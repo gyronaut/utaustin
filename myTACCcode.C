@@ -19,7 +19,7 @@ int main (int argc, char* argv[]){
 
     fprintf(stdout, "Task %d checking in!\n", irank);
 
-    string fullRunPath = "$WORK/alice/"+runDir;
+    string fullRunPath = "/work/03094/jtblair/alice/"+runDir;
     struct stat dirChecker;
     if(stat(fullRunPath.c_str(), &dirChecker)!=0){
         fprintf(stdout, "Task %d fullRunPath: %s\n", irank, fullRunPath.c_str());
@@ -38,5 +38,9 @@ int main (int argc, char* argv[]){
         mkdir(fullOutPath.c_str(), 0777);
     }
 
+    system("source /work/03093/alice-env.sh");
+    system("aliroot -b -q '**NAME OF CODE**.C(parameter 1, parameter 2, parameter 3, parameter 4)'");
 
+    ierr = MPI_Finalize();
+    return ierr;
 }
