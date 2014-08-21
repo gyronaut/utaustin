@@ -17,14 +17,15 @@ int main (int argc, char* argv[]){
 
     string runDir = "10m_batchrun";
 
-    fprintf(stdout, "Task %d checking in!", irank);
+    fprintf(stdout, "Task %d checking in!\n", irank);
 
     string fullRunPath = "$WORK/alice/"+runDir;
     struct stat dirChecker;
     if(stat(fullRunPath.c_str(), &dirChecker)!=0){
+        fprintf(stdout, "Task %d fullRunPath: %s\n", irank, fullRunPath.c_str());
         mkdir(fullRunPath.c_str(), 0777);
     }else{
-        fprintf(stdout, "stat returned 0 for Task %d", irank);
+        fprintf(stdout, "stat returned 0 for Task %d\n", irank);
     }
 
     string outputDir = "batch_";
