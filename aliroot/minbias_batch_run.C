@@ -38,13 +38,13 @@ void chain_justinGen_pythia(Int_t nev = 10000, char* filename = "outloop_io_test
 
     AliGenPythia * gener = new AliGenPythia(-1);   something like event scaling
     gener->SetEnergyCMS(7000.);
-    gener->SetNuclei(208,208);
-    gener->SetPtHard(10,10000);
+//    gener->SetNuclei(208,208);
+//    gener->SetPtHard(10,10000);
     gener->SetOrigin(0.,0.,0.); 
     gener->SetSigma(0.,0.,5.3);
     gener->SetVertexSmear(kPerEvent);
-    gener->SetTriggerParticle(0, 1., 5., 1000.);
-    gener->SetChildPtRange(5, 1000);
+//    gener->SetTriggerParticle(0, 1., 5., 1000.);
+//    gener->SetChildPtRange(5, 1000);
 
     //Initialize generator
     gener->Init();
