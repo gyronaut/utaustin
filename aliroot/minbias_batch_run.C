@@ -1,4 +1,4 @@
-void chain_justinGen_pythia(Int_t nev = 10000, char* filename = "outloop_io_test_10k.root", char* folderName){
+void minbias_batch_run(Int_t nev = 10000, char* filename = "outloop_io_test_10k.root", char* folderName){
 
     // Runloader
     TStopwatch timer;
@@ -19,9 +19,9 @@ void chain_justinGen_pythia(Int_t nev = 10000, char* filename = "outloop_io_test
     AliRunLoader* rl = AliRunLoader::Open(filename, folderName, "recreate");
 
 
-    string kineFileName = "Kinematics_";
-    kineFileName.append(filename);
-    rl->SetKineFileName(kineFileName);
+    //string kineFileName = "Kinematics_";
+    //kineFileName.append(filename);
+    //rl->SetKineFileName(kineFileName);
     rl->SetCompressionLevel(2);
     rl->SetNumberOfEventsPerFile(nev);
     rl->LoadKinematics("RECREATE");
@@ -36,7 +36,7 @@ void chain_justinGen_pythia(Int_t nev = 10000, char* filename = "outloop_io_test
     //Header
     AliHeader* header = rl->GetHeader();
 
-    AliGenPythia * gener = new AliGenPythia(-1);   something like event scaling
+    AliGenPythia * gener = new AliGenPythia(-1);   //something like event scaling
     gener->SetEnergyCMS(7000.);
 //    gener->SetNuclei(208,208);
 //    gener->SetPtHard(10,10000);

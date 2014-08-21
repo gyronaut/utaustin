@@ -51,7 +51,7 @@ int main (int argc, char* argv[]){
         mkdir(fullOutPath.c_str(), 0777);
     }
 
-    string alirootCmd = "/work/03093/deepat/alice/aliroot/vAN-20140818/build/bin/tgt_linuxx8664gcc/aliroot -b -q \"./aliroot/"+runFile+"("+numEvents+", "+outFile+", "+fullOutPath+")\"";
+    string alirootCmd = "/work/03093/deepat/alice/aliroot/vAN-20140818/build/bin/tgt_linuxx8664gcc/aliroot -b -q \'./aliroot/"+runFile+"("+numEvents+", \""+fullOutPath+outFile+"\", \"FASTGEN\")\'";
     system(alirootCmd.c_str());
 
     ierr = MPI_Finalize();
