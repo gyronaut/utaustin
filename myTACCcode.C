@@ -18,7 +18,7 @@ int main (int argc, char* argv[]){
     /***************************************
      **** STUFF TO CHANGE BETWEEN RUNS *****
      ***************************************/
-    string runDir = "10m_batchrun";
+    string runDir = "21082014_10m_batchrun";
     
     string outputDir = "batch_";
     ostringstream ss;
@@ -46,14 +46,12 @@ int main (int argc, char* argv[]){
         //fprintf(stdout, "stat returned 0 for Task %d\n", irank);
     }
 
-    string fullOutPath = fullRunPath + "/" + outputDir;
+    string fullOutPath = fullRunPath + "/" + outputDir+"/";
     if(stat(fullOutPath.c_str(), &dirChecker)!=0){
         mkdir(fullOutPath.c_str(), 0777);
     }
 
-    system("source /work/03093/deepat/alice/alice-env.sh -n 1");
-
-    string alirootCmd = "aliroot -b -q \"./aliroot/"+runFile+"("+numEvents+", "+outFile+", "+fullOutPath+")\"";
+    string alirootCmd = "/work/03093/deepat/alice/aliroot/vAN-20140818/build/bin/tgt_linuxx8664gcc/aliroot -b -q \"./aliroot/"+runFile+"("+numEvents+", "+outFile+", "+fullOutPath+")\"";
     system(alirootCmd.c_str());
 
     ierr = MPI_Finalize();
