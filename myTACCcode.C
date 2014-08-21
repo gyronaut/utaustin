@@ -53,7 +53,7 @@ int main (int argc, char* argv[]){
 
     system("source /work/03093/deepat/alice/alice-env.sh -n 1");
 
-    string alirootCmd = "aliroot -b -q \"./aliroot/"+runFile+"("+numEvents+", "+outfile+", "+fullOutPath+")\"";
+    string alirootCmd = "aliroot -b -q \"./aliroot/"+runFile+"("+numEvents+", "+outFile+", "+fullOutPath+")\"";
     system(alirootCmd.c_str());
 
     ierr = MPI_Finalize();
