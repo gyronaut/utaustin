@@ -32,7 +32,7 @@ int main (int argc, char* argv[]){
     
     string runFile = "minbias_batch_run.C";
 
-    string outFile = "25k_minbias.root"
+    string outFile = "25k_minbias.root";
     /***************************************/
 
     //fprintf(stdout, "Task %d checking in!\n", irank);
