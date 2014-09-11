@@ -1,7 +1,7 @@
 TACC Submission/Compilation Instructions:
 =========================================
 
-*For the current Event generating code, the following procedure is required to launch the jobs:
+*For the current Event generating code, the following procedure is required to launch the jobs:*
 
 + source the alice environment script (/work/03093/deepat/alice/alice-env.sh) - alias shortcut= "ali"
 
