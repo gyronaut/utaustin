@@ -18,7 +18,7 @@ int main (int argc, char* argv[]){
     /***************************************
      **** STUFF TO CHANGE BETWEEN RUNS *****
      ***************************************/
-    string inputDir = "/work/03094/jtblair/alice/25082014_10m_batchrun/batch_";
+    string inputDir = "/work/03094/jtblair/alice/25082014_100m_batchrun/batch_";
     
     ostringstream ss;
     ss <<  irank;
@@ -28,7 +28,7 @@ int main (int argc, char* argv[]){
 
     string runFile = "histo_gen.C";
     
-    string outputDir = "/work/03094/jtblair/alice/25082014_10m_batchrun/histograms";
+    string outputDir = "/work/03094/jtblair/alice/25082014_100m_batchrun/histograms";
     string outputFile = "histo_"+ss.str()+".root";
 
     /***************************************/

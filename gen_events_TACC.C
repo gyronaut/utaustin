@@ -5,7 +5,6 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
-
 using namespace std;
 
 int main (int argc, char* argv[]){
@@ -18,7 +17,7 @@ int main (int argc, char* argv[]){
     /***************************************
      **** STUFF TO CHANGE BETWEEN RUNS *****
      ***************************************/
-    string runDir = "25082014_100m_batchrun";
+    string runDir = "20140910_100m_batchrun_2";
     
     string outputDir = "batch_";
     ostringstream ss;
@@ -52,6 +51,7 @@ int main (int argc, char* argv[]){
     }
 
     string alirootCmd = "/work/03093/deepat/alice/aliroot/vAN-20140818/build/bin/tgt_linuxx8664gcc/aliroot -b -q \'./aliroot/"+runFile+"("+numEvents+", \""+fullOutPath+outFile+"\", \"FASTGEN\")\'";
+
     system(alirootCmd.c_str());
 
     ierr = MPI_Finalize();
