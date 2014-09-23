@@ -17,7 +17,7 @@ int main (int argc, char* argv[]){
     /***************************************
      **** STUFF TO CHANGE BETWEEN RUNS *****
      ***************************************/
-    string runDir = "20140911_100m_batchrun_1";
+    string runDir = "20140912_100m_batchrun_2";
     
     string outputDir = "batch_";
     ostringstream ss;
@@ -36,7 +36,7 @@ int main (int argc, char* argv[]){
 
     //fprintf(stdout, "Task %d checking in!\n", irank);
 
-    string fullRunPath = "/work/03094/jtblair/alice/"+runDir;
+    string fullRunPath = "/scratch/03094/jtblair/alice/"+runDir;
     struct stat dirChecker;
     if(stat(fullRunPath.c_str(), &dirChecker)!=0){
         //fprintf(stdout, "Task %d fullRunPath: %s\n", irank, fullRunPath.c_str());
@@ -50,7 +50,7 @@ int main (int argc, char* argv[]){
         mkdir(fullOutPath.c_str(), 0777);
     }
 
-    string alirootCmd = "/work/03093/deepat/alice/aliroot/vAN-20140818/build/bin/tgt_linuxx8664gcc/aliroot -b -q \'./aliroot/"+runFile+"("+numEvents+", \""+fullOutPath+outFile+"\", \"FASTGEN\")\' > /dev/null";
+    string alirootCmd = "/work/03093/deepat/alice/aliroot/vAN-20140818/build/bin/tgt_linuxx8664gcc/aliroot -b -q \'$WORK/aliroot/"+runFile+"("+numEvents+", \""+fullOutPath+outFile+"\", \"FASTGEN\")\' > /dev/null";
 
     system(alirootCmd.c_str());
 

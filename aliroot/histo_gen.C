@@ -59,8 +59,8 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
             phi = particle->Phi();
             eta = particle->Eta();
             parPdg = particle->GetPdgCode();
-            //select only hadrons
-            if(TMath::Abs(parPdg)==2212 || TMath::Abs(parPdg)==211 || TMath::Abs(parPdg)==321 || TMath::Abs(parPdg)==11 || TMath::Abs(parPdg)==333){
+            //select only hadrons within the eta range -0.9 < eta <0.9
+            if((TMath::Abs(parPdg)==2212 || TMath::Abs(parPdg)==211 || TMath::Abs(parPdg)==321 || TMath::Abs(parPdg)==11 || TMath::Abs(parPdg)==333)&&(TMath::Abs(eta)<0.9)){
                 hadronPt->Fill(pt);
                 if(TMath::Abs(parPdg)==333){                  
                     phiPt->Fill(pt);
@@ -92,8 +92,8 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                         assoPt = hAsso->Pt();
                         assoPhi = hAsso->Phi();
                         assoPdg = hAsso->GetPdgCode();
-                        //select just phi mesons
-                        if(TMath::Abs(assoPdg)==333){
+                        //select just phi mesons in the eta range: |eta| < 0.9
+                        if((TMath::Abs(assoPdg)==333) && (TMath::Abs(eta)< 0.9)){
                             //check that hadron isn't daughter particle
                             Int_t numDaughters = hAsso->GetNDaughters();
                             bool isHadronDaughter = false;

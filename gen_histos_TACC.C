@@ -18,7 +18,7 @@ int main (int argc, char* argv[]){
     /***************************************
      **** STUFF TO CHANGE BETWEEN RUNS *****
      ***************************************/
-    string inputDir = "/work/03094/jtblair/alice/25082014_100m_batchrun/batch_";
+    string inputDir = "/scratch/03094/jtblair/alice/20140911_100m_batchrun_1/batch_";
     
     ostringstream ss;
     ss <<  irank;
@@ -28,7 +28,7 @@ int main (int argc, char* argv[]){
 
     string runFile = "histo_gen.C";
     
-    string outputDir = "/work/03094/jtblair/alice/25082014_100m_batchrun/histograms";
+    string outputDir = "/scratch/03094/jtblair/alice/20140911_100m_batchrun_1/histograms";
     string outputFile = "histo_"+ss.str()+".root";
 
     /***************************************/
@@ -39,7 +39,7 @@ int main (int argc, char* argv[]){
     if(stat(outputDir.c_str(), &dirChecker)!=0){
         mkdir(outputDir.c_str(), 0777);
     }
-    string alirootCmd = "/work/03093/deepat/alice/aliroot/vAN-20140818/build/bin/tgt_linuxx8664gcc/aliroot -b -q \'./aliroot/"+runFile+"(\""+inputDir+"\", \""+inputFile+"\",\""+outputDir+"\", \""+outputFile+"\")\'";
+    string alirootCmd = "/work/03093/deepat/alice/aliroot/vAN-20140818/build/bin/tgt_linuxx8664gcc/aliroot -b -l -q \'/work/03094/jtblair/aliroot/"+runFile+"(\""+inputDir+"\", \""+inputFile+"\",\""+outputDir+"\", \""+outputFile+"\")\'";
     system(alirootCmd.c_str());
 
     ierr = MPI_Finalize();
