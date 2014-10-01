@@ -94,14 +94,26 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                         assoPdg = hAsso->GetPdgCode();
                         //select just phi mesons in the eta range: |eta| < 0.9
                         if((TMath::Abs(assoPdg)==333) && (TMath::Abs(eta)< 0.9)){
-                            //check that hadron isn't daughter particle
+                            //check that hadron isn't daughter particle of any phi meson
                             Int_t numDaughters = hAsso->GetNDaughters();
                             bool isHadronDaughter = false;
+                            /*
                             for(Int_t i=0; i<numDaughters; i++){
-                                Int_t daughter = hAsso->GetFirstDaughter()+i;
+                                Int_t daughter = hAsso->GetFirstDaughter()+i; //first we check to make sure the hadron isn't a direct daughter of the meson in hAsso
                                 if(daughter == part){
                                     isHadronDaughter = true;
                                 }
+                            }
+                            */
+                            Int_t firstMotherIndex = particle->GetMother(0); //we check to make sure the hadron isn't the daughter of any phi meson
+                            Int_t secondMotherIndex = particle->GetMother(1);
+                            if(firstMotherIndex != 0){
+                                TParticle *firstmother = stack->Particle(firstMotherIndex);
+                                if(TMath::Abs(firstmother->GetPdgCode()) == 333) isHadronDaughter = true;
+                            }
+                            if(lastMotherIndex != 0){
+                                TParticle *lastmother = stack->Particle(lastMotherIndex);
+                                if(TMath::Abs(lastmother->GetPdgCode()) == 333) isHadronDaughter = true;
                             }
                             if(isHadronDaughter) continue;
                             Dphi = phi - assoPhi;
