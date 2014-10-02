@@ -12,3 +12,13 @@ TACC Submission/Compilation Instructions:
 + change myBatchScript.sh to call correct executable if necessary (also change walltime, number of cores, etc.)
 
 + launch job - sbatch myBatchScript
+
+
+Next Steps for analysis:
+-------------------------
+
++ Look at Hadron and Phi-meson phi distribution (make sure it's flat)
+
++ Try to reconstruct invariant masses from K+ K- pairs (look at mass distrubition for different delta-phi bins)
+
++ See if the new "nixing daughter particle correlations" actually fixed the delta-phi distribution
