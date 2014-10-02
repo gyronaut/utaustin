@@ -111,8 +111,8 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                                 TParticle *firstmother = stack->Particle(firstMotherIndex);
                                 if(TMath::Abs(firstmother->GetPdgCode()) == 333) isHadronDaughter = true;
                             }
-                            if(lastMotherIndex != 0){
-                                TParticle *lastmother = stack->Particle(lastMotherIndex);
+                            if(secondMotherIndex != 0){
+                                TParticle *lastmother = stack->Particle(secondMotherIndex);
                                 if(TMath::Abs(lastmother->GetPdgCode()) == 333) isHadronDaughter = true;
                             }
                             if(isHadronDaughter) continue;
