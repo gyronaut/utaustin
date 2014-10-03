@@ -25,7 +25,8 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
 
     TH1F *hadronPt = new TH1F("HadronPt", "hadron pt distribution", 1000, 0, 50);
     TH1F *phiPt = new TH1F("PhiPt", "phi pt distribution", 1000, 0, 50);
-    TH2F *DphiPhiH = new TH2F("DphiPhiH", "#Delta#phi correlation for Phi-Hadron",200,0,20,64,-1.57,4.71);
+    TH1F *phiPhiDist = new TH1F("PhiPhiDist", "phi meson angular phi distribution", 100, -0.1, 6.29);
+    TH1F *hPhiDist = new TH1F("HPhiDist", "hadron angular phi distribution", 100, -0.1, 6.29);
     TH3F *DphiHPhi = new TH3F("DphiHPhi", "#Delta#phi correlation for Hadron-Phi", 1000, 0, 50, 1000, 0, 50, 64, -1.57, 4.71);
     string inputFullPath = inputDir+"/"+inputFile;
     AliRunLoader* rl = AliRunLoader::Open(inputFullPath.c_str());
@@ -64,27 +65,9 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                 hadronPt->Fill(pt);
                 if(TMath::Abs(parPdg)==333){                  
                     phiPt->Fill(pt);
-                    //loop over all particles that aren't this phi-meson to compute delta-phi
-                    for(Int_t apart = 0; apart<npart; apart++){
-                        if(apart == part) continue;
-
-                        TParticle *asso = stack->Particle(apart);
-                        assoPt = asso->Pt();
-                        assoPhi = asso->Phi();
-                        assoPdg = asso->GetPdgCode();
-                        //select just hadrons:
-                        if(TMath::Abs(assoPdg)==2212 ||TMath::Abs(assoPdg)==11 ||TMath::Abs(assoPdg)==333 ||TMath::Abs(assoPdg)==321 || TMath::Abs(assoPdg)==211){
-                            Dphi= phi - assoPhi;
-                            if(Dphi >3*TMath::Pi()/2){
-                                Dphi = Dphi - 2*TMath::Pi();
-                            }
-                            if(Dphi < -TMath::Pi()/2){
-                                Dphi = Dphi + 2*TMath::Pi();
-                            }
-                            DphiPhiH->Fill(pt, Dphi);
-                        }
-                    }
+                    phiPhiDist->Fill(phi);
                 }else{
+                    hPhiDist->Fill(phi);
                     //loop over all particles that aren't this hadron to compute delta-phi
                     for(Int_t apart = 0; apart<npart; apart++){
                         if(apart == part) continue;
@@ -141,7 +124,6 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
     //write histograms to file
     hadronPt->Write();
     phiPt->Write();
-    DphiPhiH->Write();
     DphiHPhi->Write();
 
     histoOutput->Close();

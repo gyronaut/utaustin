@@ -5,4 +5,4 @@
 #SBATCH -p normal           # Queue (partition) name -- normal, development, etc.
 #SBATCH -t 01:30:00         # Run time (hh:mm:ss)i
 
-ibrun histoParalle4.o
+ibrun histoParallel4.o
