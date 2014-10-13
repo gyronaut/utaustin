@@ -45,14 +45,16 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
     //Loop over all events
     for(Int_t nev=0; nev<numEvents; nev++){
         //if(nev%100 == 0)printf("Event: %d\n", nev);
+        rl->GetEvent(nev);
         AliStack* stack = rl->Stack();
         Int_t npart = stack->GetNprimary();
         Double_t pt=-1, E=-1, theta=-1, phi=-1, eta=-99, y=-99, eta_calc=-99, p_tot = 0, p_z = 0;
         Double_t assoPt=-1, assoPhi=-1, assoEta=-9, Dphi=-99;
         Int_t parPdg = 0, assoPdg=0;
+        TParticle *particle, *hAsso;
         //loop over all particles in stack
         for(Int_t part=0; part<npart; part++){
-            TParticle *particle = stack->Particle(part);
+            particle = stack->Particle(part);
             pt = particle->Pt();
             E = particle->Energy();
             theta = particle->Theta();
@@ -61,10 +63,10 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
             p_tot = particle->P();
             p_z = particle->Pz();
             parPdg = particle->GetPdgCode();
-            eta_calc = TMath::Log((p_tot + p_z)/(p_tot - p_z));
+            eta_calc = 0.5*TMath::Log((p_tot + p_z)/(p_tot - p_z));
             //select only hadrons within the eta range -0.9 < eta <0.9
-            if(nev%100==0 && TMath::Abs(eta)<1) printf("  Particle eta: %f, Calculated eta: %f\n", eta, eta_calc);
-            if((TMath::Abs(parPdg)==2212 || TMath::Abs(parPdg)==211 || TMath::Abs(parPdg)==321 || TMath::Abs(parPdg)==11 || TMath::Abs(parPdg)==333)&&(TMath::Abs(eta)<0.9)){
+            //if(nev%1000==0 && TMath::Abs(eta_calc)<1) printf("  Particle eta: %f, Calculated eta: %f, Pt: %f, PDG: %d\n", eta, eta_calc, pt, parPdg);
+            if((TMath::Abs(parPdg)==2212 || TMath::Abs(parPdg)==211 || TMath::Abs(parPdg)==321 || TMath::Abs(parPdg)==11 || TMath::Abs(parPdg)==333)&&(TMath::Abs(eta_calc)<0.9)){
                 hadronPt->Fill(pt);
                 count++;
                 if(TMath::Abs(parPdg)==333){                  
@@ -75,14 +77,14 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                     //loop over all particles that aren't this hadron to compute delta-phi
                     for(Int_t apart = 0; apart<npart; apart++){
                         if(apart == part) continue;
-                        TParticle *hAsso = stack->Particle(apart);
+                        hAsso = stack->Particle(apart);
                         assoPt = hAsso->Pt();
                         assoPhi = hAsso->Phi();
                         assoEta = hAsso->Eta();
                         assoPdg = hAsso->GetPdgCode();
                         //select just phi mesons in the eta range: |eta| < 0.9
                         if((TMath::Abs(assoPdg)==333) && (TMath::Abs(assoEta)< 0.9)){
-                            printf("Got Here! \n");
+                            //printf("Got Here! \n");
                             //check that hadron isn't daughter particle of any phi meson
                             Int_t numDaughters = hAsso->GetNDaughters();
                             bool isHadronDaughter = false;
@@ -119,7 +121,7 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
             }
         }
     }
-    printf("Total hadrons counted in eta range: %d", count);
+    printf("Total hadrons counted in eta range: %d\n", count);
     rl->~AliRunLoader(); 
 
 

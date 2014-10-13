@@ -28,7 +28,7 @@ int main (int argc, char* argv[]){
 
     string runFile = "histo_gen.C";
     
-    string outputDir = "/scratch/03094/jtblair/alice/20140912_100m_batchrun_1/histograms_test";
+    string outputDir = "/scratch/03094/jtblair/alice/20140912_100m_batchrun_1/histograms";
     string outputFile = "histo_"+ss.str()+".root";
 
     /***************************************/
