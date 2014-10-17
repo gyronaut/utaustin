@@ -24,6 +24,8 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
     gSystem->Load("libAliPythia6.so");  // ALICE specific implementations
 
     TH1F *invMassHisto = new TH1F("InvMassHisto", "Invariant Mass distribution for K+/K- pairs", 1000, 500, 1500);
+    TH2F *invMassDPhi = new TH2F("InvMassDPhi", "Invariant Mass Distribution for K+/K- pairs in delta-phi bins", 1000, 500, 1500, 40, -1.6, 4.7);
+    TH1F *invMassPhiOnly = new TH1F("InvMassPhiOnly", "Invariant Mass distribution for K+/K- pairs known to come from phi mesons", 1000, 500, 1500);
     string inputFullPath = inputDir+"/"+inputFile;
     AliRunLoader* rl = AliRunLoader::Open(inputFullPath.c_str());
 
@@ -79,6 +81,7 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                     if(parPdg_2 == -321 && TMath::Abs(eta_2)< 0.9){
                         //calculate invariant mass
                         invMass = TMath::Sqrt(m_1*m_1 + m_2*m_2 + 2*E_1*E_2 - 2*(px_1*px_2 + py_1*py_2 + pz_1*pz_2));
+                        invMassHisto->Fill(invMass);
 
                     }
                 }
