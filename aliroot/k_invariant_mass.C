@@ -8,7 +8,7 @@ using namespace std;
 #include "TClassTable.h"
 #include "TObjArray.h"
 
-void histo_gen(string inputDir, string inputFile, string outputDir, string outputFile){
+void k_invariant_mass(string inputDir, string inputFile, string outputDir, string outputFile){
 
     if (gClassTable->GetID("AliRun") < 0) {
         gROOT->LoadMacro("loadlibs.C");
@@ -39,7 +39,7 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
 
     rl->LoadKinematics();
     rl->LoadHeader();
-
+    
     //Loop over all events
     for(Int_t nev=0; nev<numEvents; nev++){
         //if(nev%100 == 0)printf("Event: %d\n", nev);
@@ -47,8 +47,8 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
         AliStack* stack = rl->Stack();
         Int_t npart = stack->GetNprimary();
         Double_t pt_had = -1, E_had = 0, phi_had = 0, eta_had = 99;
-        Double_t pt_1=-1, E_1=0, m_1=0, px_1=0, py_1=0, pz_1=0 phi_1=-99, eta_1=-99;
-        Double_t pt_2=-1, E_2=0, m_2=0, px_2=0, py_2=0, pz_2=0 phi_2=-99, eta_2=-99;
+        Double_t pt_1=-1, E_1=0, m_1=0, px_1=0, py_1=0, pz_1=0, phi_1=-99, eta_1=-99;
+        Double_t pt_2=-1, E_2=0, m_2=0, px_2=0, py_2=0, pz_2=0, phi_2=-99, eta_2=-99;
         Double_t invMass = 0, mother_phi= 0, mother_Dphi=0;;
         Int_t parPdg_1 = 0, parPdg_2 = 0, parPdg_had = 0, motherIndex_1 = 0, motherIndex_2 = 0, motherIndex_had = 0; 
         if(!stack) continue;
@@ -75,7 +75,7 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                     px_2 = secondPart->Px();
                     py_2 = secondPart->Py();
                     pz_2 = secondPart->Pz();
-                    E_2 = secondPart->Energy;
+                    E_2 = secondPart->Energy();
                     m_2 = secondPart->GetCalcMass();
                     phi_2 = secondPart->Phi();
                     parPdg_2 = secondPart->GetPdgCode();
@@ -101,7 +101,7 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                             E_had = hadron->Energy();
                             phi_had = hadron->Phi();
                             eta_had = hadron->Eta();
-                            parPdg_had = hadron->GetPdgCOde();
+                            parPdg_had = hadron->GetPdgCode();
                             motherIndex_had = hadron->GetFirstMother();
                             //select only hadrons in eta range: |eta| < 0.9
                             if((TMath::Abs(parPdg_had) == 211 || TMath::Abs(parPdg_had) == 11 || TMath::Abs(parPdg_had) == 2212 || TMath::Abs(parPdg_had) == 321 ) && TMath::Abs(eta_had) < 0.9){
