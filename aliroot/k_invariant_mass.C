@@ -132,9 +132,9 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
     histoOutput->cd();
 
     //write histograms to file
-    hadronPt->Write();
-    phiPt->Write();
-    DphiHPhi->Write();
+    invMassHisto->Write();
+    invMassPhiOnly->Write();
+    invMassDPhi->Write();
 
     histoOutput->Close();
 
