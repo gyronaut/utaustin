@@ -23,9 +23,11 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
     gSystem->Load("libpythia6.so");     // Pythia
     gSystem->Load("libAliPythia6.so");  // ALICE specific implementations
 
-    TH1F *invMassHisto = new TH1F("InvMassHisto", "Invariant Mass distribution for K+/K- pairs", 1000, 500, 1500);
-    TH3F *invMassDPhi = new TH3F("InvMassDPhi", "Invariant Mass Distribution for K+/K- pairs in delta-phi bins with hadron of variable pT", 1000, 0, 50, 1000, 960, 1100, 40, -1.6, 4.7); //histogram ordered triplet --> (hadron pT, invariant Mass, delta phi)
-    TH1F *invMassPhiOnly = new TH1F("InvMassPhiOnly", "Invariant Mass distribution for K+/K- pairs known to come from phi mesons", 1000, 500, 1500);
+    TH1F *invMassHisto = new TH1F("InvMassHisto", "Invariant Mass distribution for K+/K- pairs", 1000, 900, 1100);
+    TH3F *invMassDPhi = new TH3F("InvMassDPhi", "Invariant Mass Distribution for K+/K- pairs in delta-phi bins with hadron of variable pT", 1000, 0, 10, 1000, 960, 1100, 32, -1.6, 4.7); //histogram ordered triplet --> (hadron pT, invariant Mass, delta phi)
+    TH1F *invMassPhiOnly = new TH1F("InvMassPhiOnly", "Invariant Mass distribution for K+/K- pairs known to come from phi mesons", 1000, 900, 1100);
+    TH1F *eventCount = new TH1F("EventCounter", "Histogram to count number of events processed", 1, 0, 1);
+
     string inputFullPath = inputDir+"/"+inputFile;
     AliRunLoader* rl = AliRunLoader::Open(inputFullPath.c_str());
 
@@ -52,6 +54,8 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
         Double_t invMass = 0, mother_phi= 0, mother_Dphi=0;;
         Int_t parPdg_1 = 0, parPdg_2 = 0, parPdg_had = 0, motherIndex_1 = 0, motherIndex_2 = 0, motherIndex_had = 0; 
         if(!stack) continue;
+        Double_t evt = 1;
+        eventCount->Fill(evt);
         //loop over all particles in stack
         for(Int_t part=0; part<npart; part++){
             TParticle *particle = stack->Particle(part);
@@ -67,7 +71,7 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
             motherIndex_1 = particle->GetFirstMother();
             //select only K+ within the eta range -0.9 < eta <0.9
             if(parPdg_1==321 && TMath::Abs(eta_1)<0.9){
-                printf("Event &d: found a K+\n", nev);
+                //printf("Event %d: found a K+\n", nev);
                 //loop over all particles that aren't this K+ to look for K-
                 for(Int_t apart = 0; apart<npart; apart++){
                     if(apart == part) continue;
@@ -79,15 +83,18 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
                     E_2 = secondPart->Energy();
                     m_2 = secondPart->GetCalcMass();
                     phi_2 = secondPart->Phi();
+                    eta_2 = secondPart->Eta();
                     parPdg_2 = secondPart->GetPdgCode();
                     motherIndex_2 = secondPart->GetFirstMother();
                     //select just K- in the eta range: |eta| < 0.9
                     if(parPdg_2 == -321 && TMath::Abs(eta_2)< 0.9){
-                        printf("    Found K- --> K+/K- pair identified!\n");
+                        //printf("    Found K- --> K+/K- pair identified!\n");
                         //calculate invariant mass
-                        invMass = TMath::Sqrt(m_1*m_1 + m_2*m_2 + 2*E_1*E_2 - 2*(px_1*px_2 + py_1*py_2 + pz_1*pz_2));
+                        //invMass = 1000*TMath::Sqrt(m_1*m_1 + m_2*m_2 + 2*E_1*E_2 - 2*(px_1*px_2 + py_1*py_2 + pz_1*pz_2));
+                        invMass = 1000* TMath::Sqrt((E_1 + E_2)*(E_1 + E_2) - (px_1+px_2)*(px_1+px_2) - (py_1+py_2)*(py_1+py_2) - (pz_1+pz_2)*(pz_1+pz_2));
                         invMassHisto->Fill(invMass);
                         //check if the two kaons came from the same phi meson, and if so put the invariant mass in new histo
+                        //printf("INV MASS: %f\n", invMass);
                         if(motherIndex_1 > 0){
                             TParticle *mother_1 = stack->Particle(motherIndex_1);
                             if((motherIndex_1 == motherIndex_2) && (TMath::Abs(mother_1->GetPdgCode()) == 333)){
@@ -137,6 +144,7 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
     invMassHisto->Write();
     invMassPhiOnly->Write();
     invMassDPhi->Write();
+    eventCount->Write();
 
     histoOutput->Close();
 

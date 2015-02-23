@@ -51,6 +51,8 @@ void minbias_batch_run(Int_t nev = 10000, char* filename = "outloop_io_test_10k.
     gener->SetStack(stack);
 
     //Event Loop
+    
+    fprintf(stdout, "made it this far...");
 
     Int_t iev;
     for (iev = 0; iev < nev; iev++) {
