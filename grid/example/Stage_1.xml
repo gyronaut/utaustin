@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+<alien>
+  <collection name="Stage_1">
+    <event name="1">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:10:48" dir="33945994" entryId="33946254" expiretime="" gowner="jblair" guid="BD607160-9BED-11E4-A25A-CF8B83595C82" guidtime="11E49BED" jobId="461951919" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/001/root_archive.zip" md5="59ca7b2c8ec698614b19ad58cd74b525" owner="jblair" perm="755" replicated="0" size="21445" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/001/root_archive.zip" type="f" />
+    </event>
+    <event name="10">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 13:05:50" dir="33943892" entryId="33943896" expiretime="" gowner="jblair" guid="67254418-9BE5-11E4-9EFC-2B14E926D1E2" guidtime="11E49BE5" jobId="461951928" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/010/root_archive.zip" md5="69fca3f70e4381b8255e9fa0bf12ba4e" owner="jblair" perm="755" replicated="0" size="21519" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/010/root_archive.zip" type="f" />
+    </event>
+    <event name="11">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:51:13" dir="33948894" entryId="33948950" expiretime="" gowner="jblair" guid="6A7DB7D2-9BFC-11E4-9681-F78098809711" guidtime="11E49BFC" jobId="461951929" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/011/root_archive.zip" md5="1af97c11570c5495f020b94560119585" owner="jblair" perm="755" replicated="0" size="17323" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/011/root_archive.zip" type="f" />
+    </event>
+    <event name="12">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 12:55:49" dir="33943868" entryId="33943877" expiretime="" gowner="jblair" guid="27693F7E-9BE4-11E4-87A8-BF8D77E71AF2" guidtime="11E49BE4" jobId="461951930" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/012/root_archive.zip" md5="c6db33413ed0ef2cf2c4a8a572cb6c10" owner="jblair" perm="755" replicated="0" size="23943" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/012/root_archive.zip" type="f" />
+    </event>
+    <event name="13">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:08:16" dir="33945925" entryId="33946142" expiretime="" gowner="jblair" guid="990E417A-9BED-11E4-BB62-1B036E519107" guidtime="11E49BED" jobId="461951931" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/013/root_archive.zip" md5="cee92c880e565172e39f7a047551d4b7" owner="jblair" perm="755" replicated="0" size="15586" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/013/root_archive.zip" type="f" />
+    </event>
+    <event name="14">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 12:55:31" dir="33943867" entryId="33943872" expiretime="" gowner="jblair" guid="21F11756-9BE4-11E4-BB98-EBA66E4BE23D" guidtime="11E49BE4" jobId="461951932" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/014/root_archive.zip" md5="98e4c0e333dc65e430f6d7febb218c90" owner="jblair" perm="755" replicated="0" size="12489" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/014/root_archive.zip" type="f" />
+    </event>
+    <event name="15">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:45:49" dir="33946846" entryId="33946993" expiretime="" gowner="jblair" guid="F720D8EA-9BF2-11E4-94AB-1FA605385C61" guidtime="11E49BF2" jobId="461951933" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/015/root_archive.zip" md5="9badc1fc5e356a66da9776702083a89d" owner="jblair" perm="755" replicated="0" size="23260" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/015/root_archive.zip" type="f" />
+    </event>
+    <event name="16">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 19:12:48" dir="33958565" entryId="33958569" expiretime="" gowner="jblair" guid="E8B92782-9C18-11E4-9452-8F0FFD3767BE" guidtime="11E49C18" jobId="461951934" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/016/root_archive.zip" md5="d8d8187b5fea922b9fb55cf9c07700fe" owner="jblair" perm="755" replicated="0" size="18000" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/016/root_archive.zip" type="f" />
+    </event>
+    <event name="17">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 18:44:42" dir="33957942" entryId="33957953" expiretime="" gowner="jblair" guid="F806449E-9C14-11E4-9D76-9347363CCF6F" guidtime="11E49C14" jobId="461951935" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/017/root_archive.zip" md5="3cc9cfa2ff91726a52f4ea6f1bab2b5f" owner="jblair" perm="755" replicated="0" size="14788" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/017/root_archive.zip" type="f" />
+    </event>
+    <event name="18">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:35:37" dir="33946779" entryId="33946832" expiretime="" gowner="jblair" guid="A4056D7A-9BF1-11E4-8498-EB7DA3B15658" guidtime="11E49BF1" jobId="461951936" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/018/root_archive.zip" md5="a4ad521e4d7492135c6ce136797e69b1" owner="jblair" perm="755" replicated="0" size="27503" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/018/root_archive.zip" type="f" />
+    </event>
+    <event name="19">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:25:40" dir="33946628" entryId="33946708" expiretime="" gowner="jblair" guid="49D6AB3A-9BF0-11E4-91BC-736A7C62B0D9" guidtime="11E49BF0" jobId="461951937" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/019/root_archive.zip" md5="dc935146d71e9d4a49764a9a1a6dee1c" owner="jblair" perm="755" replicated="0" size="21772" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/019/root_archive.zip" type="f" />
+    </event>
+    <event name="2">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:08:16" dir="33945924" entryId="33946137" expiretime="" gowner="jblair" guid="96B1C0FA-9BED-11E4-852C-B7EE9AA6D9F9" guidtime="11E49BED" jobId="461951920" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/002/root_archive.zip" md5="635c9490f09fb953e8954188ca80d631" owner="jblair" perm="755" replicated="0" size="12489" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/002/root_archive.zip" type="f" />
+    </event>
+    <event name="20">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:25:30" dir="33946600" entryId="33946674" expiretime="" gowner="jblair" guid="0A46F4E8-9BF0-11E4-A952-63C1270051E6" guidtime="11E49BF0" jobId="461951938" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/020/root_archive.zip" md5="9d1a209d34b6321344b5121bab8f6f95" owner="jblair" perm="755" replicated="0" size="25900" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/020/root_archive.zip" type="f" />
+    </event>
+    <event name="21">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 19:31:14" dir="33959099" entryId="33959114" expiretime="" gowner="jblair" guid="7CC73CD2-9C1B-11E4-8BE9-B32B9E614FC7" guidtime="11E49C1B" jobId="461951939" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/021/root_archive.zip" md5="184a1e7e2768cd4d7e16eaf5716a131a" owner="jblair" perm="755" replicated="0" size="27003" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/021/root_archive.zip" type="f" />
+    </event>
+    <event name="22">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 19:07:03" dir="33958392" entryId="33958417" expiretime="" gowner="jblair" guid="174CE936-9C18-11E4-A47C-13993D12C89E" guidtime="11E49C18" jobId="461951940" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/022/root_archive.zip" md5="891b95ae4d40d3dc2b85e54506721416" owner="jblair" perm="755" replicated="0" size="26257" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/022/root_archive.zip" type="f" />
+    </event>
+    <event name="23">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 19:40:33" dir="33961261" entryId="33961290" expiretime="" gowner="jblair" guid="C69ACFD0-9C1C-11E4-94CE-572880868C4B" guidtime="11E49C1C" jobId="461951941" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/023/root_archive.zip" md5="40b04459f5776d99068c0c26d2112354" owner="jblair" perm="755" replicated="0" size="26835" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/023/root_archive.zip" type="f" />
+    </event>
+    <event name="24">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 19:10:26" dir="33958515" entryId="33958535" expiretime="" gowner="jblair" guid="92319516-9C18-11E4-9820-838C49F03C35" guidtime="11E49C18" jobId="461951942" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/024/root_archive.zip" md5="3d55b432a5a3f00fc4728d4834938132" owner="jblair" perm="755" replicated="0" size="27401" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/024/root_archive.zip" type="f" />
+    </event>
+    <event name="25">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 19:21:56" dir="33958793" entryId="33958823" expiretime="" gowner="jblair" guid="29FD6C34-9C1A-11E4-AB1C-87BD76B23EBF" guidtime="11E49C1A" jobId="461951943" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/025/root_archive.zip" md5="fa1ce23d27b4de0c1c022751afa27a0c" owner="jblair" perm="755" replicated="0" size="16853" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/025/root_archive.zip" type="f" />
+    </event>
+    <event name="26">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:08:16" dir="33945922" entryId="33946147" expiretime="" gowner="jblair" guid="9310FDD0-9BED-11E4-B517-9F6673A48EB5" guidtime="11E49BED" jobId="461951944" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/026/root_archive.zip" md5="6c13c90fbef5c25345b7a5ddd8b818e7" owner="jblair" perm="755" replicated="0" size="15158" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/026/root_archive.zip" type="f" />
+    </event>
+    <event name="27">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:45:31" dir="33946844" entryId="33946967" expiretime="" gowner="jblair" guid="F5AF86BE-9BF2-11E4-AC22-6385825DF719" guidtime="11E49BF2" jobId="461951945" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/027/root_archive.zip" md5="fe93d37efad4e770718c07b25c73ef40" owner="jblair" perm="755" replicated="0" size="26869" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/027/root_archive.zip" type="f" />
+    </event>
+    <event name="28">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:37:45" dir="33948491" entryId="33948512" expiretime="" gowner="jblair" guid="D9FC7280-9BFA-11E4-BA61-EB118CDC866B" guidtime="11E49BFA" jobId="461951946" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/028/root_archive.zip" md5="e5cd9c6260530003971836d96b5c2bc5" owner="jblair" perm="755" replicated="0" size="15248" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/028/root_archive.zip" type="f" />
+    </event>
+    <event name="29">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:37:55" dir="33948490" entryId="33948519" expiretime="" gowner="jblair" guid="D8314F8E-9BFA-11E4-8E78-63BD897E4FE3" guidtime="11E49BFA" jobId="461951947" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/029/root_archive.zip" md5="0fad8de6ba75008d857a4cc4ab4b1df4" owner="jblair" perm="755" replicated="0" size="16015" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/029/root_archive.zip" type="f" />
+    </event>
+    <event name="3">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:31:31" dir="33946648" entryId="33946788" expiretime="" gowner="jblair" guid="5A6B252A-9BF0-11E4-B6D9-A3D2E6BEC5EA" guidtime="11E49BF0" jobId="461951921" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/003/root_archive.zip" md5="36825ff385b32ad7dd121209c6362ada" owner="jblair" perm="755" replicated="0" size="32577" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/003/root_archive.zip" type="f" />
+    </event>
+    <event name="30">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:25:30" dir="33946613" entryId="33946681" expiretime="" gowner="jblair" guid="1B3FA45C-9BF0-11E4-9C39-83006B1C1716" guidtime="11E49BF0" jobId="461951948" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/030/root_archive.zip" md5="72a3cbd8253c482b6519135566f68d78" owner="jblair" perm="755" replicated="0" size="24267" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/030/root_archive.zip" type="f" />
+    </event>
+    <event name="31">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:58:46" dir="33949078" entryId="33949082" expiretime="" gowner="jblair" guid="D103EFE8-9BFD-11E4-8E79-AFBB6948A134" guidtime="11E49BFD" jobId="461951949" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/031/root_archive.zip" md5="7be655fd86ed50dfb3cd53ec962eca66" owner="jblair" perm="755" replicated="0" size="27190" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/031/root_archive.zip" type="f" />
+    </event>
+    <event name="32">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:38:56" dir="33948544" entryId="33948582" expiretime="" gowner="jblair" guid="FE859DC0-9BFA-11E4-A736-2736467DE09B" guidtime="11E49BFA" jobId="461951950" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/032/root_archive.zip" md5="9682dbc58ca240de75c0401eed87e6ee" owner="jblair" perm="755" replicated="0" size="19901" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/032/root_archive.zip" type="f" />
+    </event>
+    <event name="33">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 13:02:20" dir="33943886" entryId="33943890" expiretime="" gowner="jblair" guid="1E7CE752-9BE5-11E4-8B21-7B00004B0E8D" guidtime="11E49BE5" jobId="461951951" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/033/root_archive.zip" md5="add5983d16265f5aba6d895e53e6c95d" owner="jblair" perm="755" replicated="0" size="31111" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/033/root_archive.zip" type="f" />
+    </event>
+    <event name="34">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:10:07" dir="33945992" entryId="33946213" expiretime="" gowner="jblair" guid="B21FD200-9BED-11E4-9C93-EFDE338082F5" guidtime="11E49BED" jobId="461951952" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/034/root_archive.zip" md5="584b114da5f014c2cd9e1e908c71100b" owner="jblair" perm="755" replicated="0" size="23494" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/034/root_archive.zip" type="f" />
+    </event>
+    <event name="35">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:10:07" dir="33945993" entryId="33946218" expiretime="" gowner="jblair" guid="B2A39BE4-9BED-11E4-8657-FB981DC84A7D" guidtime="11E49BED" jobId="461951953" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/035/root_archive.zip" md5="4cc4bfaa6050f2d858baf11149c0f04f" owner="jblair" perm="755" replicated="0" size="17885" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/035/root_archive.zip" type="f" />
+    </event>
+    <event name="36">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:08:14" dir="33945921" entryId="33946122" expiretime="" gowner="jblair" guid="8FA9438C-9BED-11E4-8F5A-3398D8D7C498" guidtime="11E49BED" jobId="461951954" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/036/root_archive.zip" md5="71792175b27010cf5a5f802df9dab247" owner="jblair" perm="755" replicated="0" size="18471" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/036/root_archive.zip" type="f" />
+    </event>
+    <event name="37">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:36:04" dir="33948423" entryId="33948455" expiretime="" gowner="jblair" guid="9A29CE3C-9BFA-11E4-BD37-8FDDDA36920C" guidtime="11E49BFA" jobId="461951955" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/037/root_archive.zip" md5="053ce5cb3379eab443f9e5e786763262" owner="jblair" perm="755" replicated="0" size="25135" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/037/root_archive.zip" type="f" />
+    </event>
+    <event name="38">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:45:57" dir="33946943" entryId="33947010" expiretime="" gowner="jblair" guid="793E765C-9BF3-11E4-871A-27D2D66BFD36" guidtime="11E49BF3" jobId="461951956" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/038/root_archive.zip" md5="639c979fad9efdb2b1664c307c47f7d8" owner="jblair" perm="755" replicated="0" size="24418" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/038/root_archive.zip" type="f" />
+    </event>
+    <event name="39">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 13:49:21" dir="33945698" entryId="33945734" expiretime="" gowner="jblair" guid="5B741562-9BEB-11E4-A512-1FC0AE9E2A7A" guidtime="11E49BEB" jobId="461951957" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/039/root_archive.zip" md5="51bad8927de28cc2bcae4afd25004b21" owner="jblair" perm="755" replicated="0" size="15309" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/039/root_archive.zip" type="f" />
+    </event>
+    <event name="4">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:28:22" dir="33946627" entryId="33946763" expiretime="" gowner="jblair" guid="3B2A1C84-9BF0-11E4-88C4-7F5860244947" guidtime="11E49BF0" jobId="461951922" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/004/root_archive.zip" md5="ffcf1854b1b3990d484639e3b25d3f92" owner="jblair" perm="755" replicated="0" size="26981" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/004/root_archive.zip" type="f" />
+    </event>
+    <event name="40">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 13:47:02" dir="33945697" entryId="33945714" expiretime="" gowner="jblair" guid="590004D0-9BEB-11E4-8138-4F092DF80096" guidtime="11E49BEB" jobId="461951958" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/040/root_archive.zip" md5="8d73f32f64b93d4941eed24ba60945a5" owner="jblair" perm="755" replicated="0" size="15406" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/040/root_archive.zip" type="f" />
+    </event>
+    <event name="41">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 13:53:12" dir="33945777" entryId="33945805" expiretime="" gowner="jblair" guid="0EF33D20-9BEC-11E4-8F93-0754F7CA253F" guidtime="11E49BEC" jobId="461951959" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/041/root_archive.zip" md5="0e51b61d734f1b949b063e2a59443d3e" owner="jblair" perm="755" replicated="0" size="15037" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/041/root_archive.zip" type="f" />
+    </event>
+    <event name="42">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:45:50" dir="33946842" entryId="33947001" expiretime="" gowner="jblair" guid="F3D522CC-9BF2-11E4-80E1-CBFFF3A88E65" guidtime="11E49BF2" jobId="461951960" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/042/root_archive.zip" md5="a745e39590145fb521a3bb5c41472767" owner="jblair" perm="755" replicated="0" size="15309" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/042/root_archive.zip" type="f" />
+    </event>
+    <event name="43">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 18:51:14" dir="33958038" entryId="33958085" expiretime="" gowner="jblair" guid="D0B22A92-9C15-11E4-A483-B7157636046D" guidtime="11E49C15" jobId="461951961" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/043/root_archive.zip" md5="3818d5cea279ff39ce8c274828d4a9a9" owner="jblair" perm="755" replicated="0" size="23390" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/043/root_archive.zip" type="f" />
+    </event>
+    <event name="44">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 14:52:41" dir="33947027" entryId="33947079" expiretime="" gowner="jblair" guid="EAB50742-9BF3-11E4-9E52-7BC72721587D" guidtime="11E49BF3" jobId="461951963" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/045/root_archive.zip" md5="17f0e1e4f04a51be271d9b7037c872ad" owner="jblair" perm="755" replicated="0" size="24354" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/045/root_archive.zip" type="f" />
+    </event>
+    <event name="5">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:40:06" dir="33948602" entryId="33948673" expiretime="" gowner="jblair" guid="264D5078-9BFB-11E4-8884-87871EF726A4" guidtime="11E49BFB" jobId="461951923" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/005/root_archive.zip" md5="460711357219129b4b35c6acb07e79b1" owner="jblair" perm="755" replicated="0" size="27241" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/005/root_archive.zip" type="f" />
+    </event>
+    <event name="6">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:39:56" dir="33948600" entryId="33948657" expiretime="" gowner="jblair" guid="2350E24A-9BFB-11E4-A9AC-F31DE0B263C2" guidtime="11E49BFB" jobId="461951924" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/006/root_archive.zip" md5="b18b00123974a02440c9b7fcb31431fb" owner="jblair" perm="755" replicated="0" size="27342" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/006/root_archive.zip" type="f" />
+    </event>
+    <event name="7">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:39:56" dir="33948595" entryId="33948662" expiretime="" gowner="jblair" guid="21FEDB2C-9BFB-11E4-8291-EFBBFD03F4B4" guidtime="11E49BFB" jobId="461951925" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/007/root_archive.zip" md5="e9e10fd52e2e1a8b7477ce9b3f2e44db" owner="jblair" perm="755" replicated="0" size="26963" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/007/root_archive.zip" type="f" />
+    </event>
+    <event name="8">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:39:56" dir="33948601" entryId="33948667" expiretime="" gowner="jblair" guid="23A7E52C-9BFB-11E4-94B5-5B1AF5218D80" guidtime="11E49BFB" jobId="461951926" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/008/root_archive.zip" md5="b182ec70db1813c4d5dd5800544c0f14" owner="jblair" perm="755" replicated="0" size="27192" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/008/root_archive.zip" type="f" />
+    </event>
+    <event name="9">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2015-01-14 15:38:56" dir="33948542" entryId="33948575" expiretime="" gowner="jblair" guid="FDECA5E8-9BFA-11E4-9673-635A5A56A241" guidtime="11E49BFA" jobId="461951927" lfn="/alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/009/root_archive.zip" md5="d6cbefb608f6201bbad5380eaae2adae" owner="jblair" perm="755" replicated="0" size="24098" turl="alien:///alice/cern.ch/user/j/jblair/Test-12-12/output/000186320/009/root_archive.zip" type="f" />
+    </event>
+    <info command="[/alice/cern.ch/user/j/jblair/Test-12-12/output/]: find -z -x Stage_1 /alice/cern.ch/user/j/jblair//Test-12-12/output/000186320 *root_archive.zip" creator="admin" date="Wed Jan 14 22:15:14 CET 2015" timestamp="1421270114" />
+  </collection>
+</alien>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
