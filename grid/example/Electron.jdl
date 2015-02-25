@@ -3,26 +3,27 @@ Jobtag = {
 };
 # Input xml collections
 InputDataCollection = {
-   "LF:/alice/cern.ch/user/j/jblair/Test-12-12/$1,nodownload"
+   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/$1,nodownload"
 };
 # Output directory
-OutputDir = "/alice/cern.ch/user/j/jblair//Test-12-12/output/$2/#alien_counter_03i#";
+OutputDir = "/alice/cern.ch/user/j/jblair//Test-22-01/output/$2/#alien_counter_03i#";
 # List of requested packages
 Packages = {
-   "VO_ALICE@AliRoot::vAN-20141202",
+   "VO_ALICE@AliRoot::vAN-20150118",
    "VO_ALICE@ROOT::v5-34-08-6",
-   "VO_ALICE@APISCONFIG::V1.1x"
+   "VO_ALICE@APISCONFIG::V1.1x",
+   "VO_ALICE@AliPhysics::vAN-20150122"
 };
 # List of input files to be uploaded to workers
 InputFile = {
-   "LF:/alice/cern.ch/user/j/jblair/Test-12-12/ElectronV2.C",
-   "LF:/alice/cern.ch/user/j/jblair/Test-12-12/Electron.root",
-   "LF:/alice/cern.ch/user/j/jblair/Test-12-12/AliAnalysisTaskQA.cxx",
-   "LF:/alice/cern.ch/user/j/jblair/Test-12-12/AliAnalysisTaskQA.h",
-   "LF:/alice/cern.ch/user/j/jblair/Test-12-12/AddTaskQA.C"
+   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/ElectronV2.C",
+   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/Electron.root",
+   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/AliAnalysisTaskQA.cxx",
+   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/AliAnalysisTaskQA.h",
+   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/AddTaskQA.C"
 };
 # This is the startup script
-Executable = "/alice/cern.ch/user/j/jblair/Test-12-12/Electron.sh";
+Executable = "/alice/cern.ch/user/j/jblair/Test-22-01/Electron.sh";
 # We split per SE or file
 Split = "se";
 # Time after which the job is killed (833 min.)
@@ -43,7 +44,7 @@ Output = {
 # AliEn price for this job
 Price = "1";
 # Validation script to be run for each subjob
-Validationcommand = "/alice/cern.ch/user/j/jblair/Test-12-12/Electron_validation.sh";
+Validationcommand = "/alice/cern.ch/user/j/jblair/Test-22-01/Electron_validation.sh";
 User = "jblair";
 
 # JDL variables

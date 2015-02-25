@@ -11,12 +11,12 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
    Bool_t pre_final_stage = kTRUE; //true = merging done on grid, false = merge happens locally
    //Int_t cyclenumber = 10;    
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
-   char* work_dir = "Test-12-12";
+   char* work_dir = "Test-04-02";
    char* output_dir = "output";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
@@ -31,7 +31,7 @@ void RunMacro()
   AliAnalysisAlien *alienHandler = new AliAnalysisAlien();
     
     
-    alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/ANALYSIS -I$ALICE_ROOT/PWGGA -I$ALICE_ROOT/PWGHF -I$ALICE_ROOT/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_ROOT/OADB -I$ALICE_ROOT/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_ROOT/OADB  -I$ALICE_ROOT/PWGHF/hfe -I$ALICE_ROOT/PWG/EMCAL -g");
+    alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros  -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_PHYSICS/PWG/EMCAL -g");
     
     alienHandler->SetAdditionalLibs("AliAnalysisTaskQA.cxx AliAnalysisTaskQA.h AddTaskQA.C libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libTENDER.so libTENDERSupplies.so libPWGTools.so libPWGEMCAL.so");
     
@@ -39,19 +39,23 @@ void RunMacro()
     alienHandler->SetupPar("PWGHFhfe");
     alienHandler->EnablePackage("PWGHFhfe.par");  
   }
+
+// Trying to add new PHYSICS package
+  alienHandler->AddExternalPackage("AliPhysics::vAN-20150122");
+
   alienHandler->SetAnalysisSource("AliAnalysisTaskQA.cxx");
-//  alienHandler->SetOverwriteMode();
+  //alienHandler->SetOverwriteMode();
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(5);
   alienHandler->SetAPIVersion("V1.1x");
   alienHandler->SetROOTVersion("v5-34-08-6");
-  alienHandler->SetAliROOTVersion("vAN-20141202");
+  alienHandler->SetAliROOTVersion("vAN-20150118");
   alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
   alienHandler->SetGridDataDir("/alice/data/2012/LHC12d/");
-     //alienHandler->SetDataPattern("pass1/*ESDs.root");
+  //alienHandler->SetDataPattern("pass1/*ESDs.root");
   alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-   // alienHandler->SetGridDataDir("//alice/data/2013/LHC13g/");
-   // alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
+  //alienHandler->SetGridDataDir("//alice/data/2013/LHC13g/");
+  //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT!
 
    
@@ -96,13 +100,13 @@ void RunMacro()
 // Use AliRoot includes to compile our task
    gROOT->ProcessLine(".include $ALICE_ROOT/include");
    gROOT->ProcessLine(".include $ALICE_ROOT/EMCAL");
-   gROOT->ProcessLine(".include $ALICE_ROOT/PWGGA/");
+   gROOT->ProcessLine(".include $ALICE_PHYSICS/PWGGA/");
    gROOT->ProcessLine(".include $ALICE_ROOT/ANALYSIS/");
    gROOT->ProcessLine(".include $PWD/.");
-   gROOT->ProcessLine(".include $ALICE_ROOT/PWGHF");
-   gROOT->ProcessLine(".include $ALICE_ROOT/PWGHF/hfe");
+   gROOT->ProcessLine(".include $ALICE_PHYSICS/PWGHF");
+   gROOT->ProcessLine(".include $ALICE_PHYSICS/PWGHF/hfe");
 
-gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/ANALYSIS -I$ALICE_ROOT/PWGGA -I$ALICE_ROOT/PWGHF -I$ALICE_ROOT/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_ROOT/OADB -I$ALICE_ROOT/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_ROOT/OADB -I$ALICE_ROOT/PWG/FLOW/Base -g ");
+gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB -I$ALICE_ROOT/PWG/FLOW/Base -g ");
     
    AliAnalysisManager *mgr = new AliAnalysisManager("ElectronAnalysis");
    mgr->SetGridHandler(alienHandler);
@@ -115,7 +119,7 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
 
    gROOT->LoadMacro("AddTaskQA.C");
    gROOT->LoadMacro("AliAnalysisTaskQA.cxx++g");
-   gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPhysicsSelection.C");
+   gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
    gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
    AddTaskPIDResponse(kFALSE);
 
@@ -150,6 +154,7 @@ void LoadLibraries()
   gSystem->Load("libOADB");
   gSystem->Load("libANALYSIS");
   gSystem->Load("libANALYSISalice");
+  gSystem->Load("libOADB");
     gSystem->Load("libCDB");
     gSystem->Load("libRAWDatabase");
     gSystem->Load("libSTEER");

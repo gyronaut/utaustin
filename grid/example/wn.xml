@@ -16,7 +16,7 @@
     <event name="5">
       <file name="AliAOD.root" aclId="" broken="0" ctime="2012-11-22 01:18:24" dir="73738387" entryId="73738832" expiretime="" gowner="alidaq" guid="FE727E64-3439-11E2-861A-176BBDF48C33" guidtime="11E23439" jobid="242173977" lfn="/alice/data/2012/LHC12d/000186320/pass1/12000186320000.15/AliAOD.root" md5="5c3a91c36074dd6ea29e52309b2d3b65" owner="alidaq" perm="755" replicated="0" size="5458618" turl="alien:///alice/data/2012/LHC12d/000186320/pass1/12000186320000.15/AliAOD.root" type="f" />
     </event>
-    <info command="[/alice/cern.ch/user/j/jblair/]: find -z -x collection -l 5 -o 0 /alice/data/2012/LHC12d//000186320 */pass1/*/*AOD.root" creator="admin" date="Wed Jan 14 05:04:21 CET 2015" timestamp="1421208261" />
+    <info command="[/alice/cern.ch/user/j/jblair/]: find -z -x collection -l 5 -o 0 /alice/data/2012/LHC12d//000186320 */pass1/*/*AOD.root" creator="admin" date="Wed Feb  4 21:19:07 CET 2015" timestamp="1423081147" />
   </collection>
 </alien>
 

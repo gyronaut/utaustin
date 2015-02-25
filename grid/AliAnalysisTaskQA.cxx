@@ -57,7 +57,8 @@ fTrketa(0),
 fTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
-fTPCnsig(0)
+fTPCnsig(0),
+fPDGCodes(0)
 {
     // Constructor
     // Define input and output slots here
@@ -85,7 +86,8 @@ fTrketa(0),
 fTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
-fTPCnsig(0)
+fTPCnsig(0),
+fPDGCodes(0)
 {
     //Default constructor
     // Define input and output slots here
@@ -164,6 +166,9 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fTPCnsig = new TH2F("fTPCnsig","All Track TPC Nsigma distribution;p (GeV/c);#sigma_{TPC-dE/dx}",1000,0,50,200,-10,10);
     fOutputList->Add(fTPCnsig);
     
+    fPDGCodes = new TH1F("fPDGCodes", "PDG codes of tracks", 2000, -1000, 1000);
+    fOutputList->Add(fPDGCodes);
+
     PostData(1,fOutputList);
 }
 
@@ -298,7 +303,13 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         fdEdx->Fill(track->P(),dEdx);
         fTPCNpts->Fill(track->P(),track->GetTPCsignalN());
         fTPCnsig->Fill(track->P(),fTPCnSigma);
-        
+       	
+	//check for PIDs
+	Int_t PID = 0;
+	PID = track->GetLabel();
+	//Int_t PID = 0;
+	fPDGCodes->Fill(PID);
+
     } //track loop
     
     PostData(1, fOutputList);

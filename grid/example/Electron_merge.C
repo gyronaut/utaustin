@@ -9,8 +9,8 @@ void Electron_merge(const char *dir, Int_t stage=0)
    gSystem->SetIncludePath("-I.");
 // Load analysis framework libraries
    gSystem->Load("libANALYSIS");
-   gSystem->Load("libOADB");
    gSystem->Load("libANALYSISalice");
+   gSystem->Load("libOADB");
    gSystem->Load("libCORRFW");
 
 // include path
@@ -24,7 +24,7 @@ void Electron_merge(const char *dir, Int_t stage=0)
       gSystem->AddIncludePath(current);
    }
    if (listpaths) delete listpaths;
-   gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/ANALYSIS -I$ALICE_ROOT/PWGGA -I$ALICE_ROOT/PWGHF -I$ALICE_ROOT/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_ROOT/OADB -I$ALICE_ROOT/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_ROOT/OADB  -I$ALICE_ROOT/PWGHF/hfe -I$ALICE_ROOT/PWG/EMCAL -g ");
+   gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros  -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_PHYSICS/PWG/EMCAL -g ");
    gROOT->ProcessLine(".include $ALICE_ROOT/include");
    printf("Include path: %s\n", gSystem->GetIncludePath());
 
@@ -107,7 +107,7 @@ void Electron_merge(const char *dir, Int_t stage=0)
    mgr->SetRunFromPath(mgr->GetRunFromAlienPath(dir));
    mgr->SetSkipTerminate(kFALSE);
    mgr->PrintStatus();
-   AliLog::SetGlobalLogLevel(AliLog::kError);
+   AliLog::SetGlobalLogLevel(AliLog::kWarning);
    TTree *tree = NULL;
    mgr->StartAnalysis("gridterminate", tree);
 }

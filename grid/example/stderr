@@ -1,6 +1,6 @@
 Electron.sh: line 19: free: command not found
-Note: File "/Users/jtblair/alice/aliroot/master/inst/lib/libSTEER.so" already loaded
-Note: File "/Users/jtblair/alice/aliroot/master/inst/lib/libSTEER.so" already loaded
-Note: File "/Users/jtblair/alice/aliroot/master/inst/lib/libSTEER.so" already loaded
-Note: File "/Users/jtblair/alice/aliroot/master/inst/lib/libTENDER.so" already loaded
+Note: File "/Users/jtblair/alice/aliroot/v5-06-01/inst/lib/libSTEER.so" already loaded
+Note: File "/Users/jtblair/alice/aliroot/v5-06-01/inst/lib/libSTEER.so" already loaded
+Note: File "/Users/jtblair/alice/aliroot/v5-06-01/inst/lib/libSTEER.so" already loaded
+Note: File "/Users/jtblair/alice/aliphysics/vAN-20150124/inst/lib/libTENDER.so" already loaded
 Electron.sh: line 40: free: command not found

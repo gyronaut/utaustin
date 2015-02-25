@@ -12,22 +12,22 @@ fi
 cd $validateout;
 validateworkdir=`pwd`;
 
-echo "*******************************************************" >> stdout
-echo "* Automatically generated validation script           *" >> stdout
+echo "*******************************************************"
+echo "* Automatically generated validation script           *"
 
-echo "* Time:    $validatetime " >> stdout
-echo "* Dir:     $validateout" >> stdout
-echo "* Workdir: $validateworkdir" >> stdout
-echo "* ----------------------------------------------------*" >> stdout
-ls -la ./ >> stdout
-echo "* ----------------------------------------------------*" >> stdout
+echo "* Time:    $validatetime "
+echo "* Dir:     $validateout"
+echo "* Workdir: $validateworkdir"
+echo "* ----------------------------------------------------*"
+ls -la ./
+echo "* ----------------------------------------------------*"
 
 ##################################################
 
 if [ ! -f stderr ] ; then
    error=1
-   echo "* ########## Job not validated - no stderr  ###"  >> stdout
-   echo "Error = $error"  >> stdout
+   echo "* ########## Job not validated - no stderr  ###" 
+   echo "Error = $error" 
 fi
 parArch=`grep -Ei "Cannot Build the PAR Archive" stderr`
 segViol=`grep -Ei "Segmentation violation" stderr`
@@ -36,27 +36,27 @@ glibcErr=`grep -Ei '\*\*\* glibc detected \*\*\*' stderr`
 
 if [ "$parArch" != "" ] ; then
    error=1
-   echo "* ########## Job not validated - PAR archive not built  ###"  >> stdout
-   echo "$parArch"  >> stdout
-   echo "Error = $error"  >> stdout
+   echo "* ########## Job not validated - PAR archive not built  ###" 
+   echo "$parArch" 
+   echo "Error = $error" 
 fi
 if [ "$segViol" != "" ] ; then
    error=1
-   echo "* ########## Job not validated - Segment. violation  ###"  >> stdout
-   echo "$segViol"  >> stdout
-   echo "Error = $error"  >> stdout
+   echo "* ########## Job not validated - Segment. violation  ###" 
+   echo "$segViol" 
+   echo "Error = $error" 
 fi
 if [ "$segFault" != "" ] ; then
    error=1
-   echo "* ########## Job not validated - Segment. fault  ###"  >> stdout
-   echo "$segFault"  >> stdout
-   echo "Error = $error"  >> stdout
+   echo "* ########## Job not validated - Segment. fault  ###" 
+   echo "$segFault" 
+   echo "Error = $error" 
 fi
 if [ "$glibcErr" != "" ] ; then
    error=1
-   echo "* ########## Job not validated - *** glibc detected ***  ###"  >> stdout
-   echo "$glibcErr"  >> stdout
-   echo "Error = $error"  >> stdout
+   echo "* ########## Job not validated - *** glibc detected ***  ###" 
+   echo "$glibcErr" 
+   echo "Error = $error" 
 fi
 if ! [ -f outputs_valid ] ; then
    error=1
@@ -64,9 +64,9 @@ if ! [ -f outputs_valid ] ; then
    echo "Output files were not validated by the analysis manager" >> stderr
 fi
 if [ $error = 0 ] ; then
-   echo "* ----------------   Job Validated  ------------------*" >> stdout
+   echo "* ----------------   Job Validated  ------------------*"
 fi
-echo "* ----------------------------------------------------*" >> stdout
-echo "*******************************************************" >> stdout
+echo "* ----------------------------------------------------*"
+echo "*******************************************************"
 cd -
 exit $error
