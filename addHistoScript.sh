@@ -6,5 +6,5 @@
 #SBATCH -p normal           # Queue (partition) name -- normal, development, etc.
 #SBATCH -t 01:30:00         # Run time (hh:mm:ss)i
 
-cd /scratch/03094/jtblair/alice/20140911_100m_batchrun_1/histograms 
-hadd -k batch1_histos.root histo_*
+cd /scratch/03094/jtblair/alice/20140911_100m_batchrun_1/invMass_histograms 
+hadd -k invbatch1_histos.root invMass_histo_*

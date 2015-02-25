@@ -29,7 +29,7 @@ int main (int argc, char* argv[]){
     string runFile = "k_invariant_mass.C";
     
     string outputDir = "/scratch/03094/jtblair/alice/20140912_100m_batchrun_1/invMass_histograms";
-    string outputFile = "test_invMass_histo_"+ss.str()+".root";
+    string outputFile = "invMass_histo_"+ss.str()+".root";
 
     /***************************************/
 
