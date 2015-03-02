@@ -17,7 +17,7 @@ int main (int argc, char* argv[]){
     /***************************************
      **** STUFF TO CHANGE BETWEEN RUNS *****
      ***************************************/
-    string runDir = "20150223_100m_batchrun_1";
+    string runDir = "20150225_100m_batchrun_2";
     
     string outputDir = "batch_";
     ostringstream ss;

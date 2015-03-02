@@ -64,9 +64,9 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
             p_z = particle->Pz();
             parPdg = particle->GetPdgCode();
             eta_calc = 0.5*TMath::Log((p_tot + p_z)/(p_tot - p_z));
-            //select only hadrons within the eta range -0.9 < eta <0.9
+            //select only hadrons within the eta range -0.9 < eta <0.9 and pt > 150 MeV
             //if(nev%1000==0 && TMath::Abs(eta_calc)<1) printf("  Particle eta: %f, Calculated eta: %f, Pt: %f, PDG: %d\n", eta, eta_calc, pt, parPdg);
-            if((TMath::Abs(parPdg)==2212 || TMath::Abs(parPdg)==211 || TMath::Abs(parPdg)==321 || TMath::Abs(parPdg)==11 || TMath::Abs(parPdg)==333)&&(TMath::Abs(eta_calc)<0.9)){
+            if((TMath::Abs(parPdg)==2212 || TMath::Abs(parPdg)==211 || TMath::Abs(parPdg)==321 || TMath::Abs(parPdg)==11 || TMath::Abs(parPdg)==333)&&(TMath::Abs(eta_calc)<0.9)&&(pt > 0.150)){
                 hadronPt->Fill(pt);
                 count++;
                 if(TMath::Abs(parPdg)==333){                  
@@ -82,8 +82,8 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
                         assoPhi = hAsso->Phi();
                         assoEta = hAsso->Eta();
                         assoPdg = hAsso->GetPdgCode();
-                        //select just phi mesons in the eta range: |eta| < 0.9
-                        if((TMath::Abs(assoPdg)==333) && (TMath::Abs(assoEta)< 0.9)){
+                        //select just phi mesons in the eta range: |eta| < 0.9 and pt > 150 MeV
+                        if((TMath::Abs(assoPdg)==333) && (TMath::Abs(assoEta)< 0.9) && (assoPt > 0.150)){
                             //printf("Got Here! \n");
                             //check that hadron isn't daughter particle of any phi meson
                             Int_t numDaughters = hAsso->GetNDaughters();
@@ -121,7 +121,7 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
             }
         }
     }
-    printf("Total hadrons counted in eta range: %d\n", count);
+//    printf("Total hadrons counted in eta range: %d\n", count);
     rl->~AliRunLoader(); 
 
 
