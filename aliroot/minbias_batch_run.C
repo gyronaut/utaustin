@@ -43,7 +43,7 @@ void minbias_batch_run(Int_t nev = 10000, char* filename = "outloop_io_test_10k.
     gener->SetOrigin(0.,0.,0.); 
     gener->SetSigma(0.,0.,5.3);
     gener->SetVertexSmear(kPerEvent);
-    gener->SetTriggerChargedMultiplicity(2, 0.9, 0.150); //only events with 2 charged particles, in eta range <0.9, >150 MeV
+//    gener->SetTriggerChargedMultiplicity(2, 0.9, 0.150); //only events with 2 charged particles, in eta range <0.9, >150 MeV
 //    gener->SetTriggerParticle(0, 1., 5., 1000.);
 //    gener->SetChildPtRange(5, 1000);
 
