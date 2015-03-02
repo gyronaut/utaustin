@@ -69,8 +69,8 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
             eta_1 = particle->Eta();
             parPdg_1 = particle->GetPdgCode();
             motherIndex_1 = particle->GetFirstMother();
-            //select only K+ within the eta range -0.9 < eta <0.9
-            if(parPdg_1==321 && TMath::Abs(eta_1)<0.9){
+            //select only K+ within the eta range -0.9 < eta <0.9 and pt > 150 MeV
+            if(parPdg_1==321 && TMath::Abs(eta_1)<0.9 && pt_1 > .150){
                 //printf("Event %d: found a K+\n", nev);
                 //loop over all particles that aren't this K+ to look for K-
                 for(Int_t apart = 0; apart<npart; apart++){
@@ -86,8 +86,8 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
                     eta_2 = secondPart->Eta();
                     parPdg_2 = secondPart->GetPdgCode();
                     motherIndex_2 = secondPart->GetFirstMother();
-                    //select just K- in the eta range: |eta| < 0.9
-                    if(parPdg_2 == -321 && TMath::Abs(eta_2)< 0.9){
+                    //select just K- in the eta range: |eta| < 0.9 and pt > 150 MeV
+                    if(parPdg_2 == -321 && TMath::Abs(eta_2)< 0.9 && pt_2 > 0.150){
                         //printf("    Found K- --> K+/K- pair identified!\n");
                         //calculate invariant mass
                         //invMass = 1000*TMath::Sqrt(m_1*m_1 + m_2*m_2 + 2*E_1*E_2 - 2*(px_1*px_2 + py_1*py_2 + pz_1*pz_2));
