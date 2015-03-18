@@ -21,6 +21,14 @@ void plot_phi_histo(string inputName){
     TH2F *DphiPhiH = (TH2F *)histoFile->Get("DphiPhiH");
     TH3F *HPhiDphi = (TH3F *)histoFile->Get("DphiHPhi"); 
 
+    TH1F *hadronPtPEREVENT = (TH1F*) hadronPt->Clone("HadronpTperEvent");
+    TH1F *phiPtPEREVENT = (TH1F*) phiPt->Clone("PhipTperEvent");
+    //set-up "per event" histograms
+    for(int i = 0; i < hadronPtPEREVENT->GetNbinsX(); i++){
+	hadronPtPEREVENT->SetBinContent(i, (float)hadronPtPEREVENT->GetBinContent(i)/hadronPtPEREVENT->GetEntries());
+	phiPtPEREVENT->SetBinContent(i, (float)phiPtPEREVENT->GetBinContent(i)/phiPtPEREVENT->GetEntries());
+    }
+
     TH1D *fHPhiDphi[9];
     fHPhiDphi[0] = HPhiDphi->ProjectionZ("ptH1ptPhiInc", 20, 1000, 0, 1000);
     fHPhiDphi[0]->SetTitle("p_{T}^{h} > 1 GeV/c");
