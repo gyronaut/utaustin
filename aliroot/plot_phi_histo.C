@@ -70,9 +70,9 @@ void plot_phi_histo(string inputName){
     TF1* fit = new TF1("fit1", "pol0(0)+gaus(1)+gaus(4)", -1.5, 4.7);
     fit->SetParameter(0, P->GetParameter(0));
 //    fit->SetParameter(1, 2000);
-    fit->FixParameter(2, 0);
+    fit->SetParameter(2, 0);
     fit->SetParameter(3, 1);
-    fit->FixParameter(5, 3.1416);
+    fit->SetParameter(5, 3.1416);
     fit->SetParameter(6, 1.5);
 
     fit->SetLineColor(2);
