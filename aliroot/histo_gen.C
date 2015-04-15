@@ -9,10 +9,12 @@ using namespace std;
 #include "TObjArray.h"
 
 void histo_gen(string inputDir, string inputFile, string outputDir, string outputFile){
+	TStopwatch timer_io;
+	timer_io.start();
 
-    if (gClassTable->GetID("AliRun") < 0) {
-        gROOT->LoadMacro("loadlibs.C");
-        loadlibs();
+	if (gClassTable->GetID("AliRun") < 0) {
+		gROOT->LoadMacro("loadlibs.C");
+		loadlibs();
     }
 
     gSystem->SetIncludePath("-I$ROOTSYS/include -I$ALICE_ROOT/include -I$ALICE_ROOT");
