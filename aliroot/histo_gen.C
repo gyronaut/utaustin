@@ -39,12 +39,14 @@ void histo_gen(string inputDir, string inputFile, string outputDir, string outpu
     Int_t numEvents = rl->GetNumberOfEvents();
     TDatabasePDG* DataBase = new TDatabasePDG();
 
+    printf("Number of Events: %d", numEvents);
+
     rl->LoadKinematics();
     rl->LoadHeader();
     Int_t count = 0;
     //Loop over all events
     for(Int_t nev=0; nev<numEvents; nev++){
-        //if(nev%100 == 0)printf("Event: %d\n", nev);
+        if(nev%100 == 0)printf("Event: %d\n", nev);
         rl->GetEvent(nev);
         AliStack* stack = rl->Stack();
         Int_t npart = stack->GetNprimary();
