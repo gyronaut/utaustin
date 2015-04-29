@@ -14,7 +14,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
 		gROOT->LoadMacro("loadlibs.C");
 		loadlibs();
     }
-    TStopwatch timer_io;
+//    TStopwatch timer_io;
 
     gSystem->SetIncludePath("-I$ROOTSYS/include -I$ALICE_ROOT/include -I$ALICE_ROOT");
     gSystem->Load("libhijing.so");
@@ -24,14 +24,18 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     gSystem->Load("libpythia6.so");     // Pythia
     gSystem->Load("libAliPythia6.so");  // ALICE specific implementations
 
+    Int_t bins[3] = {1000,1000,256};
+    Double_t min[3] = {0.0, 0.0, -1.57};
+    Double_t max[3] = {50.0, 50.0, 4.71};
+
     TH1F *hadronPt = new TH1F("HadronPt", "hadron pt distribution", 1000, 0, 50);
     TH1F *phiPt = new TH1F("PhiPt", "phi pt distribution", 1000, 0, 50);
     TH1F *phiPhiDist = new TH1F("PhiPhiDist", "phi meson angular phi distribution", 100, -0.1, 6.29);
     TH1F *hPhiDist = new TH1F("HPhiDist", "hadron angular phi distribution", 100, -0.1, 6.29);
-    TH3F *DphiHPhi = new TH3F("DphiHPhi", "#Delta#phi correlation for Hadron-Phi", 1000, 0, 50, 1000, 0, 50, 64, -1.57, 4.71);
+    THnSparseF *DphiHPhi = new THnSparseF("DphiHPhi", "#Delta#phi correlation for Hadron-Phi", 3, bins, min, max);
 
-    TH2F *k0PhiDist = new TH2F("k0Dist", "Phi distribution for k0", 100, -0.1, 6.29);
-    TH3F *DphiHK0 = new TH3F("DphiHK0", "#Delta#phi correlation for Hadron-K^{0}", 1000, 0, 50, 1000, 0, 50, 64, -1.57, 4.71);
+    TH1F *k0PhiDist = new TH1F("k0Dist", "Phi distribution for k0", 100, -0.1, 6.29);
+    THnSparseF *DphiHK0 = new THnSparseF("DphiHK0", "#Delta#phi correlation for Hadron-K^{0}", 3, bins, min, max);
 
     string input_full_path = input_dir+"/"+input_file;
     AliRunLoader* rl = AliRunLoader::Open(input_full_path.c_str());
@@ -54,18 +58,19 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     Int_t npart = 0;
     Double_t pt=-1, E=-1, theta=-1, phi=-1, eta=-99, y=-99, eta_calc=-99, p_tot = 0, p_z = 0;
     Double_t asso_pt=-1, asso_phi=-1, asso_eta=-9, delta_phi=-99;
+    Double_t point[3] = {0,0,0};
     Int_t par_pdg = 0, asso_pdg=0;
     TParticle *particle, *hAsso;
     AliStack* stack;
 
-    timer_io.Stop();
-    fprintf(stdout, "IO ");
-    timer_io.Print("u");
+//    timer_io.Stop();
+//    fprintf(stdout, "IO ");
+//    timer_io.Print("u");
 
     //Loop over all events
     for(Int_t nev=0; nev<num_events; nev++){
 //        if(nev%100 == 0)printf("Event: %d\n", nev);
-        TStopwatch timer_getevent;
+//        TStopwatch timer_getevent;
 
         rl->GetEvent(nev);
         stack = rl->Stack();
@@ -77,11 +82,11 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
         asso_pt= -1, asso_phi=-1, asso_eta=-9, delta_phi=-99;
         par_pdg = 0, asso_pdg = 0;
         
-        timer_getevent.Stop();
-        fprintf(stdout, "GETEVENT ");
-        timer_getevent.Print("u");
+//        timer_getevent.Stop();
+//        fprintf(stdout, "GETEVENT ");
+//        timer_getevent.Print("u");
         
-        TStopwatch timer_analysis;
+//        TStopwatch timer_analysis;
         //loop over all particles in stack
         for(Int_t part=0; part<npart; part++){
             particle = stack->Particle(part);
@@ -157,22 +162,25 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
                             if(delta_phi < -TMath::Pi()/2){
                                 delta_phi = delta_phi + 2*TMath::Pi();
                             }
+                            point[0] = pt;
+                            point[1] = asso_pt;
+                            point[2] = delta_phi;
                             if(TMath::Abs(asso_pdg)==333){
-                                DphiHPhi->Fill(pt, asso_pt, delta_phi);
+                                DphiHPhi->Fill(point);
                             }else{
-                                DphiHK0->Fill(pt, asso_pt, delta_phi);
+                                DphiHK0->Fill(point);
                             }
                         }
                     }
                 }
             }
         }
-        timer_analysis.Stop();
-        fprintf(stdout, "ANALYSIS ");
-        timer_analysis.Print("u");
+//        timer_analysis.Stop();
+//        fprintf(stdout, "ANALYSIS ");
+//        timer_analysis.Print("u");
     }
 
-    TStopwatch timer_write;
+//    TStopwatch timer_write;
 
 //    printf("Total hadrons counted in eta range: %d\n", count);
     rl->~AliRunLoader(); 
@@ -188,9 +196,12 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     phiPt->Write();
     DphiHPhi->Write();
 
+    k0PhiDist->Write();
+    DphiHK0->Write();
+
     histoOutput->Close();
 
-    timer_write.Stop();
-    fprintf(stdout, "WRITE ");
-    timer_write.Print("u");
+//    timer_write.Stop();
+//    fprintf(stdout, "WRITE ");
+//    timer_write.Print("u");
 }
