@@ -14,7 +14,8 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
 		gROOT->LoadMacro("loadlibs.C");
 		loadlibs();
     }
-//    TStopwatch timer_io;
+    TStopwatch timer_total;
+    //    TStopwatch timer_io;
 
     gSystem->SetIncludePath("-I$ROOTSYS/include -I$ALICE_ROOT/include -I$ALICE_ROOT");
     gSystem->Load("libhijing.so");
@@ -204,4 +205,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
 //    timer_write.Stop();
 //    fprintf(stdout, "WRITE ");
 //    timer_write.Print("u");
+    timer_total.Stop();
+    fprintf(stdout, "TOTAL: ");
+    timer_total.Print("u");
 }
