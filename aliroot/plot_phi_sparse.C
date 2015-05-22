@@ -38,16 +38,16 @@ void plot_phi_sparse(string inputName){
     TH1D *fHPhiDphi[9];
     fHPhiDphi[0] = HPhiDphi->ProjectionZ("ptH1ptPhiInc", 20, 1000, 0, 1000);
     fHPhiDphi[0]->SetTitle("p_{T}^{h} > 1 GeV/c");
-    fHPhiDphi[1] = HPhiDphi->ProjectionZ("ptH5ptPhiInc", 100, 1000, 0, 1000);
-    fHPhiDphi[1]->SetTitle("p_{T}^{h} > 5 GeV/c");
+    fHPhiDphi[1] = HPhiDphi->ProjectionZ("ptH5ptPhiInc", 80, 1000, 0, 1000);
+    fHPhiDphi[1]->SetTitle("p_{T}^{h} > 4 GeV/c");
     fHPhiDphi[2] = HPhiDphi->ProjectionZ("ptH7ptPhiInc", 140, 1000, 0, 1000);
     fHPhiDphi[2]->SetTitle("p_{T}^{h} > 7 GeV/c");
-    fHPhiDphi[3] = HPhiDphi->ProjectionZ("ptH5_1ptPhi2", 100, 1000, 20, 40);
-    fHPhiDphi[3]->SetTitle("p_{T}^{h} > 5,   1 < p_{T}^{#phi} < 2 GeV/c");
-    fHPhiDphi[4] = HPhiDphi->ProjectionZ("ptH5_2ptPhi4", 100, 1000, 41, 80);
-    fHPhiDphi[4]->SetTitle("p_{T}^{h} > 5,   2 < p_{T}^{#phi} < 4 GeV/c");
-    fHPhiDphi[5] = HPhiDphi->ProjectionZ("ptH5_4ptPhi", 100, 1000, 81, 1000);
-    fHPhiDphi[5]->SetTitle("p_{T}^{h} > 5,   p_{T}^{#phi} > 4 GeV/c");
+    fHPhiDphi[3] = HPhiDphi->ProjectionZ("ptH4_1ptPhi2", 80, 1000, 20, 40);
+    fHPhiDphi[3]->SetTitle("p_{T}^{h} > 4,   1 < p_{T}^{#phi} < 2 GeV/c");
+    fHPhiDphi[4] = HPhiDphi->ProjectionZ("ptH4_2ptPhi4", 80, 1000, 41, 80);
+    fHPhiDphi[4]->SetTitle("p_{T}^{h} > 4,   2 < p_{T}^{#phi} < 4 GeV/c");
+    fHPhiDphi[5] = HPhiDphi->ProjectionZ("ptH4_4ptPhi", 80, 1000, 81, 1000);
+    fHPhiDphi[5]->SetTitle("p_{T}^{h} > 4,   p_{T}^{#phi} > 4 GeV/c");
     fHPhiDphi[6] = HPhiDphi->ProjectionZ("ptH7_1ptPhi2", 140, 1000, 20, 40);
     fHPhiDphi[6]->SetTitle("p_{T}^{h} > 7,   1 < p_{T}^{#phi} < 2 GeV/c");
     fHPhiDphi[7] = HPhiDphi->ProjectionZ("ptH7_2ptPhi4", 140, 1000, 41, 80);
@@ -58,16 +58,16 @@ void plot_phi_sparse(string inputName){
     TH1D *fHK0Dphi[9];
     fHK0Dphi[0] = HK0Dphi->ProjectionZ("ptH1ptK0Inc", 20, 1000, 0, 1000);
     fHK0Dphi[0]->SetTitle("p_{T}^{h} > 1 GeV/c");
-    fHK0Dphi[1] = HK0Dphi->ProjectionZ("ptH5ptK0Inc", 100, 1000, 0, 1000);
-    fHK0Dphi[1]->SetTitle("p_{T}^{h} > 5 GeV/c");
+    fHK0Dphi[1] = HK0Dphi->ProjectionZ("ptH5ptK0Inc", 80, 1000, 0, 1000);
+    fHK0Dphi[1]->SetTitle("p_{T}^{h} > 4 GeV/c");
     fHK0Dphi[2] = HK0Dphi->ProjectionZ("ptH7ptK0Inc", 140, 1000, 0, 1000);
     fHK0Dphi[2]->SetTitle("p_{T}^{h} > 7 GeV/c");
-    fHK0Dphi[3] = HK0Dphi->ProjectionZ("ptH5_1ptK02", 100, 1000, 20, 40);
-    fHK0Dphi[3]->SetTitle("p_{T}^{h} > 5,   1 < p_{T}^{K} < 2 GeV/c");
-    fHK0Dphi[4] = HK0Dphi->ProjectionZ("ptH5_2ptK04", 100, 1000, 41, 80);
-    fHK0Dphi[4]->SetTitle("p_{T}^{h} > 5,   2 < p_{T}^{K} < 4 GeV/c");
-    fHK0Dphi[5] = HK0Dphi->ProjectionZ("ptH5_4ptK0", 100, 1000, 81, 1000);
-    fHK0Dphi[5]->SetTitle("p_{T}^{h} > 5,   p_{T}^{K} > 4 GeV/c");
+    fHK0Dphi[3] = HK0Dphi->ProjectionZ("ptH4_1ptK02", 80, 1000, 20, 40);
+    fHK0Dphi[3]->SetTitle("p_{T}^{h} > 4,   1 < p_{T}^{K} < 2 GeV/c");
+    fHK0Dphi[4] = HK0Dphi->ProjectionZ("ptH4_2ptK04", 80, 1000, 41, 80);
+    fHK0Dphi[4]->SetTitle("p_{T}^{h} > 4,   2 < p_{T}^{K} < 4 GeV/c");
+    fHK0Dphi[5] = HK0Dphi->ProjectionZ("ptH4_4ptK0", 80, 1000, 81, 1000);
+    fHK0Dphi[5]->SetTitle("p_{T}^{h} > 4,   p_{T}^{K} > 4 GeV/c");
     fHK0Dphi[6] = HK0Dphi->ProjectionZ("ptH7_1ptK02", 140, 1000, 20, 40);
     fHK0Dphi[6]->SetTitle("p_{T}^{h} > 7,   1 < p_{T}^{K} < 2 GeV/c");
     fHK0Dphi[7] = HK0Dphi->ProjectionZ("ptH7_2ptK04", 140, 1000, 41, 80);
@@ -76,13 +76,67 @@ void plot_phi_sparse(string inputName){
     fHK0Dphi[8]->SetTitle("p_{T}^{h} > 7,   p_{T}^{K} > 4 GeV/c");
  
     TH1D* HPhiDphiInclusive = HPhiDphi->ProjectionZ("dphiptPhiInc",80,1000,40,1000);
-    HPhiDphiInclusive->SetTitle("#Delta#phi for hadron-#phi(1020), p_{T}^{h} > 4 GeV/c,  p_{T}^{#phi} > 2 GeV/c");
+    HPhiDphiInclusive->SetTitle("#Delta#phi for hadron-#phi(1020), p_{T}^{h} > 4 GeV/c, p_{T}^{#phi} > 2 GeV/c");
 
     TH1D* HK0DphiInclusive = HK0Dphi->ProjectionZ("dphiptKInc,80, 1000, 40, 1000");
-    HK0DphiInclusive->SetTitle("#Delta#phi for hadron-K^{0}, p_{T}^{h} > 4 GeV/c,  p_{T}^{K} > 2 GeV/c");
+    HK0DphiInclusive->SetTitle("#Delta#phi for hadron-K^{0}, p_{T}^{h} > 4 GeV/c, p_{T}^{K} > 2 GeV/c");
 
+    Double_t xbins[19] = {-1.57079, -1.22173, -0.872662, -0.523596, -0.17453, 0.174536, \
+                        0.523602, 0.87267, 1.22173, 1.5708, 1.91987, 2.26893, 2.618, 2.96706, \
+                        3.31613, 3.66519, 4.01426, 4.36333, 4.71239}; 
+    TH1D* ScaledHPhiDphiInclusive = HPhiDphiInclusive->Rebin(18, "ScaledDphiHPhiInclusive", xbins);
+    TH1D* ScaledHK0DphiInclusive = HK0DphiInclusive->Rebin(18, "ScaledHK0DphiInclusive", xbins);
+
+    //Setting up histogram for Christina's data:
+    Double_t data[18] = {287.344, 263.394, 340.795, 444.768, 1162.75, 526.076, 285.806, \
+                   230.348, 300.421, 271.289, 283.492, 354.686, 423.02, 497.954, 424.278, \
+                   399.197, 312.045, 339.193};
+    Double_t error[18] = {19.7231, 19.1311, 21.6102, 28.5307, 49.8197, 29.0345, 20.445, 19, \
+                  20.025, 19.8997, 21.0713, 23.4094, 27.0924, 29.1204, 26.5707, 24.3516, \
+                  21.166, 21.5639};
+    TH1D* HPhiDphiData = ScaledHPhiDphiInclusive->Clone();
+    for(int i = 0; i < 18; i++){
+        HPhiDphiData->SetBinContent(i+1,data[i]);
+        HPhiDphiData->SetBinError(i+1, error[i]);
+    }
+    //Checking data
+    TCanvas *cData = new TCanvas("dphidata", "#Delta#phi data", 50, 50, 600, 400);
+    cData->cd();
+    HPhiDphiData->SetLineColor(1);
+    HPhiDphiData->Draw("HIST");
+
+    //Checking rebinned data
+    TCanvas *cRebin = new TCanvas("dphirebinned", "#Delta#phi rebinned", 50, 50, 600, 400);
+    cRebin->cd();
+    ScaledHPhiDphiInclusive->SetLineColor(1);
+    ScaledHPhiDphiInclusive->Draw("HIST");
+
+    //Checking rebinned K0
+    TCanvas *cRebinK0 = new TCanvas("dphirebinnedK0", "#Delta#phi K0 rebinned", 50, 50, 600, 400);
+    cRebinK0->cd();
+    ScaledHK0DphiInclusive->SetLineColor(1);
+    ScaledHK0DphiInclusive->Draw("HIST");
+
+/*
+    //Setting up the scaling factor between the simulation/data:
+    Double_t scale_factor = 0;
+    for(int i = 1; i < 19; i++){
+        HPhiDphiData->SetBinContent(i, HPhiDphiData->GetBinContent(i)-287.674);
+        scale_factor += ((HPhiDphiData->GetBinContent(i))/(ScaledHPhiDphiInclusive->GetBinContent(i)+1));
+    }
+    scale_factor = scale_factor/18.0;
+    ScaledHPhiDphiInclusive->Scale(scale_factor);
+
+    //Graph of scaled data
+    TCanvas *cScaled = new TCanvas("dphiscaled", "#Delta#phi scaled", 50, 50, 600, 400);
+    cScaled->cd();
+    ScaledHPhiDphiInclusive->SetLineColor(1);
+    ScaledHPhiDphiInclusive->Draw("SAME E1");
+    HPhiDphiData->SetLineColor(2);
+    HPhiDphiData->Draw("SAME E1");
+*/
     // Graph of dphi all pT
-    TCanvas *cInc = new TCanvas("dphiInclusive", "#Delta#phi inclusive", 50, 50, 1000, 1000);
+    TCanvas *cInc = new TCanvas("dphiInclusive", "#Delta#phi inclusive", 50, 50, 600, 400);
     cInc->cd();
     HPhiDphiInclusive->SetLineColor(1);
     HPhiDphiInclusive->SetFillColor(16);
@@ -92,8 +146,8 @@ void plot_phi_sparse(string inputName){
     HPhiDphiInclusive->SetMarkerSize(2);
     HPhiDphiInclusive->GetXaxis()->SetTitle("#Delta#phi");
     HPhiDphiInclusive->Draw("SAME E1");
- 
-    TCanvas *cInc = new TCanvas("dphiKInclusive", "#Delta#phi inclusive", 65, 65, 1000, 1000);
+
+    TCanvas *cInc = new TCanvas("dphiKInclusive", "#Delta#phi inclusive", 65, 65, 600, 400);
     cInc->cd();
     HK0DphiInclusive->SetLineColor(1);
     HK0DphiInclusive->SetFillColor(16);
@@ -118,18 +172,18 @@ void plot_phi_sparse(string inputName){
     fit->SetLineColor(2);
     fit->SetLineWidth(3);
     HPhiDphiInclusive->Fit(fit, "", "SAME C");
-
+/*
     // Graph of Hadron pT Distribution
-    TCanvas *c1 = new TCanvas("HadronPtCanvas", "Pt distribution for hadrons", 50, 50, 1000, 1000);
+    TCanvas *c1 = new TCanvas("HadronPtCanvas", "Pt distribution for hadrons", 50, 50, 600, 400);
     c1->cd();
     c1->SetLogy();
     hadronPt->GetXaxis()->SetRangeUser(0, 15);
     hadronPt->SetLineColor(1);
     hadronPt->SetFillColor(16);
     hadronPt->Draw();
-
+*/
     // Graph of Phi(1020) pT Distribution
-    TCanvas *c2 = new TCanvas("PhiPtCanvas", "Pt distribution for Phi mesons", 60, 60, 1000, 1000);
+    TCanvas *c2 = new TCanvas("PhiPtCanvas", "Pt distribution for Phi mesons", 60, 60, 600, 400);
     c2->cd();
     c2->SetLogy();
     phiPt->GetXaxis()->SetRangeUser(0, 15);
@@ -193,10 +247,10 @@ void plot_phi_sparse(string inputName){
     char* full_labelgt4 = str_full_labelgt4.c_str();
     label.DrawLatex(8.5, maxHeight*.7*.7*.7, full_labelgt4);
 
-    // Graph of Phi(1020) pT Distribution for hadron pT > 5 GeV/c
-    TCanvas *c3 = new TCanvas("PhiPtgt5Canvas", "Pt distribution for Phi mesons", 60, 60, 1000, 1000);
+    // Graph of Phi(1020) pT Distribution for hadron pT > 4 GeV/c
+    TCanvas *c3 = new TCanvas("PhiPtgt5Canvas", "Pt distribution for Phi mesons", 60, 60, 600, 400);
     c3->cd();
-    TH1D* phiPt_Hgt5 = HPhiDphi->ProjectionY("phiPtgt5", 100, 1000, 0, 64);
+    TH1D* phiPt_Hgt5 = HPhiDphi->ProjectionY("phiPtgt5", 80, 1000, 0, 256);
     phiPt_Hgt5->SetTitle("p_{T}^{#phi} Distribution for events with a hadron with p_{T}^{h} > 5 GeV/c");
     phiPt_Hgt5->GetXaxis()->SetRangeUser(0, 15);
     phiPt_Hgt5->GetXaxis()->SetTitle("p_{T}^{#phi}");
@@ -207,9 +261,9 @@ void plot_phi_sparse(string inputName){
     Double_t numphiPt_Hgt5_1_2 = phiPt_Hgt5->Integral(20, 40);
     Double_t numphiPt_Hgt5_2_4 = phiPt_Hgt5->Integral(41, 80);
     Double_t numphiPt_Hgt5_gt4 = phiPt_Hgt5->Integral(81, 1000);   
-    
+   
     printf("Number of phi1_2 = %d\nNumber of phi2_4 = %d\nNumber of phigt4 = %d\n", numphiPt_Hgt5_1_2, numphiPt_Hgt5_2_4, numphiPt_Hgt5_gt4);
-    
+ /*   
     TH1F* phiPt_Hgt5_1_2 = (TH1F*) phiPt_Hgt5->Clone();
     phiPt_Hgt5_1_2->GetXaxis()->SetRangeUser(1, 2);
     phiPt_Hgt5_1_2->SetLineColor(1);
@@ -259,7 +313,7 @@ void plot_phi_sparse(string inputName){
     label_Hgt5.DrawLatex(10, maxHeight_Hgt5*.66, full_labelH_Hgt5_gt4);
 
     // Graph of Phi(1020) pT Distribution for hadron pT > 7 GeV/c
-    TCanvas *c4 = new TCanvas("PhiPtgt7Canvas", "Pt distribution for Phi mesons", 60, 60, 1000, 1000);
+    TCanvas *c4 = new TCanvas("PhiPtgt7Canvas", "Pt distribution for Phi mesons", 60, 60, 600, 400);
     c4->cd();
     TH1D* phiPt_Hgt7 = HPhiDphi->ProjectionY("phiPtgt7", 140, 1000, 0, 64);
     phiPt_Hgt7->SetTitle("p_{T}^{#phi} Distribution for events with a hadron with p_{T}^{h} > 7 GeV/c");
@@ -323,9 +377,9 @@ void plot_phi_sparse(string inputName){
     char* full_labelH_Hgt7_gt4 = str_full_labelH_Hgt7_gt4.c_str();
     label_Hgt7.DrawLatex(10, .66*maxHeight_Hgt7, full_labelH_Hgt7_gt4);
 
-
+*/
     // Graph of H-Phi correlation for pT-Phi inclusive    
-    TCanvas *c5 = new TCanvas("H-Phi correlation for pTh range, ptPhi inclusive", "H-Phi correlation for pTh range, ptPhi inclusive", 50, 50, 1000, 1000);
+    TCanvas *c5 = new TCanvas("H-Phi correlation for pTh range, ptPhi inclusive", "H-Phi correlation for pTh range, ptPhi inclusive", 50, 50, 600, 400);
     c5->Divide(2,2);
     for(int i=-1; i<3; i++){
         c5->cd(i+2);
@@ -350,8 +404,8 @@ void plot_phi_sparse(string inputName){
         }
     }
 
-    // Graph of high-pt hadron (> 5 Gev/c) phi(1020) correlation
-    TCanvas *c6 = new TCanvas("H-Phi correlation for pTh>5, ptPhi ranges", "H-Phi correlation for pTh>5, ptPhi ranges", 50, 50, 1000, 1000);
+    // Graph of high-pt hadron (> 4 Gev/c) phi(1020) correlation
+    TCanvas *c6 = new TCanvas("H-Phi correlation for pTh>4, ptPhi ranges", "H-Phi correlation for pTh>4, ptPhi ranges", 50, 50, 600, 400);
     c6->Divide(2,2);
     for(int i=2; i<6; i++){
         c6->cd(i-1);
@@ -359,7 +413,7 @@ void plot_phi_sparse(string inputName){
             TLatex heading;
             heading.SetTextAlign(22);
             heading.SetTextSize(0.1);
-            heading.DrawLatex(0.5, 0.5, "#splitline{#Delta#phi correlation between}{#splitline{high p_{T} hadrons (> 5 GeV/c)}{and #phi(1020) mesons}}");
+            heading.DrawLatex(0.5, 0.5, "#splitline{#Delta#phi correlation between}{#splitline{high p_{T} hadrons (> 4 GeV/c)}{and #phi(1020) mesons}}");
         }else{
             fHPhiDphi[i]->GetXaxis()->SetTitle("#Delta#phi");
             fHPhiDphi[i]->SetLineWidth(0);
@@ -375,9 +429,9 @@ void plot_phi_sparse(string inputName){
             fHPhiDphi[i]->Draw("SAME E1");
         }
     }
-
+/*
     // Graph of high pT Hadron (> 7 GeV/c) and phi-meson correlation
-    TCanvas *c7 = new TCanvas("H-Phi correlation for pTh>7, ptPhi ranges", "H-Phi correlation for pTh>7, ptPhi ranges", 50, 50, 1000, 1000);
+    TCanvas *c7 = new TCanvas("H-Phi correlation for pTh>7, ptPhi ranges", "H-Phi correlation for pTh>7, ptPhi ranges", 50, 50, 600, 400);
     c7->Divide(2,2);
     for(int i=5; i<9; i++){
         c7->cd(i-4);
@@ -401,9 +455,9 @@ void plot_phi_sparse(string inputName){
             fHPhiDphi[i]->Draw("SAME E1");
         }
     }
-    
+*/    
     // Graph of H-K0 correlation for pT-K0 inclusive    
-    TCanvas *c8 = new TCanvas("H-K0 correlation for pTh range, ptK0 inclusive", "H-K0 correlation for pTh range, ptK0 inclusive", 50, 50, 1000, 1000);
+    TCanvas *c8 = new TCanvas("H-K0 correlation for pTh range, ptK0 inclusive", "H-K0 correlation for pTh range, ptK0 inclusive", 50, 50, 600, 400);
     c8->Divide(2,2);
     for(int i=-1; i<3; i++){
         c8->cd(i+2);
@@ -429,7 +483,7 @@ void plot_phi_sparse(string inputName){
     }
 
     // Graph of high-pt hadron (> 5 Gev/c) K0 correlation
-    TCanvas *c9 = new TCanvas("H-K0 correlation for pTh>5, ptK0 ranges", "H-K0 correlation for pTh>5, ptK0 ranges", 50, 50, 1000, 1000);
+    TCanvas *c9 = new TCanvas("H-K0 correlation for pTh>4, ptK0 ranges", "H-K0 correlation for pTh>4, ptK0 ranges", 50, 50, 600, 400);
     c9->Divide(2,2);
     for(int i=2; i<6; i++){
         c9->cd(i-1);
@@ -437,7 +491,7 @@ void plot_phi_sparse(string inputName){
             TLatex heading;
             heading.SetTextAlign(22);
             heading.SetTextSize(0.1);
-            heading.DrawLatex(0.5, 0.5, "#splitline{#Delta#phi correlation between}{#splitline{high p_{T} hadrons (> 5 GeV/c)}{and K^{0} mesons}}");
+            heading.DrawLatex(0.5, 0.5, "#splitline{#Delta#phi correlation between}{#splitline{high p_{T} hadrons (> 4 GeV/c)}{and K^{0} mesons}}");
         }else{
             fHK0Dphi[i]->GetXaxis()->SetTitle("#Delta#phi");
             fHK0Dphi[i]->SetLineWidth(0);
@@ -453,9 +507,9 @@ void plot_phi_sparse(string inputName){
             fHK0Dphi[i]->Draw("SAME E1");
         }
     }
-
+/*
     // Graph of high pT Hadron (> 7 GeV/c) and phi-meson correlation
-    TCanvas *c10 = new TCanvas("H-K0 correlation for pTh>7, ptK0 ranges", "H-K0 correlation for pTh>7, ptK0 ranges", 50, 50, 1000, 1000);
+    TCanvas *c10 = new TCanvas("H-K0 correlation for pTh>7, ptK0 ranges", "H-K0 correlation for pTh>7, ptK0 ranges", 50, 50, 600, 400);
     c10->Divide(2,2);
     for(int i=5; i<9; i++){
         c10->cd(i-4);
@@ -479,6 +533,6 @@ void plot_phi_sparse(string inputName){
             fHK0Dphi[i]->Draw("SAME E1");
         }
     }
-
+*/
 
 }

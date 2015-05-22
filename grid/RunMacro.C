@@ -11,12 +11,12 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kTRUE; //true = merging done on grid, false = merge happens locally
+   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   Bool_t pre_final_stage = kTRUE; //kTRUE = merging done on grid, kFALSE = merge happens locally
    //Int_t cyclenumber = 10;    
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
-   char* work_dir = "Test-04-02";
+   char* work_dir = "Test-05-19";
    char* output_dir = "output";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
@@ -40,16 +40,14 @@ void RunMacro()
     alienHandler->EnablePackage("PWGHFhfe.par");  
   }
 
-// Trying to add new PHYSICS package
-  alienHandler->AddExternalPackage("AliPhysics::vAN-20150122");
-
   alienHandler->SetAnalysisSource("AliAnalysisTaskQA.cxx");
   //alienHandler->SetOverwriteMode();
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(5);
   alienHandler->SetAPIVersion("V1.1x");
-  alienHandler->SetROOTVersion("v5-34-08-6");
-  alienHandler->SetAliROOTVersion("vAN-20150118");
+  alienHandler->SetROOTVersion("v5-34-08-7");
+  alienHandler->SetAliROOTVersion("v5-06-17");
+  alienHandler->SetAliPhysicsVersion("vAN-20150518");
   alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
   alienHandler->SetGridDataDir("/alice/data/2012/LHC12d/");
   //alienHandler->SetDataPattern("pass1/*ESDs.root");
@@ -75,13 +73,13 @@ void RunMacro()
    alienHandler->SetGridWorkingDir(work_dir);
    alienHandler->SetGridOutputDir(output_dir);
    alienHandler->SetDefaultOutputs();
-   alienHandler->SetAnalysisMacro("ElectronV2.C");
+   alienHandler->SetAnalysisMacro("QATestV2.C");
    alienHandler->SetSplitMaxInputFileNumber(noffiles);
-   alienHandler->SetExecutable("Electron.sh");
+   alienHandler->SetExecutable("QATest.sh");
    alienHandler->SetExecutableCommand("aliroot -b -q");
    alienHandler->SetTTL(ttl); //10000
    alienHandler->SetInputFormat("xml-single");
-   alienHandler->SetJDLName("Electron.jdl");
+   alienHandler->SetJDLName("QATest.jdl");
    alienHandler->SetPrice(1);
    alienHandler->SetSplitMode("se");
    alienHandler->SetMasterResubmitThreshold(10);
@@ -108,7 +106,7 @@ void RunMacro()
 
 gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB -I$ALICE_ROOT/PWG/FLOW/Base -g ");
     
-   AliAnalysisManager *mgr = new AliAnalysisManager("ElectronAnalysis");
+   AliAnalysisManager *mgr = new AliAnalysisManager("TestAnalysis");
    mgr->SetGridHandler(alienHandler);
 
    AliAODInputHandler* aodH = new AliAODInputHandler();
@@ -121,7 +119,7 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
    gROOT->LoadMacro("AliAnalysisTaskQA.cxx++g");
    gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
    gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
-   AddTaskPIDResponse(kFALSE);
+   AddTaskPIDResponse(kFALSE); //Set to kTRUE for MC data
 
    //create a task
    AliAnalysisTaskQA *taskQA = AddTaskQA();

@@ -34,6 +34,10 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     TH1F *phiPhiDist = new TH1F("PhiPhiDist", "phi meson angular phi distribution", 100, -0.1, 6.29);
     TH1F *hPhiDist = new TH1F("HPhiDist", "hadron angular phi distribution", 100, -0.1, 6.29);
     THnSparseF *DphiHPhi = new THnSparseF("DphiHPhi", "#Delta#phi correlation for Hadron-Phi", 3, bins, min, max);
+    THnSparseF *DphiPiPhi = new THnSparseF("DphiPiPhi", "#Delta#phi correlation for Pion-Phi", 3, bins, min, max);
+    THnSparseF *DphiKPhi = new THnSparseF("DphiKPhi", "#Delta#phi correlation for Kaon-Phi", 3, bins, min, max);
+
+    TH1I *triggerHist = new TH1I("triggerHist", "Number of Trigger particles per event", 21, 0, 20);
 
     TH1F *k0PhiDist = new TH1F("k0Dist", "Phi distribution for k0", 100, -0.1, 6.29);
     THnSparseF *DphiHK0 = new THnSparseF("DphiHK0", "#Delta#phi correlation for Hadron-K^{0}", 3, bins, min, max);
@@ -57,6 +61,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
 
     Int_t count = 0;
     Int_t npart = 0;
+    Int_t ntrigger=0;
     Double_t pt=-1, E=-1, theta=-1, phi=-1, eta=-99, y=-99, eta_calc=-99, p_tot = 0, p_z = 0;
     Double_t asso_pt=-1, asso_phi=-1, asso_eta=-9, delta_phi=-99;
     Double_t point[3] = {0,0,0};
@@ -72,7 +77,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     for(Int_t nev=0; nev<num_events; nev++){
 //        if(nev%100 == 0)printf("Event: %d\n", nev);
 //        TStopwatch timer_getevent;
-
+        ntrigger=0;
         rl->GetEvent(nev);
         stack = rl->Stack();
         
@@ -102,8 +107,9 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
             eta_calc = 0.5*TMath::Log((p_tot + p_z)/(p_tot - p_z));
             //select only hadrons within the eta range -0.9 < eta <0.9 and pt > 150 MeV
             //if(nev%1000==0 && TMath::Abs(eta_calc)<1) printf("  Particle eta: %f, Calculated eta: %f, Pt: %f, PDG: %d\n", eta, eta_calc, pt, par_pdg);
-            if((TMath::Abs(par_pdg)==2212 || TMath::Abs(par_pdg)==311 || TMath::Abs(par_pdg)==211 || TMath::Abs(par_pdg)==321 || TMath::Abs(par_pdg)==11 || TMath::Abs(par_pdg)==333)&&(TMath::Abs(eta_calc)<0.9)&&(pt > 0.150)){
+            if((TMath::Abs(par_pdg)==2212 || TMath::Abs(par_pdg)==311 || TMath::Abs(par_pdg)==211 || TMath::Abs(par_pdg)==321 || TMath::Abs(par_pdg)==333)&&(TMath::Abs(eta_calc)<0.9)&&(pt > 0.150)){
                 hadronPt->Fill(pt);
+                if(pt > 4.0) ntrigger++;
                 count++;
                 if(TMath::Abs(par_pdg)==333){                  
                     phiPt->Fill(pt);
@@ -157,11 +163,11 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
                             }
                             if(isHadronDaughter) continue;
                             delta_phi = phi - asso_phi;
-                            if(delta_phi >3*TMath::Pi()/2){
-                                delta_phi = delta_phi - 2*TMath::Pi();
+                            if(delta_phi >3.0*TMath::Pi()/2.0){
+                                delta_phi = delta_phi - 2.0*TMath::Pi();
                             }
-                            if(delta_phi < -TMath::Pi()/2){
-                                delta_phi = delta_phi + 2*TMath::Pi();
+                            if(delta_phi < -TMath::Pi()/2.0){
+                                delta_phi = delta_phi + 2.0*TMath::Pi();
                             }
                             point[0] = pt;
                             point[1] = asso_pt;
@@ -171,6 +177,11 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
                             }else{
                                 DphiHK0->Fill(point);
                             }
+                            if(TMath::Abs(pdg)==211){
+                                DphiPiPhi->Fill(point);
+                            }else if(TMath::Abs(pdg)=321){
+                                DphiKPhi->Fill(point);
+                            }
                         }
                     }
                 }
@@ -179,6 +190,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
 //        timer_analysis.Stop();
 //        fprintf(stdout, "ANALYSIS ");
 //        timer_analysis.Print("u");
+        triggerHist->Fill(ntrigger);
     }
 
 //    TStopwatch timer_write;
@@ -196,9 +208,13 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     hadronPt->Write();
     phiPt->Write();
     DphiHPhi->Write();
-
+    DphiPiPhi->Write();
+    DphiKPhi->Write();
     k0PhiDist->Write();
     DphiHK0->Write();
+
+
+    triggerHist->Write();
 
     histoOutput->Close();
 
