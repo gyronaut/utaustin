@@ -41,7 +41,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
 
     TH1F *k0PhiDist = new TH1F("k0Dist", "Phi distribution for k0", 100, -0.1, 6.29);
     THnSparseF *DphiHK0 = new THnSparseF("DphiHK0", "#Delta#phi correlation for Hadron-K^{0}", 3, bins, min, max);
-
+    THnSparseF *DphiPiK0 = new THnSparseF("DphiPiK0", "#Delta#phi correlation for Pion-K^{0}", 3, bins, min, max);
     string input_full_path = input_dir+"/"+input_file;
     AliRunLoader* rl = AliRunLoader::Open(input_full_path.c_str());
 
@@ -181,6 +181,9 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
                                 }
                             }else{
                                 DphiHK0->Fill(point);
+                                if(TMath::Abs(par_pdg)==211){
+                                    DphiPiK0->Fill(point);
+                                }
                             }
                         }
                     }
