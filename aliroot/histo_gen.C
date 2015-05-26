@@ -37,7 +37,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     THnSparseF *DphiPiPhi = new THnSparseF("DphiPiPhi", "#Delta#phi correlation for Pion-Phi", 3, bins, min, max);
     THnSparseF *DphiKPhi = new THnSparseF("DphiKPhi", "#Delta#phi correlation for Kaon-Phi", 3, bins, min, max);
 
-    TH1I *triggerHist = new TH1I("triggerHist", "Number of Trigger particles per event", 21, 0, 20);
+    TH1I *triggerHist = new TH1I("triggerHist", "Number of Trigger particles per event", 20, 0.5, 20.5);
 
     TH1F *k0PhiDist = new TH1F("k0Dist", "Phi distribution for k0", 100, -0.1, 6.29);
     THnSparseF *DphiHK0 = new THnSparseF("DphiHK0", "#Delta#phi correlation for Hadron-K^{0}", 3, bins, min, max);
@@ -174,13 +174,13 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
                             point[2] = delta_phi;
                             if(TMath::Abs(asso_pdg)==333){
                                 DphiHPhi->Fill(point);
+                                if(TMath::Abs(par_pdg)==211){
+                                    DphiPiPhi->Fill(point);
+                                }else if(TMath::Abs(par_pdg)==321){
+                                    DphiKPhi->Fill(point);
+                                }
                             }else{
                                 DphiHK0->Fill(point);
-                            }
-                            if(TMath::Abs(pdg)==211){
-                                DphiPiPhi->Fill(point);
-                            }else if(TMath::Abs(pdg)=321){
-                                DphiKPhi->Fill(point);
                             }
                         }
                     }
