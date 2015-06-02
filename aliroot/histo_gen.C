@@ -215,6 +215,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     DphiKPhi->Write();
     k0PhiDist->Write();
     DphiHK0->Write();
+    DphiPiK0->Write();
 
 
     triggerHist->Write();
