@@ -25,23 +25,47 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     gSystem->Load("libpythia6.so");     // Pythia
     gSystem->Load("libAliPythia6.so");  // ALICE specific implementations
 
-    Int_t bins[3] = {1000,1000,256};
-    Double_t min[3] = {0.0, 0.0, -1.57};
-    Double_t max[3] = {50.0, 50.0, 4.71};
+    /* Bin limits for pT, phi, and eta THnSparse histos */
+    Int_t dist_bins[3] = {100, 100, 100};
+    Double_t dist_min[3] = {0.0, -0.1, -3};
+    Double_t dist_max[3] = {20, 6.29, 3};
 
-    TH1F *hadronPt = new TH1F("HadronPt", "hadron pt distribution", 1000, 0, 50);
-    TH1F *phiPt = new TH1F("PhiPt", "phi pt distribution", 1000, 0, 50);
-    TH1F *phiPhiDist = new TH1F("PhiPhiDist", "phi meson angular phi distribution", 100, -0.1, 6.29);
-    TH1F *hPhiDist = new TH1F("HPhiDist", "hadron angular phi distribution", 100, -0.1, 6.29);
-    THnSparseF *DphiHPhi = new THnSparseF("DphiHPhi", "#Delta#phi correlation for Hadron-Phi", 3, bins, min, max);
-    THnSparseF *DphiPiPhi = new THnSparseF("DphiPiPhi", "#Delta#phi correlation for Pion-Phi", 3, bins, min, max);
-    THnSparseF *DphiKPhi = new THnSparseF("DphiKPhi", "#Delta#phi correlation for Kaon-Phi", 3, bins, min, max);
-
+    /* PT, PHI, AND ETA DISTRIUBTIONS (pT, phi, eta)*/
+    THnSparseF *phiPtPhiEtaDist = new THnSparseF("phiPtPhiEtaDist", "phi meson angular phi & eta distribution", 3, dist_bins, dist_min, dist_max);
+    THnSparseF *hPtPhiEtaDist = new THnSparseF("hPtPhiEtaDist", "hadron angular phi distribution", 3, dist_bins, dist_min, dist_max);
+    THnSparseF *k0PtPhiEtaDist = new THnSparseF("k0PtPhiEtaDist", "angular phi distribution for k0", 3, dist_bins, dist_min, dist_max);
+    THnSparseF *kPtPhiEtaDist = new THnSparseF("kPtPhiEtaDist", "angular phi distribution for charged kaons", 3, dist_bins, dist_min, dist_max);
+    THnSparseF *piPtPhiEtaDist = new THnSparseF("piPtPhiEtaDist", "angular phi distribution for charged pions", 3, dist_bins, dist_min, dist_max);
+    THnSparseF *pPtPhiEtaDist = new THnSparseF("pPtPhiEtaDist", "angular phi distribution for protons", 3, dist_bins, dist_min, dist_max);
+ 
+    /* TRIGGER PARTICLES PER EVENT */
     TH1I *triggerHist = new TH1I("triggerHist", "Number of Trigger particles per event", 20, 0.5, 20.5);
 
-    TH1F *k0PhiDist = new TH1F("k0Dist", "Phi distribution for k0", 100, -0.1, 6.29);
-    THnSparseF *DphiHK0 = new THnSparseF("DphiHK0", "#Delta#phi correlation for Hadron-K^{0}", 3, bins, min, max);
-    THnSparseF *DphiPiK0 = new THnSparseF("DphiPiK0", "#Delta#phi correlation for Pion-K^{0}", 3, bins, min, max);
+    /* Bin limits for Delta-phi THnSparse histos */
+    Int_t d_phi_bins[3] = {100,100,256};
+    Double_t d_phi_min[3] = {0.0, 0.0, -1.57};
+    Double_t d_phi_max[3] = {20.0, 20.0, 4.71};
+
+
+    /* DELTA-PHI HISTOGRAMS (Trigger pT, correlation pT, delta phi)
+     * These are the histograms for delta phi correlation between various particle
+     * species.  These are what the main analysis is running on.
+     */
+    THnSparseF *DphiHPhi = new THnSparseF("DphiHPhi", "#Delta#phi correlation for Hadron-Phi", 3, d_phi_bins, d_phi_min, d_phi_max);
+    THnSparseF *DphiPiPhi = new THnSparseF("DphiPiPhi", "#Delta#phi correlation for Pion-Phi", 3, d_phi_bins, d_phi_min, d_phi_max);
+    THnSparseF *DphiKPhi = new THnSparseF("DphiKPhi", "#Delta#phi correlation for Kaon-Phi", 3, d_phi_bins, d_phi_min, d_phi_max);
+
+    THnSparseF *DphiHK0 = new THnSparseF("DphiHK0", "#Delta#phi correlation for Hadron-K^{0}", 3, d_phi_bins, d_phi_min, d_phi_max);
+    THnSparseF *DphiPiK0 = new THnSparseF("DphiPiK0", "#Delta#phi correlation for Pion-K^{0}", 3, d_phi_bins, d_phi_min, d_phi_max);
+
+    THnSparseF *DphiHp = new THnSparseF("DphiHp", "#Delta#phi correlation for Hadron-proton", 3, d_phi_bins, d_phi_min, d_phi_max);
+    
+    THnSparseF *DphiHK = new THnSparseF("DphiHK", "#Delta#phi correlation for Hadron-kaon", 3, d_phi_bins, d_phi_min, d_phi_max);
+
+    THnSparseF *DphiHPi = new THnSparseF("DphiHpi", "#Delta#phi correlation for Hadron-pion", 3, d_phi_bins, d_phi_min, d_phi_max);
+    
+    THnSparseF *DphiHH = new THnSparseF("DphiHH", "#Delta#phi correlation for Hadron-Hadron", 3, d_phi_bins, d_phi_min, d_phi_max);
+
     string input_full_path = input_dir+"/"+input_file;
     AliRunLoader* rl = AliRunLoader::Open(input_full_path.c_str());
 
@@ -73,7 +97,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
 //    fprintf(stdout, "IO ");
 //    timer_io.Print("u");
 
-    //Loop over all events
+    /* Loop over all events */
     for(Int_t nev=0; nev<num_events; nev++){
 //        if(nev%100 == 0)printf("Event: %d\n", nev);
 //        TStopwatch timer_getevent;
@@ -83,7 +107,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
         
         npart = stack->GetNprimary();
         
-        //reset all variables before new event
+        /* Reset all variables before each event is analyzed */
         pt=-1, E=-1, theta=-1, phi=-1, eta=-99, y=-99, eta_calc=-99, p_tot = 0, p_z = 0;
         asso_pt= -1, asso_phi=-1, asso_eta=-9, delta_phi=-99;
         par_pdg = 0, asso_pdg = 0;
@@ -93,7 +117,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
 //        timer_getevent.Print("u");
         
 //        TStopwatch timer_analysis;
-        //loop over all particles in stack
+        /* Loop over all particles in stack */
         for(Int_t part=0; part<npart; part++){
             particle = stack->Particle(part);
             pt = particle->Pt();
@@ -105,118 +129,173 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
             p_z = particle->Pz();
             par_pdg = particle->GetPdgCode();
             eta_calc = 0.5*TMath::Log((p_tot + p_z)/(p_tot - p_z));
-            //select only hadrons within the eta range -0.9 < eta <0.9 and pt > 150 MeV
-            //if(nev%1000==0 && TMath::Abs(eta_calc)<1) printf("  Particle eta: %f, Calculated eta: %f, Pt: %f, PDG: %d\n", eta, eta_calc, pt, par_pdg);
-            if((TMath::Abs(par_pdg)==2212 || TMath::Abs(par_pdg)==311 || TMath::Abs(par_pdg)==211 || TMath::Abs(par_pdg)==321 || TMath::Abs(par_pdg)==333)&&(TMath::Abs(eta_calc)<0.9)&&(pt > 0.150)){
-                hadronPt->Fill(pt);
-                if(pt > 4.0) ntrigger++;
+            /* Select only the species of hadrons we're interested in (phi, pi, k0, k+-, p) */
+            if(TMath::Abs(par_pdg)==2212 || TMath::Abs(par_pdg)==311 || TMath::Abs(par_pdg)==211 || TMath::Abs(par_pdg)==321 || TMath::Abs(par_pdg)==333){         
+                point[0] = pt;
+                point[1] = phi;
+                point[2] = eta_calc;
+                hPtPhiEtaDist->Fill(point);
+                switch(TMath::Abs(par_pdg)){
+                    case 2212:
+                        pPtPhiEtaDist->Fill(point);
+                        break;
+                    case 311:
+                        k0PtPhiEtaDist->Fill(point);
+                        break;
+                    case 321:
+                        kPtPhiEtaDist->Fill(point);
+                        break;
+                    case 333:
+                        phiPtPhiEtaDist->Fill(point);
+                        break;
+                    case 211:
+                        piPtPhiEtaDist->Fill(point);
+                        break;
+                    default:
+                        fprintf(stdout, "How did this particle get through? \n");
+                        break;
+                }
+                if((TMath::Abs(eta_calc)>0.9)||(pt < 0.150))continue;
                 count++;
-                if(TMath::Abs(par_pdg)==333){                  
-                    phiPt->Fill(pt);
-                    phiPhiDist->Fill(phi);
-                }else if(TMath::Abs(par_pdg)==311){
-                    k0PhiDist->Fill(phi);
-                }else{
-                    hPhiDist->Fill(phi);
-                    //loop over all particles that aren't this hadron to compute delta-phi
-                    for(Int_t apart = 0; apart<npart; apart++){
-                        if(apart == part) continue;
-                        hAsso = stack->Particle(apart);
-                        asso_pt = hAsso->Pt();
-                        asso_phi = hAsso->Phi();
-                        asso_eta = hAsso->Eta();
-                        asso_pdg = hAsso->GetPdgCode();
-                        //select just phi mesons in the eta range: |eta| < 0.9 and pt > 150 MeV
-                        if((TMath::Abs(asso_pdg)==333 || TMath::Abs(asso_pdg)==311) && (TMath::Abs(asso_eta)< 0.9) && (asso_pt > 0.150)){
-                            //printf("Got Here! \n");
-                            //check that hadron isn't daughter particle of any phi meson
-                            Int_t numDaughters = hAsso->GetNDaughters();
-                            bool isHadronDaughter = false;
-                            /*
-                            for(Int_t i=0; i<numDaughters; i++){
-                                Int_t daughter = hAsso->GetFirstDaughter()+i; //first we check to make sure the hadron isn't a direct daughter of the meson in hAsso
-                                if(daughter == part){
-                                    isHadronDaughter = true;
-                                }
-                            }
-                            */
-                            Int_t firstMotherIndex = particle->GetMother(0); //we check to make sure the hadron isn't the daughter of any phi meson (k0)
-                            Int_t secondMotherIndex = particle->GetMother(1);
-                            if(TMath::Abs(asso_pdg)==333){
-                                if(firstMotherIndex > 0){
-                                    TParticle *firstmother = stack->Particle(firstMotherIndex);
-                                    if(TMath::Abs(firstmother->GetPdgCode()) == 333) isHadronDaughter = true;
-                                }
-                                if(secondMotherIndex > 0){
-                                    TParticle *lastmother = stack->Particle(secondMotherIndex);
-                                    if(TMath::Abs(lastmother->GetPdgCode()) == 333) isHadronDaughter = true;
-                                }
-                            }else if(TMath::Abs(asso_pdg)==311){
-                                if(firstMotherIndex > 0){
-                                    TParticle *firstmother = stack->Particle(firstMotherIndex);
-                                    if(TMath::Abs(firstmother->GetPdgCode()) == 311) isHadronDaughter = true;
-                                }
-                                if(secondMotherIndex > 0){
-                                    TParticle *lastmother = stack->Particle(secondMotherIndex);
-                                    if(TMath::Abs(lastmother->GetPdgCode()) == 311) isHadronDaughter = true;
-                                }
-                            }
-                            if(isHadronDaughter) continue;
-                            delta_phi = phi - asso_phi;
-                            if(delta_phi >3.0*TMath::Pi()/2.0){
-                                delta_phi = delta_phi - 2.0*TMath::Pi();
-                            }
-                            if(delta_phi < -TMath::Pi()/2.0){
-                                delta_phi = delta_phi + 2.0*TMath::Pi();
-                            }
-                            point[0] = pt;
-                            point[1] = asso_pt;
-                            point[2] = delta_phi;
-                            if(TMath::Abs(asso_pdg)==333){
-                                DphiHPhi->Fill(point);
-                                if(TMath::Abs(par_pdg)==211){
-                                    DphiPiPhi->Fill(point);
-                                }else if(TMath::Abs(par_pdg)==321){
-                                    DphiKPhi->Fill(point);
-                                }
-                            }else{
-                                DphiHK0->Fill(point);
-                                if(TMath::Abs(par_pdg)==211){
-                                    DphiPiK0->Fill(point);
-                                }
+                /* Only charged hadrons (pions, kaons, protons) should be considered for the trigger particle, everything else discarded */
+                if(!((TMath::Abs(par_pdg))==2212||(TMath::Abs(par_pdg))==211||(TMath::Abs(par_pdg))==321)) continue;
+                if(pt > 4.0) ntrigger++;
+                /* Loop over all particles that aren't this hadron to compute delta-phi */
+                for(Int_t apart = 0; apart<npart; apart++){
+                    if(apart == part) continue;
+                    hAsso = stack->Particle(apart);
+                    asso_pt = hAsso->Pt();
+                    asso_phi = hAsso->Phi();
+                    asso_eta = hAsso->Eta();
+                    asso_pdg = hAsso->GetPdgCode();
+                    
+                    /* Exclude non hadrons (species we're not interested in) */
+                    if(!(TMath::Abs(asso_pdg)==2212 || TMath::Abs(asso_pdg)==311 || TMath::Abs(asso_pdg)==211 || TMath::Abs(asso_pdg)==321 || TMath::Abs(asso_pdg)==333)) continue;
+                    /* Exclude any hadron that's not within the acceptance */
+                    if(asso_pt < 0.15 || TMath::Abs(asso_eta) > 0.9) continue;
+
+                    /* Check that trigger hadron isn't daughter particle of the associated particle*/
+                    Int_t numDaughters = hAsso->GetNDaughters();
+                    bool isHadronDaughter = false;
+                    bool daughterOutOfBounds = false;
+                    
+                    for(Int_t i=0; i<numDaughters; i++){
+                        /* First we check to make sure the trigger hadron isn't a direct daughter of the associated hadron */
+                        Int_t daughter = hAsso->GetFirstDaughter()+i;
+                        if(daughter == part){
+                            isHadronDaughter = true;
+                        }
+                        /* Next we check to make sure all decay particles of associated hadron are within the acceptance bounds in pT and eta */
+                        if(daughter > 0 && daughter < npart){
+                            if(stack->Particle(daughter)->Pt() < 0.15 || TMath::Abs(stack->Particle(daughter)->Eta()) > 0.9){
+                                daughterOutOfBounds = true;
                             }
                         }
+                    }
+                    
+                    /*  
+                    Int_t firstMotherIndex = particle->GetMother(0); //we check to make sure the hadron isn't the daughter of any phi meson (k0)
+                    Int_t secondMotherIndex = particle->GetMother(1);
+                    if(TMath::Abs(asso_pdg)==333){
+                        if(firstMotherIndex > 0){
+                            TParticle *firstmother = stack->Particle(firstMotherIndex);
+                            if(TMath::Abs(firstmother->GetPdgCode()) == 333) isHadronDaughter = true;
+                        }
+                        if(secondMotherIndex > 0){
+                            TParticle *lastmother = stack->Particle(secondMotherIndex);
+                            if(TMath::Abs(lastmother->GetPdgCode()) == 333) isHadronDaughter = true;
+                        }
+                    }else if(TMath::Abs(asso_pdg)==311){
+                        if(firstMotherIndex > 0){
+                            TParticle *firstmother = stack->Particle(firstMotherIndex);
+                            if(TMath::Abs(firstmother->GetPdgCode()) == 311) isHadronDaughter = true;
+                        }
+                        if(secondMotherIndex > 0){
+                            TParticle *lastmother = stack->Particle(secondMotherIndex);
+                            if(TMath::Abs(lastmother->GetPdgCode()) == 311) isHadronDaughter = true;
+                        }
+                    }
+                    */
+                    if(daughterOutOfBounds) continue;
+                    if(isHadronDaughter) continue;
+
+                    delta_phi = phi - asso_phi;
+                    if(delta_phi >3.0*TMath::Pi()/2.0){
+                        delta_phi = delta_phi - 2.0*TMath::Pi();
+                    }
+                    if(delta_phi < -TMath::Pi()/2.0){
+                        delta_phi = delta_phi + 2.0*TMath::Pi();
+                    }
+
+                    point[0] = pt;
+                    point[1] = asso_pt;
+                    point[2] = delta_phi;
+                    DphiHH->Fill(point);
+
+                    switch(TMath::Abs(asso_pdg)){
+                        case 333:
+                            DphiHPhi->Fill(point);
+                            if(TMath::Abs(par_pdg)==211){
+                                DphiPiPhi->Fill(point);
+                            }else if(TMath::Abs(par_pdg)==321){
+                                DphiKPhi->Fill(point);
+                            }
+                            break;
+                        case 311:
+                            DphiHK0->Fill(point);
+                            if(TMath::Abs(par_pdg)==211){
+                                DphiPiK0->Fill(point);
+                            }
+                            break;
+                        case 211:
+                            DphiHPi->Fill(point);
+                            break;
+                        case 2212:
+                            DphiHp->Fill(point);
+                            break;
+                        case 321:
+                            DphiHK->Fill(point);
+                            break;
+                        default:
+                            fprintf(stdout, "Associated particle that shouldn't have gotten through...\n PDG: %d \n", asso_pdg);
+                            break;
                     }
                 }
             }
         }
+    }
 //        timer_analysis.Stop();
 //        fprintf(stdout, "ANALYSIS ");
 //        timer_analysis.Print("u");
-        triggerHist->Fill(ntrigger);
-    }
+    triggerHist->Fill(ntrigger);
 
 //    TStopwatch timer_write;
-
 //    printf("Total hadrons counted in eta range: %d\n", count);
+
     rl->~AliRunLoader(); 
 
-
-    //open new file to contain histograms
+    /* Open new file to contain histograms */
     string outputFullPath = output_dir+"/"+output_file;
     TFile *histoOutput = new TFile(outputFullPath.c_str(), "RECREATE");
     histoOutput->cd();
 
-    //write histograms to file
-    hadronPt->Write();
-    phiPt->Write();
+    /* Write histograms to file */
+    phiPtPhiEtaDist->Write();
+    k0PtPhiEtaDist->Write();
+    kPtPhiEtaDist->Write();
+    piPtPhiEtaDist->Write();
+    hPtPhiEtaDist->Write();
+    pPtPhiEtaDist->Write();
+
     DphiHPhi->Write();
     DphiPiPhi->Write();
     DphiKPhi->Write();
-    k0PhiDist->Write();
     DphiHK0->Write();
     DphiPiK0->Write();
-
+    DphiHK->Write();
+    DphiHPi->Write();
+    DphiHp->Write();
+    DphiHH->Write();
 
     triggerHist->Write();
 
