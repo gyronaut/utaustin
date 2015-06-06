@@ -17,7 +17,7 @@ int main (int argc, char* argv[]){
     ierr = MPI_Comm_rank(MPI_COMM_WORLD, &irank);
 
     string input_dir_root, input_dir, input_file, output_dir, output_file_root, output_file;
-    string run_file = "/Users/jtblair/utaustin/aliroot/histo_gen.C";
+    string run_file = "/Users/jtblair/utaustin/aliroot/k_invariant_mass.C";
     string aliroot_cmd, aliroot_source="ali";
     int num_processors, first_dir, last_dir, range, per_processor;
 

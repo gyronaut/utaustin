@@ -26,10 +26,10 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
     TH1F *invMassPhiOnly = new TH1F("InvMassPhiOnly", "Invariant Mass distribution for K+/K- pairs known to come from phi mesons", 1000, 900, 1100);
 
     Int_t bins[4] = {100, 100, 200, 256};
-    Float_t min[4] = {0.0, 0.0, 0.0, -1.57};
-    Float_t max[4] = {20.0, 20.0, 2.0, 4.71}; 
-    THnSparse DphiInvMass = new THnSparse("DphiInvMass", "Histogram to contain pt, inv mass, and dphi data", 4, bins, min, max); 
-    Float_t point[4] = {0.0, 0.0, 0.0, 0.0};
+    Double_t min[4] = {0.0, 0.0, 0.0, -1.57};
+    Double_t max[4] = {20.0, 20.0, 2.0, 4.71}; 
+    THnSparseF *DphiInvMass = new THnSparseF("DphiInvMass", "Histogram to contain pt, inv mass, and dphi data", 4, bins, min, max); 
+    Double_t point[4] = {0.0, 0.0, 0.0, 0.0};
 
     string inputFullPath = inputDir+"/"+inputFile;
     AliRunLoader* rl = AliRunLoader::Open(inputFullPath.c_str());
@@ -142,7 +142,6 @@ void k_invariant_mass(string inputDir, string inputFile, string outputDir, strin
     //write histograms to file
     invMassPhiOnly->Write();
     DphiInvMass->Write();
-    eventCount->Write();
 
     histoOutput->Close();
 
