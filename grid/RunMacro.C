@@ -11,12 +11,12 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
    Bool_t pre_final_stage = kTRUE; //kTRUE = merging done on grid, kFALSE = merge happens locally
    //Int_t cyclenumber = 10;    
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
-   char* work_dir = "Test-05-19";
+   char* work_dir = "Test-06-10";
    char* output_dir = "output";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
@@ -46,24 +46,27 @@ void RunMacro()
   alienHandler->SetNtestFiles(5);
   alienHandler->SetAPIVersion("V1.1x");
   alienHandler->SetROOTVersion("v5-34-08-7");
-  alienHandler->SetAliROOTVersion("v5-06-17");
-  alienHandler->SetAliPhysicsVersion("vAN-20150518");
+  alienHandler->SetAliROOTVersion("v5-06-19");
+  alienHandler->SetAliPhysicsVersion("vAN-20160601");
   alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
-  alienHandler->SetGridDataDir("/alice/data/2012/LHC12d/");
-  //alienHandler->SetDataPattern("pass1/*ESDs.root");
-  alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
+  alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
+  alienHandler->SetDataPattern("*ESDs.root"); //The file name that's inside that data directory
+  //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
   //alienHandler->SetGridDataDir("//alice/data/2013/LHC13g/");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  alienHandler->SetRunPrefix("000"); // IMPORTANT!
+  //alienHandler->SetRunPrefix("000"); // IMPORTANT! only for real data, MC simulations don't need this prefix
 
    
 //LHC12d   
     //Int_t runArray[] = {186320, 186319, 186318, 186229, 186208, 186205, 186200, 186167, 186165, 186164, 186163, 185912, 185909, 185784, 185778, 185776, 185775, 185768, 185765, 185764, 185757, 185756, 185738, 185735, 185734, 185701, 185699, 185698, 185697, 185695, 185687, 185680, 185589, 185588, 185583, 185582, 185581, 185580, 185578};
-  Int_t runArray[] = {186320, 186319, 186318, 186229, 186208, 186205, 186200, 186167, 186165, 186164, 186163, 185912, 185909, 185784, 185778, 185776, 185775, 185768, 185765, 185764, 185757, 185756, 185738, 185735, 185734, 185701, 185699, 185698, 185697, 185695, 185687, 185680, 185589, 185588, 185583, 185582, 185581, 185580, 185578, 185575, 185574, 185565, 185563, 185474, 185465, 185461, 185457, 185375, 185371, 185363, 185362, 185361, 185360, 185359, 185356, 185351, 185350, 185349, 185303, 185302, 185300, 185299, 185296, 185293, 185292, 185291, 185289, 185288, 185284, 185282, 185221, 185217, 185208, 185206, 185203, 185198, 185196, 185189};
+  //Int_t runArray[] = {186320, 186319, 186318, 186229, 186208, 186205, 186200, 186167, 186165, 186164, 186163, 185912, 185909, 185784, 185778, 185776, 185775, 185768, 185765, 185764, 185757, 185756, 185738, 185735, 185734, 185701, 185699, 185698, 185697, 185695, 185687, 185680, 185589, 185588, 185583, 185582, 185581, 185580, 185578, 185575, 185574, 185565, 185563, 185474, 185465, 185461, 185457, 185375, 185371, 185363, 185362, 185361, 185360, 185359, 185356, 185351, 185350, 185349, 185303, 185302, 185300, 185299, 185296, 185293, 185292, 185291, 185289, 185288, 185284, 185282, 185221, 185217, 185208, 185206, 185203, 185198, 185196, 185189};
 
- //LHC13g
+//LHC13g
     //Int_t runArray[] = {197606};
     
+//LHC10d - MC simulations
+    Int_t runArray[] = {119159}
+
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
     if (i == sizeof(runArray) / sizeof(runArray[1])) break;
@@ -109,17 +112,18 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
    AliAnalysisManager *mgr = new AliAnalysisManager("TestAnalysis");
    mgr->SetGridHandler(alienHandler);
 
-   AliAODInputHandler* aodH = new AliAODInputHandler();
-   mgr->SetInputEventHandler(aodH);
-   // AliESDInputHandler* esdH = new AliESDInputHandler();
-   // mgr->SetInputEventHandler(esdH);
+   /* Make sure handler matches data type */
+   //AliAODInputHandler* aodH = new AliAODInputHandler();
+   //mgr->SetInputEventHandler(aodH);
+   AliESDInputHandler* esdH = new AliESDInputHandler();
+   mgr->SetInputEventHandler(esdH);
    
 
    gROOT->LoadMacro("AddTaskQA.C");
    gROOT->LoadMacro("AliAnalysisTaskQA.cxx++g");
-   gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
+   //gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
    gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
-   AddTaskPIDResponse(kFALSE); //Set to kTRUE for MC data
+   AddTaskPIDResponse(kTRUE); //Set to kTRUE for MC data
 
    //create a task
    AliAnalysisTaskQA *taskQA = AddTaskQA();

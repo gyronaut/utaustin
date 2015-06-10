@@ -11,22 +11,22 @@ Jobtag = {
 OutputDir = "$1";
 # List of requested packages
 Packages = {
-   "VO_ALICE@AliRoot::vAN-20150118",
-   "VO_ALICE@ROOT::v5-34-08-6",
+   "VO_ALICE@AliRoot::v5-06-19",
+   "VO_ALICE@ROOT::v5-34-08-7",
    "VO_ALICE@APISCONFIG::V1.1x",
-   "VO_ALICE@AliPhysics::vAN-20150122"
+   "VO_ALICE@AliPhysics::vAN-20150601"
 };
 # List of input files to be uploaded to workers
 InputFile = {
-   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/Electron_merge.C",
-   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/Electron.root",
-   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/AliAnalysisTaskQA.cxx",
-   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/AliAnalysisTaskQA.h",
-   "LF:/alice/cern.ch/user/j/jblair/Test-22-01/AddTaskQA.C",
+   "LF:/alice/cern.ch/user/j/jblair/Test-06-10/Electron_merge.C",
+   "LF:/alice/cern.ch/user/j/jblair/Test-06-10/Electron.root",
+   "LF:/alice/cern.ch/user/j/jblair/Test-06-10/AliAnalysisTaskQA.cxx",
+   "LF:/alice/cern.ch/user/j/jblair/Test-06-10/AliAnalysisTaskQA.h",
+   "LF:/alice/cern.ch/user/j/jblair/Test-06-10/AddTaskQA.C",
    "LF:$1/Stage_$2.xml"
 };
 # This is the startup script
-Executable = "/alice/cern.ch/user/j/jblair/Test-22-01/Electron_merge.sh";
+Executable = "/alice/cern.ch/user/j/jblair/Test-06-10/Electron_merge.sh";
 # We split per SE for merging in stages
 # Time after which the job is killed (833 min.)
 TTL = "50000";
@@ -42,6 +42,6 @@ Arguments = "Stage_$2.xml $2";
 # AliEn price for this job
 Price = "1";
 # Validation script to be run for each subjob
-Validationcommand = "/alice/cern.ch/user/j/jblair/Test-22-01/Electron_validation_merge.sh";
+Validationcommand = "/alice/cern.ch/user/j/jblair/Test-06-10/Electron_validation_merge.sh";
 User = "jblair";
 Workdirectorysize = {"5000MB"};

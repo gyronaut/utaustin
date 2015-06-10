@@ -1,8 +1,8 @@
-const char *anatype = "AOD";
+const char *anatype = "ESD";
 
 void ElectronV2()
 {
-// Analysis using AOD data
+// Analysis using ESD data
 // Automatically generated analysis steering macro executed in grid subjobs
 
    TStopwatch timer;
@@ -75,7 +75,7 @@ void ElectronV2()
    AliAnalysisManager *mgr = AliAnalysisAlien::LoadAnalysisManager("Electron.root");
    if (!mgr) return;
    mgr->PrintStatus();
-   AliLog::SetGlobalLogLevel(AliLog::kWarning);
+   AliLog::SetGlobalLogLevel(AliLog::kError);
    TChain *chain = CreateChain("wn.xml", anatype);
 
    mgr->StartAnalysis("localfile", chain);
