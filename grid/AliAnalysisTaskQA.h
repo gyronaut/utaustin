@@ -47,7 +47,15 @@ private:
     TH2F        *fTPCNpts;//!TPC Npoints used for dedx
     TH2F        *fTPCnsig;//!TPC Nsigma
     TH1F	*fPDGCodes;//particle codes
-    
+   
+    TH1F    *fPhiPt;//reconstructed phi pt
+    TH1F    *fPhiInvMass;
+
+    TH2F    *fTPCnsigK;
+    TH2F    *fTPCnsigp;
+    TH2F    *fTPCnsige;
+    TH2F    *fTPCnsigPi;
+
     AliAnalysisTaskQA(const AliAnalysisTaskQA&); // not implemented
     AliAnalysisTaskQA& operator=(const AliAnalysisTaskQA&); // not implemented
     
