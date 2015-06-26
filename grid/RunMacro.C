@@ -16,12 +16,12 @@ void RunMacro()
    //Int_t cyclenumber = 10;    
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
-   char* work_dir = "InvMassTest-06-26";
+   char* work_dir = "InvMass-06-26";
    char* output_dir = "output";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
    //Int_t runcycle[] = {0,36,78};
-   Int_t runcycle[] = {0,1};
+   Int_t runcycle[] = {0,18,23,28,33,36};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -67,7 +67,7 @@ void RunMacro()
     //Int_t runArray[] = {197606};
     
   //LHC10d4 - MC Data
-  Int_t runArray[] = {119159};
+  Int_t runArray[] = {119159, 119161, 119163, 119841, 119842, 119844, 119845, 119846, 119849, 119853, 119856, 119859, 119862, 120067, 120069, 120072, 120073, 120076, 120079, 120244, 120503, 120504, 120505, 120616, 120617, 120671, 120741, 120750, 120758, 120820, 120821, 120822, 120823, 120824, 120825, 120829};
 
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
