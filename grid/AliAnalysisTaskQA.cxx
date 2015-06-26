@@ -16,6 +16,7 @@
 #include "TChain.h"
 #include "TTree.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TCanvas.h"
 #include "THnSparse.h"
 #include "TParticle.h"
@@ -28,6 +29,7 @@
 #include "AliESDtrackCuts.h"
 #include "AliAODEvent.h"
 #include "AliAODHandler.h"
+#include "AliAODMCParticle.h"
 
 #include "AliPID.h"
 #include "AliESDpid.h"
@@ -36,6 +38,7 @@
 
 #include "AliMCEvent.h"
 #include "AliStack.h"
+#include "AliMCEventHandler.h"
 
 #include "AliAnalysisTaskQA.h"
 
@@ -65,9 +68,9 @@ fTPCnsig(0),
 fPDGCodes(0),
 fPhiPt(0),
 fPhiInvMass(0),
-fTPCnsigK(0),
 fTPCnsigp(0),
 fTPCnsige(0),
+fTPCnsigK(0),
 fTPCnsigPi(0)
 {
     // Constructor
@@ -211,7 +214,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 //________________________________________________________________________
 void AliAnalysisTaskQA::UserExec(Option_t *)
 {
-    printf("Made it to UserExec! \n");
+    //printf("Made it to UserExec! \n");
     // Main loop
     // Called for each event
     // Post output data.
@@ -232,35 +235,47 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     ///////////////////////
     // Setting up fStack //
     ///////////////////////
-    AliInputEventHandler *fMcHandler = dynamic_cast<AliInputEventHandler*> (AliAnalysisManager::GetAnalysisManager()->GetMCtruthEventHandler());
+    
+    AliMCEventHandler *fMCHandler = 0x0;
+    AliMCEvent *fMcEvent = 0x0;
+    AliStack *fStack = 0x0;
+    TClonesArray *mcArray = 0x0;
+    
+    if(fESD){
+        fMCHandler = dynamic_cast<AliMCEventHandler*>(AliAnalysisManager::GetAnalysisManager()->GetMCtruthEventHandler()); 
+   
+        
+        if(fMCHandler->Init("grid")){
+            fMcEvent = fMCHandler->MCEvent();
+            // printf("handler set up! \n");
+        }else{
+            if(fDebug > 1) printf("AliAnalysisTaskHFDijetMC::UserExec fMcHandler=NULL\n");
+            fprintf(stderr, "no MCHandler!\n");
+            return;
+        }
 
-    AliMCEvent* fMcEvent = 0x0;
+        if(!fMcEvent){
+            if(fDebug > 1) printf("AliAnalysisTaskHFDijetMC::UserExec fMcEvent=NULL \n");
+            fprintf(stderr, "No MCEvent!\n");
+            return;
+        }else{
+            //fprintf(stdout, "MCEvent Found!\n");
+        }
 
-    if(fMcHandler){
-        fMcEvent = fMcHandler->MCEvent();
-        fprintf(stdout, "handler set up! \n");
-    }else{
-        if(fDebug > 1) printf("AliAnalysisTaskHFDijetMC::UserExec fMcHandler=NULL\n");
-        fprintf(stderr, "no MCHandler!\n");
-        return;
-    }
-
-    if(!fMcEvent){
-        if(fDebug > 1) printf("AliAnalysisTaskHFDijetMC::UserExec fMcEvent=NULL \n");
-        fprintf(stderr, "No MCEvent!\n");
-        return;
-    }else{
-        fprintf(stdout, "MCEvent Found!\n");
-    }
-
-    AliStack *fStack = ((AliMCEvent*)fMcEvent)->Stack();
-    if(!fStack){
-        fprintf(stderr, "No Stack :(\n");
-        return;
-    }else{
-        fprintf(stdout, "Stack found!\n");
-    }
-
+        fStack = ((AliMCEvent*)fMcEvent)->Stack();
+        if(!fStack){
+            fprintf(stderr, "No Stack :(\n");
+            return;
+        }else{
+            //printf("Stack found!\n");
+        }
+    }else if(fAOD){
+        mcArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
+        if(!mcArray){
+            AliError("Array of MC particles not found");
+            return;
+        }
+    } 
     ////////////////////
     //cuts initialised//
     ///////////////////
@@ -268,44 +283,44 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     esdTrackCutsH->SetMaxDCAToVertexXY(2.4);
     esdTrackCutsH->SetMaxDCAToVertexZ(3.2);
     esdTrackCutsH->SetDCAToVertex2D(kTRUE);
-    
+
     fAOD = dynamic_cast<AliAODEvent*>(InputEvent());
     if (fAOD) {
         // printf("fAOD available\n");
         //return;
     }
-    
+
     ///////////////////
     //PID initialised//
     //////////////////
     fpidResponse = fInputHandler->GetPIDResponse();
-    
+
     ////////////////
     //Event vertex//
     ///////////////
     Int_t ntracks = -999;
     ntracks = fVevent->GetNumberOfTracks();
     if(ntracks < 1) printf("There are %d tracks in this event\n",ntracks);
-    
+
     fNevents->Fill(0); //all events
     Double_t Zvertex = -100, Xvertex = -100, Yvertex = -100;
     const AliVVertex *pVtx = fVevent->GetPrimaryVertex();
     Double_t NcontV = pVtx->GetNContributors();
     if(NcontV<2)return;
     fNevents->Fill(1); //events with 2 tracks
-    
+
     Zvertex = pVtx->GetZ();
     Yvertex = pVtx->GetY();
     Xvertex = pVtx->GetX();
     fVtxZ->Fill(Zvertex);
     fVtxX->Fill(Xvertex);
     fVtxY->Fill(Yvertex);
-    
+
     /////////////////
     //trigger check//
     /////////////////
     fVevent->GetFiredTriggerClasses();
-    
+
     Int_t trigger = -1;
     if (fAOD){
         //Double_t multiplicity=fAOD->GetHeader()->GetRefMultiplicity();
@@ -380,13 +395,26 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         fPDGCodes->Fill(PID);
         // Using stack to get actual particle PDG codes
         if(PID > 1){ 
-            TParticle *MCPart = fStack->Particle(PID);
-            if(MCPart){
-                Int_t fPDG = MCPart->GetPdgCode();
-                if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
-                if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
-                if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
-                if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
+            
+            if(fESD){
+                TParticle *MCPart = fStack->Particle(PID);
+                if(MCPart){
+                    Int_t fPDG = MCPart->GetPdgCode();
+                    if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
+                }
+            }else if(fAOD){
+                AliAODMCParticle *MCtrk = (AliAODMCParticle*)mcArray->At(PID);
+                if(MCtrk){
+                    Int_t fPDG = MCtrk->GetPdgCode();
+                    if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
+                
+                }
             }
         }
 

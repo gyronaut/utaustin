@@ -11,20 +11,20 @@ AliAnalysisTask *AddTaskQA(){
     }
     TString type = mgr->GetInputEventHandler()->GetDataType(); // can be "ESD" or "AOD"
     
-    Bool_t MCthere=kFALSE;
+/*    Bool_t MCthere=kFALSE;
     AliMCEventHandler *mcH = dynamic_cast<AliMCEventHandler*>(mgr->GetMCtruthEventHandler());
     if(!mcH){
         MCthere=kFALSE;
     }else{
         MCthere=kTRUE;
     }
-    
+  */  
     //char calib[100];
     //    sprintf(calib,"QA");
  
     AliAnalysisTaskQA *hfecalqa7 = new AliAnalysisTaskQA("emcqa");
     mgr->AddTask(hfecalqa7);
-    hfecalqa7->SelectCollisionCandidates(AliVEvent::kINT7);
+    //hfecalqa7->SelectCollisionCandidates(AliVEvent::kINT7);
     
     TString containerName7 = mgr->GetCommonFileName();
     containerName7 += ":PWGHF_hfeHFEemcQAINT7";
