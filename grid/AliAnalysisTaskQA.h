@@ -50,6 +50,7 @@ private:
    
     TH1F    *fPhiPt;//reconstructed phi pt
     TH1F    *fPhiInvMass;
+    TH1F    *fTruthPhiInvMass;
 
     TH2F    *fTPCnsigK;
     TH2F    *fTPCnsigp;

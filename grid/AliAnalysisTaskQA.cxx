@@ -20,6 +20,7 @@
 #include "TCanvas.h"
 #include "THnSparse.h"
 #include "TParticle.h"
+#include "TStopwatch.h"
 
 #include "AliAnalysisTask.h"
 #include "AliAnalysisManager.h"
@@ -68,6 +69,7 @@ fTPCnsig(0),
 fPDGCodes(0),
 fPhiPt(0),
 fPhiInvMass(0),
+fTruthPhiInvMass(0),
 fTPCnsigp(0),
 fTPCnsige(0),
 fTPCnsigK(0),
@@ -103,6 +105,7 @@ fTPCnsig(0),
 fPDGCodes(0),
 fPhiPt(0),
 fPhiInvMass(0),
+fTruthPhiInvMass(0),
 fTPCnsigp(0),
 fTPCnsige(0),
 fTPCnsigK(0),
@@ -192,8 +195,11 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fPhiPt = new TH1F("fPhiPt", "p_{T} distribution of all reconstructed #phi mesons; p_{T} (GeV/c);counts", 1000, 0, 100);
     fOutputList->Add(fPhiPt);
 
-    fPhiInvMass = new TH1F("fPhiInvMass", "Invariant mass distribution for all K0 pairs; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
+    fPhiInvMass = new TH1F("fPhiInvMass", "Invariant mass distribution for all K+- pairs; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
     fOutputList->Add(fPhiInvMass);
+
+    fTruthPhiInvMass = new TH1F("fTruthPhiInvMass", "Invariant mass distribution for only K+- that come from #phi; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
+    fOutputList->Add(fTruthPhiInvMass);
 
     // Additional TPC Histograms for different particle species
     fTPCnsigK = new TH2F("fTPCnsigK", "Only Kaon TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
@@ -219,6 +225,9 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     // Called for each event
     // Post output data.
     
+//    TStopwatch *initTimer = new TStopwatch();
+//    initTimer->Start();
+
     UInt_t evSelMask=((AliInputEventHandler*)(AliAnalysisManager::GetAnalysisManager()->GetInputEventHandler()))->IsEventSelected();
     
     fVevent = dynamic_cast<AliVEvent*>(InputEvent());
@@ -245,7 +254,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         fMCHandler = dynamic_cast<AliMCEventHandler*>(AliAnalysisManager::GetAnalysisManager()->GetMCtruthEventHandler()); 
    
         
-        if(fMCHandler->Init("grid")){
+        if(fMCHandler){
             fMcEvent = fMCHandler->MCEvent();
             // printf("handler set up! \n");
         }else{
@@ -346,22 +355,33 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     if(fabs(Zvertex>10.0))return;
     fNevents->Fill(2); //events after z vtx cut
     
-    
+//    initTimer->Stop();
+//    printf("INIT: ");
+//    initTimer->Print("u");
+//    printf("\n");
+
+//    TStopwatch *analysisTimer = new TStopwatch();
+//    analysisTimer->Start();
+
     ///////////////
     //Track loop///
     ///////////////
+    AliVTrack *track;
+    AliESDtrack *etrack;
+    AliAODTrack *atrack;
+    AliVParticle* Vtrack;
     for (Int_t iTracks = 0; iTracks < ntracks; iTracks++) {
         
-        AliVParticle* Vtrack = 0x0;
+        Vtrack = 0x0;
         Vtrack  = fVevent->GetTrack(iTracks);
         
         if (!Vtrack) {
             printf("ERROR: Could not receive track %d\n", iTracks);
             continue;
         }
-        AliVTrack *track = dynamic_cast<AliVTrack*>(Vtrack);
-        AliESDtrack *etrack = dynamic_cast<AliESDtrack*>(Vtrack);
-        AliAODTrack *atrack = dynamic_cast<AliAODTrack*>(Vtrack);
+        track = dynamic_cast<AliVTrack*>(Vtrack);
+        etrack = dynamic_cast<AliESDtrack*>(Vtrack);
+        atrack = dynamic_cast<AliAODTrack*>(Vtrack);
         
         ////////////////////
         //Apply track cuts//
@@ -388,32 +408,35 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         fTPCnsig->Fill(track->P(),fTPCnSigma);
 
 
-        //check for PIDs
-        Int_t PID = 0;
-        PID = track->GetLabel();
+        //check for labelss
+        Int_t label = 0;
+        label = track->GetLabel();
         //Int_t PID = 0;
-        fPDGCodes->Fill(PID);
+        fPDGCodes->Fill(label);
+        
+        Bool_t isPhiMeson = kFALSE;
         // Using stack to get actual particle PDG codes
-        if(PID > 1){ 
+        if(label > 1){ 
             
             if(fESD){
-                TParticle *MCPart = fStack->Particle(PID);
+                TParticle *MCPart = fStack->Particle(label);
                 if(MCPart){
                     Int_t fPDG = MCPart->GetPdgCode();
                     if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==333)isPhiMeson=kTRUE;
                 }
             }else if(fAOD){
-                AliAODMCParticle *MCtrk = (AliAODMCParticle*)mcArray->At(PID);
+                AliAODMCParticle *MCtrk = (AliAODMCParticle*)mcArray->At(label);
                 if(MCtrk){
                     Int_t fPDG = MCtrk->GetPdgCode();
                     if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
-                
+                    if(TMath::Abs(fPDG)==333)isPhiMeson=kTRUE;
                 }
             }
         }
@@ -421,7 +444,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         ///////////////////////////////
         // Do TPC Cut to identify K+ //
         ///////////////////////////////
-        if(fTPCnSigma < 2.0 && track->Pt() > 0.15 && TMath::Abs(track->Eta()) < 0.8 && track->Charge()==1){
+        if(TMath::Abs(fTPCnSigma) < 2.0 && track->Pt() > 0.15 && TMath::Abs(track->Eta()) < 0.8 && track->Charge()==1){
 
             //Do Second Track Loop to find other K0 and calculate their invariant mass
             for(Int_t jTracks = 0; jTracks < ntracks; jTracks++){
@@ -452,7 +475,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 /////////////////////////////////////////////
                 // Do TPC cut to identify second Kaon (K-) //
                 ////////////////////////////////////////////
-                if(fSecondTPCnsig < 2.0 && secondTrack->Pt() > 0.15 && TMath::Abs(secondTrack->Eta()) < 0.8 && secondTrack->Charge()==-1){
+                if(TMath::Abs(fSecondTPCnsig) < 2.0 && secondTrack->Pt() > 0.15 && TMath::Abs(secondTrack->Eta()) < 0.8 && secondTrack->Charge()==-1){
 
                     Double_t calcPx = 0.0, calcPy = 0.0, calcPz = 0.0;
                     Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0;
@@ -473,16 +496,37 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             }//inner track loop
         }
 
+        //////////////////////////////////
+        // Find only Phi daughter Kaons //
+        //////////////////////////////////
+
+        if(isPhiMeson){
+            
+        }
+
     } //track loop
-    
+//    analysisTimer->Stop();
+//    printf("ANALYSIS: ");
+//    analysisTimer->Print("u");
+//    printf("\n");  
+
+//    TStopwatch *writeTimer = new TStopwatch();
+//    writeTimer->Start();
     PostData(1, fOutputList);
+//    printf("WRITE: ");
+//    writeTimer->Print("u");
+//    printf("\n");
+
+//    delete initTimer;
+//    delete analysisTimer;
+//    delete writeTimer;
 }      
 //________________________________________________________________________
 void AliAnalysisTaskQA::Terminate(Option_t *) 
 {
     // Draw result to the screen
     // Called once at the end of the query
-    
+    printf("terminating task... \n");
     fOutputList = dynamic_cast<TList*> (GetOutputData(1));
     if (!fOutputList) {
         printf("ERROR: Output list not available\n");
