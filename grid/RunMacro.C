@@ -11,13 +11,13 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kFALSE; //true = merging done on grid, false = merge happens locally
+   const char*  mode = "full"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   Bool_t pre_final_stage = kTRUE; //true = merging done on grid, false = merge happens locally
    //Int_t cyclenumber = 10;    
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
-   char* work_dir = "InvMass-07-01";
-   char* output_dir = "output";
+   char* work_dir = "InvMass-07-06";
+   char* output_dir = "output-with-truth";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
    //Int_t runcycle[] = {0,6,11,17,23,28,33,36};
@@ -67,8 +67,8 @@ void RunMacro()
     //Int_t runArray[] = {197606};
     
   //LHC10d4 - MC Data
-  //Int_t runArray[] = {119159, 119161, 119163, 119841, 119842, 119844, 119845, 119846, 119849, 119853, 119856, 119859, 119862, 120067, 120069, 120072, 120073, 120076, 120079, 120244, 120503, 120504, 120505, 120616, 120617, 120671, 120741, 120750, 120758, 120820, 120821, 120822, 120823, 120824, 120825, 120829};
-    Int_t runArray[] = {120073}; //for testing why files were being opened but not closed
+  Int_t runArray[] = {119159, 119161, 119163, 119841, 119842, 119844, 119845, 119846, 119849, 119853, 119856, 119859, 119862, 120067, 120069, 120072, 120073, 120076, 120079, 120244, 120503, 120504, 120505, 120616, 120617, 120671, 120741, 120750, 120758, 120820, 120821, 120822, 120823, 120824, 120825, 120829};
+   // Int_t runArray[] = {120073}; //for testing why files were being opened but not closed
 
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {

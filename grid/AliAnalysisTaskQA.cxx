@@ -416,10 +416,13 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         
         Bool_t isPhiMeson = kFALSE;
         // Using stack to get actual particle PDG codes
+        TParticle *MCPart = 0x0;
+        AliAODMCParticle *MCtrk = 0x0;
+
         if(label > 1){ 
             
             if(fESD){
-                TParticle *MCPart = fStack->Particle(label);
+                MCPart = fStack->Particle(label);
                 if(MCPart){
                     Int_t fPDG = MCPart->GetPdgCode();
                     if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
@@ -429,7 +432,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                     if(TMath::Abs(fPDG)==333)isPhiMeson=kTRUE;
                 }
             }else if(fAOD){
-                AliAODMCParticle *MCtrk = (AliAODMCParticle*)mcArray->At(label);
+                MCtrk = (AliAODMCParticle*)mcArray->At(label);
                 if(MCtrk){
                     Int_t fPDG = MCtrk->GetPdgCode();
                     if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
@@ -501,7 +504,26 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         //////////////////////////////////
 
         if(isPhiMeson){
-            
+            Double_t truthPx = 0.0, truthPy = 0.0, truthPz=0.0;
+            Double_t truthE = 0.0, truthInvMass=0.0;
+           if(fESD){
+                Int_t first_index = MCPart->GetDaughter(0);
+                Int_t second_index = MCPart->GetDaughter(1);
+                if(first_index > 0 && second_index > 0){
+                    TParticle *firstDaughter = fStack->Particle(first_index);
+                    TParticle *secondDaughter = fStack->Particle(second_index);
+                    //Make sure the two decay particles are oppositely charged kaons
+                    if(TMath::Abs(firstDaughter->GetPdgCode()) == 321 && TMath::Abs(secondDaughter->GetPdgCode()) == 321 && (firstDaughter->GetPdgCode()*secondDaughter->GetPdgCode()) < 0){
+                        truthE = firstDaughter->Energy() + secondDaughter->Energy();
+                        truthPx = firstDaughter->Px() + secondDaughter->Px();
+                        truthPy = firstDaughter->Py() + secondDaughter->Py();
+                        truthPz = firstDaughter->Pz() + secondDaughter->Pz();
+                        
+                        truthInvMass = TMath::Sqrt(truthE*truthE - (truthPx*truthPx + truthPy*truthPy + truthPz*truthPz));
+                        fTruthPhiInvMass->Fill(truthInvMass);
+                    }
+                }
+           } 
         }
 
     } //track loop
