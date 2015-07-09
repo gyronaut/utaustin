@@ -407,39 +407,34 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         fTPCNpts->Fill(track->P(),track->GetTPCsignalN());
         fTPCnsig->Fill(track->P(),fTPCnSigma);
 
-
-        //check for labelss
+        //check for labels
         Int_t label = 0;
         label = track->GetLabel();
-        //Int_t PID = 0;
-        fPDGCodes->Fill(label);
-        
-        Bool_t isPhiMeson = kFALSE;
-        // Using stack to get actual particle PDG codes
-        TParticle *MCPart = 0x0;
-        AliAODMCParticle *MCtrk = 0x0;
 
-        if(label > 1){ 
-            
+        // Using stack to get actual particle PDG codes
+        TParticle *MCPart = 0x0, *MCSecondPart=0x0;
+        AliAODMCParticle *MCtrk = 0x0, *MCSecondtrk = 0x0;
+        Int_t fPDG = 0;
+
+        if(label > 1){             
             if(fESD){
                 MCPart = fStack->Particle(label);
                 if(MCPart){
-                    Int_t fPDG = MCPart->GetPdgCode();
+                    fPDG = MCPart->GetPdgCode();
+                    fPDGCodes->Fill(fPDG);
                     if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
-                    if(TMath::Abs(fPDG)==333)isPhiMeson=kTRUE;
                 }
             }else if(fAOD){
                 MCtrk = (AliAODMCParticle*)mcArray->At(label);
                 if(MCtrk){
-                    Int_t fPDG = MCtrk->GetPdgCode();
+                    fPDG = MCtrk->GetPdgCode();
                     if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
                     if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
-                    if(TMath::Abs(fPDG)==333)isPhiMeson=kTRUE;
                 }
             }
         }
@@ -475,6 +470,19 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 
                 fSecondTPCnsig = fpidResponse->NumberOfSigmasTPC(secondTrack, AliPID::kKaon);
 
+                //Get Truth for second particle
+                Int_t secondLabel = 0, secondPDG = 0;
+                secondLabel = secondTrack->GetLabel();
+                if(fESD && secondLabel > 0){
+                    MCSecondPart = fStack->Particle(secondLabel);
+                    if(MCSecondPart)
+                        secondPDG = MCSecondPart->GetPdgCode();
+                }
+                if(fAOD && secondLabel > 0){
+                    MCSecondtrk = (AliAODMCParticle*)mcArray->At(secondLabel);
+                    if(MCSecondtrk)
+                        secondPDG = MCSecondtrk->GetPdgCode();
+                }
                 /////////////////////////////////////////////
                 // Do TPC cut to identify second Kaon (K-) //
                 ////////////////////////////////////////////
@@ -495,36 +503,36 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                     calcInvMass = TMath::Sqrt(calcE*calcE - (calcPx*calcPx + calcPy*calcPy + calcPz*calcPz));
 
                     fPhiInvMass->Fill(calcInvMass);
-                }
+
+                    /////////////////////////////////////
+                    // Calc w/ only Phi daughter Kaons //
+                    /////////////////////////////////////
+
+                    if(secondPDG == -321 && fPDG == 321){ 
+                        Double_t truthPx = 0.0, truthPy = 0.0, truthPz=0.0;
+                        Double_t truthE = 0.0, truthInvMass=0.0;
+                        if(fESD){
+                            truthPx = MCPart->Px() + MCSecondPart->Px();
+                            truthPy = MCPart->Py() + MCSecondPart->Py();
+                            truthPz = MCPart->Pz() + MCSecondPart->Pz();
+                            truthE = MCPart->Energy() + MCSecondPart->Energy();
+                            truthInvMass = TMath::Sqrt(truthE*truthE - (truthPx*truthPx + truthPy*truthPy + truthPz*truthPz));
+                            Int_t firstMotherIndex = MCPart->GetMother(0);
+                            Int_t secondMotherIndex = MCSecondPart->GetMother(0);
+                            Int_t motherPDG = 0;
+                            if(firstMotherIndex > 0)
+                                motherPDG = fStack->Particle(firstMotherIndex)->GetPdgCode();
+                            if(firstMotherIndex == secondMotherIndex && TMath::Abs(motherPDG)==333)
+                                fTruthPhiInvMass->Fill(truthInvMass);
+                        }
+                        if(fAOD){
+
+                        }
+                    }
+               }
             }//inner track loop
         }
 
-        //////////////////////////////////
-        // Find only Phi daughter Kaons //
-        //////////////////////////////////
-
-        if(isPhiMeson){
-            Double_t truthPx = 0.0, truthPy = 0.0, truthPz=0.0;
-            Double_t truthE = 0.0, truthInvMass=0.0;
-           if(fESD){
-                Int_t first_index = MCPart->GetDaughter(0);
-                Int_t second_index = MCPart->GetDaughter(1);
-                if(first_index > 0 && second_index > 0){
-                    TParticle *firstDaughter = fStack->Particle(first_index);
-                    TParticle *secondDaughter = fStack->Particle(second_index);
-                    //Make sure the two decay particles are oppositely charged kaons
-                    if(TMath::Abs(firstDaughter->GetPdgCode()) == 321 && TMath::Abs(secondDaughter->GetPdgCode()) == 321 && (firstDaughter->GetPdgCode()*secondDaughter->GetPdgCode()) < 0){
-                        truthE = firstDaughter->Energy() + secondDaughter->Energy();
-                        truthPx = firstDaughter->Px() + secondDaughter->Px();
-                        truthPy = firstDaughter->Py() + secondDaughter->Py();
-                        truthPz = firstDaughter->Pz() + secondDaughter->Pz();
-                        
-                        truthInvMass = TMath::Sqrt(truthE*truthE - (truthPx*truthPx + truthPy*truthPy + truthPz*truthPz));
-                        fTruthPhiInvMass->Fill(truthInvMass);
-                    }
-                }
-           } 
-        }
 
     } //track loop
 //    analysisTimer->Stop();
