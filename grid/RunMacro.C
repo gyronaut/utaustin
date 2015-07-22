@@ -17,10 +17,10 @@ void RunMacro()
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
    char* work_dir = "PhiInvMass_MC_LHC12d";
-   char* output_dir = "output_07_09";
+   char* output_dir = "output_07_22";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   Int_t runcycle[] = {0,6,11,17,23,28,33,36};
+   Int_t runcycle[] = {0,3,6,11,17,23,28,33,36};
    //Int_t runcycle[]={0,1};
    Bool_t UseParfiles = kFALSE;
 

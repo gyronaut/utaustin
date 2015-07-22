@@ -70,6 +70,9 @@ fPDGCodes(0),
 fPhiPt(0),
 fPhiInvMass(0),
 fTruthPhiInvMass(0),
+fTruthTracksPhiInvMass(0),
+fLikeSignInvMass(0),
+fLikeSignCounter(0),
 fTPCnsigp(0),
 fTPCnsige(0),
 fTPCnsigK(0),
@@ -106,6 +109,9 @@ fPDGCodes(0),
 fPhiPt(0),
 fPhiInvMass(0),
 fTruthPhiInvMass(0),
+fTruthTracksPhiInvMass(0),
+fLikeSignInvMass(0),
+fLikeSignCounter(0),
 fTPCnsigp(0),
 fTPCnsige(0),
 fTPCnsigK(0),
@@ -200,6 +206,15 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 
     fTruthPhiInvMass = new TH1F("fTruthPhiInvMass", "Invariant mass distribution for only K+- that come from #phi; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
     fOutputList->Add(fTruthPhiInvMass);
+
+    fTruthTracksPhiInvMass = new TH1F("fTruthTracksPhiInvMass", "Invariant mass distribution of reconstructed tracks known to come from #phi; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
+    fOutputList->Add(fTruthTracksPhiInvMass);
+
+    fLikeSignInvMass = new TH1F("fLikeSignInvMass", "Invariant mass distribution of like-sign Kaon pairs; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
+    fOutputList->Add(fLikeSignInvMass);
+
+    fLikeSignCounter = new TH1F("fLikeSignCounter", "Number of like sign pairs, N++/N--", 3, -1, 1);
+    fOutputList->Add(fLikeSignCounter);
 
     // Additional TPC Histograms for different particle species
     fTPCnsigK = new TH2F("fTPCnsigK", "Only Kaon TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
@@ -442,7 +457,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         ///////////////////////////////
         // Do TPC Cut to identify K+ //
         ///////////////////////////////
-        if(TMath::Abs(fTPCnSigma) < 2.0 && track->Pt() > 0.15 && TMath::Abs(track->Eta()) < 0.8 && track->Charge()==1){
+        if(TMath::Abs(fTPCnSigma) < 2.0 && track->Pt() > 0.15 && TMath::Abs(track->Eta()) < 0.8){
 
             //Do Second Track Loop to find other K0 and calculate their invariant mass
             for(Int_t jTracks = 0; jTracks < ntracks; jTracks++){
@@ -486,8 +501,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 /////////////////////////////////////////////
                 // Do TPC cut to identify second Kaon (K-) //
                 ////////////////////////////////////////////
-                if(TMath::Abs(fSecondTPCnsig) < 2.0 && secondTrack->Pt() > 0.15 && TMath::Abs(secondTrack->Eta()) < 0.8 && secondTrack->Charge()==-1){
-
+                if(TMath::Abs(fSecondTPCnsig) < 2.0 && secondTrack->Pt() > 0.15 && TMath::Abs(secondTrack->Eta()) < 0.8){
                     Double_t calcPx = 0.0, calcPy = 0.0, calcPz = 0.0;
                     Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0;
 
@@ -497,37 +511,45 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                     calcPt = TMath::Sqrt(calcPx*calcPx + calcPy*calcPy);
 
                     calcE = track->E() + secondTrack->E();
-
-                    fPhiPt->Fill(calcPt);
-
                     calcInvMass = TMath::Sqrt(calcE*calcE - (calcPx*calcPx + calcPy*calcPy + calcPz*calcPz));
 
-                    fPhiInvMass->Fill(calcInvMass);
+                    //Unlike sign pairs - create actual phi inv-mass distribution
+                    if(track->Charge() == 1 && secondTrack->Charge() == -1){
+                        fPhiInvMass->Fill(calcInvMass);
 
-                    /////////////////////////////////////
-                    // Calc w/ only Phi daughter Kaons //
-                    /////////////////////////////////////
+                        fPhiPt->Fill(calcPt);
+                        /////////////////////////////////////
+                        // Calc w/ only Phi daughter Kaons //
+                        /////////////////////////////////////
 
-                    if(secondPDG == -321 && fPDG == 321){ 
-                        Double_t truthPx = 0.0, truthPy = 0.0, truthPz=0.0;
-                        Double_t truthE = 0.0, truthInvMass=0.0;
-                        if(fESD){
-                            truthPx = MCPart->Px() + MCSecondPart->Px();
-                            truthPy = MCPart->Py() + MCSecondPart->Py();
-                            truthPz = MCPart->Pz() + MCSecondPart->Pz();
-                            truthE = MCPart->Energy() + MCSecondPart->Energy();
-                            truthInvMass = TMath::Sqrt(truthE*truthE - (truthPx*truthPx + truthPy*truthPy + truthPz*truthPz));
-                            Int_t firstMotherIndex = MCPart->GetMother(0);
-                            Int_t secondMotherIndex = MCSecondPart->GetMother(0);
-                            Int_t motherPDG = 0;
-                            if(firstMotherIndex > 0)
-                                motherPDG = fStack->Particle(firstMotherIndex)->GetPdgCode();
-                            if(firstMotherIndex == secondMotherIndex && TMath::Abs(motherPDG)==333)
-                                fTruthPhiInvMass->Fill(truthInvMass);
+                        if(secondPDG == -321 && fPDG == 321){ 
+                            Double_t truthPx = 0.0, truthPy = 0.0, truthPz=0.0;
+                            Double_t truthE = 0.0, truthInvMass=0.0;
+                            if(fESD){
+                                truthPx = MCPart->Px() + MCSecondPart->Px();
+                                truthPy = MCPart->Py() + MCSecondPart->Py();
+                                truthPz = MCPart->Pz() + MCSecondPart->Pz();
+                                truthE = MCPart->Energy() + MCSecondPart->Energy();
+                                truthInvMass = TMath::Sqrt(truthE*truthE - (truthPx*truthPx + truthPy*truthPy + truthPz*truthPz));
+                                Int_t firstMotherIndex = MCPart->GetMother(0);
+                                Int_t secondMotherIndex = MCSecondPart->GetMother(0);
+                                Int_t motherPDG = 0;
+                                if(firstMotherIndex > 0)
+                                    motherPDG = fStack->Particle(firstMotherIndex)->GetPdgCode();
+                                if(firstMotherIndex == secondMotherIndex && TMath::Abs(motherPDG)==333){
+                                    fTruthPhiInvMass->Fill(truthInvMass);
+                                    fTruthTracksPhiInvMass->Fill(calcInvMass);
+                                }
+                            }
+                            if(fAOD){
+
+                            }
                         }
-                        if(fAOD){
-
-                        }
+                    }
+                    //Like sign pairs - create background inv-mass distribution
+                    if(track->Charge()*secondTrack->Charge() == 1){
+                        fLikeSignInvMass->Fill(calcInvMass);
+                        fLikeSignCounter->Fill(track->Charge());
                     }
                }
             }//inner track loop

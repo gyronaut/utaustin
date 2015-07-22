@@ -189,7 +189,7 @@ void plot_dphi(string inputName){
     HPhiDphiInclusive->DrawCopy();
     HPhiDphiInclusive->Sumw2();
     HPhiDphiInclusive->SetMarkerStyle(21);
-    HPhiDphiInclusive->SetMarkerSize(2);
+    HPhiDphiInclusive->SetMarkerSize(1);
     HPhiDphiInclusive->GetXaxis()->SetTitle("#Delta#phi");
     HPhiDphiInclusive->Draw("SAME E1");
 
@@ -200,7 +200,7 @@ void plot_dphi(string inputName){
     HK0DphiInclusive->DrawCopy();
     HK0DphiInclusive->Sumw2();
     HK0DphiInclusive->SetMarkerStyle(21);
-    HK0DphiInclusive->SetMarkerSize(2);
+    HK0DphiInclusive->SetMarkerSize(1);
     HK0DphiInclusive->GetXaxis()->SetTitle("#Delta#phi");
     HK0DphiInclusive->Draw("SAME E1");
  
@@ -211,7 +211,7 @@ void plot_dphi(string inputName){
     HKDphiInclusive->DrawCopy();
     HKDphiInclusive->Sumw2();
     HKDphiInclusive->SetMarkerStyle(21);
-    HKDphiInclusive->SetMarkerSize(2);
+    HKDphiInclusive->SetMarkerSize(1);
     HKDphiInclusive->GetXaxis()->SetTitle("#Delta#phi");
     HKDphiInclusive->Draw("SAME E1");
 
@@ -222,7 +222,7 @@ void plot_dphi(string inputName){
     HPiDphiInclusive->DrawCopy();
     HPiDphiInclusive->Sumw2();
     HPiDphiInclusive->SetMarkerStyle(21);
-    HPiDphiInclusive->SetMarkerSize(2);
+    HPiDphiInclusive->SetMarkerSize(1);
     HPiDphiInclusive->GetXaxis()->SetTitle("#Delta#phi");
     HPiDphiInclusive->Draw("SAME E1");
 
@@ -233,7 +233,7 @@ void plot_dphi(string inputName){
     HpDphiInclusive->DrawCopy();
     HpDphiInclusive->Sumw2();
     HpDphiInclusive->SetMarkerStyle(21);
-    HpDphiInclusive->SetMarkerSize(2);
+    HpDphiInclusive->SetMarkerSize(1);
     HpDphiInclusive->GetXaxis()->SetTitle("#Delta#phi");
     HpDphiInclusive->Draw("SAME E1");
 
@@ -244,7 +244,7 @@ void plot_dphi(string inputName){
     HHDphiInclusive->DrawCopy();
     HHDphiInclusive->Sumw2();
     HHDphiInclusive->SetMarkerStyle(21);
-    HHDphiInclusive->SetMarkerSize(2);
+    HHDphiInclusive->SetMarkerSize(1);
     HHDphiInclusive->GetXaxis()->SetTitle("#Delta#phi");
     HHDphiInclusive->Draw("SAME E1");
    

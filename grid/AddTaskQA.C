@@ -27,9 +27,9 @@ AliAnalysisTask *AddTaskQA(){
     //hfecalqa7->SelectCollisionCandidates(AliVEvent::kINT7);
     
     TString containerName7 = mgr->GetCommonFileName();
-    containerName7 += ":PWGHF_hfeHFEemcQAINT7";
+    containerName7 += ":PhiReconstruction";
     AliAnalysisDataContainer *cinput  = mgr->GetCommonInputContainer();
-    AliAnalysisDataContainer *coutput1 = mgr->CreateContainer("QA", TList::Class(),AliAnalysisManager::kOutputContainer, containerName7.Data());
+    AliAnalysisDataContainer *coutput1 = mgr->CreateContainer("InvMass", TList::Class(),AliAnalysisManager::kOutputContainer, containerName7.Data());
     mgr->ConnectInput(hfecalqa7, 0, cinput);
     mgr->ConnectOutput(hfecalqa7, 1, coutput1);
 

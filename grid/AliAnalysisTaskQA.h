@@ -51,6 +51,9 @@ private:
     TH1F    *fPhiPt;//reconstructed phi pt
     TH1F    *fPhiInvMass;
     TH1F    *fTruthPhiInvMass;
+    TH1F    *fTruthTracksPhiInvMass;
+    TH1F    *fLikeSignInvMass;
+    TH1F    *fLikeSignCounter; //to count number of N++ and N-- pairs
 
     TH2F    *fTPCnsigK;
     TH2F    *fTPCnsigp;
