@@ -45,20 +45,18 @@ private:
     TH1F        *fTrkphi;//!track phi
     TH2F        *fdEdx;//!dedx vs pt
     TH2F        *fTPCNpts;//!TPC Npoints used for dedx
-    TH2F        *fTPCnsig;//!TPC Nsigma
+    TH2F        *fTPCKaonNSig;//!TPC Nsigma
     TH1F	*fPDGCodes;//particle codes
    
-    TH1F    *fPhiPt;//reconstructed phi pt
-    TH1F    *fPhiInvMass;
-    TH1F    *fTruthPhiInvMass;
-    TH1F    *fTruthTracksPhiInvMass;
-    TH1F    *fLikeSignInvMass;
-    TH1F    *fLikeSignCounter; //to count number of N++ and N-- pairs
+    THnSparseF    *fPhiInvMass;
+    THnSparseF    *fTruthPhiInvMass;
+    THnSparseF    *fTruthTracksPhiInvMass;
+    THnSparseF    *fLikeSignInvMass;
 
-    TH2F    *fTPCnsigK;
-    TH2F    *fTPCnsigp;
-    TH2F    *fTPCnsige;
-    TH2F    *fTPCnsigPi;
+    TH2F    *fTPCKaonNSigK;
+    TH2F    *fTPCKaonNSigp;
+    TH2F    *fTPCKaonNSige;
+    TH2F    *fTPCKaonNSigPi;
 
     AliAnalysisTaskQA(const AliAnalysisTaskQA&); // not implemented
     AliAnalysisTaskQA& operator=(const AliAnalysisTaskQA&); // not implemented

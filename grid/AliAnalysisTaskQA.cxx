@@ -65,18 +65,16 @@ fTrketa(0),
 fTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
-fTPCnsig(0),
+fTPCKaonNSig(0),
 fPDGCodes(0),
-fPhiPt(0),
 fPhiInvMass(0),
 fTruthPhiInvMass(0),
 fTruthTracksPhiInvMass(0),
 fLikeSignInvMass(0),
-fLikeSignCounter(0),
-fTPCnsigp(0),
-fTPCnsige(0),
-fTPCnsigK(0),
-fTPCnsigPi(0)
+fTPCKaonNSigp(0),
+fTPCKaonNSige(0),
+fTPCKaonNSigK(0),
+fTPCKaonNSigPi(0)
 {
     // Constructor
     // Define input and output slots here
@@ -104,18 +102,16 @@ fTrketa(0),
 fTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
-fTPCnsig(0),
+fTPCKaonNSig(0),
 fPDGCodes(0),
-fPhiPt(0),
 fPhiInvMass(0),
 fTruthPhiInvMass(0),
 fTruthTracksPhiInvMass(0),
 fLikeSignInvMass(0),
-fLikeSignCounter(0),
-fTPCnsigp(0),
-fTPCnsige(0),
-fTPCnsigK(0),
-fTPCnsigPi(0)
+fTPCKaonNSigp(0),
+fTPCKaonNSige(0),
+fTPCKaonNSigK(0),
+fTPCKaonNSigPi(0)
 {
     //Default constructor
     // Define input and output slots here
@@ -191,43 +187,45 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fTPCNpts = new TH2F("fTPCNpts","All track TPC Npoints used for dE/dx calculation;p (GeV/c);N points",200,0,20,200,0.,200.);
     fOutputList->Add(fTPCNpts);
     
-    fTPCnsig = new TH2F("fTPCnsig","All Track TPC Nsigma distribution;p (GeV/c);#sigma_{TPC-dE/dx}",1000,0,50,200,-10,10);
-    fOutputList->Add(fTPCnsig);
+    fTPCKaonNSig = new TH2F("fTPCKaonNSig","All Track TPC Nsigma distribution;p (GeV/c);#sigma_{TPC-dE/dx}",1000,0,50,200,-10,10);
+    fOutputList->Add(fTPCKaonNSig);
     
     fPDGCodes = new TH1F("fPDGCodes", "PDG codes of tracks", 2000, -1000, 1000);
     fOutputList->Add(fPDGCodes);
 
     // Additional Histograms for Reconstructed Phi mesons
-    fPhiPt = new TH1F("fPhiPt", "p_{T} distribution of all reconstructed #phi mesons; p_{T} (GeV/c);counts", 1000, 0, 100);
-    fOutputList->Add(fPhiPt);
-
-    fPhiInvMass = new TH1F("fPhiInvMass", "Invariant mass distribution for all K+- pairs; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
+    Int_t bins[2] = {100, 1000};
+    Double_t min[2] = {0.0, 0.5};
+    Double_t max[2] = {10.0, 2.0};
+ 
+    fPhiInvMass = new THnSparseF("fPhiInvMass", "Invariant mass distribution for all K+- pairs per p_{T}", 2, bins, min, max);
     fOutputList->Add(fPhiInvMass);
 
-    fTruthPhiInvMass = new TH1F("fTruthPhiInvMass", "Invariant mass distribution for only K+- that come from #phi; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
+    fTruthPhiInvMass = new THnSparseF("fTruthPhiInvMass", "Invariant mass distribution for true K+- that come from #phi per p_{T}", 2, bins, min, max);
     fOutputList->Add(fTruthPhiInvMass);
 
-    fTruthTracksPhiInvMass = new TH1F("fTruthTracksPhiInvMass", "Invariant mass distribution of reconstructed tracks known to come from #phi; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
+    fTruthTracksPhiInvMass = new THnSparseF("fTruthTracksPhiInvMass", "Invariant mass distribution of reconstructed tracks known to come from #phi per p_{T}", 2, bins, min, max);
     fOutputList->Add(fTruthTracksPhiInvMass);
 
-    fLikeSignInvMass = new TH1F("fLikeSignInvMass", "Invariant mass distribution of like-sign Kaon pairs; m (GeV/c^{2}); counts", 1000, 0.5, 2.0);
+    Int_t lsbins[3] = {100, 1000, 3};
+    Double_t lsmin[3] = {0.0, 0.5, -1.1};
+    Double_t lsmax[3] = {10.0, 2.0, 1.1};
+
+    fLikeSignInvMass = new THnSparseF("fLikeSignInvMass", "Invariant mass distribution of like-sign Kaon pairs per p_{T}", 3, lsbins, lsmin, lsmax);
     fOutputList->Add(fLikeSignInvMass);
 
-    fLikeSignCounter = new TH1F("fLikeSignCounter", "Number of like sign pairs, N++/N--", 3, -1, 1);
-    fOutputList->Add(fLikeSignCounter);
-
     // Additional TPC Histograms for different particle species
-    fTPCnsigK = new TH2F("fTPCnsigK", "Only Kaon TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
-    fOutputList->Add(fTPCnsigK);
+    fTPCKaonNSigK = new TH2F("fTPCKaonNSigK", "Only Kaon TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
+    fOutputList->Add(fTPCKaonNSigK);
 
-    fTPCnsigPi = new TH2F("fTPCnsigPi", "Only Pion TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
-    fOutputList->Add(fTPCnsigPi);
+    fTPCKaonNSigPi = new TH2F("fTPCKaonNSigPi", "Only Pion TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
+    fOutputList->Add(fTPCKaonNSigPi);
 
-    fTPCnsige = new TH2F("fTPCnsige", "Only Electron TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
-    fOutputList->Add(fTPCnsige);
+    fTPCKaonNSige = new TH2F("fTPCKaonNSige", "Only Electron TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
+    fOutputList->Add(fTPCKaonNSige);
 
-    fTPCnsigp = new TH2F("fTPCnsigp", "Only Proton TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
-    fOutputList->Add(fTPCnsigp);
+    fTPCKaonNSigp = new TH2F("fTPCKaonNSigp", "Only Proton TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
+    fOutputList->Add(fTPCKaonNSigp);
 
     PostData(1,fOutputList);
 }
@@ -420,7 +418,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         fTrkphi->Fill(track->Phi());
         fdEdx->Fill(track->P(),dEdx);
         fTPCNpts->Fill(track->P(),track->GetTPCsignalN());
-        fTPCnsig->Fill(track->P(),fTPCnSigma);
+        fTPCKaonNSig->Fill(track->P(),fTPCnSigma);
 
         //check for labels
         Int_t label = 0;
@@ -430,6 +428,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         TParticle *MCPart = 0x0, *MCSecondPart=0x0;
         AliAODMCParticle *MCtrk = 0x0, *MCSecondtrk = 0x0;
         Int_t fPDG = 0;
+        Double_t point[2] = {0, 0};
+        Double_t lspoint[3] = {0, 0, 0};
 
         if(label > 1){             
             if(fESD){
@@ -437,19 +437,19 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 if(MCPart){
                     fPDG = MCPart->GetPdgCode();
                     fPDGCodes->Fill(fPDG);
-                    if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
-                    if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
-                    if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
-                    if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==2212)fTPCKaonNSigp->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==321)fTPCKaonNSigK->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==211)fTPCKaonNSigPi->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==11)fTPCKaonNSige->Fill(track->P(), fTPCnSigma);
                 }
             }else if(fAOD){
                 MCtrk = (AliAODMCParticle*)mcArray->At(label);
                 if(MCtrk){
                     fPDG = MCtrk->GetPdgCode();
-                    if(TMath::Abs(fPDG)==2212)fTPCnsigp->Fill(track->P(), fTPCnSigma);
-                    if(TMath::Abs(fPDG)==321)fTPCnsigK->Fill(track->P(), fTPCnSigma);
-                    if(TMath::Abs(fPDG)==211)fTPCnsigPi->Fill(track->P(), fTPCnSigma);
-                    if(TMath::Abs(fPDG)==11)fTPCnsige->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==2212)fTPCKaonNSigp->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==321)fTPCKaonNSigK->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==211)fTPCKaonNSigPi->Fill(track->P(), fTPCnSigma);
+                    if(TMath::Abs(fPDG)==11)fTPCKaonNSige->Fill(track->P(), fTPCnSigma);
                 }
             }
         }
@@ -464,7 +464,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 //Exclude double counted particles
                 if(jTracks == iTracks) continue;
                 
-                Double_t fSecondTPCnsig = -999;
+                Double_t fSecondTPCKaonNSig = -999;
 
                 AliVParticle* vSecondTrack = 0x0;
                 vSecondTrack = fVevent->GetTrack(jTracks);
@@ -483,7 +483,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                    if(!aSecondTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue; //mimimum cuts
                 }
                 
-                fSecondTPCnsig = fpidResponse->NumberOfSigmasTPC(secondTrack, AliPID::kKaon);
+                fSecondTPCKaonNSig = fpidResponse->NumberOfSigmasTPC(secondTrack, AliPID::kKaon);
 
                 //Get Truth for second particle
                 Int_t secondLabel = 0, secondPDG = 0;
@@ -501,7 +501,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 /////////////////////////////////////////////
                 // Do TPC cut to identify second Kaon (K-) //
                 ////////////////////////////////////////////
-                if(TMath::Abs(fSecondTPCnsig) < 2.0 && secondTrack->Pt() > 0.15 && TMath::Abs(secondTrack->Eta()) < 0.8){
+                if(TMath::Abs(fSecondTPCKaonNSig) < 2.0 && secondTrack->Pt() > 0.15 && TMath::Abs(secondTrack->Eta()) < 0.8){
                     Double_t calcPx = 0.0, calcPy = 0.0, calcPz = 0.0;
                     Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0;
 
@@ -513,11 +513,15 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                     calcE = track->E() + secondTrack->E();
                     calcInvMass = TMath::Sqrt(calcE*calcE - (calcPx*calcPx + calcPy*calcPy + calcPz*calcPz));
 
+                    point[0] = calcPt;
+                    lspoint[0] = calcPt;
+                    point[1] = calcInvMass;
+                    lspoint[1] = calcInvMass;
+                    lspoint[2] = track->Charge();
                     //Unlike sign pairs - create actual phi inv-mass distribution
                     if(track->Charge() == 1 && secondTrack->Charge() == -1){
-                        fPhiInvMass->Fill(calcInvMass);
+                        fPhiInvMass->Fill(point);
 
-                        fPhiPt->Fill(calcPt);
                         /////////////////////////////////////
                         // Calc w/ only Phi daughter Kaons //
                         /////////////////////////////////////
@@ -525,6 +529,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                         if(secondPDG == -321 && fPDG == 321){ 
                             Double_t truthPx = 0.0, truthPy = 0.0, truthPz=0.0;
                             Double_t truthE = 0.0, truthInvMass=0.0;
+                            Double_t truthPoint[2] = {0.0, 0.0};
                             if(fESD){
                                 truthPx = MCPart->Px() + MCSecondPart->Px();
                                 truthPy = MCPart->Py() + MCSecondPart->Py();
@@ -534,11 +539,13 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                                 Int_t firstMotherIndex = MCPart->GetMother(0);
                                 Int_t secondMotherIndex = MCSecondPart->GetMother(0);
                                 Int_t motherPDG = 0;
+                                truthPoint[0] = TMath::Sqrt(truthPx*truthPx + truthPy*truthPy);
+                                truthPoint[1] = truthInvMass;
                                 if(firstMotherIndex > 0)
                                     motherPDG = fStack->Particle(firstMotherIndex)->GetPdgCode();
                                 if(firstMotherIndex == secondMotherIndex && TMath::Abs(motherPDG)==333){
-                                    fTruthPhiInvMass->Fill(truthInvMass);
-                                    fTruthTracksPhiInvMass->Fill(calcInvMass);
+                                    fTruthPhiInvMass->Fill(truthPoint);
+                                    fTruthTracksPhiInvMass->Fill(point);
                                 }
                             }
                             if(fAOD){
@@ -548,8 +555,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                     }
                     //Like sign pairs - create background inv-mass distribution
                     if(track->Charge()*secondTrack->Charge() == 1){
-                        fLikeSignInvMass->Fill(calcInvMass);
-                        fLikeSignCounter->Fill(track->Charge());
+                        fLikeSignInvMass->Fill(lspoint);
                     }
                }
             }//inner track loop
