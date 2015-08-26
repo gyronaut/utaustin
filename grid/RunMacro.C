@@ -11,16 +11,16 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "full"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
    Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally
    //Int_t cyclenumber = 10;    
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
    char* work_dir = "PhiInvMass_MC_LHC12d";
-   char* output_dir = "output_07_22";
+   char* output_dir = "output_08_25";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   Int_t runcycle[] = {0,3,6,11,17,23,28,33,36};
+   Int_t runcycle[] = {0,1,3,6,11,17,23,28,33,36};
    //Int_t runcycle[]={0,1};
    Bool_t UseParfiles = kFALSE;
 
@@ -76,6 +76,7 @@ void RunMacro()
     alienHandler->AddRunNumber(runArray[i]);
    }
 
+   printf("\n\nSetting Up alienHandler.\n\n");
    alienHandler->SetGridWorkingDir(work_dir);
    alienHandler->SetGridOutputDir(output_dir);
    alienHandler->SetDefaultOutputs();
@@ -112,7 +113,7 @@ void RunMacro()
 
 gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB -I$ALICE_ROOT/PWG/FLOW/Base -g ");
 
-   
+   printf("\n!!!!!!!!!!!!!!!!!!!!!!\n AliAnalysis Manager \n\n");
    AliAnalysisManager *mgr = new AliAnalysisManager("PhiAnalysis");
    mgr->SetGridHandler(alienHandler);
 

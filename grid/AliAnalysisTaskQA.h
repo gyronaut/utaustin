@@ -51,12 +51,20 @@ private:
     THnSparseF    *fPhiInvMass;
     THnSparseF    *fTruthPhiInvMass;
     THnSparseF    *fTruthTracksPhiInvMass;
-    THnSparseF    *fLikeSignInvMass;
+    THnSparseF    *fPhiLikeSignInvMass;
+    THnSparseF    *fKInvMass;
+    THnSparseF    *fKLikeSignInvMass;
 
     TH2F    *fTPCKaonNSigK;
     TH2F    *fTPCKaonNSigp;
     TH2F    *fTPCKaonNSige;
     TH2F    *fTPCKaonNSigPi;
+
+    THnSparseF  *fDphiHPhi;
+    THnSparseF  *fDphiHKstar;
+    THnSparseF  *fDphiHK;
+    THnSparseF  *fDphiHPi;
+    THnSparseF  *fDphiHp;
 
     AliAnalysisTaskQA(const AliAnalysisTaskQA&); // not implemented
     AliAnalysisTaskQA& operator=(const AliAnalysisTaskQA&); // not implemented
