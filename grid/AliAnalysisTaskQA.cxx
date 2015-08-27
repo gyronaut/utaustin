@@ -79,6 +79,7 @@ fTPCKaonNSigK(0),
 fTPCKaonNSigPi(0),
 fDphiHPhi(0),
 fDphiHK(0),
+fDphiHKstar(0),
 fDphiHPi(0),
 fDphiHp(0)
 {
@@ -89,6 +90,9 @@ fDphiHp(0)
     // Output slot #0 id reserved by the base class for AOD
     // Output slot #1 writes into a TH1 container
     DefineOutput(1, TList::Class());
+    //printf("\n\n!!!!!!!!!!]\n done with the constructor! \n");
+    //fflush(stdout);
+
 }
 //________________________________________________________________________
 AliAnalysisTaskQA::AliAnalysisTaskQA()
@@ -122,6 +126,7 @@ fTPCKaonNSigK(0),
 fTPCKaonNSigPi(0),
 fDphiHPhi(0),
 fDphiHK(0),
+fDphiHKstar(0),
 fDphiHPi(0),
 fDphiHp(0)
 {
@@ -144,7 +149,8 @@ AliAnalysisTaskQA::~AliAnalysisTaskQA()
 //________________________________________________________________________
 void AliAnalysisTaskQA::UserCreateOutputObjects()
 {
-    printf("\n!!!!!\n Starting UserCreateOutputObjects \n\n");
+    //printf("\n!!!!!\n Starting UserCreateOutputObjects \n\n");
+    //fflush(stdout);
     // Create histograms
     // Called once
     AliDebug(3, "Creating Output Objects");
@@ -256,7 +262,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fOutputList->Add(fDphiHPhi);
 
     fDphiHKstar = new THnSparseF("fDphiHKstar", "Hadron-K*(892) #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHK);
+    fOutputList->Add(fDphiHKstar);
 
     fDphiHK = new THnSparseF("fDphiHK", "Hadron-Kaon #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHK);
@@ -273,7 +279,8 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 //________________________________________________________________________
 void AliAnalysisTaskQA::UserExec(Option_t *)
 {
-    //printf("Made it to UserExec! \n");
+    //printf("\n!!!!!!!!!!!!!!\nMade it to UserExec! \n");
+    //fflush(stdout);
     // Main loop
     // Called for each event
     // Post output data.

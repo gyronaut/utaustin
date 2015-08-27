@@ -20,7 +20,7 @@ void RunMacro()
    char* output_dir = "output_08_25";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   Int_t runcycle[] = {0,1,3,6,11,17,23,28,33,36};
+   Int_t runcycle[] = {0,3,6,11,17,23,28,33,36};
    //Int_t runcycle[]={0,1};
    Bool_t UseParfiles = kFALSE;
 
@@ -145,9 +145,11 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
      return;
 
    mgr->PrintStatus();
-   fprintf(stdout, "About to launch analysis... \n");
+   fprintf(stdout, "\n!!!!!!!!!!!!!\nAbout to launch analysis... \n");
    // Start analysis in grid.
    mgr->StartAnalysis(launch);
+   printf("\n!!!!!!!!!!!!!\nDone with StartAnalysis(launch)\n");
+   fflush(stdout);
 }
 //---------------------------------------
 void LoadLibraries()
