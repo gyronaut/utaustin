@@ -508,10 +508,10 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 for(Int_t j_track = 0; j_track < ntracks; j_track++){
                     if(i_track == j_track) continue;
                     vSecondDecayTrack = 0x0;
-                    vSecondDecayTrack = fVevent->GetTrack(i_track);
+                    vSecondDecayTrack = fVevent->GetTrack(j_track);
 
                     if(!vSecondDecayTrack){
-                        printf("Error: Could not receive track %d\n", i_track);
+                        printf("Error: Could not receive track %d\n", j_track);
                         continue;
                     }
                     secondDecayTrack = dynamic_cast<AliVTrack*>(vSecondDecayTrack);
@@ -531,7 +531,6 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                         fpiTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kPion);
                         Double_t calcPx = 0.0, calcPy = 0.0, calcPz = 0.0;
                         Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0;
-
                         if(TMath::Abs(fTPCnSigma) < 2.0){
                             calcPx = firstKaonTrack->Px()+secondDecayTrack->Px();
                             calcPy = firstKaonTrack->Py()+secondDecayTrack->Py();
@@ -598,10 +597,10 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 for(Int_t j_track = 0; j_track < ntracks; j_track++){
                     if(i_track == j_track) continue;
                     vSecondDecayTrack = 0x0;
-                    vSecondDecayTrack = fVevent->GetTrack(i_track);
+                    vSecondDecayTrack = fVevent->GetTrack(j_track);
 
                     if(!vSecondDecayTrack){
-                        printf("Error: Could not receive track %d\n", i_track);
+                        printf("Error: Could not receive track %d\n", j_track);
                         continue;
                     }
                     secondDecayTrack = dynamic_cast<AliVTrack*>(vSecondDecayTrack);
@@ -822,6 +821,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             
             //Loop over all phi reals
             Double_t cor_phi = 0, cor_pt = 0;
+
             for(Int_t i_particle = 0; i_particle < phiReals.size(); i_particle++){
                  cor_pt = TMath::Sqrt(phiReals[i_particle].Px()*phiReals[i_particle].Px() + phiReals[i_particle].Py()*phiReals[i_particle].Py());
                  cor_phi = TMath::Pi() + TMath::ATan2(-1*phiReals[i_particle].Py(), -1*phiReals[i_particle].Px());
