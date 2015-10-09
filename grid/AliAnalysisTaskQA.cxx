@@ -149,8 +149,8 @@ AliAnalysisTaskQA::~AliAnalysisTaskQA()
 //________________________________________________________________________
 void AliAnalysisTaskQA::UserCreateOutputObjects()
 {
-    //printf("\n!!!!!\n Starting UserCreateOutputObjects \n\n");
-    //fflush(stdout);
+    printf("\n!!!!!\n Starting UserCreateOutputObjects \n\n");
+    fflush(stdout);
     // Create histograms
     // Called once
     AliDebug(3, "Creating Output Objects");
@@ -241,18 +241,30 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fOutputList->Add(fKLikeSignInvMass);
    
     // Additional TPC Histograms for different particle species (in relation to Kaon)
-    fTPCKaonNSigK = new TH2F("fTPCKaonNSigK", "Only Kaon TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
+    fTPCKaonNSigK = new TH2F("fTPCKaonNSigK", "Only Kaon TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
     fOutputList->Add(fTPCKaonNSigK);
 
-    fTPCKaonNSigPi = new TH2F("fTPCKaonNSigPi", "Only Pion TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
+    fTPCKaonNSigPi = new TH2F("fTPCKaonNSigPi", "Only Pion TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
     fOutputList->Add(fTPCKaonNSigPi);
 
-    fTPCKaonNSige = new TH2F("fTPCKaonNSige", "Only Electron TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
+    fTPCKaonNSige = new TH2F("fTPCKaonNSige", "Only Electron TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
     fOutputList->Add(fTPCKaonNSige);
 
-    fTPCKaonNSigp = new TH2F("fTPCKaonNSigp", "Only Proton TPC Nsigma distribution; p (GeV/c{;#sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
+    fTPCKaonNSigp = new TH2F("fTPCKaonNSigp", "Only Proton TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
     fOutputList->Add(fTPCKaonNSigp);
 
+    fPhiDaughterPTKept = new TH2F("fPhiDaughterPTKept", "Pt distribution of Phi Meson Daughter Particles, Kept; p_{T}^{K+} (GeV/c); p_{T}^{K-} (GeV/c)", 16,0,4,16,0,4);
+    fOutputList->Add(fPhiDaughterPTKept);
+
+    fPhiDaughterPTCut = new TH2F("fPhiDaughterPTCut", "Pt distribution of Phi Meson Daughter Particles, Cut; p_{T}^{K+} (GeV/c); p_{T}^{K-} (GeV/c)", 40,0,10,40,0,10);
+    fOutputList->Add(fPhiDaughterPTCut);
+ 
+    fKstarDaughterPTKept = new TH2F("fKstarDaughterPTKept", "Pt distribution of K*(892) Meson Daughter Particles, Kept; p_{T}^{K} (GeV/c); p_{T}^{#pi} (GeV/c)", 16,0,4,16,0,4);
+    fOutputList->Add(fKstarDaughterPTKept);
+
+    fKstarDaughterPTCut = new TH2F("fKstarDaughterPTCut", "Pt distribution of K*(892) Meson Daughter Particles, Cut; p_{T}^{K} (GeV/c); p_{T}^{#pi} (GeV/c)", 40,0,10,40,0,10);
+    fOutputList->Add(fKstarDaughterPTCut);
+   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi)
     Int_t dphi_bins[3]= {100, 100, 256};
     Double_t dphi_min[3] = {0.0, 0.0, -1.57};
@@ -279,7 +291,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 //________________________________________________________________________
 void AliAnalysisTaskQA::UserExec(Option_t *)
 {
-    //printf("\n!!!!!!!!!!!!!!\nMade it to UserExec! \n");
+    printf("\n!!!!!!!!!!!!!!\nMade it to UserExec! \n");
     //fflush(stdout);
     // Main loop
     // Called for each event
@@ -644,8 +656,12 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                             phi.SetPy(firstKaonTrack->Py()+secondDecayTrack->Py());
                             phi.SetPz(firstKaonTrack->Pz()+secondDecayTrack->Pz());
                             phi.SetE(firstKaonTrack->E()+secondDecayTrack->E());
-                            phiReals.push_back(phi);
-
+                            if(firstKaonTrack->Pt() < 4 && secondDecayTrack->Pt() < 4){
+                                fPhiDaughterPTKept->Fill(firstKaonTrack->Pt(), secondDecayTrack->Pt());
+                                phiReals.push_back(phi);
+                            }else{
+                                fPhiDaughterPTCut->Fill(firstKaonTrack->Pt(), secondDecayTrack->Pt());
+                            }
                             point[0] = TMath::Sqrt(phi.Px()*phi.Px() + phi.Py()*phi.Py());
                             point[1] = TMath::Sqrt(phi.E()*phi.E() - (phi.Px()*phi.Px() + phi.Py()*phi.Py() + phi.Pz()*phi.Pz()));
                             fTruthTracksPhiInvMass->Fill(point); 
@@ -655,7 +671,12 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                             K.SetPy(firstKaonTrack->Py() + secondDecayTrack->Py());
                             K.SetPz(firstKaonTrack->Pz() + secondDecayTrack->Px());
                             K.SetE(firstKaonTrack->E() + secondDecayTrack->E());
-                            KReals.push_back(K);
+                            if(firstKaonTrack->Pt() < 4 && secondDecayTrack->Pt()<4){
+                                fKstarDaughterPTKept->Fill(firstKaonTrack->Pt(), secondDecayTrack->Pt());
+                                KReals.push_back(K);
+                            }else{
+                                fKstarDaughterPTCut->Fill(firstKaonTrack->Pt(), secondDecayTrack->Pt());
+                            }
                         }
                     }
                 }

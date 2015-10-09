@@ -59,6 +59,10 @@ private:
     TH2F    *fTPCKaonNSigp;
     TH2F    *fTPCKaonNSige;
     TH2F    *fTPCKaonNSigPi;
+    TH2F    *fPhiDaughterPTKept;
+    TH2F    *fPhiDaughterPTCut;
+    TH2F    *fKstarDaughterPTKept;
+    TH2F    *fKstarDaughterPTCut;
 
     THnSparseF  *fDphiHPhi;
     THnSparseF  *fDphiHKstar;
