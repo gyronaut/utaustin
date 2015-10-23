@@ -23,12 +23,14 @@ void plot_phi_histo(string inputName){
     THnSparseF *dphiHK = (THnSparseF *)InvMass->FindObject("fDphiHK");
     THnSparseF *dphiHPi = (THnSparseF *)InvMass->FindObject("fDphiHPi");
     THnSparseF *dphiHp = (THnSparseF *)InvMass->FindObject("fDphiHp");
+    THnSparseF *dphiHK0 = (THnSparseF *)InvMass->FindObject("fDphiHK0");
 
     TH3D *HPhiDphi = dphiHPhi->Projection(0,1,2);
     TH3D *HKstarDphi = dphiHKstar->Projection(0,1,2);
     TH3D *HKDphi = dphiHK->Projection(0,1,2);
     TH3D *HPiDphi = dphiHPi->Projection(0,1,2);
     TH3D *HpDphi = dphiHp->Projection(0,1,2);
+    TH3D *HK0Dphi = dphiHK0->Projection(0,1,2);
 
     // Graph of BG corrected inv-mass distribution
 /*
@@ -166,15 +168,36 @@ void plot_phi_histo(string inputName){
         dphiHpArray[i]->Draw("SAME");
     }
 
+    TH1D *dphiHK0Array[5];
+    dphiHK0Array[0] = HK0Dphi->ProjectionZ("ptH4_ptK0Inc", 20, 100, 0, 100);
+    dphiHK0Array[0]->SetTitle("p_{T}^{H} > 4 GeV/c, p_{T}^{K0} Inclusive");
+    dphiHK0Array[1] = HK0Dphi->ProjectionZ("ptH4_1ptK02", 20, 100, 5, 10);
+    dphiHK0Array[1]->SetTitle("p_{T}^{H} > 4 GeV/c, 1 < p_{T}^{K0} < 2 GeV/c");
+    dphiHK0Array[2] = HK0Dphi->ProjectionZ("ptH4_2ptK04", 20, 100, 10, 20);
+    dphiHK0Array[2]->SetTitle("p_{T}^{H} > 4 GeV/c, 2 < p_{T}^{K0} < 4 GeV/c");
+    dphiHK0Array[3] = HK0Dphi->ProjectionZ("2ptH_ptK02", 0, 10, 0, 10);
+    dphiHK0Array[3]->SetTitle("p_{T}^{H} < 2 GeV/c, p_{T}^{K0} < 2 GeV/c");
+    dphiHK0Array[4] = HK0Dphi->ProjectionZ("ptH4_2ptK0", 20, 100, 10, 100);
+    dphiHK0Array[4]->SetTitle("p_{T}^{H} > 4 GeV/c, p_{T}^{K0} > 2 GeV/c");
+
+
+    TCanvas *cDphiHK0 = new TCanvas("cDphiHK0", "cDphiHK0", 50, 50, 600, 600);
+    cDphiHK0->Divide(2,2);
+    for(int i =0; i<4; i++){
+        cDphiHK0->cd(i+1);
+        dphiHK0Array[i]->Draw("SAME");
+    }  
+
+//Putting several different Species on one canvas for comparisons
     TCanvas *cDphiAll = new TCanvas("cDphiAll", "cDphiAll", 50, 50, 600, 600);
     cDphiAll->Divide(2,2);
     cDphiAll->cd(1);
-    dphiHPiArray[2]->Draw("SAME");
+    dphiHK0Array[4]->Draw("SAME");
     cDphiAll->cd(2);
     dphiHpArray[2]->Draw("SAME");
     cDphiAll->cd(3);
-    dphiHKstarArray[2]->Draw("SAME");
+    dphiHKstarArray[4]->Draw("SAME");
     cDphiAll->cd(4);
-    dphiHPhiArray[2]->Draw("SAME");
+    dphiHPhiArray[4]->Draw("SAME");
 
 }

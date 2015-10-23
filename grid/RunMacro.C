@@ -11,17 +11,17 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally
+   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally
    //Int_t cyclenumber = 10;    
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
    char* work_dir = "PhiInvMass_MC_LHC12d";
-   char* output_dir = "output_10_09";
+   char* output_dir = "output_10_12";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   Int_t runcycle[] = {0,1,3,6,11,17,23,28,33,36};
-   //Int_t runcycle[]={0,1};
+   //Int_t runcycle[] = {0,3,6,11,17,23,28,33,36};
+   Int_t runcycle[]={0,11};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler

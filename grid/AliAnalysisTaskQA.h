@@ -63,10 +63,13 @@ private:
     TH2F    *fPhiDaughterPTCut;
     TH2F    *fKstarDaughterPTKept;
     TH2F    *fKstarDaughterPTCut;
+    TH2F    *fK0DaughterPTKept;
+    TH2F    *fK0DaughterPTCut;
 
     THnSparseF  *fDphiHPhi;
     THnSparseF  *fDphiHKstar;
     THnSparseF  *fDphiHK;
+    THnSparseF  *fDphiHK0;
     THnSparseF  *fDphiHPi;
     THnSparseF  *fDphiHp;
 

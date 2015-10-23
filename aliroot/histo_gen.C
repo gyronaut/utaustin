@@ -38,6 +38,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
     THnSparseF *piPtPhiEtaDist = new THnSparseF("piPtPhiEtaDist", "angular phi distribution for charged pions", 3, dist_bins, dist_min, dist_max);
     THnSparseF *pPtPhiEtaDist = new THnSparseF("pPtPhiEtaDist", "angular phi distribution for protons", 3, dist_bins, dist_min, dist_max);
  
+    TH2F *K0daughterPT = new TH2F("K0daughterPT", "PT distribution for #pi^{+/-} daughters of K^{0}_{S}; p_{T}^{#pi^+}; p_{T}^{#pi^-}", 50, 0, 10, 50, 0, 10);
     /* TRIGGER PARTICLES PER EVENT */
     TH1I *triggerHist = new TH1I("triggerHist", "Number of Trigger particles per event", 20, 0.5, 20.5);
 
@@ -130,7 +131,7 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
             par_pdg = particle->GetPdgCode();
             eta_calc = 0.5*TMath::Log((p_tot + p_z)/(p_tot - p_z));
             /* Select only the species of hadrons we're interested in (phi, pi, k0, k+-, p) */
-            if(TMath::Abs(par_pdg)==2212 || TMath::Abs(par_pdg)==311 || TMath::Abs(par_pdg)==211 || TMath::Abs(par_pdg)==321 || TMath::Abs(par_pdg)==333){         
+            if(TMath::Abs(par_pdg)==310 || TMath::Abs(par_pdg)==2212 || TMath::Abs(par_pdg)==311 || TMath::Abs(par_pdg)==211 || TMath::Abs(par_pdg)==321 || TMath::Abs(par_pdg)==333){         
                 point[0] = pt;
                 point[1] = phi;
                 point[2] = eta_calc;
@@ -151,6 +152,16 @@ void histo_gen(string input_dir, string input_file, string output_dir, string ou
                     case 211:
                         piPtPhiEtaDist->Fill(point);
                         break;
+                    case 310:
+                        if(particle->GetNDaughters()==2){
+                            TParticle daughter1 = stack->Particle(particle->GetFirstDaughter());
+                            TParticle daughter2 = stack->Particle(particle->GetFirstDaughter()+1);
+                            if(daughter1->GetPdgCode()==211 && daughter2->GetPdgCode()==-211){
+                                K0daughterPT->Fill(daughter1->Pt(), daughter2->Pt());
+                            }else if(daughter1->GetPdgCode()==-211 && daughter2->GetPdgCode()==211){
+                                K0daughterPT->Fill(daughter2->Pt(), daughter1->Pt());
+                            }
+                        }
                     default:
                         fprintf(stdout, "How did this particle get through? \n");
                         break;
