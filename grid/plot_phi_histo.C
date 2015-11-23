@@ -200,4 +200,25 @@ void plot_phi_histo(string inputName){
     cDphiAll->cd(4);
     dphiHPhiArray[4]->Draw("SAME");
 
+//Setting up ratio between h-phi and h-K0
+    TH1D* dphiHPhiRebin = dphiHPhiArray[4]->Rebin(16, "dphiHPhiRebin");
+    TH1D* dphiHK0Rebin = dphiHK0Array[4]->Rebin(16, "dphiHK0Rebin");
+
+    TH1D* dphiRatio = dphiHK0Rebin->Clone("dphiRatio");
+    dphiRatio->Divide(dphiHPhiRebin);
+    dphiRatio->SetTitle("Ratio of K_{S}^{0} / #Phi(1020)");
+
+    TCanvas *cHPhiRebin = new TCanvas("cHPhiRebin", "cHPhiRebin", 50, 50, 600, 600);
+    cHPhiRebin->cd();
+    dphiHPhiRebin->Draw();
+    dphiHPhiRebin->Draw("E SAME");
+
+    TCanvas *cHK0Rebin = new TCanvas("cHK0Rebin", "cHK0Rebin", 50, 50, 600, 600);
+    cHK0Rebin->cd();
+    dphiHK0Rebin->Draw();
+    dphiHK0Rebin->Draw("E SAME");
+
+    TCanvas *cRatio = new TCanvas("cRatio", "cRatio", 50,50, 600,600);
+    cRatio->cd();
+    dphiRatio->Draw();
 }
