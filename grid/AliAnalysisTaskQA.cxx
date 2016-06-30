@@ -332,14 +332,11 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     }
      
     fESD = dynamic_cast<AliESDEvent*>(InputEvent());
-    if (fESD) {
-        //   printf("fESD available\n");
-        //return;
-    }
-    ///////////////////////
-    // Setting up fStack //
-    ///////////////////////
-    
+
+    /////////////////////////////////
+    // Setting up fStack (MC Only) //
+    /////////////////////////////////
+/*    
     AliMCEventHandler *fMCHandler = 0x0;
     AliMCEvent *fMcEvent = 0x0;
     AliStack *fStack = 0x0;
@@ -380,6 +377,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             return;
         }
     } 
+*/
     ////////////////////
     //cuts initialised//
     ///////////////////
@@ -449,20 +447,12 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     ///////////////////
     if(fabs(Zvertex>10.0))return;
     fNevents->Fill(2); //events after z vtx cut
-    
-//    initTimer->Stop();
-//    printf("INIT: ");
-//    initTimer->Print("u");
-//    printf("\n");
-
-//    TStopwatch *analysisTimer = new TStopwatch();
-//    analysisTimer->Start();
 
     //Initialize the vectors/points that will be used to fill the histograms
     std::vector<TLorentzVector> phiCandidates;
-    std::vector<TLorentzVector> phiReals;
+//    std::vector<TLorentzVector> phiReals;
     std::vector<TLorentzVector> KCandidates;
-    std::vector<TLorentzVector> KReals;
+//    std::vector<TLorentzVector> KReals;
     std::vector<TLorentzVector> K0Reals;
     TLorentzVector phi;
     TLorentzVector K;
@@ -471,8 +461,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     Double_t lspoint[3] = {0, 0, 0};
     Double_t dphi_point[3] = {0, 0, 0};
 
-    TParticle *MCFirstDecay = 0x0;
-    AliAODMCParticle* MCFirstDecayTrack = 0x0;
+//    TParticle *MCFirstDecay = 0x0;
+//    AliAODMCParticle* MCFirstDecayTrack = 0x0;
     AliVTrack *firstDecayTrack = 0x0;
     AliESDtrack *eFirstDecayTrack = 0x0;
     AliAODTrack *aFirstDecayTrack = 0x0;
@@ -506,7 +496,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             Int_t label = 0;
             label = firstDecayTrack->GetLabel();
 
-            // Using stack to get actual particle PDG codes
+            // Using stack to get actual particle PDG codes (MC Only)
+            /* 
             Int_t fPDG = 0;
             Int_t motherPDG = 0;
             Int_t motherIndex = 0;
@@ -529,11 +520,12 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                     }
                 }
             }
+            */
 
             fTPCnSigma = fpidResponse->NumberOfSigmasTPC(firstDecayTrack, AliPID::kKaon);
 
-            TParticle *MCSecondDecay = 0x0;
-            AliAODMCParticle* MCSecondDecayTrack = 0x0;
+//            TParticle *MCSecondDecay = 0x0;
+//            AliAODMCParticle* MCSecondDecayTrack = 0x0;
             AliVTrack *secondDecayTrack = 0x0;
             AliESDtrack *eSecondDecayTrack = 0x0;
             AliAODTrack *aSecondDecayTrack = 0x0;
@@ -628,7 +620,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 }
             }
 
-            //Cut on just real kaon+ from real phi, or real kaons from real K*(892), or real pi+ from K0
+            //Cut on just real kaon+ from real phi, or real kaons from real K*(892), or real pi+ from K0 (MC Only)
+            /*
             if((fPDG == 321 && TMath::Abs(motherPDG) == 333) || ((TMath::Abs(fPDG) == 321 && TMath::Abs(motherPDG) == 313)) || (fPDG == 211 && TMath::Abs(motherPDG)==310)){
                 for(Int_t j_track = 0; j_track < ntracks; j_track++){
                     if(i_track == j_track) continue;
@@ -717,12 +710,14 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                     }
                 }
             }
+            */
         }
     } 
 
-    ///////////////
-    //Track loop///
-    ///////////////
+    ////////////////
+    // Track loop // (MC only right now...) 
+    ////////////////
+    /*
     TParticle* MCTriggerParticle = 0x0;
     AliAODMCParticle* MCTriggerTrack = 0x0;
     AliVTrack *triggerTrack = 0x0;
@@ -776,7 +771,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             Int_t label = 0;
             label = triggerTrack->GetLabel();
 
-            // Using stack to get actual particle PDG codes
+            // Using stack to get actual particle PDG codes (MC Only)
+            /*
             Int_t fPDG = 0;
             if(label > 1){             
                 if(fESD){
@@ -800,7 +796,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                     }
                 }
             }
-
+            */
+    /*
             TParticle* MCFirstParticle=0x0;
             AliAODMCParticle* MCFirsttrk = 0x0;
             AliVParticle* vFirstTrack = 0x0;
@@ -919,7 +916,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             }
        }
     } //track loop
-
+    */
 //    analysisTimer->Stop();
 //    printf("ANALYSIS: ");
 //    analysisTimer->Print("u");

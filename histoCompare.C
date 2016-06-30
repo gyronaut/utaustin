@@ -1,6 +1,20 @@
 #include <string>
 
 void histoCompare(string checkFileName){
+
+    gStyle->SetLabelSize(0.05, "xyz");
+    gStyle->SetLabelOffset(0.015, "xyz");
+    gStyle->SetTitleSize(0.05, "xyz");
+    gStyle->SetTitleSize(0.055, "h");
+    gStyle->SetTitleOffset(1.1, "x");
+    gStyle->SetTitleOffset(1.2, "y");
+    gStyle->SetPadTopMargin(0.08);
+    gStyle->SetPadBottomMargin(0.12);
+    gStyle->SetPadLeftMargin(0.14);
+    gStyle->SetPadRightMargin(0.1);
+    gStyle->SetOptStat(0);
+    gROOT->ForceStyle();
+
     //Initialize OADB container
     AliOADBContainer *container = new AliOADBContainer("");
     container->InitFromFile("$ALICE_PHYSICS/OADB/EMCAL/EMCALTimeCalib.root", "AliEMCALTimeCalib");

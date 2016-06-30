@@ -16,12 +16,12 @@ void RunMacro()
    //Int_t cyclenumber = 10;    
    Int_t cyclenumber = 1;    
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiInvMass_MC_LHC12d";
-   char* output_dir = "output_10_12";
+   char* work_dir = "PhiInvMass_LHC13c";
+   char* output_dir = "output_22_06_2016";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   //Int_t runcycle[] = {0,3,6,11,17,23,28,33,36};
-   Int_t runcycle[]={0,11};
+//   Int_t runcycle[]={0,3,7,10,14};
+   Int_t runcycle[]={0,14};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -40,34 +40,34 @@ void RunMacro()
   }
 
 // Trying to add new PHYSICS package
-  alienHandler->AddExternalPackage("AliPhysics::vAN-20150601");
+//  alienHandler->AddExternalPackage("AliPhysics::vAN-20160606-1");
 
   alienHandler->SetAnalysisSource("AliAnalysisTaskQA.cxx");
   //alienHandler->SetOverwriteMode();
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(5);
   alienHandler->SetAPIVersion("V1.1x");
-  alienHandler->SetROOTVersion("v5-34-08-7");
-  alienHandler->SetAliROOTVersion("v5-06-19");
-  //alienHandler->SetAliPhysicsVersion("vAN-20150601");
-  alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
-  alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
-  alienHandler->SetDataPattern("*ESDs.root");
+  alienHandler->SetROOTVersion("v5-34-30-alice-24");
+  alienHandler->SetAliROOTVersion("v5-08-11a-1");
+  alienHandler->SetAliPhysicsVersion("vAN-20160606-1");
+  //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
+  //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
+  //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  //alienHandler->SetGridDataDir("//alice/data/2013/LHC13g/");
-  //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  //alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
+  alienHandler->SetGridDataDir("//alice/data/2013/LHC13c/");
+  alienHandler->SetDataPattern("*/pass4/*/*AOD.root");
+  alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
    
 //LHC12d   
     //Int_t runArray[] = {186320, 186319, 186318, 186229, 186208, 186205, 186200, 186167, 186165, 186164, 186163, 185912, 185909, 185784, 185778, 185776, 185775, 185768, 185765, 185764, 185757, 185756, 185738, 185735, 185734, 185701, 185699, 185698, 185697, 185695, 185687, 185680, 185589, 185588, 185583, 185582, 185581, 185580, 185578};
   //Int_t runArray[] = {186320, 186319, 186318, 186229, 186208, 186205, 186200, 186167, 186165, 186164, 186163, 185912, 185909, 185784, 185778, 185776, 185775, 185768, 185765, 185764, 185757, 185756, 185738, 185735, 185734, 185701, 185699, 185698, 185697, 185695, 185687, 185680, 185589, 185588, 185583, 185582, 185581, 185580, 185578, 185575, 185574, 185565, 185563, 185474, 185465, 185461, 185457, 185375, 185371, 185363, 185362, 185361, 185360, 185359, 185356, 185351, 185350, 185349, 185303, 185302, 185300, 185299, 185296, 185293, 185292, 185291, 185289, 185288, 185284, 185282, 185221, 185217, 185208, 185206, 185203, 185198, 185196, 185189};
 
- //LHC13g
-    //Int_t runArray[] = {197606};
+ //LHC13c
+    Int_t runArray[] = {195529, 195531, 195566, 195567, 195568, 195592, 195593, 195596, 195633, 195635, 195644, 195673, 195675, 195677};
     
-  //LHC10d4 - MC Data
-  Int_t runArray[] = {119159, 119161, 119163, 119841, 119842, 119844, 119845, 119846, 119849, 119853, 119856, 119859, 119862, 120067, 120069, 120072, 120073, 120076, 120079, 120244, 120503, 120504, 120505, 120616, 120617, 120671, 120741, 120750, 120758, 120820, 120821, 120822, 120823, 120824, 120825, 120829};
+//LHC10d4 - MC Data
+    //Int_t runArray[] = {119159, 119161, 119163, 119841, 119842, 119844, 119845, 119846, 119849, 119853, 119856, 119859, 119862, 120067, 120069, 120072, 120073, 120076, 120079, 120244, 120503, 120504, 120505, 120616, 120617, 120671, 120741, 120750, 120758, 120820, 120821, 120822, 120823, 120824, 120825, 120829};
    // Int_t runArray[] = {120073}; //for testing why files were being opened but not closed
 
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
@@ -117,14 +117,14 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
    AliAnalysisManager *mgr = new AliAnalysisManager("PhiAnalysis");
    mgr->SetGridHandler(alienHandler);
 
-   //AliAODInputHandler* aodH = new AliAODInputHandler();
-   //mgr->SetInputEventHandler(aodH);
-   AliESDInputHandler* esdH = new AliESDInputHandler();
-   mgr->SetInputEventHandler(esdH);
+   AliAODInputHandler* aodH = new AliAODInputHandler();
+   mgr->SetInputEventHandler(aodH);
+//   AliESDInputHandler* esdH = new AliESDInputHandler();
+//   mgr->SetInputEventHandler(esdH);
 
-    AliMCEventHandler* mcH = new AliMCEventHandler();
-    mgr->SetMCtruthEventHandler(mcH);   
-    mcH->SetReadTR(kFALSE);
+//    AliMCEventHandler* mcH = new AliMCEventHandler();
+//    mgr->SetMCtruthEventHandler(mcH);   
+//    mcH->SetReadTR(kFALSE);
 
    gROOT->LoadMacro("AddTaskQA.C");
    gROOT->LoadMacro("AliAnalysisTaskQA.cxx++g");
@@ -133,10 +133,10 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
 
 
     //switch on aliphysicsselection
-    AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(kTRUE); 
+//    AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(kTRUE); 
  
     //Only set true for MC
-    Bool_t isMC = kTRUE;
+    Bool_t isMC = kFALSE;
    AddTaskPIDResponse(isMC);
     //create a task
    AliAnalysisTaskQA *taskQA = AddTaskQA();

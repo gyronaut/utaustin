@@ -7,19 +7,19 @@ void compareRunByRun(){
     TString filename = "";
 
     //Set up 4 TCanvas (one for each BC)
-    TCanvas *c0 = new TCanvas("c0","c0", 800, 600);
+    TCanvas *c0 = new TCanvas("c0","c0", 1000, 600);
     c0->Divide(6, 4);
     c0->SetLogz();
 
-    TCanvas *c1 = new TCanvas("c1","c1", 800, 600);
+    TCanvas *c1 = new TCanvas("c1","c1", 1000, 600);
     c1->Divide(6, 4);
     c0->SetLogz();
 
-    TCanvas *c2 = new TCanvas("c2","c2", 800, 600);
+    TCanvas *c2 = new TCanvas("c2","c2", 1000, 600);
     c2->Divide(6, 4);
     c2->SetLogz();
 
-    TCanvas *c3 = new TCanvas("c3","c3", 800, 600);
+    TCanvas *c3 = new TCanvas("c3","c3", 1000, 600);
     c3->Divide(6, 4);
     c3->SetLogz();
 
@@ -48,6 +48,9 @@ void compareRunByRun(){
             }
             rawtime[j]->GetXaxis()->SetRangeUser(0, 4607);
             rawtime[j]->SetOption("COL");
+            rawtime[j]->SetStats(kFALSE);
+            rawtime[j]->GetZaxis()->SetRangeUser(1,10);
+            rawtime[j]->SetTitle("");
         }
         c0->cd(i+1);
         gPad->SetLogz();
