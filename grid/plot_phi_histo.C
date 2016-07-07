@@ -23,10 +23,15 @@ void plot_phi_histo(string inputName){
     TH1D *corrInvMass[16];
     TH1D *phiInvMassBinned[16];
     TH1D *likeSignInvMassBinned[16];
+    TF1 *fits[16];
+    for(int n = 0; n < 16; n++){
+        fits[n] = new TF1(Form("f%i", n), "gaus", 1.005,1.035);
+    } 
 
     Double_t pt_bounds[] = {0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 10.0};
     Int_t pt_bins[] = {4, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 60, 70, 100};
-        
+    Double_t sigmas[16];    
+
     Double_t sideband = 0.0;
     Double_t likeSignSideBand = 0.0;
     Double_t scaleFactor = 0.0;
@@ -50,6 +55,8 @@ void plot_phi_histo(string inputName){
             likeSignInvMassBinned[i]->SetLineColor(2);
             corrInvMass[i] = (TH1D*)phiInvMassBinned[i]->Clone(Form("corrInvMass_%i_%i", pt_bins[i], pt_bins[i]));
             corrInvMass[i]->Add(likeSignInvMassBinned[i], -1.0);
+            corrInvMass[i]->Fit(Form("f%i", i), "R");
+            sigmas[i] = fits[i]->GetParameter("Sigma");
         }
     }   
 
@@ -68,7 +75,9 @@ void plot_phi_histo(string inputName){
 
     for(int k =0; k < 15; k++){
         c1->cd(k+1);
+        printf("sigma: %E\n", sigmas[k]);
         corrInvMass[k]->Draw();
+        fits[k]->Draw("SAME");
     }
     /* 
     THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
