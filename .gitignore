@@ -1,1 +1,12 @@
 *.o*
+*.root
+*.xml
+*.png
+*.jdl
+*.pdf
+*.gif
+*.DS_STORE
+*.d
+*.so
+*stderr
+*stdout
