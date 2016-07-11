@@ -577,12 +577,16 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                             if(firstDecayTrack->Charge() == 1 && secondDecayTrack->Charge() == -1){
                                 fPhiInvMass->Fill(point);
                                 
-                                //Set-up TLorenztVector (px, py, pz, E), then push to vector
-                                phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
-                                phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
-                                phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
-                                phi.SetE(firstDecayTrack->E()+secondDecayTrack->E());
-                                phiCandidates.push_back(phi);
+                                //Set-up TLorenztVector (px, py, pz, E), then push to vector (only for <3 sigma inv mass deviation)
+                                double nsigma = 3.0;
+                                double sigma = 0.00305; //(in MeV/c^2)
+                                if(TMath::Abs(calcInvMass - 1.0195) <= nsigma*sigma){
+                                    phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
+                                    phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
+                                    phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
+                                    phi.SetE(firstDecayTrack->E()+secondDecayTrack->E());
+                                    phiCandidates.push_back(phi);
+                                }
                             }else if(firstDecayTrack->Charge()*secondDecayTrack->Charge() == 1){
                                 fPhiLikeSignInvMass->Fill(lspoint);
                             }
@@ -720,6 +724,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     /*
     TParticle* MCTriggerParticle = 0x0;
     AliAODMCParticle* MCTriggerTrack = 0x0;
+    */
     AliVTrack *triggerTrack = 0x0;
     AliESDtrack *etriggerTrack = 0x0;
     AliAODTrack *atriggerTrack = 0x0;
@@ -797,15 +802,28 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 }
             }
             */
-    /*
+            /*
             TParticle* MCFirstParticle=0x0;
             AliAODMCParticle* MCFirsttrk = 0x0;
+            
             AliVParticle* vFirstTrack = 0x0;
             AliVTrack* firstTrack = 0x0;
             AliESDtrack* eFirstTrack = 0x0;
             AliAODTrack* aFirstTrack = 0x0;
-
+            */
             //Do Correlation Track Loop, finding correlation particles
+            for(std::vector<TLorentzVector>::iterator i_phi = phiCandidates.begin(); i_phi != phiCandidates.end(); i_phi++){
+                dphi_point[1] = i_phi->Pt();
+                dphi_point[2] = trigger_phi - i_phi->Phi();
+                if(dphi_point[2] < -TMath::Pi()/2.0){
+                    dphi_point[2] += 2.0*TMath::Pi();
+                }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
+                    dphi_point[2] -= 2.0*TMath::Pi();
+                }
+                fDphiHPhi->Fill(dphi_point);
+            }
+
+            /*
             for(Int_t j_track = 0; j_track < ntracks; j_track++){
                 //Exclude double counted particles
                 if(j_track == i_track) continue;
@@ -914,9 +932,9 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                  }
                  fDphiHK0->Fill(dphi_point);
             }
+            */
        }
     } //track loop
-    */
 //    analysisTimer->Stop();
 //    printf("ANALYSIS: ");
 //    analysisTimer->Print("u");
