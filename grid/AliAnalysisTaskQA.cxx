@@ -228,7 +228,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fOutputList->Add(fPDGCodes);
 
     // Additional Histograms for Reconstructed Phi mesons
-    Int_t bins[2] = {100, 1000};
+    Int_t bins[2] = {100, 1000}; //pt, invmass
     Double_t min[2] = {0.0, 0.5};
     Double_t max[2] = {10.0, 2.0};
  
@@ -285,14 +285,14 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fK0DaughterPTCut = new TH2F("fK0DaughterPTCut", "Pt distribution of K0 Meson Daughter Particles, Cut; p_{T}^{#pi^{+}} (GeV/c); p_{T}^{#pi^{-}} (GeV/c)", 40,0,10,40,0,10);
     fOutputList->Add(fK0DaughterPTCut);
    
-    // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi)
-    Int_t dphi_bins[3]= {100, 100, 256};
-    Double_t dphi_min[3] = {0.0, 0.0, -1.57};
-    Double_t dphi_max[3] = {20.0, 20.0, 4.71};
+    // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
+    Int_t dphi_bins[5]=    {100,   100,    64,   24, 120};
+    Double_t dphi_min[5] = {0.0,   0.0, -1.57, -3.0, 0.98};
+    Double_t dphi_max[5] = {20.0, 20.0,  4.71,  3.0, 1.1};
 
-    fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
+    fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 5, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHPhi);
-
+/*
     fDphiHKstar = new THnSparseF("fDphiHKstar", "Hadron-K*(892) #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHKstar);
 
@@ -307,7 +307,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 
     fDphiHp = new THnSparseF("fDphiHp", "Hadron-proton #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHp);
-
+*/
     PostData(1,fOutputList);
 }
 
@@ -573,14 +573,11 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                             point[1] = calcInvMass;
                             lspoint[1] = calcInvMass;
                             lspoint[2] = firstDecayTrack->Charge();
-                            //Unlike sign pairs - create actual phi inv-mass distribution
+                            //Unlike sign pairs - create phi inv-mass distribution (and add to vector if invmass between 0.98 and 1.1)
                             if(firstDecayTrack->Charge() == 1 && secondDecayTrack->Charge() == -1){
                                 fPhiInvMass->Fill(point);
-                                
-                                //Set-up TLorenztVector (px, py, pz, E), then push to vector (only for <3 sigma inv mass deviation)
-                                double nsigma = 3.0;
-                                double sigma = 0.00305; //(in MeV/c^2)
-                                if(TMath::Abs(calcInvMass - 1.0195) <= nsigma*sigma){
+                                if(calcInvMass >= 0.98 && calcInvMass <= 1.1){
+                                    //Set-up TLorenztVector (px, py, pz, E), then push to vector
                                     phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
                                     phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
                                     phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
@@ -820,6 +817,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
                     dphi_point[2] -= 2.0*TMath::Pi();
                 }
+                dphi_point[3] = triggerTrack->Eta() - i_phi->Eta();
+                dphi_point[4] = TMath::Sqrt(i_phi->E()*i_phi->E() - (i_phi->Px()*i_phi->Px() + i_phi->Py()*i_phi->Py() + i_phi->Pz()*i_phi->Pz()));
                 fDphiHPhi->Fill(dphi_point);
             }
 
