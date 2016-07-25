@@ -79,21 +79,49 @@ void plot_phi_histo(string inputName){
         corrInvMass[k]->Draw();
         fits[k]->Draw("SAME");
     }
-    /* 
+     
     THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
+    /*
     THnSparseF *dphiHKstar = (THnSparseF *)InvMass->FindObject("fDphiHKstar");
     THnSparseF *dphiHK = (THnSparseF *)InvMass->FindObject("fDphiHK");
     THnSparseF *dphiHPi = (THnSparseF *)InvMass->FindObject("fDphiHPi");
     THnSparseF *dphiHp = (THnSparseF *)InvMass->FindObject("fDphiHp");
     THnSparseF *dphiHK0 = (THnSparseF *)InvMass->FindObject("fDphiHK0");
-
+    */
     TH3D *HPhiDphi = dphiHPhi->Projection(0,1,2);
+    
+    dphiHPhi->GetAxis(0)->SetRange(20, 100); //cutting on trigger pt greater than 4 GeV/c
+    dphiHPhi->GetAxis(1)->SetRange(5,15); //cutting on phi pt between 1 GeV/c and 3 GeV/c
+    
+    TH1D *phiInvMassPerDPhi[16]; 
+    TCanvas *cInvDPhi = new TCanvas("cInvDPhi", "cIncDPhi", 50,50,800,800);
+    cInvDPhi->Divide(4,4);
+    for(int i = 0; i < 16; i++){
+        cInvDPhi->cd(i+1);
+        dphiHPhi->GetAxis(2)->SetRange((4*i)+1, 4*(i+1));
+        phiInvMassPerDPhi[i] = dphiHPhi->Projection(4);
+        phiInvMassPerDPhi[i]->SetTitle(Form("Inv Mass dist. for %.2f < #Delta#Phi < %.2f", (-1.57 + i*(0.3925)), (-1.57+(i+1)*(0.3925))));
+        phiInvMassPerDPhi[i]->Draw();
+    }
+    dphiHPhi->GetAxis(2)->SetRange(0,0);
+
+    TH1D *dphiPhiPeak;
+    dphiHPhi->GetAxis(4)->SetRangeUser(1.010, 1.030);
+    dphiPhiPeak = dphiHPhi->Projection(2);
+    dphiPhiPeak->SetTitle("Hadron-Phi #Delta#Phi for Phi Peak"); 
+
+    TH1D *dphiPhiSideband;
+    dphiHPhi->GetAxis(4)->SetRangeUser(1.040, 1.060);
+    dphiPhiSideband = dphiHPhi->Projection(2);
+    dphiPhiSideband->SetTitle("Hadron-Phi #Delta#Phi for Phi Sideband");
+    
+    /*
     TH3D *HKstarDphi = dphiHKstar->Projection(0,1,2);
     TH3D *HKDphi = dphiHK->Projection(0,1,2);
     TH3D *HPiDphi = dphiHPi->Projection(0,1,2);
     TH3D *HpDphi = dphiHp->Projection(0,1,2);
     TH3D *HK0Dphi = dphiHK0->Projection(0,1,2);
-*/
+    */
     // Graph of BG corrected inv-mass distribution
 /*
     if(phiInvMass){
@@ -131,7 +159,7 @@ void plot_phi_histo(string inputName){
     bgCorPhiMass->SetMarkerSize(1);
     bgCorPhiMass->Draw("SAME E1");
 */
-/*
+
     TH1D *dphiHPhiArray[5];
     dphiHPhiArray[0] = HPhiDphi->ProjectionZ("ptH4_ptPhiInc", 20, 100, 0, 100);
     dphiHPhiArray[0]->SetTitle("p_{T}^{H} > 4 GeV/c, p_{T}^{#Phi} Inclusive");
@@ -150,7 +178,15 @@ void plot_phi_histo(string inputName){
         cDphiHPhi->cd(i+1);
         dphiHPhiArray[i]->Draw("SAME");
     }  
+    
+    TCanvas *cDphiHPhi2 = new TCanvas("cDphiHPhi2", "cDphiHPhi2", 50, 50, 600, 600);
+    cDphiHPhi2->cd();
+    dphiPhiPeak->Draw("SAME");
+    
+    TCanvas *cDphiHPhi3 = new TCanvas("cDphiHPhi3", "cDphiHPhi3", 50, 50, 600, 600);
+    dphiPhiSideband->Draw("SAME");
 
+    /*
     TH1D *dphiHKstarArray[5];
     dphiHKstarArray[0] = HKstarDphi->ProjectionZ("ptH4_ptKstarInc", 20, 100, 0, 100);
     dphiHKstarArray[0]->SetTitle("p_{T}^{H} > 4 GeV/c, p_{T}^{K*} Inclusive");
