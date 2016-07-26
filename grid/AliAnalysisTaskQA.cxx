@@ -84,6 +84,7 @@ fKstarDaughterPTCut(0),
 fK0DaughterPTKept(0),
 fK0DaughterPTCut(0),
 fDphiHPhi(0),
+fDphiHKK(0),
 fDphiHK(0),
 fDphiHKstar(0),
 fDphiHK0(0),
@@ -138,6 +139,7 @@ fKstarDaughterPTCut(0),
 fK0DaughterPTKept(0),
 fK0DaughterPTCut(0),
 fDphiHPhi(0),
+fDphiHKK(0),
 fDphiHK(0),
 fDphiHKstar(0),
 fDphiHK0(0),
@@ -292,6 +294,10 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 5, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHPhi);
+
+    fDphiHKK = new THnSparseF("fDphiHKK", "Hadron-#KK likesign #Delta#phi correlations", 5, dphi_bins, dphi_min, dphi_max);
+    fOutputList->Add(fDphiHKK);
+
 /*
     fDphiHKstar = new THnSparseF("fDphiHKstar", "Hadron-K*(892) #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHKstar);
@@ -450,7 +456,10 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
 
     //Initialize the vectors/points that will be used to fill the histograms
     std::vector<TLorentzVector> phiCandidates;
+    std::vector<Int_t> phiDaughterTrackNum;
 //    std::vector<TLorentzVector> phiReals;
+    std::vector<TLorentzVector> phiLikesignCandidates;
+    std::vector<Int_t> likesignDaughterTrackNum;
     std::vector<TLorentzVector> KCandidates;
 //    std::vector<TLorentzVector> KReals;
     std::vector<TLorentzVector> K0Reals;
@@ -459,7 +468,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
 
     Double_t point[2] = {0, 0};
     Double_t lspoint[3] = {0, 0, 0};
-    Double_t dphi_point[3] = {0, 0, 0};
+    Double_t dphi_point[5] = {0, 0, 0, 0, 0};
 
 //    TParticle *MCFirstDecay = 0x0;
 //    AliAODMCParticle* MCFirstDecayTrack = 0x0;
@@ -583,9 +592,21 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                                     phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
                                     phi.SetE(firstDecayTrack->E()+secondDecayTrack->E());
                                     phiCandidates.push_back(phi);
+                                    phiDaughterTrackNum.push_back(i_track);
+                                    phiDaughterTrackNum.push_back(j_track);
                                 }
                             }else if(firstDecayTrack->Charge()*secondDecayTrack->Charge() == 1){
                                 fPhiLikeSignInvMass->Fill(lspoint);
+                                if(calcInvMass >= 0.98 && calcInvMass <=1.1){
+                                    phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
+                                    phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
+                                    phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
+                                    phi.SetE(firstDecayTrack->E()+secondDecayTrack->E());
+                                    phiLikesignCandidates.push_back(phi);
+                                    likesignDaughterTrackNum.push_back(i_track);
+                                    likesignDaughterTrackNum.push_back(j_track);
+                                }
+
                             }
                         }
                         if(TMath::Abs(fpiTPCnSigma) < 2.0){
@@ -809,20 +830,35 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             AliAODTrack* aFirstTrack = 0x0;
             */
             //Do Correlation Track Loop, finding correlation particles
-            for(std::vector<TLorentzVector>::iterator i_phi = phiCandidates.begin(); i_phi != phiCandidates.end(); i_phi++){
-                dphi_point[1] = i_phi->Pt();
-                dphi_point[2] = trigger_phi - i_phi->Phi();
+            for(int i_phi = 0; i_phi < phiCandidates.size(); i_phi++){
+                if(i_track == phiDaughterTrackNum[2*i_phi] || i_track == phiDaughterTrackNum[2*i_phi + 1]) continue; //skip if hadron is one of the daughter particles
+                dphi_point[1] = phiCandidates[i_phi].Pt();
+                dphi_point[2] = trigger_phi - phiCandidates[i_phi].Phi();
                 if(dphi_point[2] < -TMath::Pi()/2.0){
                     dphi_point[2] += 2.0*TMath::Pi();
                 }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
                     dphi_point[2] -= 2.0*TMath::Pi();
                 }
-                dphi_point[3] = triggerTrack->Eta() - i_phi->Eta();
-                dphi_point[4] = TMath::Sqrt(i_phi->E()*i_phi->E() - (i_phi->Px()*i_phi->Px() + i_phi->Py()*i_phi->Py() + i_phi->Pz()*i_phi->Pz()));
+                dphi_point[3] = triggerTrack->Eta() - phiCandidates[i_phi].Eta();
+                dphi_point[4] = TMath::Sqrt(phiCandidates[i_phi].E()*phiCandidates[i_phi].E() - (phiCandidates[i_phi].Px()*phiCandidates[i_phi].Px() + phiCandidates[i_phi].Py()*phiCandidates[i_phi].Py() + phiCandidates[i_phi].Pz()*phiCandidates[i_phi].Pz()));
                 fDphiHPhi->Fill(dphi_point);
             }
 
-            /*
+             for(int i_KK = 0; i_KK < phiLikesignCandidates.size(); i_KK++){
+                if(i_track == likesignDaughterTrackNum[2*i_KK] || i_track == likesignDaughterTrackNum[2*i_KK + 1]) continue; //skip if hadron is one of the daughter particles
+                dphi_point[1] = phiLikesignCandidates[i_KK].Pt();
+                dphi_point[2] = trigger_phi - phiLikesignCandidates[i_KK].Phi();
+                if(dphi_point[2] < -TMath::Pi()/2.0){
+                    dphi_point[2] += 2.0*TMath::Pi();
+                }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
+                    dphi_point[2] -= 2.0*TMath::Pi();
+                }
+                dphi_point[3] = triggerTrack->Eta() - phiLikesignCandidates[i_KK].Eta();
+                dphi_point[4] = TMath::Sqrt(phiLikesignCandidates[i_KK].E()*phiLikesignCandidates[i_KK].E() - (phiLikesignCandidates[i_KK].Px()*phiLikesignCandidates[i_KK].Px() + phiLikesignCandidates[i_KK].Py()*phiLikesignCandidates[i_KK].Py() + phiLikesignCandidates[i_KK].Pz()*phiLikesignCandidates[i_KK].Pz()));
+                fDphiHKK->Fill(dphi_point);
+            }
+
+           /*
             for(Int_t j_track = 0; j_track < ntracks; j_track++){
                 //Exclude double counted particles
                 if(j_track == i_track) continue;
