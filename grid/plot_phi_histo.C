@@ -46,11 +46,11 @@ void plot_phi_histo(string inputName){
             phiInvMass->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
             phiInvMassBinned[i] = (TH1D*)phiInvMass->Projection(1);
             phiInvMassBinned[i]->SetTitle(Form("%.1f < p_{T} < %.1f GeV/c", pt_bounds[i], pt_bounds[i+1]));
-            sideband = phiInvMassBinned[i]->Integral(40,53); //integrating from mass of 1.04 to ~1.06 for the sideband scaling
+            sideband = phiInvMassBinned[i]->Integral(61,81); //integrating from mass of 1.04 to ~1.06 for the sideband scaling
             likeSignInvMass->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
             likeSignInvMassBinned[i] = (TH1D*)likeSignInvMass->Projection(1);
             likeSignInvMassBinned[i]->SetTitle(Form("%.1f < p_{T} < %.1f GeV/c", pt_bounds[i], pt_bounds[i+1]));
-            likeSignSideBand = likeSignInvMassBinned[i]->Integral(40,53);
+            likeSignSideBand = likeSignInvMassBinned[i]->Integral(61,81);
             likeSignInvMassBinned[i]->Scale(sideband/likeSignSideBand);
             likeSignInvMassBinned[i]->SetLineColor(2);
             corrInvMass[i] = (TH1D*)phiInvMassBinned[i]->Clone(Form("corrInvMass_%i_%i", pt_bins[i], pt_bins[i]));
@@ -81,6 +81,8 @@ void plot_phi_histo(string inputName){
     }
      
     THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
+    THnSparseF *dphiHKK = (THnSparseF *)InvMass->FindObject("fDphiHKK");
+
     /*
     THnSparseF *dphiHKstar = (THnSparseF *)InvMass->FindObject("fDphiHKstar");
     THnSparseF *dphiHK = (THnSparseF *)InvMass->FindObject("fDphiHK");
@@ -93,16 +95,64 @@ void plot_phi_histo(string inputName){
     dphiHPhi->GetAxis(0)->SetRange(20, 100); //cutting on trigger pt greater than 4 GeV/c
     dphiHPhi->GetAxis(1)->SetRange(5,15); //cutting on phi pt between 1 GeV/c and 3 GeV/c
     
-    TH1D *phiInvMassPerDPhi[16]; 
+    //performing same cuts for KK pairs:
+    dphiHKK->GetAxis(0)->SetRange(20, 100);
+    dphiHKK->GetAxis(1)->SetRange(5,15);
+
+    TH1D *phiInvMassPerDPhi[16];
+    TH1D *likesignInvMassPerDPhi[16]; 
+    TH1D *corrPhiInvMassPerDPhi[16];
     TCanvas *cInvDPhi = new TCanvas("cInvDPhi", "cIncDPhi", 50,50,800,800);
     cInvDPhi->Divide(4,4);
     for(int i = 0; i < 16; i++){
+        scaleFactor=0.0;
         cInvDPhi->cd(i+1);
         dphiHPhi->GetAxis(2)->SetRange((4*i)+1, 4*(i+1));
+        dphiHKK->GetAxis(2)->SetRange((4*i)+1, 4*(i+1));
+        
         phiInvMassPerDPhi[i] = dphiHPhi->Projection(4);
+        likesignInvMassPerDPhi[i] = dphiHKK->Projection(4);
+        sideband = phiInvMassPerDPhi[i]->Integral(61, 81);
+        likeSignSideBand = likesignInvMassPerDPhi[i]->Integral(61,81);
+
         phiInvMassPerDPhi[i]->SetTitle(Form("Inv Mass dist. for %.2f < #Delta#Phi < %.2f", (-1.57 + i*(0.3925)), (-1.57+(i+1)*(0.3925))));
         phiInvMassPerDPhi[i]->Draw();
+
+        scaleFactor = sideband/likeSignSideBand;
+        likesignInvMassPerDPhi[i]->Scale(scaleFactor);
+        likeSignSideBand = likesignInvMassPerDPhi[i]->Integral(61,81);
+        printf("%d. sideband: %f, likeSignSideBand: %f, difference: %f\n", i, sideband, likeSignSideBand, sideband-likeSignSideBand);
+        likesignInvMassPerDPhi[i]->SetLineColor(2);
+        likesignInvMassPerDPhi[i]->Draw("SAME");
+        corrPhiInvMassPerDPhi[i] = (TH1D*)phiInvMassPerDPhi[i]->Clone();
+        corrPhiInvMassPerDPhi[i]->Add(likesignInvMassPerDPhi[i], -1.0);
     }
+
+    TCanvas *cCorrInvDPhi = new TCanvas("cCorrInvDPhi", "cCorrInvDPhi", 40, 40, 800, 800);
+    cCorrInvDPhi->Divide(4,4);
+    TF1 *dPhiFits[16];
+    double numPhi[16];
+    TH1D* corrDPhi = new TH1D("corrDPhi", "BG-Corrected Hadron-Phi #Delta#Phi distribution", 16, -1.57, 4.71);
+    for(int i = 0; i<16; i++){
+        cCorrInvDPhi->cd(i+1);
+        //dPhiFits[i] = new TF1(Form("dphif%i", i), "gaus", 1.005,1.035); 
+        //dPhiFits[i]->SetParameter(1, 1.020);
+        //dPhiFits[i]->SetParameter(2, 0.0045);
+        //dPhiFits[i]->SetParameter(0, 200);
+        //dPhiFits[i]->SetParLimits(1, 1.015, 1.025);
+        //dPhiFits[i]->SetParLimits(2, 0.0010, 0.007);
+        //dPhiFits[i]->SetParLimits(0, 100, 10000);
+        corrPhiInvMassPerDPhi[i]->Draw();
+        //corrPhiInvMassPerDPhi[i]->Fit(Form("dphif%i", i), "R");
+        //printf("%i. Total: %f\n", i, dPhiFits[i]->Integral(1.005, 1.035));
+        numPhi[i] = corrPhiInvMassPerDPhi[i]->Integral(31, 51);
+        corrDPhi->SetBinContent(i+1, numPhi[i]);
+    }
+
+    TCanvas *cCorrDPhi = new TCanvas("cCorrDPhi", "cCorrDPhi", 30, 30, 600, 600);
+    cCorrDPhi->cd();
+    corrDPhi->Draw();
+
     dphiHPhi->GetAxis(2)->SetRange(0,0);
 
     TH1D *dphiPhiPeak;
