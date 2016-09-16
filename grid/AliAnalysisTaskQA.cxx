@@ -65,31 +65,11 @@ fTrketa(0),
 fTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
-fTPCKaonNSig(0),
-fPDGCodes(0),
-fPhiInvMass(0),
-fTruthPhiInvMass(0),
-fTruthTracksPhiInvMass(0),
-fPhiLikeSignInvMass(0),
-fKInvMass(0),
-fKLikeSignInvMass(0),
-fTPCKaonNSigp(0),
-fTPCKaonNSige(0),
-fTPCKaonNSigK(0),
-fTPCKaonNSigPi(0),
-fPhiDaughterPTKept(0),
-fPhiDaughterPTCut(0),
-fKstarDaughterPTKept(0),
-fKstarDaughterPTCut(0),
-fK0DaughterPTKept(0),
-fK0DaughterPTCut(0),
+fKKUSDist(0),
+fKKLSDist(0),
+fTrigDist(0),
 fDphiHPhi(0),
-fDphiHKK(0),
-fDphiHK(0),
-fDphiHKstar(0),
-fDphiHK0(0),
-fDphiHPi(0),
-fDphiHp(0)
+fDphiHKK(0)
 {
     // Constructor
     // Define input and output slots here
@@ -120,31 +100,11 @@ fTrketa(0),
 fTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
-fTPCKaonNSig(0),
-fPDGCodes(0),
-fPhiInvMass(0),
-fTruthPhiInvMass(0),
-fTruthTracksPhiInvMass(0),
-fPhiLikeSignInvMass(0),
-fKInvMass(0),
-fKLikeSignInvMass(0),
-fTPCKaonNSigp(0),
-fTPCKaonNSige(0),
-fTPCKaonNSigK(0),
-fTPCKaonNSigPi(0),
-fPhiDaughterPTKept(0),
-fPhiDaughterPTCut(0),
-fKstarDaughterPTKept(0),
-fKstarDaughterPTCut(0),
-fK0DaughterPTKept(0),
-fK0DaughterPTCut(0),
+fKKUSDist(0),
+fKKLSDist(0),
+fTrigDist(0),
 fDphiHPhi(0),
-fDphiHKK(0),
-fDphiHK(0),
-fDphiHKstar(0),
-fDphiHK0(0),
-fDphiHPi(0),
-fDphiHp(0)
+fDphiHKK(0)
 {
     //Default constructor
     // Define input and output slots here
@@ -223,20 +183,31 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fOutputList->Add(fTPCNpts);
     
     // TPC NSig histogram 
-    fTPCKaonNSig = new TH2F("fTPCKaonNSig","All Track TPC Nsigma distribution;p (GeV/c);#sigma_{TPC-dE/dx}",1000,0,50,200,-10,10);
+/*    fTPCKaonNSig = new TH2F("fTPCKaonNSig","All Track TPC Nsigma distribution;p (GeV/c);#sigma_{TPC-dE/dx}",1000,0,50,200,-10,10);
     fOutputList->Add(fTPCKaonNSig);
     
     fPDGCodes = new TH1F("fPDGCodes", "PDG codes of tracks", 2000, -1000, 1000);
     fOutputList->Add(fPDGCodes);
+*/
+    // Histogram for trigger distribution
+    Int_t trigBins[3] = {100,100,50};
+    Double_t trigMin[3] = {0.1, 0.0, -2.0};
+    Double_t trigMax[3] = {10.1, 6.28, 2.0};
 
-    // Additional Histograms for Reconstructed Phi mesons
-    Int_t bins[2] = {100, 1000}; //pt, invmass
-    Double_t min[2] = {0.0, 0.5};
-    Double_t max[2] = {10.0, 2.0};
+    fTrigDist = new THnSparseF("fTrigDist", "Distribution for trigger particles", 3, trigBins, trigMin, trigMax);
+    fOutputList->Add(fTrigDist);
+
+    // Additional Histograms for US and LS Kaon pairs:
+    Int_t bins[4] = {100, 200, 100, 50}; //pt, invmass, phi, eta
+    Double_t min[4] = {0.1, 0.98, 0.0, -2.0};
+    Double_t max[4] = {10.1, 1.1, 6.28, 2.0};
  
-    fPhiInvMass = new THnSparseF("fPhiInvMass", "Invariant mass distribution for all K+- pairs per p_{T}", 2, bins, min, max);
-    fOutputList->Add(fPhiInvMass);
+    fKKUSDist = new THnSparseF("fkkUSDist", "Distribution for all US Kaon pairs", 4, bins, min, max);
+    fOutputList->Add(fKKUSDist);
 
+    fKKLSDist = new THnSparseF("fkkLSDist", "Distribution for all LS Kaon pairs", 4, bins, min, max);
+    fOutputList->Add(fKKLSDist);
+/*
     fTruthPhiInvMass = new THnSparseF("fTruthPhiInvMass", "Invariant mass distribution for true K+- that come from #phi per p_{T}", 2, bins, min, max);
     fOutputList->Add(fTruthPhiInvMass);
 
@@ -257,6 +228,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fOutputList->Add(fKLikeSignInvMass);
    
     // Additional TPC Histograms for different particle species (in relation to Kaon)
+
     fTPCKaonNSigK = new TH2F("fTPCKaonNSigK", "Only Kaon TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
     fOutputList->Add(fTPCKaonNSigK);
 
@@ -286,10 +258,10 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 
     fK0DaughterPTCut = new TH2F("fK0DaughterPTCut", "Pt distribution of K0 Meson Daughter Particles, Cut; p_{T}^{#pi^{+}} (GeV/c); p_{T}^{#pi^{-}} (GeV/c)", 40,0,10,40,0,10);
     fOutputList->Add(fK0DaughterPTCut);
-   
+*/   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
-    Int_t dphi_bins[5]=    {100,   100,    64,   24, 120};
-    Double_t dphi_min[5] = {0.0,   0.0, -1.57, -3.0, 0.98};
+    Int_t dphi_bins[5]=    {85,   98,    64,   24, 120};
+    Double_t dphi_min[5] = {3.0,   0.4, -1.57, -3.0, 0.98};
     Double_t dphi_max[5] = {20.0, 20.0,  4.71,  3.0, 1.1};
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 5, dphi_bins, dphi_min, dphi_max);
@@ -466,9 +438,9 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     TLorentzVector phi;
     TLorentzVector K;
 
-    Double_t point[2] = {0, 0};
-    Double_t lspoint[3] = {0, 0, 0};
-    Double_t dphi_point[5] = {0, 0, 0, 0, 0};
+    Double_t distPoint[4] = {0, 0, 0, 0}; //pt, invmass, phi, eta
+    Double_t trigPoint[3] = {0, 0, 0}; //pt, phi, eta
+    Double_t dphi_point[5] = {0, 0, 0, 0, 0}; //trigger pt, phi pt, delta-phi, delta-eta, phi invmass
 
 //    TParticle *MCFirstDecay = 0x0;
 //    AliAODMCParticle* MCFirstDecayTrack = 0x0;
@@ -500,6 +472,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
 
         if(firstDecayTrack->Pt() > 0.15 && TMath::Abs(firstDecayTrack->Eta()) < 0.8){
             Double_t fTPCnSigma = -999;
+            Double_t fTOFnSigma = -999;
             Double_t fpiTPCnSigma = -999;
             //check for labels
             Int_t label = 0;
@@ -532,7 +505,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             */
 
             fTPCnSigma = fpidResponse->NumberOfSigmasTPC(firstDecayTrack, AliPID::kKaon);
-
+            fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(firstDecayTrack, AliPID::kKaon);
 //            TParticle *MCSecondDecay = 0x0;
 //            AliAODMCParticle* MCSecondDecayTrack = 0x0;
             AliVTrack *secondDecayTrack = 0x0;
@@ -540,8 +513,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             AliAODTrack *aSecondDecayTrack = 0x0;
             AliVParticle *vSecondDecayTrack = 0x0;
 
-            //Cut on kaon candidates
-            if(TMath::Abs(fTPCnSigma) < 2.0){
+            //Cut on kaon candidates (and only cut on TOF if it exists, should be -999 if it doesn't)
+            if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0 || fTOFnSigma == -999)){
                 for(Int_t j_track = 0; j_track < ntracks; j_track++){
                     if(i_track == j_track) continue;
                     vSecondDecayTrack = 0x0;
@@ -563,12 +536,13 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
 
                     if(secondDecayTrack->Pt() > 0.15 && TMath::Abs(secondDecayTrack->Eta()) < 0.8){
                         fTPCnSigma = -999;
-                      
+                        fTOFnSigma = -999;
                         fTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kKaon);
+                        fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(secondDecayTrack, AliPID::kKaon);
                         fpiTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kPion);
                         Double_t calcPx = 0.0, calcPy = 0.0, calcPz = 0.0;
                         Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0;
-                        if(TMath::Abs(fTPCnSigma) < 2.0){
+                        if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0 || fTOFnSigma == -999)){
                             calcPx = firstDecayTrack->Px()+secondDecayTrack->Px();
                             calcPy = firstDecayTrack->Py()+secondDecayTrack->Py();
                             calcPz = firstDecayTrack->Pz()+secondDecayTrack->Pz();
@@ -576,15 +550,9 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
 
                             calcE = firstDecayTrack->E() + secondDecayTrack->E();
                             calcInvMass = TMath::Sqrt(calcE*calcE - (calcPx*calcPx + calcPy*calcPy + calcPz*calcPz));
-
-                            point[0] = calcPt;
-                            lspoint[0] = calcPt;
-                            point[1] = calcInvMass;
-                            lspoint[1] = calcInvMass;
-                            lspoint[2] = firstDecayTrack->Charge();
+                            
                             //Unlike sign pairs - create phi inv-mass distribution (and add to vector if invmass between 0.98 and 1.1)
                             if(firstDecayTrack->Charge() == 1 && secondDecayTrack->Charge() == -1){
-                                fPhiInvMass->Fill(point);
                                 if(calcInvMass >= 0.98 && calcInvMass <= 1.1){
                                     //Set-up TLorenztVector (px, py, pz, E), then push to vector
                                     phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
@@ -594,9 +562,14 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                                     phiCandidates.push_back(phi);
                                     phiDaughterTrackNum.push_back(i_track);
                                     phiDaughterTrackNum.push_back(j_track);
+
+                                    distPoint[0] = phi.Pt();
+                                    distPoint[1] = calcInvMass;
+                                    distPoint[2] = phi.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
+                                    distPoint[3] = phi.Eta();
+                                    fKKUSDist->Fill(distPoint);
                                 }
                             }else if(firstDecayTrack->Charge()*secondDecayTrack->Charge() == 1){
-                                fPhiLikeSignInvMass->Fill(lspoint);
                                 if(calcInvMass >= 0.98 && calcInvMass <=1.1){
                                     phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
                                     phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
@@ -605,10 +578,17 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                                     phiLikesignCandidates.push_back(phi);
                                     likesignDaughterTrackNum.push_back(i_track);
                                     likesignDaughterTrackNum.push_back(j_track);
+                                    
+                                    distPoint[0] = phi.Pt();
+                                    distPoint[1] = calcInvMass;
+                                    distPoint[2] = phi.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
+                                    distPoint[3] = phi.Eta();
+                                    fKKLSDist->Fill(distPoint);
                                 }
 
                             }
                         }
+                        /*
                         if(TMath::Abs(fpiTPCnSigma) < 2.0){
                             calcPx = firstDecayTrack->Px()+secondDecayTrack->Px();
                             calcPy = firstDecayTrack->Py()+secondDecayTrack->Py();
@@ -637,7 +617,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                                 fKLikeSignInvMass->Fill(lspoint);
                             }
                             
-                        }
+                        }*/
                     }
                 }
             }
@@ -777,7 +757,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         ////////////////////
         //Track properties//
         ////////////////////
-        Double_t dEdx =-999, fTPCnSigma=-999;
+        Double_t dEdx =-999, fTPCnSigma=-999, fTOFnSigma=-999;
         dEdx = triggerTrack->GetTPCsignal();
        
         //Cut on p_T and eta
@@ -832,6 +812,10 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             //Do Correlation Track Loop, finding correlation particles
             for(int i_phi = 0; i_phi < phiCandidates.size(); i_phi++){
                 if(i_track == phiDaughterTrackNum[2*i_phi] || i_track == phiDaughterTrackNum[2*i_phi + 1]) continue; //skip if hadron is one of the daughter particles
+                trigPoint[0] = triggerTrack->Pt();
+                trigPoint[1] = triggerTrack->Phi();
+                trigPoint[2] = triggerTrack->Eta();
+                fTrigDist->Fill(trigPoint);
                 dphi_point[1] = phiCandidates[i_phi].Pt();
                 dphi_point[2] = trigger_phi - phiCandidates[i_phi].Phi();
                 if(dphi_point[2] < -TMath::Pi()/2.0){

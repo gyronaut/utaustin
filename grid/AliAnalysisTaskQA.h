@@ -46,34 +46,13 @@ private:
     TH2F        *fdEdx;//!dedx vs pt
     TH2F        *fTPCNpts;//!TPC Npoints used for dedx
     TH2F        *fTPCKaonNSig;//!TPC Nsigma
-    TH1F	*fPDGCodes;//particle codes
-   
-    THnSparseF    *fPhiInvMass;
-    THnSparseF    *fTruthPhiInvMass;
-    THnSparseF    *fTruthTracksPhiInvMass;
-    THnSparseF    *fPhiLikeSignInvMass;
-    THnSparseF    *fKInvMass;
-    THnSparseF    *fKLikeSignInvMass;
 
-    TH2F    *fTPCKaonNSigK;
-    TH2F    *fTPCKaonNSigp;
-    TH2F    *fTPCKaonNSige;
-    TH2F    *fTPCKaonNSigPi;
-    TH2F    *fPhiDaughterPTKept;
-    TH2F    *fPhiDaughterPTCut;
-    TH2F    *fKstarDaughterPTKept;
-    TH2F    *fKstarDaughterPTCut;
-    TH2F    *fK0DaughterPTKept;
-    TH2F    *fK0DaughterPTCut;
-
+    THnSparseF  *fTrigDist;
+    THnSparseF  *fKKUSDist;
+    THnSparseF  *fKKLSDist;
     THnSparseF  *fDphiHPhi;
     THnSparseF  *fDphiHKK;
-    THnSparseF  *fDphiHKstar;
-    THnSparseF  *fDphiHK;
-    THnSparseF  *fDphiHK0;
-    THnSparseF  *fDphiHPi;
-    THnSparseF  *fDphiHp;
-
+ 
     AliAnalysisTaskQA(const AliAnalysisTaskQA&); // not implemented
     AliAnalysisTaskQA& operator=(const AliAnalysisTaskQA&); // not implemented
     
