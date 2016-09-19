@@ -18,8 +18,8 @@ void plot_phi_histo(string inputName){
 
     TFile *histoFile = new TFile(inputName.c_str());
     histoFile->cd("PhiReconstruction");
-    THnSparseF *phiInvMass = (THnSparseF *)InvMass->FindObject("fPhiInvMass");
-    THnSparseF *likeSignInvMass = (THnSparseF *)InvMass->FindObject("fPhiLikeSignInvMass");
+    THnSparseF *fkkUSDist = (THnSparseF *)InvMass->FindObject("fkkUSDist");
+    THnSparseF *fkkLSDist = (THnSparseF *)InvMass->FindObject("fkkLSDist");
     TH1D *corrInvMass[16];
     TH1D *phiInvMassBinned[16];
     TH1D *likeSignInvMassBinned[16];
@@ -36,21 +36,24 @@ void plot_phi_histo(string inputName){
     Double_t likeSignSideBand = 0.0;
     Double_t scaleFactor = 0.0;
 
-    if(phiInvMass && likeSignInvMass){
-        phiInvMass->GetAxis(1)->SetRange(320,400);
-        phiInvMass->GetAxis(1)->SetTitle("Inv Mass (GeV/c^2)");
-        likeSignInvMass->GetAxis(1)->SetRange(320,400);
-        likeSignInvMass->SetTitle("Inv Mass (GeV/c^2)");
+    /* Setting up the invariant mass dist for LS and US Kaon pairs (scaled to the sideband region),
+     * and a "BG corrected" invmass per pt dist */
+    if(fkkUSDist && fkkLSDist){
+        fkkUSDist->GetAxis(1)->SetRange(0,200);
+        fkkUSDist->GetAxis(1)->SetTitle("Inv Mass (GeV/c^2)");
+        fkkLSDist->GetAxis(1)->SetRange(0,200);
+        fkkLSDist->SetTitle("Inv Mass (GeV/c^2)");
+        double bins_per_mass = 200.0/(1.1-0.98);
 
         for(int i =0; i<15; i++){
-            phiInvMass->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
-            phiInvMassBinned[i] = (TH1D*)phiInvMass->Projection(1);
+            fkkUSDist->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
+            phiInvMassBinned[i] = (TH1D*)fkkUSDist->Projection(1);
             phiInvMassBinned[i]->SetTitle(Form("%.1f < p_{T} < %.1f GeV/c", pt_bounds[i], pt_bounds[i+1]));
-            sideband = phiInvMassBinned[i]->Integral(61,81); //integrating from mass of 1.04 to ~1.06 for the sideband scaling
-            likeSignInvMass->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
-            likeSignInvMassBinned[i] = (TH1D*)likeSignInvMass->Projection(1);
+            sideband = phiInvMassBinned[i]->Integral((int)(bins_per_mass*(1.04-0.98)),(int)(bins_per_mass*(1.06-0.98))); //integrating from mass of 1.04 to ~1.06 for the sideband scaling
+            fkkLSDist->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
+            likeSignInvMassBinned[i] = (TH1D*)fkkLSDist->Projection(1);
             likeSignInvMassBinned[i]->SetTitle(Form("%.1f < p_{T} < %.1f GeV/c", pt_bounds[i], pt_bounds[i+1]));
-            likeSignSideBand = likeSignInvMassBinned[i]->Integral(61,81);
+            likeSignSideBand = likeSignInvMassBinned[i]->Integral((int)(bins_per_mass*(1.04-0.98)),(int)(bins_per_mass*(1.06-0.98)));
             likeSignInvMassBinned[i]->Scale(sideband/likeSignSideBand);
             scaleFactor = sideband/likeSignSideBand;
             likeSignInvMassBinned[i]->SetLineColor(2);
@@ -83,14 +86,6 @@ void plot_phi_histo(string inputName){
      
     THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
     THnSparseF *dphiHKK = (THnSparseF *)InvMass->FindObject("fDphiHKK");
-
-    /*
-    THnSparseF *dphiHKstar = (THnSparseF *)InvMass->FindObject("fDphiHKstar");
-    THnSparseF *dphiHK = (THnSparseF *)InvMass->FindObject("fDphiHK");
-    THnSparseF *dphiHPi = (THnSparseF *)InvMass->FindObject("fDphiHPi");
-    THnSparseF *dphiHp = (THnSparseF *)InvMass->FindObject("fDphiHp");
-    THnSparseF *dphiHK0 = (THnSparseF *)InvMass->FindObject("fDphiHK0");
-    */
     TH3D *HPhiDphi = dphiHPhi->Projection(0,1,2);
     
     dphiHPhi->GetAxis(0)->SetRange(20, 100); //cutting on trigger pt greater than 4 GeV/c
@@ -127,9 +122,9 @@ void plot_phi_histo(string inputName){
         likesignInvMassPerDPhi[i]->Draw("SAME HIST E");
         
         //For corrected plots, need to rebin the distributions to get rid of some of the noise
-        phiInvMassPerDPhi[i]->Rebin(4);
+        phiInvMassPerDPhi[i]->Rebin();
         phiInvMassPerDPhi[i]->Sumw2();
-        likesignInvMassPerDPhi[i]->Rebin(4);
+        likesignInvMassPerDPhi[i]->Rebin();
         likesignInvMassPerDPhi[i]->Sumw2();
         corrPhiInvMassPerDPhi[i] = (TH1D*)phiInvMassPerDPhi[i]->Clone();
         corrPhiInvMassPerDPhi[i]->Add(likesignInvMassPerDPhi[i], -1.0);
@@ -235,4 +230,5 @@ void plot_phi_histo(string inputName){
     dphiUSPeak->Draw("SAME");
     dphiLSPeak->SetLineColor(2);
     dphiLSPeak->Draw("SAME");
+
 }
