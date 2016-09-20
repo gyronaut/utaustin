@@ -208,21 +208,15 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fKKLSDist = new THnSparseF("fkkLSDist", "Distribution for all LS Kaon pairs", 4, bins, min, max);
     fOutputList->Add(fKKLSDist);
 /*
-    fTruthPhiInvMass = new THnSparseF("fTruthPhiInvMass", "Invariant mass distribution for true K+- that come from #phi per p_{T}", 2, bins, min, max);
-    fOutputList->Add(fTruthPhiInvMass);
-
-    fTruthTracksPhiInvMass = new THnSparseF("fTruthTracksPhiInvMass", "Invariant mass distribution of reconstructed tracks known to come from #phi per p_{T}", 2, bins, min, max);
-    fOutputList->Add(fTruthTracksPhiInvMass);
-
-    fKInvMass = new THnSparseF("fKInvMass", "Invariant mass distribution for all unlike sign Kaon/Pion pairs per p_{T}", 2, bins, min, max);
-    fOutputList->Add(fKInvMass);
-
     Int_t lsbins[3] = {100, 1000, 3};
     Double_t lsmin[3] = {0.0, 0.5, -1.1};
     Double_t lsmax[3] = {10.0, 2.0, 1.1};
 
-    fPhiLikeSignInvMass = new THnSparseF("fPhiLikeSignInvMass", "Invariant mass distribution of like-sign Kaon pairs per p_{T}", 3, lsbins, lsmin, lsmax);
-    fOutputList->Add(fPhiLikeSignInvMass);
+    fPhiUSInvMass = new THnSparseF("fPhiUSInvMass", "Invariant mass dist. of unlike-sign Kaon pairs per p_{T}", 2, lsbins, lsmin, lsmax);
+    fOutputList->Add(fPhiUSInvMass);
+
+    fPhiLSInvMass = new THnSparseF("fPhiLikeSignInvMass", "Invariant mass distribution of like-sign Kaon pairs per p_{T}", 3, lsbins, lsmin, lsmax);
+    fOutputList->Add(fPhiLSInvMass);
 
     fKLikeSignInvMass = new THnSparseF("fKLikeSignInvMass", "Invariant mass distribution of like-sign Kaon/Pion pairs per p_{T}", 3, lsbins, lsmin, lsmax);
     fOutputList->Add(fKLikeSignInvMass);
@@ -269,23 +263,6 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 
     fDphiHKK = new THnSparseF("fDphiHKK", "Hadron-#KK likesign #Delta#phi correlations", 5, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHKK);
-
-/*
-    fDphiHKstar = new THnSparseF("fDphiHKstar", "Hadron-K*(892) #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHKstar);
-
-    fDphiHK = new THnSparseF("fDphiHK", "Hadron-Kaon #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHK);
-
-    fDphiHK0 = new THnSparseF("fDphiHK0", "Hadron-K0 #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHK0);
-
-    fDphiHPi = new THnSparseF("fDphiHPi", "Hadron-Pi #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHPi);
-
-    fDphiHp = new THnSparseF("fDphiHp", "Hadron-proton #Delta#phi correlations", 3, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHp);
-*/
     PostData(1,fOutputList);
 }
 
@@ -505,7 +482,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             */
 
             fTPCnSigma = fpidResponse->NumberOfSigmasTPC(firstDecayTrack, AliPID::kKaon);
-            fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(firstDecayTrack, AliPID::kKaon);
+//            fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(firstDecayTrack, AliPID::kKaon);
 //            TParticle *MCSecondDecay = 0x0;
 //            AliAODMCParticle* MCSecondDecayTrack = 0x0;
             AliVTrack *secondDecayTrack = 0x0;
@@ -538,7 +515,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                         fTPCnSigma = -999;
                         fTOFnSigma = -999;
                         fTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kKaon);
-                        fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(secondDecayTrack, AliPID::kKaon);
+                        //fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(secondDecayTrack, AliPID::kKaon);
                         fpiTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kPion);
                         Double_t calcPx = 0.0, calcPy = 0.0, calcPz = 0.0;
                         Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0;
@@ -757,7 +734,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         ////////////////////
         //Track properties//
         ////////////////////
-        Double_t dEdx =-999, fTPCnSigma=-999, fTOFnSigma=-999;
+        Double_t dEdx =-999, fTPCnSigma=-999;
         dEdx = triggerTrack->GetTPCsignal();
        
         //Cut on p_T and eta

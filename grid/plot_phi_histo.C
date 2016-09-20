@@ -20,6 +20,10 @@ void plot_phi_histo(string inputName){
     histoFile->cd("PhiReconstruction");
     THnSparseF *fkkUSDist = (THnSparseF *)InvMass->FindObject("fkkUSDist");
     THnSparseF *fkkLSDist = (THnSparseF *)InvMass->FindObject("fkkLSDist");
+    THnSparseF *fTrigDist = (THnSparseF *)InvMass->FindObject("fTrigDist");
+    THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
+    THnSparseF *dphiHKK = (THnSparseF *)InvMass->FindObject("fDphiHKK");
+
     TH1D *corrInvMass[16];
     TH1D *phiInvMassBinned[16];
     TH1D *likeSignInvMassBinned[16];
@@ -62,8 +66,63 @@ void plot_phi_histo(string inputName){
             corrInvMass[i]->Fit(Form("f%i", i), "R");
             sigmas[i] = fits[i]->GetParameter("Sigma");
         }
-    }   
+    }else{
+      printf("couldn't open kk distributions!\n");
+      return 0;
+    }
 
+    // Plotting distributions for KK pairs (US and LS) and trigger particles
+
+    TCanvas *cLSDist = new TCanvas("cLSDist", "cLSDist", 50, 50, 800, 800);
+    cLSDist->Divide(2,2);
+    TCanvas *cUSDist = new TCanvas("cUSDist", "cUSDist", 50, 50, 800, 800);
+    cUSDist->Divide(2,2);
+    TCanvas *cTrigDist = new TCanvas("cTrigDist", "cTrigDist", 50, 50, 800, 800);
+    cTrigDist->Divide(2,2);
+
+    fkkLSDist->GetAxis(0)->SetRangeUser(1.0, 3.0);
+    fkkUSDist->GetAxis(0)->SetRangeUser(1.0, 3.0);
+    //fkkUSDist->GetAxis(1)->SetRangeUser(1.01, 1.03);
+    fTrigDist->GetAxis(0)->SetRangeUser(4.0, 10.1);
+    TH1D* hLSDist[3];
+    TH1D* hUSDist[3];
+    TH1D* hTrigDist[2];
+    for(int i=0; i<3; i++){
+        hLSDist[i] = fkkLSDist->Projection(i+1);
+        hUSDist[i] = fkkUSDist->Projection(i+1);
+        if(i<2){
+            hTrigDist[i] = fTrigDist->Projection(i+1);
+        }
+    }
+    fkkLSDist->GetAxis(0)->SetRangeUser(0.1, 10.1);
+    fkkUSDist->GetAxis(0)->SetRangeUser(0.1, 10.1);
+    fkkUSDist->GetAxis(1)->SetRangeUser(0.98, 1.1);
+    fTrigDist->GetAxis(0)->SetRangeUser(0.1, 10.1);
+
+    for(int i=0; i<4; i++){
+        if(i==0){
+            cLSDist->cd(i+1);
+            fkkLSDist->Projection(i)->Draw("SAME");
+            cUSDist->cd(i+1);
+            fkkUSDist->Projection(i)->Draw("SAME");
+            cTrigDist->cd(i+1);
+            fTrigDist->Projection(i)->Draw("SAME");
+        }else if(i==1){
+            cLSDist->cd(i+1);
+            hLSDist[i-1]->Draw("SAME");
+            cUSDist->cd(i+1);
+            hUSDist[i-1]->Draw("SAME");            
+        }else{
+            cLSDist->cd(i+1);
+            hLSDist[i-1]->Draw("SAME");
+            cUSDist->cd(i+1);
+            hUSDist[i-1]->Draw("SAME");
+            cTrigDist->cd(i+1);
+            hTrigDist[i-2]->Draw("SAME");
+        }
+    }
+
+    // Plotting the US and LS invariant mass per pT bin on the same plot
     TCanvas *c0 = new TCanvas("cTest", "cTest", 50, 50, 800, 800);
     c0->Divide(4,4);
 
@@ -74,20 +133,19 @@ void plot_phi_histo(string inputName){
     }
 
 
+    // Plotting the 'corrected' invariant mass per pT bin
     TCanvas *c1 = new TCanvas("cCorrInvMass", "cCorrInvMass", 50, 50, 800, 800);
     c1->Divide(4,4);
 
     for(int k =0; k < 15; k++){
         c1->cd(k+1);
-        //printf("sigma: %E\n", sigmas[k]);
         corrInvMass[k]->Draw();
         fits[k]->Draw("SAME");
     }
      
-    THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
-    THnSparseF *dphiHKK = (THnSparseF *)InvMass->FindObject("fDphiHKK");
+
     TH3D *HPhiDphi = dphiHPhi->Projection(0,1,2);
-    
+   
     dphiHPhi->GetAxis(0)->SetRange(20, 100); //cutting on trigger pt greater than 4 GeV/c
     dphiHPhi->GetAxis(1)->SetRange(5,15); //cutting on phi pt between 1 GeV/c and 3 GeV/c
     
