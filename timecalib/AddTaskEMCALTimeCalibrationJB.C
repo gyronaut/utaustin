@@ -1,7 +1,7 @@
 /// \file AddTaskEMCALTimeCalibration.C
-/// \brief Configuration of task AliAnalysisTaskEMCALTimeCalib.
+/// \brief Configuration of task AliAnalysisTaskEMCALTimeCalibJB.
 ///
-/// Configuration of task AliAnalysisTaskEMCALTimeCalib
+/// Configuration of task AliAnalysisTaskEMCALTimeCalibJB
 ///
 /// The parameters for the analysis are:
 /// \param outputFile: TString, output file name
@@ -26,7 +26,7 @@
 /// \author Adam Matyja <adam.tomasz.matyja@ifj.edu.pl>, INP PAN Cracow
 ///
 
-AliAnalysisTaskEMCALTimeCalib  * AddTaskEMCALTimeCalibration(TString  outputFile = "", // timeResults.root
+AliAnalysisTaskEMCALTimeCalibJB* AddTaskEMCALTimeCalibrationJB(TString  outputFile = "", // timeResults.root
 							     TString  geometryName = "",//EMCAL_COMPLETE12SMV1_DCAL_8SM
 							     Double_t minClusterEne = 1.0,
 							     Double_t maxClusterEne = 500,
@@ -53,7 +53,7 @@ AliAnalysisTaskEMCALTimeCalib  * AddTaskEMCALTimeCalibration(TString  outputFile
   AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
   if (!mgr) 
   {
-    ::Error("AddTaskEMCALTimeCalibration", "No analysis manager to connect to.");
+    ::Error("AddTaskEMCALTimeCalibrationJB", "No analysis manager to connect to.");
     return NULL;
   }  
   
@@ -61,11 +61,11 @@ AliAnalysisTaskEMCALTimeCalib  * AddTaskEMCALTimeCalibration(TString  outputFile
   //==============================================================================
   if (!mgr->GetInputEventHandler()) 
   {
-    ::Error("AddTaskEMCALTimeCalibration", "This task requires an input event handler");
+    ::Error("AddTaskEMCALTimeCalibrationJB", "This task requires an input event handler");
     return NULL;
   }
     
-  AliAnalysisTaskEMCALTimeCalib *taskmbemcal = new AliAnalysisTaskEMCALTimeCalib("TimeCalibTask");
+  AliAnalysisTaskEMCALTimeCalibJB *taskmbemcal = new AliAnalysisTaskEMCALTimeCalibJB("TimeCalibTask");
   taskmbemcal->SelectCollisionCandidates(AliVEvent::kEMC1|AliVEvent::kEMC7|AliVEvent::kEMC8|AliVEvent::kEMCEJE|AliVEvent::kEMCEGA);
   taskmbemcal->SetGeometryName(geometryName);
   taskmbemcal->SetMinClusterEnergy (minClusterEne);

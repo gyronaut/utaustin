@@ -1,8 +1,8 @@
-#ifndef AliAnalysisTaskEMCALTimeCalib_h
-#define AliAnalysisTaskEMCALTimeCalib_h
+#ifndef AliAnalysisTaskEMCALTimeCalibJB_h
+#define AliAnalysisTaskEMCALTimeCalibJB_h
 
 //_________________________________________________________________________
-/// \class AliAnalysisTaskEMCALTimeCalib
+/// \class AliAnalysisTaskEMCALTimeCalibJB
 /// \brief Task to work on Time Calibration for EMCal/DCal.
 ///
 /// Derived from "Exercice with a task to work on T0 from TOF or T0" by Hugues Delagrange (SUBATECH)"
@@ -62,13 +62,13 @@ class AliTOFT0maker;
 
 #include "AliAnalysisTaskSE.h"
 
-class AliAnalysisTaskEMCALTimeCalib : public AliAnalysisTaskSE 
+class AliAnalysisTaskEMCALTimeCalibJB : public AliAnalysisTaskSE 
 {
  public:
 
   enum { kNSM = 20, kNBCmask = 4 };
 
-   AliAnalysisTaskEMCALTimeCalib() : AliAnalysisTaskSE(),
+   AliAnalysisTaskEMCALTimeCalibJB() : AliAnalysisTaskSE(),
     fRunNumber(-1),
     fTOFmaker(0),
     fOutputList(0),
@@ -149,8 +149,8 @@ class AliAnalysisTaskEMCALTimeCalib : public AliAnalysisTaskSE
     fhTimeVsIdLGBC()
     { ; }
   
-  AliAnalysisTaskEMCALTimeCalib(const char *name);
-  virtual ~AliAnalysisTaskEMCALTimeCalib() { ; }
+  AliAnalysisTaskEMCALTimeCalibJB(const char *name);
+  virtual ~AliAnalysisTaskEMCALTimeCalibJB() { ; }
   
   //  virtual void   LocalInit();
   //virtual Bool_t Notify();
@@ -384,13 +384,13 @@ class AliAnalysisTaskEMCALTimeCalib : public AliAnalysisTaskSE
   TH2F          *fhTimeVsIdLGBC[kNBCmask]; //!<! 4 BCmask LG
 
   /// Copy constructor not implemented.
-  AliAnalysisTaskEMCALTimeCalib(           const AliAnalysisTaskEMCALTimeCalib&);
+  AliAnalysisTaskEMCALTimeCalibJB(           const AliAnalysisTaskEMCALTimeCalibJB&);
   
   /// Assignment operator not implemented.
-  AliAnalysisTaskEMCALTimeCalib& operator=(const AliAnalysisTaskEMCALTimeCalib&); 
+  AliAnalysisTaskEMCALTimeCalibJB& operator=(const AliAnalysisTaskEMCALTimeCalibJB&); 
   
 /// \cond CLASSIMP
-  ClassDef(AliAnalysisTaskEMCALTimeCalib, 3) ;
+  ClassDef(AliAnalysisTaskEMCALTimeCalibJB, 3) ;
 /// \endcond
 };
 

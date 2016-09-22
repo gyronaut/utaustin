@@ -50,10 +50,10 @@
 #include "AliEMCALGeometry.h"
 #include "AliOADBContainer.h"
 
-#include "AliAnalysisTaskEMCALTimeCalib.h"
+#include "AliAnalysisTaskEMCALTimeCalibJB.h"
 
 /// \cond CLASSIMP
-ClassImp(AliAnalysisTaskEMCALTimeCalib) ;
+ClassImp(AliAnalysisTaskEMCALTimeCalibJB) ;
 /// \endcond
 
 using std::cout;
@@ -61,7 +61,7 @@ using std::endl;
 
 //________________________________________________________________________
 /// Constructor
-AliAnalysisTaskEMCALTimeCalib::AliAnalysisTaskEMCALTimeCalib(const char *name)
+AliAnalysisTaskEMCALTimeCalibJB::AliAnalysisTaskEMCALTimeCalibJB(const char *name)
 : AliAnalysisTaskSE(name),
   fRunNumber(-1),
   fTOFmaker(0),
@@ -193,14 +193,14 @@ AliAnalysisTaskEMCALTimeCalib::AliAnalysisTaskEMCALTimeCalib(const char *name)
 /// Look the proper source to have more information
 /// Modified July 2, 2010 - HKD to take into account
 /// the changes in ALiTOFT0maker
-//void AliAnalysisTaskEMCALTimeCalib::LocalInit()
+//void AliAnalysisTaskEMCALTimeCalibJB::LocalInit()
 //{
-//  AliDebug(1,"AliAnalysisTaskEMCALTimeCalib::LocalInit()");
+//  AliDebug(1,"AliAnalysisTaskEMCALTimeCalibJB::LocalInit()");
 //}
 
 /// Load reference Histograms (for one period) from file
 //_____________________________________________________________________
-void AliAnalysisTaskEMCALTimeCalib::LoadReferenceHistos()
+void AliAnalysisTaskEMCALTimeCalibJB::LoadReferenceHistos()
 {
   if(fReferenceFileName.Length()!=0){
     TFile *myFile = TFile::Open(fReferenceFileName.Data());
@@ -229,12 +229,12 @@ void AliAnalysisTaskEMCALTimeCalib::LoadReferenceHistos()
   } else { //end of reference file is provided
     AliFatal("You require to load reference histos from file but FILENAME is not provided");
   }
-} // End of AliAnalysisTaskEMCALTimeCalib::LoadReferenceHistos()
+} // End of AliAnalysisTaskEMCALTimeCalibJB::LoadReferenceHistos()
 
 /// Load reference Histograms (run-by-run in one period) from file into memory
 /// This method should be called at the beginning of processing only once
 //_____________________________________________________________________
-void AliAnalysisTaskEMCALTimeCalib::LoadReferenceRunByRunHistos()
+void AliAnalysisTaskEMCALTimeCalibJB::LoadReferenceRunByRunHistos()
 {
   // connect ref run here
   if(fReferenceRunByRunFileName.Length()!=0){
@@ -258,12 +258,12 @@ void AliAnalysisTaskEMCALTimeCalib::LoadReferenceRunByRunHistos()
     AliFatal("You require to load reference run-by-run histos from file but FILENAME is not provided");
     return;
   }
-} // End of AliAnalysisTaskEMCALTimeCalib::LoadReferenceRunByRunHistos()
+} // End of AliAnalysisTaskEMCALTimeCalibJB::LoadReferenceRunByRunHistos()
 
 /// Load reference histogram with L1 phases for given run
 /// This method should be called per run
 ////_____________________________________________________________________
-void AliAnalysisTaskEMCALTimeCalib::SetL1PhaseReferenceForGivenRun()
+void AliAnalysisTaskEMCALTimeCalibJB::SetL1PhaseReferenceForGivenRun()
 {
   fhRefRuns=NULL;
   if(!fL1PhaseList) {
@@ -293,7 +293,7 @@ void AliAnalysisTaskEMCALTimeCalib::SetL1PhaseReferenceForGivenRun()
 //_____________________________________________________________________
 /// Connect ESD or AOD here
 /// Called when run is changed
-void AliAnalysisTaskEMCALTimeCalib::NotifyRun()
+void AliAnalysisTaskEMCALTimeCalibJB::NotifyRun()
 {
   AliDebug(1,"AnalysisTaskEMCalTimeCalib::NotifyRun()");
   AliDebug(2,Form("Notify(): EMCal geometry: fgeom = %p, fGeometryName=%s\n ",fgeom,fGeometryName.Data()));
@@ -325,9 +325,9 @@ void AliAnalysisTaskEMCALTimeCalib::NotifyRun()
 
 //_____________________________________________________________________
 /// Set the EMCal Geometry
-Bool_t AliAnalysisTaskEMCALTimeCalib::SetEMCalGeometry()
+Bool_t AliAnalysisTaskEMCALTimeCalibJB::SetEMCalGeometry()
 {
-  AliDebug(1,"AliAnalysisTaskEMCALTimeCalib::SetEMCalGeometry()");
+  AliDebug(1,"AliAnalysisTaskEMCALTimeCalibJB::SetEMCalGeometry()");
   if(fGeometryName.Length()==0){
     fgeom=AliEMCALGeometry::GetInstanceFromRunNumber(fRunNumber);
     AliInfo(Form("Get EMCAL geometry name <%s> for run %d",fgeom->GetName(),fRunNumber));
@@ -347,7 +347,7 @@ Bool_t AliAnalysisTaskEMCALTimeCalib::SetEMCalGeometry()
 
 //_____________________________________________________________________
 /// Get T0 time from TOF
-void AliAnalysisTaskEMCALTimeCalib::PrepareTOFT0maker()
+void AliAnalysisTaskEMCALTimeCalibJB::PrepareTOFT0maker()
 {
   //method under development
   AliInfo(Form("<D> -- Run # = %d", fRunNumber));
@@ -379,9 +379,9 @@ void AliAnalysisTaskEMCALTimeCalib::PrepareTOFT0maker()
 //________________________________________________________________________
 /// Create histograms
 /// Called once
-void AliAnalysisTaskEMCALTimeCalib::UserCreateOutputObjects()
+void AliAnalysisTaskEMCALTimeCalibJB::UserCreateOutputObjects()
 {
-  AliDebug(1,"AliAnalysisTaskEMCALTimeCalib::UserCreateOutputObjects()");
+  AliDebug(1,"AliAnalysisTaskEMCALTimeCalibJB::UserCreateOutputObjects()");
 
   const Int_t nChannels = 17664;
   //book histograms
@@ -635,11 +635,11 @@ void AliAnalysisTaskEMCALTimeCalib::UserCreateOutputObjects()
   PostData(1,fOutputList);
 
   
-} // End of AliAnalysisTaskEMCALTimeCalib::UserCreateOuputObjects()
+} // End of AliAnalysisTaskEMCALTimeCalibJB::UserCreateOuputObjects()
 
 //________________________________________________________________________
 /// Main loop executed for each event
-void AliAnalysisTaskEMCALTimeCalib::UserExec(Option_t *)
+void AliAnalysisTaskEMCALTimeCalibJB::UserExec(Option_t *)
 {
   // Called for each event
   AliDebug(2,Form("UserExec: EMCal geometry: fgeom = %p fGeometryName %s",fgeom,fGeometryName.Data()));
@@ -951,12 +951,12 @@ void AliAnalysisTaskEMCALTimeCalib::UserExec(Option_t *)
 // } // end if trigger type 
 
   PostData(1, fOutputList);  
-} // End of AliAnalysisTaskEMCALTimeCalib::UserExec()
+} // End of AliAnalysisTaskEMCALTimeCalibJB::UserExec()
 
 //________________________________________________________________________
 /// Draw result to the screen
 /// Called once at the end of the query
-void AliAnalysisTaskEMCALTimeCalib::Terminate(Option_t *)
+void AliAnalysisTaskEMCALTimeCalibJB::Terminate(Option_t *)
 {
   fOutputList = dynamic_cast<TList*> (GetOutputData(1));
   
@@ -978,11 +978,11 @@ void AliAnalysisTaskEMCALTimeCalib::Terminate(Option_t *)
     AliDebug(1,"ERROR: Output list not available");
     return;
   }
-} // End of AliAnalysisTaskEMCALTimeCalib::Terminate
+} // End of AliAnalysisTaskEMCALTimeCalibJB::Terminate
 
 //________________________________________________________________________
 /// Selection criteria of good cluster are set here
-Bool_t AliAnalysisTaskEMCALTimeCalib::AcceptCluster(AliVCluster* clus)
+Bool_t AliAnalysisTaskEMCALTimeCalibJB::AcceptCluster(AliVCluster* clus)
 {
   //fix with noisy EMCAL fee card
   Int_t nCells = clus->GetNCells();
@@ -1037,11 +1037,11 @@ Bool_t AliAnalysisTaskEMCALTimeCalib::AcceptCluster(AliVCluster* clus)
 
 
   return kTRUE;
-}//End AliAnalysisTaskEMCALTimeCalib::AcceptCluster
+}//End AliAnalysisTaskEMCALTimeCalibJB::AcceptCluster
 
 //________________________________________________________________________
 /// Check if low gain cell is in a cluster
-Bool_t  AliAnalysisTaskEMCALTimeCalib::IsLowGainCellInCluster(AliVCluster* clus){
+Bool_t  AliAnalysisTaskEMCALTimeCalibJB::IsLowGainCellInCluster(AliVCluster* clus){
   UShort_t * index = clus->GetCellsAbsId() ;
   AliVCaloCells &cells= *(InputEvent()->GetEMCALCells());
   for(Int_t i = 0; i < clus->GetNCells() ; i++) {
@@ -1053,7 +1053,7 @@ Bool_t  AliAnalysisTaskEMCALTimeCalib::IsLowGainCellInCluster(AliVCluster* clus)
 
 //________________________________________________________________________
 /// Check RCU for cell given by Super Module, column index, row index
-Bool_t AliAnalysisTaskEMCALTimeCalib::CheckCellRCU(Int_t nSupMod,Int_t icol,Int_t irow)
+Bool_t AliAnalysisTaskEMCALTimeCalibJB::CheckCellRCU(Int_t nSupMod,Int_t icol,Int_t irow)
 {
   Int_t iRCU;
   if(nSupMod < 10 || (nSupMod >= 12 && nSupMod <18) ) 
@@ -1079,11 +1079,11 @@ Bool_t AliAnalysisTaskEMCALTimeCalib::CheckCellRCU(Int_t nSupMod,Int_t icol,Int_
     AliFatal(Form("Wrong EMCAL/DCAL RCU number = %d\n", iRCU));
 
   return kTRUE;
-}//End AliAnalysisTaskEMCALTimeCalib::CheckCellRCU
+}//End AliAnalysisTaskEMCALTimeCalibJB::CheckCellRCU
 
 //________________________________________________________________________
 /// Set default cuts for calibration
-void AliAnalysisTaskEMCALTimeCalib::SetDefaultCuts()
+void AliAnalysisTaskEMCALTimeCalibJB::SetDefaultCuts()
 {
   fMinClusterEnergy=1.0;//0.5//0.7
   fMaxClusterEnergy=500;
@@ -1131,7 +1131,7 @@ void AliAnalysisTaskEMCALTimeCalib::SetDefaultCuts()
 /// input - root file with histograms 
 /// output - root file with constants in historams
 /// isFinal - flag: kFALSE-first iteration, kTRUE-final iteration
-void AliAnalysisTaskEMCALTimeCalib::ProduceCalibConsts(TString inputFile,TString outputFile,Bool_t isFinal)
+void AliAnalysisTaskEMCALTimeCalibJB::ProduceCalibConsts(TString inputFile,TString outputFile,Bool_t isFinal)
 {
   TFile *file =new TFile(inputFile.Data());
   if(file==0x0) {
@@ -1254,7 +1254,7 @@ void AliAnalysisTaskEMCALTimeCalib::ProduceCalibConsts(TString inputFile,TString
 /// Calculate calibration constants per SM (equivalent of L1 phase)
 /// input - root file with calibration constants from 1st pass
 /// output - root file with histograms for given run offset per SM 
-void AliAnalysisTaskEMCALTimeCalib::ProduceOffsetForSMsV2(Int_t runNumber,TString inputFile,TString outputFile, Bool_t offset100, Bool_t justL1phase){
+void AliAnalysisTaskEMCALTimeCalibJB::ProduceOffsetForSMsV2(Int_t runNumber,TString inputFile,TString outputFile, Bool_t offset100, Bool_t justL1phase){
 
 const  Double_t lowerLimit[]={
     0,
@@ -1378,11 +1378,11 @@ const  Double_t upperLimit[]={
 }
 
 //____________________________________________________
-void AliAnalysisTaskEMCALTimeCalib::LoadBadChannelMapOADB()
+void AliAnalysisTaskEMCALTimeCalibJB::LoadBadChannelMapOADB()
 {
   if(fBadChannelMapSet) return;
   AliOADBContainer *contBC=new AliOADBContainer("");
-  contBC->InitFromFile(Form("%s/EMCALBadChannels.root","alien://$ALICE_PHYSICS/OADB/EMCAL"),"AliEMCALBadChannels"); 
+  contBC->InitFromFile(Form("%s/EMCALBadChannels.root","$ALICE_PHYSICS/OADB/EMCAL"),"AliEMCALBadChannels"); 
   printf("contBC %p, ent  %d\n",contBC,contBC->GetNumberOfEntries());
   TObjArray *arrayBC=(TObjArray*)contBC->GetObject(fRunNumber);
   if(arrayBC) {
@@ -1405,7 +1405,7 @@ void AliAnalysisTaskEMCALTimeCalib::LoadBadChannelMapOADB()
 }  // Bad channel map loaded
 
 //____________________________________________________
-void AliAnalysisTaskEMCALTimeCalib::LoadBadChannelMapFile()
+void AliAnalysisTaskEMCALTimeCalibJB::LoadBadChannelMapFile()
 {
   if(fBadChannelMapSet) return;
 
@@ -1426,7 +1426,7 @@ void AliAnalysisTaskEMCALTimeCalib::LoadBadChannelMapFile()
 
 //_____________________________________________________________________
 /// Load Bad Channel Map from different source
-void AliAnalysisTaskEMCALTimeCalib::LoadBadChannelMap(){
+void AliAnalysisTaskEMCALTimeCalibJB::LoadBadChannelMap(){
   if(fSetBadChannelMapSource==1) LoadBadChannelMapOADB();
   else if(fSetBadChannelMapSource==2) LoadBadChannelMapFile();
 }
