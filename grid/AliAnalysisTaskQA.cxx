@@ -524,8 +524,12 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                             calcPy = firstDecayTrack->Py()+secondDecayTrack->Py();
                             calcPz = firstDecayTrack->Pz()+secondDecayTrack->Pz();
                             calcPt = TMath::Sqrt(calcPx*calcPx + calcPy*calcPy);
-
-                            calcE = firstDecayTrack->E() + secondDecayTrack->E();
+                            
+                            //calcE = firstDecayTrack->E() + secondDecayTrack->E();
+                          //calculating energy of each kaon candidate assuming k mass
+                            calcE1 = TMath::Sqrt(0.4937*0.4937 + firstDecayTrack->P()*firstDecayTrack->P());
+                            calcE2 = TMath::Sqrt(0.4937*0.4937 + secondDecayTrack->P()*secondDecayTrack->P());
+                            calcE = calcE1 + calcE2;
                             calcInvMass = TMath::Sqrt(calcE*calcE - (calcPx*calcPx + calcPy*calcPy + calcPz*calcPz));
                             
                             //Unlike sign pairs - create phi inv-mass distribution (and add to vector if invmass between 0.98 and 1.1)
