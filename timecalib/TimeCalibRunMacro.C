@@ -18,7 +18,7 @@ void TimeCalibRunMacro()
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "TimeCalibWork";
-   char* output_dir = "BCMapTesting";
+   char* output_dir = "BCMapTesting_OADB";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
    Int_t runcycle[]={0,1};
@@ -32,7 +32,7 @@ void TimeCalibRunMacro()
    
     alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros  -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_PHYSICS/PWG/EMCAL -g");
     
-    alienHandler->SetAdditionalLibs("AliAnalysisTaskEMCALTimeCalib.cxx AliAnalysisTaskEMCALTimeCalib.h AddTaskEMCALTimeCalibration.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libTENDER.so libTENDERSupplies.so libPWGTools.so libPWGEMCAL.so");
+    alienHandler->SetAdditionalLibs("AliAnalysisTaskEMCALTimeCalibJB.cxx AliAnalysisTaskEMCALTimeCalibJB.h AddTaskEMCALTimeCalibrationJB.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libTENDER.so libTENDERSupplies.so libPWGTools.so libPWGEMCAL.so");
     
   if(UseParfiles){
     alienHandler->SetupPar("PWGHFhfe");
@@ -42,7 +42,7 @@ void TimeCalibRunMacro()
 // Trying to add new PHYSICS package
 //  alienHandler->AddExternalPackage("AliPhysics::vAN-20160606-1");
 
-  alienHandler->SetAnalysisSource("AliAnalysisTaskEMCALTimeCalib.cxx");
+  alienHandler->SetAnalysisSource("AliAnalysisTaskEMCALTimeCalibJB.cxx");
   //alienHandler->SetOverwriteMode();
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(5);
@@ -127,10 +127,10 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
 //    mgr->SetMCtruthEventHandler(mcH);   
 //    mcH->SetReadTR(kFALSE);
 
-   gROOT->LoadMacro("AddTaskEMCALTimeCalibration.C");
-   gROOT->LoadMacro("AliAnalysisTaskEMCALTimeCalib.cxx++g");
+   gROOT->LoadMacro("AliAnalysisTaskEMCALTimeCalibJB.cxx++g");
+   gROOT->LoadMacro("AddTaskEMCALTimeCalibrationJB.C");
    gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
-   gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
+//   gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
 
 
     //switch on aliphysicsselection
@@ -138,10 +138,10 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
  
     //Only set true for MC
     Bool_t isMC = kFALSE;
-   AddTaskPIDResponse(isMC);
+//   AddTaskPIDResponse(isMC);
     //create a task
     if(!TGrid::Connect("alien://")) return;
-   AliAnalysisTaskEMCALTimeCalib *task = AddTaskEMCALTimeCalibration("AnalysisResults.root","",0.9,500,2,200,0.1,4.,0.1,0.4,0.025,0.4,400.,800.,kFALSE,"","",kFALSE,kTRUE,2,"alien:///alice/cern.ch/user/j/jblair/BCmap_244628.root");
+   AliAnalysisTaskEMCALTimeCalibJB *task = AddTaskEMCALTimeCalibrationJB("AnalysisResults.root","",0.9,500,2,200,0.1,4.,0.1,0.4,0.025,0.4,400.,800.,kFALSE,"","",kFALSE,kTRUE,1,"");
 
    if (!mgr->InitAnalysis())
      return;

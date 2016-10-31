@@ -482,7 +482,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             */
 
             fTPCnSigma = fpidResponse->NumberOfSigmasTPC(firstDecayTrack, AliPID::kKaon);
-//            fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(firstDecayTrack, AliPID::kKaon);
+            fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(firstDecayTrack, AliPID::kKaon);
 //            TParticle *MCSecondDecay = 0x0;
 //            AliAODMCParticle* MCSecondDecayTrack = 0x0;
             AliVTrack *secondDecayTrack = 0x0;
@@ -490,8 +490,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             AliAODTrack *aSecondDecayTrack = 0x0;
             AliVParticle *vSecondDecayTrack = 0x0;
 
-            //Cut on kaon candidates (and only cut on TOF if it exists, should be -999 if it doesn't)
-            if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0 || fTOFnSigma == -999)){
+            //Cut on kaon candidates
+            if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0)){
                 for(Int_t j_track = 0; j_track < ntracks; j_track++){
                     if(i_track == j_track) continue;
                     vSecondDecayTrack = 0x0;
@@ -515,11 +515,11 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                         fTPCnSigma = -999;
                         fTOFnSigma = -999;
                         fTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kKaon);
-                        //fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(secondDecayTrack, AliPID::kKaon);
+                        fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(secondDecayTrack, AliPID::kKaon);
                         fpiTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kPion);
                         Double_t calcPx = 0.0, calcPy = 0.0, calcPz = 0.0;
-                        Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0;
-                        if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0 || fTOFnSigma == -999)){
+                        Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0, calcE1=0.0, calcE2=0.0;
+                        if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0)){
                             calcPx = firstDecayTrack->Px()+secondDecayTrack->Px();
                             calcPy = firstDecayTrack->Py()+secondDecayTrack->Py();
                             calcPz = firstDecayTrack->Pz()+secondDecayTrack->Pz();

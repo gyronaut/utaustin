@@ -47,11 +47,11 @@ private:
     TH2F        *fTPCNpts;//!TPC Npoints used for dedx
     TH2F        *fTPCKaonNSig;//!TPC Nsigma
 
-    THnSparseF  *fTrigDist;
-    THnSparseF  *fKKUSDist;
-    THnSparseF  *fKKLSDist;
-    THnSparseF  *fDphiHPhi;
-    THnSparseF  *fDphiHKK;
+    THnSparseF  *fTrigDist;//! trigger distribution
+    THnSparseF  *fKKUSDist;//! unlike sign kaon distribution
+    THnSparseF  *fKKLSDist;//! like sign kaon distribution
+    THnSparseF  *fDphiHPhi;//! delta-phi distribution with unlike sign kaon pairs
+    THnSparseF  *fDphiHKK;//! delta-phi distribution with like sign kaon pairs
  
     AliAnalysisTaskQA(const AliAnalysisTaskQA&); // not implemented
     AliAnalysisTaskQA& operator=(const AliAnalysisTaskQA&); // not implemented

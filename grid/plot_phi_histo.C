@@ -29,7 +29,16 @@ void plot_phi_histo(string inputName){
     TH1D *likeSignInvMassBinned[16];
     TF1 *fits[16];
     for(int n = 0; n < 16; n++){
-        fits[n] = new TF1(Form("f%i", n), "gaus", 1.005,1.035);
+        fits[n] = new TF1(Form("f%i", n),  "[0]*TMath::Voigt(x - [1], [2], [3], 4) + pol0(4)",0.99, 1.1);
+        fits[n]->SetParameter(1, 1.020);
+        fits[n]->SetParameter(2, 0.0002);
+        fits[n]->SetParameter(0, 600);
+        fits[n]->FixParameter(3, 0.00426);
+        fits[n]->SetParLimits(1, 1.010, 1.030);
+        //fits[n]->SetParLimits(0, 225, 400);
+        //fits[n]->SetParLimits(2, 0.0010, 0.007);
+        //fits[n]->SetParLimits(3, 0.0010, 0.010);
+
     } 
 
     Double_t pt_bounds[] = {0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 10.0};
@@ -39,25 +48,29 @@ void plot_phi_histo(string inputName){
     Double_t sideband = 0.0;
     Double_t likeSignSideBand = 0.0;
     Double_t scaleFactor = 0.0;
+    Double_t invMin = 0.99;
+    Double_t invMax = 1.1;
+    Int_t numBins = 200 - (int)(((invMin-0.98)+(1.1-invMax))*200./(1.1-0.98));
 
     /* Setting up the invariant mass dist for LS and US Kaon pairs (scaled to the sideband region),
      * and a "BG corrected" invmass per pt dist */
     if(fkkUSDist && fkkLSDist){
-        fkkUSDist->GetAxis(1)->SetRange(0,200);
-        fkkUSDist->GetAxis(1)->SetTitle("Inv Mass (GeV/c^2)");
-        fkkLSDist->GetAxis(1)->SetRange(0,200);
-        fkkLSDist->SetTitle("Inv Mass (GeV/c^2)");
-        double bins_per_mass = 200.0/(1.1-0.98);
+        double bins_per_mass = numBins/(invMax-invMin);
 
+        fkkUSDist->GetAxis(1)->SetRange(200-numBins,200);
+        fkkUSDist->GetAxis(1)->SetTitle("Inv Mass (GeV/c^2)");
+        fkkLSDist->GetAxis(1)->SetRange(200-numBins,200);
+        fkkLSDist->SetTitle("Inv Mass (GeV/c^2)");
+        
         for(int i =0; i<15; i++){
             fkkUSDist->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
             phiInvMassBinned[i] = (TH1D*)fkkUSDist->Projection(1);
             phiInvMassBinned[i]->SetTitle(Form("%.1f < p_{T} < %.1f GeV/c", pt_bounds[i], pt_bounds[i+1]));
-            sideband = phiInvMassBinned[i]->Integral((int)(bins_per_mass*(1.04-0.98)),(int)(bins_per_mass*(1.06-0.98))); //integrating from mass of 1.04 to ~1.06 for the sideband scaling
+            sideband = phiInvMassBinned[i]->Integral((int)(bins_per_mass*(1.04-invMin)),(int)(bins_per_mass*(1.06-invMin))); //integrating from mass of 1.04 to ~1.06 for the sideband scaling
             fkkLSDist->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
             likeSignInvMassBinned[i] = (TH1D*)fkkLSDist->Projection(1);
             likeSignInvMassBinned[i]->SetTitle(Form("%.1f < p_{T} < %.1f GeV/c", pt_bounds[i], pt_bounds[i+1]));
-            likeSignSideBand = likeSignInvMassBinned[i]->Integral((int)(bins_per_mass*(1.04-0.98)),(int)(bins_per_mass*(1.06-0.98)));
+            likeSignSideBand = likeSignInvMassBinned[i]->Integral((int)(bins_per_mass*(1.04-invMin)),(int)(bins_per_mass*(1.06-invMin)));
             likeSignInvMassBinned[i]->Scale(sideband/likeSignSideBand);
             scaleFactor = sideband/likeSignSideBand;
             likeSignInvMassBinned[i]->SetLineColor(2);
@@ -81,9 +94,20 @@ void plot_phi_histo(string inputName){
     cTrigDist->Divide(2,2);
 
     fkkLSDist->GetAxis(0)->SetRangeUser(1.0, 3.0);
+    fkkLSDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
     fkkUSDist->GetAxis(0)->SetRangeUser(1.0, 3.0);
-    //fkkUSDist->GetAxis(1)->SetRangeUser(1.01, 1.03);
-    fTrigDist->GetAxis(0)->SetRangeUser(4.0, 10.1);
+    fkkUSDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
+   //fkkUSDist->GetAxis(1)->SetRangeUser(1.01, 1.03);
+    fTrigDist->GetAxis(0)->SetRangeUser(4.0, 6.0);
+    fTrigDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
+    
+    fkkLSDist->GetAxis(2)->SetTitle("#varphi");
+    fkkUSDist->GetAxis(2)->SetTitle("#varphi");
+
+    fkkLSDist->GetAxis(3)->SetTitle("#eta");
+    fkkUSDist->GetAxis(3)->SetTitle("#eta");
+    fTrigDist->GetAxis(2)->SetTitle("#eta");
+
     TH1D* hLSDist[3];
     TH1D* hUSDist[3];
     TH1D* hTrigDist[2];
@@ -131,8 +155,11 @@ void plot_phi_histo(string inputName){
         phiInvMassBinned[j]->Draw("E");
         likeSignInvMassBinned[j]->Draw("SAME");
     }
-
-
+/*  
+    c0->cd();
+    phiInvMassBinned[0]->Draw("HIST E");
+    likeSignInvMassBinned[0]->Draw("SAME");
+*/
     // Plotting the 'corrected' invariant mass per pT bin
     TCanvas *c1 = new TCanvas("cCorrInvMass", "cCorrInvMass", 50, 50, 800, 800);
     c1->Divide(4,4);
@@ -142,16 +169,19 @@ void plot_phi_histo(string inputName){
         corrInvMass[k]->Draw();
         fits[k]->Draw("SAME");
     }
-     
-
+/*
+    c1->cd();
+    corrInvMass[0]->Draw();
+    fits[0]->Draw("SAME");    
+*/
     TH3D *HPhiDphi = dphiHPhi->Projection(0,1,2);
    
-    dphiHPhi->GetAxis(0)->SetRange(20, 100); //cutting on trigger pt greater than 4 GeV/c
-    dphiHPhi->GetAxis(1)->SetRange(5,15); //cutting on phi pt between 1 GeV/c and 3 GeV/c
+    dphiHPhi->GetAxis(0)->SetRangeUser(4.0, 6.0); //cutting on trigger pt greater than 4 GeV/c
+    dphiHPhi->GetAxis(1)->SetRangeUser(1.0,3.0); //cutting on phi pt between 1 GeV/c and 3 GeV/c
     
     //performing same cuts for KK pairs:
-    dphiHKK->GetAxis(0)->SetRange(20, 100);
-    dphiHKK->GetAxis(1)->SetRange(5,15);
+    dphiHKK->GetAxis(0)->SetRangeUser(4.0, 6.0);
+    dphiHKK->GetAxis(1)->SetRangeUser(1.0,3.0);
 
     TH1D *phiInvMassPerDPhi[16];
     TH1D *likesignInvMassPerDPhi[16]; 
@@ -167,10 +197,11 @@ void plot_phi_histo(string inputName){
         phiInvMassPerDPhi[i] = dphiHPhi->Projection(4);
         likesignInvMassPerDPhi[i] = dphiHKK->Projection(4);
         phiInvMassPerDPhi[i]->Sumw2();
-        sideband = phiInvMassPerDPhi[i]->Integral(61, 81);
-        likeSignSideBand = likesignInvMassPerDPhi[i]->Integral(61,81);
+        numBins = (Double_t)phiInvMassPerDPhi[i]->GetNbinsX();
+        sideband = phiInvMassPerDPhi[i]->Integral((int)((1.04-invMin)*numBins/(invMax-invMin)), (int)((1.06-invMin)*numBins/(invMax-invMin)));
+        likeSignSideBand = likesignInvMassPerDPhi[i]->Integral((int)((1.04-invMin)*numBins/(invMax-invMin)), (int)((1.06-invMin)*numBins/(invMax-invMin)));
 
-        phiInvMassPerDPhi[i]->SetTitle(Form("Inv Mass dist. for %.2f < #Delta#Phi < %.2f", (-1.57 + i*(0.3925)), (-1.57+(i+1)*(0.3925))));
+        phiInvMassPerDPhi[i]->SetTitle(Form("Inv Mass dist. for %.2f < #Delta#varphi < %.2f", (-1.57 + i*(0.3925)), (-1.57+(i+1)*(0.3925))));
         phiInvMassPerDPhi[i]->Draw("HIST E");
 
         scaleFactor = sideband/likeSignSideBand;
@@ -192,30 +223,45 @@ void plot_phi_histo(string inputName){
     cCorrInvDPhi->Divide(4,4);
     TF1 *dPhiFits[16];
     Double_t numPhi[16];
-    TH1D* corrDPhi = new TH1D("corrDPhi", "BG-Corrected Hadron-Phi #Delta#Phi distribution", 16, -1.57, 4.71);
+    TH1D* corrDPhi = new TH1D("corrDPhi", "BG-Corrected #Delta#varphi for Hadron-#Phi(1020)", 16, -1.57, 4.71);
     for(int i = 0; i<16; i++){
         cCorrInvDPhi->cd(i+1);
-        dPhiFits[i] = new TF1(Form("dphif%i", i), "gaus(0) + pol0(3)",0.98,1.1); 
+        //dPhiFits[i] = new TF1(Form("dphif%i", i), "gaus(0) + pol0(3)",0.98,1.1); 
+        dPhiFits[i] = new TF1(Form("dphif%i", i), "[0]*TMath::Voigt(x - [1], [2], [3], 3) + pol0(4)",0.98, 1.1); 
         dPhiFits[i]->SetParameter(1, 1.020);
-        dPhiFits[i]->SetParameter(2, 0.0045);
-        dPhiFits[i]->SetParameter(0, 200);
-        //dPhiFits[i]->SetParameter(3, 0);
+        dPhiFits[i]->SetParameter(2, 0.002);
+        dPhiFits[i]->SetParameter(0, 1);
+        dPhiFits[i]->FixParameter(3, 0.00426);
         dPhiFits[i]->SetParLimits(1, 1.015, 1.025);
-        dPhiFits[i]->SetParLimits(2, 0.0010, 0.007);
-        dPhiFits[i]->SetParLimits(0, 100, 10000);
-        //dPhiFits[i]->SetParLimits(3, -100, 100);
+        //dPhiFits[i]->SetParLimits(2, 0.0010, 0.007);
+        //dPhiFits[i]->SetParLimits(3, 0.0010, 0.010);
+        //dPhiFits[i]->SetParLimits(0, 100, 10000);
+        //dPhiFits[i]->SetParLimits(3, -200, 200);
         corrPhiInvMassPerDPhi[i]->Fit(Form("dphif%i", i), "R");
         corrPhiInvMassPerDPhi[i]->Draw("SAME HIST E FUNC");
         //printf("%i. Total: %f\n", i, dPhiFits[i]->Integral(1.005, 1.035));
-        printf("correction: %f", dPhiFits[i]->GetParameter(3)*3.0);
-        numPhi[i] = corrPhiInvMassPerDPhi[i]->Integral(9, 12) - dPhiFits[i]->GetParameter(3)*3.0;
+        numBins = (Double_t)corrPhiInvMassPerDPhi[i]->GetNbinsX();
+        printf("correction: %f", dPhiFits[i]->GetParameter(3)*(int)((1.03-1.01)*numBins/(invMax-invMin)));
+        numPhi[i] = corrPhiInvMassPerDPhi[i]->Integral((int)((1.01-invMin)*numBins/(invMax-invMin)), (int)((1.03-invMin)*numBins/(invMax-invMin))) - dPhiFits[i]->GetParameter(4)*(int)((1.03-1.01)*numBins/(invMax-invMin));
         printf("Corrected num Phis: %f\n", numPhi[i]);
         corrDPhi->SetBinContent(i+1, numPhi[i]);
     }
 
     TCanvas *cCorrDPhi = new TCanvas("cCorrDPhi", "cCorrDPhi", 30, 30, 600, 600);
     cCorrDPhi->cd();
+    TF1 *corrFit = new TF1("corrFit", "gaus(0) + gaus(3) + pol0(6)", -1.57, 4.71);
+    corrFit->SetParameter(6, 800);
+    corrFit->SetParameter(0, 50);
+    corrFit->SetParameter(1, 0.0);
+    corrFit->SetParameter(2, 1.0);
+    corrFit->SetParameter(3, 50);
+    corrFit->SetParameter(4, 3.14);
+    corrFit->SetParLimits(4, 3.1, 3.2);
+    corrFit->SetParameter(5, 1.5);
+
+    corrDPhi->Fit("corrFit", "R");
     corrDPhi->Draw();
+    //corrFit->Draw("SAME");
 
     //Reset the Delta-phi axis range after the dphi binned projections are done being created above.
     dphiHPhi->GetAxis(2)->SetRange(0,0);
@@ -224,12 +270,12 @@ void plot_phi_histo(string inputName){
     TH1D *dphiPhiPeak;
     dphiHPhi->GetAxis(4)->SetRangeUser(1.010, 1.030);
     dphiPhiPeak = dphiHPhi->Projection(2);
-    dphiPhiPeak->SetTitle("Hadron-Phi #Delta#Phi for Phi Peak"); 
+    dphiPhiPeak->SetTitle("#Delta#varphi for Hadron-#Phi(1020) in Peak"); 
 
     TH1D *dphiPhiSideband;
     dphiHPhi->GetAxis(4)->SetRangeUser(1.040, 1.060);
     dphiPhiSideband = dphiHPhi->Projection(2);
-    dphiPhiSideband->SetTitle("Hadron-Phi #Delta#Phi for Phi Sideband");
+    dphiPhiSideband->SetTitle("#Delta#varphi for Hadron-#Phi(1020) in Sideband");
  
 // Setting up different trigger/assoc momentum cuts for delta-phi distribution
     TH1D *dphiHPhiArray[5];
@@ -258,19 +304,23 @@ void plot_phi_histo(string inputName){
     TH1D* dphiUSSideband = dphiHPhi->Projection(2);
     dphiHKK->GetAxis(4)->SetRangeUser(1.040,1.060);
     TH1D* dphiLSSideband = dphiHKK->Projection(2);
-    sideband = dphiHPhi->Projection(4)->Integral(15, 20);
-    likeSignSideBand = dphiHKK->Projection(4)->Integral(15, 20);
+    dphiHKK->GetAxis(4)->SetRangeUser(0.98, 1.1);
+    dphiHPhi->GetAxis(4)->SetRangeUser(0.98, 1.1);
+    numBins = (Double_t)dphiHPhi->GetAxis(4)->GetNbins();
+    sideband = dphiHPhi->Projection(4)->Integral((int)((1.040-invMin)*numBins/(invMax-invMin)), (int)((1.060-invMin)*numBins/(invMax-invMin)));
+    likeSignSideBand = dphiHKK->Projection(4)->Integral((int)((1.040-invMin)*numBins/(invMax-invMin)), (int)((1.060-invMin)*numBins/(invMax-invMin)));
     scaleFactor = sideband/likeSignSideBand;
-    //printf("sideband: %f, likeSignSideBand: %f, scaleFactor: %f \n", sideband, likeSignSideBand, scaleFactor);
+    printf("sideband: %f, likeSignSideBand: %f, scaleFactor: %f \n", sideband, likeSignSideBand, scaleFactor);
     dphiLSSideband->Scale(scaleFactor);
 
     TCanvas *cDphiHPhi3 = new TCanvas("cDphiHPhi3", "cDphiHPhi3", 50, 50, 600, 600);
     cDphiHPhi3->cd();
     dphiUSSideband->SetLineWidth(2);
-    dphiUSSideband->SetTitle("Hadron-Phi #Delta#Phi for Sideband Region");
-    dphiUSSideband->Draw("SAME");
+    dphiUSSideband->SetTitle("#Delta#varphi for Hadron-#Phi(1020) in Sideband Region");
+    dphiUSSideband->GetXaxis()->SetTitle("#Delta#varphi");
+    dphiUSSideband->Draw("SAME HIST E");
     dphiLSSideband->SetLineColor(2);
-    dphiLSSideband->Draw("SAME");
+    dphiLSSideband->Draw("SAME HIST E");
 
 
 // Setting & plotting delta-phi distribution for Unlike and Like sign pairs in the phi mass peak
@@ -284,9 +334,28 @@ void plot_phi_histo(string inputName){
     TCanvas *cDphiHPhi2 = new TCanvas("cDphiHPhi2", "cDphiHPhi2", 50, 50, 600, 600);
     cDphiHPhi2->cd();
     dphiUSPeak->SetLineWidth(2);
-    dphiUSPeak->SetTitle("Hadron-Phi #Delta#Phi for Peak Region");
-    dphiUSPeak->Draw("SAME");
+    dphiUSPeak->SetTitle("#Delta#varphi for Hadron-#Phi(1020) in Peak Region");
+    dphiUSPeak->GetXaxis()->SetTitle("#Delta#varphi");
+    dphiUSPeak->Draw("SAME HIST E");
     dphiLSPeak->SetLineColor(2);
-    dphiLSPeak->Draw("SAME");
+    dphiLSPeak->Draw("SAME HIST E");
+
+//Calculating and plotting the difference between US and LS pairs for the phi mass peak region (second method)
+    dphiUSPeak->Sumw2();
+    dphiLSPeak->Sumw2();
+    TH1D *corrDPhiPeakRegion = (TH1D*)dphiUSPeak->Clone();
+    corrDPhiPeakRegion->Add(dphiLSPeak, -1.0);
+
+    corrDPhiPeakRegion->Rebin(4);
+    
+    TCanvas *cDphiHPhi4 = new TCanvas("cDphiHPhi4", "cDphiHPhi4", 50, 50, 600, 600);
+    cDphiHPhi4->cd();
+    corrDPhiPeakRegion->SetTitle("Corrected #Delta#varphi for Hadron-#Phi(1020) in Peak Region");
+    corrDPhiPeakRegion->GetXaxis()->SetTitle("#Delta#varphi");
+    corrDPhiPeakRegion->Draw("SAME HIST E");
+
+//inv mass region I care about:
 
 }
+
+
