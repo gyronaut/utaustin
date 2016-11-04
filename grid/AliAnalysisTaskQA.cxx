@@ -63,6 +63,9 @@ fTrigMulti(0),
 fTrkPt(0),
 fTrketa(0),
 fTrkphi(0),
+fHybridTrkPt(0),
+fHybridTrketa(0),
+fHybridTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
 fKKUSDist(0),
@@ -98,6 +101,9 @@ fTrigMulti(0),
 fTrkPt(0),
 fTrketa(0),
 fTrkphi(0),
+fHybridTrkPt(0),
+fHybridTrketa(0),
+fHybridTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
 fKKUSDist(0),
@@ -175,7 +181,18 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     
     fTrkphi = new TH1F("fTrkphi","All Track #phi distribution;#phi;counts",100,0,6.3);
     fOutputList->Add(fTrkphi);
+
+    //Hybrid track histos
+    fHybridTrkPt = new TH1F("fHybridTrkPt","p_{T} distribution of all hybrid tracks;p_{T} (GeV/c);counts",1000,0,100);
+    fOutputList->Add(fHybridTrkPt);
     
+    fHybridTrketa = new TH1F("fHybridTrketa","All Hybrid Track #eta distribution;#eta;counts",100,-1.5,1.5);
+    fOutputList->Add(fHybridTrketa);
+    
+    fHybridTrkphi = new TH1F("fHybridTrkphi","All Hybrid Track #phi distribution;#phi;counts",100,0,6.3);
+    fOutputList->Add(fHybridTrkphi);
+    
+
     fdEdx = new TH2F("fdEdx","All Track dE/dx distribution;p (GeV/c);dE/dx",200,0,20,500,0,160);
     fOutputList->Add(fdEdx);
     
@@ -725,11 +742,18 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         etriggerTrack = dynamic_cast<AliESDtrack*>(VtriggerTrack);
         atriggerTrack = dynamic_cast<AliAODTrack*>(VtriggerTrack);
         
+        //fill hybrid track histos if the track is hybrid
+        if(triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8 && (atriggerTrack->IsHybridGlobalConstrainedGlobal() || atriggerTrack->IsHybridTPCConstrainedGlobal())){
+            fHybridTrkPt->Fill(triggerTrack->Pt());
+            fHybridTrketa->Fill(triggerTrack->Eta());
+            fHybridTrkphi->Fill(triggerTrack->Phi());
+        }
+
         ////////////////////
         //Apply track cuts//
         ////////////////////
         if(fAOD)
-            if(!atriggerTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue; //mimimum cuts
+            if(!atriggerTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)&&!(atriggerTrack->IsHybridGlobalConstrainedGlobal())&&!(atriggerTrack->IsHybridTPCConstrainedGlobal())) continue; //selecting global and hybrid tracks for trigger, continue otherwise
         
         if(fESD)
             if(!esdTrackCutsH->AcceptTrack(etriggerTrack))continue;

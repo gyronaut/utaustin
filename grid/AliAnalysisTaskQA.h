@@ -43,6 +43,9 @@ private:
     TH1F        *fTrkPt;//!track pt
     TH1F        *fTrketa;//!track eta
     TH1F        *fTrkphi;//!track phi
+    TH1F        *fHybridTrkPt;//!hybrid track pt
+    TH1F        *fHybridTrketa;//!hybrid track eta
+    TH1F        *fHybridTrkphi;//!hybrid track phi
     TH2F        *fdEdx;//!dedx vs pt
     TH2F        *fTPCNpts;//!TPC Npoints used for dedx
     TH2F        *fTPCKaonNSig;//!TPC Nsigma
