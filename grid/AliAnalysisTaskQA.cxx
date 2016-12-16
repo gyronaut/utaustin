@@ -66,6 +66,9 @@ fTrkphi(0),
 fHybridTrkPt(0),
 fHybridTrketa(0),
 fHybridTrkphi(0),
+fHybridGlobalTrkPt(0),
+fHybridGlobalTrketa(0),
+fHybridGlobalTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
 fKKUSDist(0),
@@ -104,6 +107,9 @@ fTrkphi(0),
 fHybridTrkPt(0),
 fHybridTrketa(0),
 fHybridTrkphi(0),
+fHybridGlobalTrkPt(0),
+fHybridGlobalTrketa(0),
+fHybridGlobalTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
 fKKUSDist(0),
@@ -173,6 +179,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fTrigMulti = new TH2F("fTrigMulti","Multiplicity distribution for different triggers; Trigger type; multiplicity",11,-1,10,2000,0,2000);
     fOutputList->Add(fTrigMulti);
     
+    //Global track histos
     fTrkPt = new TH1F("fTrkPt","p_{T} distribution of all tracks;p_{T} (GeV/c);counts",1000,0,100);
     fOutputList->Add(fTrkPt);
     
@@ -182,7 +189,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fTrkphi = new TH1F("fTrkphi","All Track #phi distribution;#phi;counts",100,0,6.3);
     fOutputList->Add(fTrkphi);
 
-    //Hybrid track histos
+    //HybridTPC track histos
     fHybridTrkPt = new TH1F("fHybridTrkPt","p_{T} distribution of all hybrid tracks;p_{T} (GeV/c);counts",1000,0,100);
     fOutputList->Add(fHybridTrkPt);
     
@@ -192,7 +199,16 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fHybridTrkphi = new TH1F("fHybridTrkphi","All Hybrid Track #phi distribution;#phi;counts",100,0,6.3);
     fOutputList->Add(fHybridTrkphi);
     
-
+    //HybridGlobal track histos
+    fHybridGlobalTrkPt = new TH1F("fHybridGlobalTrkPt","p_{T} distribution of all hybrid tracks;p_{T} (GeV/c);counts",1000,0,100);
+    fOutputList->Add(fHybridGlobalTrkPt);
+    
+    fHybridGlobalTrketa = new TH1F("fHybridGlobalTrketa","All HybridGlobal Track #eta distribution;#eta;counts",100,-1.5,1.5);
+    fOutputList->Add(fHybridGlobalTrketa);
+    
+    fHybridGlobalTrkphi = new TH1F("fHybridGlobalTrkphi","All HybridGlobal Track #phi distribution;#phi;counts",100,0,6.3);
+    fOutputList->Add(fHybridGlobalTrkphi);
+ 
     fdEdx = new TH2F("fdEdx","All Track dE/dx distribution;p (GeV/c);dE/dx",200,0,20,500,0,160);
     fOutputList->Add(fdEdx);
     
@@ -742,18 +758,34 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
         etriggerTrack = dynamic_cast<AliESDtrack*>(VtriggerTrack);
         atriggerTrack = dynamic_cast<AliAODTrack*>(VtriggerTrack);
         
-        //fill hybrid track histos if the track is hybrid
-        if(triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8 && (atriggerTrack->IsHybridGlobalConstrainedGlobal() || atriggerTrack->IsHybridTPCConstrainedGlobal())){
+        //fill hybrid track histos if the track is hybridTPC
+        if(triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8 && atriggerTrack->IsHybridTPCConstrainedGlobal()){
             fHybridTrkPt->Fill(triggerTrack->Pt());
             fHybridTrketa->Fill(triggerTrack->Eta());
             fHybridTrkphi->Fill(triggerTrack->Phi());
         }
 
+        //fill hybrid track histos if the track is hybridGlobal
+        if(triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8 && atriggerTrack->IsHybridGlobalConstrainedGlobal()){
+            fHybridGlobalTrkPt->Fill(triggerTrack->Pt());
+            fHybridGlobalTrketa->Fill(triggerTrack->Eta());
+            fHybridGlobalTrkphi->Fill(triggerTrack->Phi());
+        }
+
+        //fill global track histos if the track is global
+        if( triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8 && atriggerTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)){
+            fTrkPt->Fill(triggerTrack->Pt());
+            fTrketa->Fill(triggerTrack->Eta());
+            fTrkphi->Fill(triggerTrack->Phi());
+        }
+
+
+
         ////////////////////
         //Apply track cuts//
         ////////////////////
         if(fAOD)
-            if(!atriggerTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)&&!(atriggerTrack->IsHybridGlobalConstrainedGlobal())&&!(atriggerTrack->IsHybridTPCConstrainedGlobal())) continue; //selecting global and hybrid tracks for trigger, continue otherwise
+            if(!atriggerTrack->IsHybridGlobalConstrainedGlobal()) continue; //selecting just hybrid-global tracks for trigger, continue otherwise
         
         if(fESD)
             if(!esdTrackCutsH->AcceptTrack(etriggerTrack))continue;
@@ -767,9 +799,9 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
        
         //Cut on p_T and eta
         if(triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8){
-            fTrkPt->Fill(triggerTrack->Pt());
-            fTrketa->Fill(triggerTrack->Eta());
-            fTrkphi->Fill(triggerTrack->Phi());
+            //fTrkPt->Fill(triggerTrack->Pt());
+            //fTrketa->Fill(triggerTrack->Eta());
+            //fTrkphi->Fill(triggerTrack->Phi());
             fdEdx->Fill(triggerTrack->P(),dEdx);
             fTPCNpts->Fill(triggerTrack->P(),triggerTrack->GetTPCsignalN());
             

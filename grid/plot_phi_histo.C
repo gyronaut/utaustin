@@ -18,6 +18,7 @@ void plot_phi_histo(string inputName){
 
     TFile *histoFile = new TFile(inputName.c_str());
     histoFile->cd("PhiReconstruction");
+    TH1F *fTrigPt = (TH1F*)InvMass->FindObject("fTrigPt");
     THnSparseF *fkkUSDist = (THnSparseF *)InvMass->FindObject("fkkUSDist");
     THnSparseF *fkkLSDist = (THnSparseF *)InvMass->FindObject("fkkLSDist");
     THnSparseF *fTrigDist = (THnSparseF *)InvMass->FindObject("fTrigDist");

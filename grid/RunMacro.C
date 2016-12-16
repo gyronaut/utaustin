@@ -18,11 +18,11 @@ void RunMacro()
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiInvMass_LHC13b";
-   char* output_dir = "output_03_11_2016";
+   char* output_dir = "output_2016_12_06";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
    Int_t runcycle[]={0,11};
-//   Int_t runcycle[]={0,3,6,9,11};
+//   Int_t runcycle[]={0,3,6,12,14};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -56,7 +56,7 @@ void RunMacro()
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
   alienHandler->SetGridDataDir("//alice/data/2013/LHC13b/");
-  alienHandler->SetDataPattern("*/pass4/*/*AOD.root");
+  alienHandler->SetDataPattern("*/pass4/AOD/*AOD.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
    
