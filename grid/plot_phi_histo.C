@@ -42,8 +42,8 @@ void plot_phi_histo(string inputName){
 
     } 
 
-    Double_t pt_bounds[] = {0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 10.0};
-    Int_t pt_bins[] = {4, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 60, 70, 100};
+    Double_t pt_bounds[] = {1.0, 3.0, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 10.0};
+    Int_t pt_bins[] = {10, 30, 8, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 60, 70, 100};
     Double_t sigmas[16];    
 
     Double_t sideband = 0.0;
@@ -94,12 +94,12 @@ void plot_phi_histo(string inputName){
     TCanvas *cTrigDist = new TCanvas("cTrigDist", "cTrigDist", 50, 50, 800, 800);
     cTrigDist->Divide(2,2);
 
-    fkkLSDist->GetAxis(0)->SetRangeUser(1.0, 3.0);
+    fkkLSDist->GetAxis(0)->SetRangeUser(2.0, 4.0);
     fkkLSDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
-    fkkUSDist->GetAxis(0)->SetRangeUser(1.0, 3.0);
+    fkkUSDist->GetAxis(0)->SetRangeUser(2.0, 4.0);
     fkkUSDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
    //fkkUSDist->GetAxis(1)->SetRangeUser(1.01, 1.03);
-    fTrigDist->GetAxis(0)->SetRangeUser(4.0, 6.0);
+    fTrigDist->GetAxis(0)->SetRangeUser(4.0, 8.0);
     fTrigDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
     
     fkkLSDist->GetAxis(2)->SetTitle("#varphi");
@@ -149,18 +149,18 @@ void plot_phi_histo(string inputName){
 
     // Plotting the US and LS invariant mass per pT bin on the same plot
     TCanvas *c0 = new TCanvas("cTest", "cTest", 50, 50, 800, 800);
-    c0->Divide(4,4);
+/*    c0->Divide(4,4);
 
     for(int j = 0; j< 15; j++){
         c0->cd(j+1);
         phiInvMassBinned[j]->Draw("E");
         likeSignInvMassBinned[j]->Draw("SAME");
     }
-/*  
+*/  
     c0->cd();
     phiInvMassBinned[0]->Draw("HIST E");
     likeSignInvMassBinned[0]->Draw("SAME");
-*/
+
     // Plotting the 'corrected' invariant mass per pT bin
     TCanvas *c1 = new TCanvas("cCorrInvMass", "cCorrInvMass", 50, 50, 800, 800);
     c1->Divide(4,4);
@@ -177,12 +177,12 @@ void plot_phi_histo(string inputName){
 */
     TH3D *HPhiDphi = dphiHPhi->Projection(0,1,2);
    
-    dphiHPhi->GetAxis(0)->SetRangeUser(4.0, 6.0); //cutting on trigger pt greater than 4 GeV/c
-    dphiHPhi->GetAxis(1)->SetRangeUser(1.0,3.0); //cutting on phi pt between 1 GeV/c and 3 GeV/c
+    dphiHPhi->GetAxis(0)->SetRangeUser(4.0, 8.0); //cutting on trigger pt between 3 GeV/c and 6 GeV/c
+    dphiHPhi->GetAxis(1)->SetRangeUser(2.0,4.0); //cutting on phi pt between 1 GeV/c and 3 GeV/c
     
     //performing same cuts for KK pairs:
-    dphiHKK->GetAxis(0)->SetRangeUser(4.0, 6.0);
-    dphiHKK->GetAxis(1)->SetRangeUser(1.0,3.0);
+    dphiHKK->GetAxis(0)->SetRangeUser(4.0, 8.0);
+    dphiHKK->GetAxis(1)->SetRangeUser(2.0,4.0);
 
     TH1D *phiInvMassPerDPhi[16];
     TH1D *likesignInvMassPerDPhi[16]; 
@@ -251,8 +251,8 @@ void plot_phi_histo(string inputName){
     TCanvas *cCorrDPhi = new TCanvas("cCorrDPhi", "cCorrDPhi", 30, 30, 600, 600);
     cCorrDPhi->cd();
     TF1 *corrFit = new TF1("corrFit", "gaus(0) + gaus(3) + pol0(6)", -1.57, 4.71);
-    corrFit->SetParameter(6, 800);
-    corrFit->SetParameter(0, 50);
+    corrFit->SetParameter(6, 500);
+    corrFit->SetParameter(0, 100);
     corrFit->SetParameter(1, 0.0);
     corrFit->SetParameter(2, 1.0);
     corrFit->SetParameter(3, 50);
@@ -346,16 +346,46 @@ void plot_phi_histo(string inputName){
     dphiLSPeak->Sumw2();
     TH1D *corrDPhiPeakRegion = (TH1D*)dphiUSPeak->Clone();
     corrDPhiPeakRegion->Add(dphiLSPeak, -1.0);
+    
 
-    corrDPhiPeakRegion->Rebin(4);
+    Double_t xbins[18]= {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+    double low = corrDPhiPeakRegion->GetXaxis()->GetBinLowEdge(1);
+    printf("low %i: %f\n", 0, low);
+    xbins[0] = low;
+    for(int i=1;i<17; i++){
+       low  = corrDPhiPeakRegion->GetXaxis()->GetBinLowEdge(3+4*(i-1));
+       printf("low %i: %f\n", i, low);
+       xbins[i] = low;
+    }
+    xbins[17] = 4.71; 
+
+    corrDPhiPeakRegion->Rebin(17, "hnew", xbins);
     
     TCanvas *cDphiHPhi4 = new TCanvas("cDphiHPhi4", "cDphiHPhi4", 50, 50, 600, 600);
     cDphiHPhi4->cd();
-    corrDPhiPeakRegion->SetTitle("Corrected #Delta#varphi for Hadron-#Phi(1020) in Peak Region");
-    corrDPhiPeakRegion->GetXaxis()->SetTitle("#Delta#varphi");
-    corrDPhiPeakRegion->Draw("SAME HIST E");
 
-//inv mass region I care about:
+    TF1* dphifit = new TF1("dphifit", "gaus(0) + gaus(3) + pol0(6)", -1.3, 4.5);
+    dphifit->SetParameter(6, 1000);
+    dphifit->SetParameter(0, 200);
+    dphifit->SetParLimits(0, 100.0, 800.0); 
+    dphifit->SetParameter(1, 0.0);
+    dphifit->SetParameter(2, 1.0);
+    dphifit->SetParameter(3, 100);
+    dphifit->SetParLimits(3, 1.0, 200.0);
+    dphifit->SetParameter(4, 3.14);
+    dphifit->SetParLimits(4, 3.1, 3.2);
+    dphifit->SetParameter(5, 1.5);
+
+    hnew->Fit("dphifit", "R");
+
+
+    hnew->SetTitle("Corrected #Delta#varphi for Hadron-#Phi(1020) in Peak Region");
+    hnew->GetXaxis()->SetTitle("#Delta#varphi");
+    
+    hnew->Draw("SAME HIST E");
+
+
 
 }
 
