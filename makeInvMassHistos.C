@@ -33,6 +33,7 @@ Double_t KstarFun(Double_t *x, Double_t *par)
 {
     const Double_t Temp = 0.160;
     return par[0]*bw1(x, par)*PS(x[0], par[3], Temp);
+    //return par[0]*bw1(x, par);
     //return par[0]*bw1(x, par)*PS(x[0], par[3], Temp)*1.e6;
     
 }
@@ -116,7 +117,7 @@ int makeInvMassHistos(){
 
 
 
-    TFile *output = new TFile("output_invm_bggaus_relBW_24_02_2017.root", "RECREATE");
+    TFile *output = new TFile("output_invm_bggaus_relBW_2017_02_28.root", "RECREATE");
 
     TH1D *kstar0mass = new TH1D("kstar0mass", "K*^{0} Mass vs. p_{T}", 20, 0.0, 4.0);
     TH1D *kstar0massBG = new TH1D("kstar0massBG", "K*^{0} Mass vs. p_{T} with BG", 20, 0.0, 4.0);
@@ -133,6 +134,7 @@ int makeInvMassHistos(){
     TCanvas *canvas[9];
 
     for(int nfile = 0; nfile < 20; nfile++){
+        double meanPT = (double)(nfile*2+1)/10.0;
         string filename = folder+files[nfile];
         string ptLower = filename.substr(filename.find("[")+1, 3);
         string ptHigher = filename.substr(filename.find(",")+1, 3);   
@@ -156,7 +158,8 @@ int makeInvMassHistos(){
         }
 
         double massBin=0.0;
-        double invMass[8];        for(int i=0; i<8; i++){
+        double invMass[8];
+        for(int i=0; i<8; i++){
             invMass[i] = 0.0;
         }
         int lineNumber = 1;
@@ -171,7 +174,7 @@ int makeInvMassHistos(){
         
 
         printf("****** Fits for file: %s ******\n", filename.c_str());
-        for(int i=0; i<8; i++){
+        for(int i=3; i<4; i++){
            
             histos[i]->Sumw2(); 
             if(nfile==0){
@@ -182,13 +185,13 @@ int makeInvMassHistos(){
             //canvas[i]->SetLogy();
             histos[i]->SetLineColor(1);
             histos[i]->SetLineWidth(1);
-            histos[i]->GetXaxis()->SetRangeUser(0.6, 1.2);
+            histos[i]->GetXaxis()->SetRangeUser(0.7, 1.2);
             histos[i]->GetYaxis()->SetRangeUser(0, 1.5*histos[i]->GetBinContent(histos[i]->GetMaximumBin()));
             histos[i]->SetStats(kFALSE);
             //histos[i]->Draw("HIST");
             //secondFit->Draw("SAME");
  
-
+/*
             if(nfile<5){
                 //TF1 *fit = new TF1(Form("fitPTbin0%dparticle%d", nfile*2+1, i), "[0]*TMath::BreitWigner(x, [1], [2])", 0.6, 1.2);
                 TF1 *fit = new TF1(Form("fitPTbin0%dparticle%d", nfile*2+1, i), relativisticBW, 0.6, 1.2, 3);
@@ -208,66 +211,56 @@ int makeInvMassHistos(){
                 TF1 *bgFit = new TF1(Form("bgFitPTbin%dparticle%d", nfile*2+1, i), "gaus(0)", 0.6, 1.2);
                 bg[i] = (TH1D*)histos[i]->Clone(Form("bgPTbin%dparticle%d", nfile*2+1, i));              
             }
-            fit->SetParameter(0, 10.0);
-            fit->SetParameter(1, 0.9);
-            fit->SetParameter(2, 0.0474);
-            //fit->FixParameter(2, 0.0474);
-            fit->SetParLimits(0, 0.1, 1000.0);
-            fit->SetParLimits(1, 0.8, 1.0);
-            fit->SetParLimits(2, 0.001, 0.2);
-            fit->SetParNames("scale", "M", "Gamma");
+*/
+            bg[i] = (TH1D*)histos[i]->Clone(Form("bgPTbin%d00particle%d", nfile*2+1, i));
+
+            printf("mean PT: %f", meanPT);
+
+            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.7, 1.2, 4);
+            TF1 *bgFit = new TF1(Form("bgFitPTbin%d00particle%d", nfile*2+1, i), "gaus(0)", 0.7, 1.2);
+            TF1 *secondFit = new TF1(Form("secondFitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBWGaus, 0.7, 1.2, 7);
+
+            fit->SetParNames("BW Area", "Mass", "Width", "PT");
+            fit->SetParameters(1.0, 0.89, 0.0474, 0.5);
+            fit->SetParLimits(0, .0001, 1.e12);
+            fit->SetParLimits(1, 0.87, 0.92);
+            fit->SetParLimits(2, 0.04, 0.6);
+            fit->FixParameter(3, meanPT);
             fit->SetLineColor(2);
 
             bgFit->SetParameter(0, 10);
-            bgFit->SetParLimits(0, 0.01, 30);
+            bgFit->SetParLimits(0, 0.00001, 100);
             bgFit->SetParameter(1, 0.8);
-            bgFit->SetParLimits(1, 0.75, 1.2);
-            bgFit->SetParameter(2,1.0);
-            bgFit->SetParLimits(2, 0.05, 4.0);
+            bgFit->SetParLimits(1, 0.7, 1.1);
+            bgFit->SetParameter(2, 1.0);
+            bgFit->SetParLimits(2, 0.05, 1000.0);
 
 
             printf("%s\n", fit->GetName());
-            if(nfile<5){
-                histos[i]->Fit(Form("fitPTbin0%dparticle%d", nfile*2+1, i), "R N", "SAME");
-                //histos[i]->Fit(Form("bgFitPTbin0%dpatriclt%d", nfile*2+1, i), "R");
-            }else{
-                histos[i]->Fit(Form("fitPTbin%dparticle%d", nfile*2+1, i), "R N", "SAME");
-                //histos[i]->Fit(Form("bgFitPTbin%dparticle%d", nfile*2+1, i), "R");
-            }
+            histos[i]->Fit(Form("fitPTbin%d00particle%d", nfile*2+1, i), "R", "SAME");
 
             for(int j=0; j<100; j++){
                 bg[i]->SetBinContent(j, bg[i]->GetBinContent(j) - fit->Eval(bg[i]->GetBinCenter(j)));
             } 
 
-            if(nfile<5){
-                bg[i]->Fit(Form("bgFitPTbin0%dparticle%d", nfile*2+1, i), "R N", "SAME");
-            }else{
-                bg[i]->Fit(Form("bgFitPTbin%dparticle%d", nfile*2+1, i), "R N", "SAME");
-            }
+            bg[i]->Fit(Form("bgFitPTbin%d00particle%d", nfile*2+1, i), "R N", "SAME");
 
-            secondFit->SetParameter(0, fit->GetParameter(0));
-            secondFit->SetParLimits(0, 0.1, 1000.0);
-            secondFit->SetParameter(1, fit->GetParameter(0));
-            secondFit->SetParLimits(1, 0.8, 1.0);
-            secondFit->SetParameter(2, fit->GetParameter(0));
-            secondFit->SetParLimits(2, 0.01, 0.1);
-            //secondFit->FixParameter(2, 0.0474);
-            secondFit->SetParameter(3, bgFit->GetParameter(0));
-            secondFit->SetParLimits(3, bgFit->GetParameter(0)*0.8, bgFit->GetParameter(0)*1.2);
-            secondFit->SetParameter(4, bgFit->GetParameter(1));
-            secondFit->SetParLimits(4, bgFit->GetParameter(1)*0.8, bgFit->GetParameter(1)*1.2);
-            secondFit->SetParameter(5, bgFit->GetParameter(2));
-            secondFit->SetParLimits(5, bgFit->GetParameter(2)*0.8, bgFit->GetParameter(2)*1.2);
-            secondFit->SetParNames("scale", "M", "Gamma", "c", "b", "a");
+            secondFit->SetParNames("Gaus Scale", "Gaus Mean", "Gaus Width", "BW Area", "Mass", "Width", "PT");
+            secondFit->SetParameters(bgFit->GetParameter(0), bgFit->GetParameter(1), bgFit->GetParameter(2), fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3));
+            secondFit->SetParLimits(3, 0.0001, 1.e12);
+            secondFit->SetParLimits(4, 0.87, 0.92);
+            //secondFit->SetParLimits(5, 0.04, 0.06);
+            secondFit->FixParameter(5, 0.0465);
+            secondFit->FixParameter(6, fit->GetParameter(3));
+            secondFit->SetParLimits(0, bgFit->GetParameter(0)*0.8, bgFit->GetParameter(0)*1.2);
+            secondFit->SetParLimits(1, bgFit->GetParameter(1)*0.8, bgFit->GetParameter(1)*1.2);
+            secondFit->SetParLimits(2, bgFit->GetParameter(2)*0.8, bgFit->GetParameter(2)*1.2);
             secondFit->SetLineColor(2);
             secondFit->SetLineStyle(2);
 
-            if(nfile<5){
-                histos[i]->Fit(Form("secondFitPTbin0%dparticle%d", nfile*2+1, i), "R", "SAME");
-            }else{
-                histos[i]->Fit(Form("secondFitPTbin%dparticle%d", nfile*2+1, i), "R", "SAME");
-            }
+            printf("set parameters for second fit!\n\n");
 
+            histos[i]->Fit(Form("secondFitPTbin%d00particle%d", nfile*2+1, i), "R", "SAME");
             histos[i]->Draw("HIST");
             secondFit->Draw("SAME");
 
@@ -280,13 +273,13 @@ int makeInvMassHistos(){
             //Do mass and width vs. pT plots just for K*0
             if(i==3){
                 mass = fit->GetParameter(1);
-                massBG = secondFit->GetParameter(1);
+                massBG = secondFit->GetParameter(4);
                 massError = fit->GetParError(1);
-                massBGError = secondFit->GetParError(1);
+                massBGError = secondFit->GetParError(4);
                 width = fit->GetParameter(2);
                 widthError = fit->GetParError(2);
-                widthBG = secondFit->GetParameter(2);
-                widthBGError = secondFit->GetParError(2);
+                widthBG = secondFit->GetParameter(5);
+                widthBGError = secondFit->GetParError(5);
 
                 kstar0mass->SetBinContent(nfile+1, mass);
                 kstar0mass->SetBinError(nfile+1, massError);
@@ -305,14 +298,15 @@ int makeInvMassHistos(){
                     singlecanvas->cd();
                     printf("Got here! \n");
                     histos[i]->Draw("HIST");
-                    bgFit->SetParameter(0, secondFit->GetParameter(3));
-                    bgFit->SetParameter(1, secondFit->GetParameter(4));
-                    bgFit->SetParameter(2, secondFit->GetParameter(5));
+                    bgFit->SetParameter(0, secondFit->GetParameter(0));
+                    bgFit->SetParameter(1, secondFit->GetParameter(1));
+                    bgFit->SetParameter(2, secondFit->GetParameter(2));
                     bgFit->SetLineColor(9);
                     bgFit->SetLineStyle(4);
-                    fit->SetParameter(0, secondFit->GetParameter(0));
-                    fit->SetParameter(1, secondFit->GetParameter(1));
-                    fit->SetParameter(2, secondFit->GetParameter(2));
+
+                    fit->SetParameter(0, secondFit->GetParameter(3));
+                    fit->SetParameter(1, secondFit->GetParameter(4));
+                    fit->SetParameter(2, secondFit->GetParameter(5));
                     fit->SetLineColor(8);
                     fit->SetLineStyle(1);
                     bgFit->Draw("SAME");
@@ -325,7 +319,7 @@ int makeInvMassHistos(){
          
     }
 
-    for(int i=0; i<8; i++){
+    for(int i=3; i<4; i++){
         canvas[i]->Write();
     }
     kstar0mass->Write();
@@ -334,4 +328,3 @@ int makeInvMassHistos(){
     kstar0widthBG->Write();
     //output->Close();
 }
-
