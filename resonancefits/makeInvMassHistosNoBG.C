@@ -24,9 +24,9 @@ Double_t bw1(Double_t *x, Double_t *par)
 {
     const Double_t MassK = 0.49368;
     const Double_t MassPi = 0.13957;
-    Double_t Gamma = par[2]*pow(par[1]/x[0],4.0);
-    Gamma *= pow(s(x[0],MassK,MassPi)/s(par[1],MassK,MassPi),1.5);
-    //Double_t Gamma = par[2];
+    //Double_t Gamma = par[2]*pow(par[1]/x[0],4.0);
+    //Gamma *= pow(s(x[0],MassK,MassPi)/s(par[1],MassK,MassPi),1.5);
+    Double_t Gamma = par[2];
     return bw(x[0],par[1],Gamma);
 }
 
@@ -93,7 +93,7 @@ int makeInvMassHistosNoBG(){
     particles[6] = "K*^{0} + #bar{K}*^{0}";
     particles[7] = "K*^{+} + K*^{-}";
 
-    string folder = "/Users/jtblair/Downloads/invm/pt02/";
+    string folder = "/Users/jtblair/Downloads/invm_decayed/pt02/";
     string files[20];
     files[0] = "invm_[0.0,0.2].dat";
     files[1] = "invm_[0.2,0.4].dat";
@@ -118,7 +118,7 @@ int makeInvMassHistosNoBG(){
 
 
 
-    TFile *output = new TFile("output_invm_nobg_relBW_noPS_masswidthvar_2017_03_02.root", "RECREATE");
+    TFile *output = new TFile("output_invm_norescatter_relBW_noPS_simplewidthvar_2017_03_03.root", "RECREATE");
 
     TH1D *kstar0mass = new TH1D("kstar0mass", "K*^{0} Mass vs. p_{T}", 20, 0.0, 4.0);
     TH1D *kstar0massBG = new TH1D("kstar0massBG", "K*^{0} Mass vs. p_{T} with BG", 20, 0.0, 4.0);
@@ -217,15 +217,15 @@ int makeInvMassHistosNoBG(){
 
             printf("mean PT: %f", meanPT);
 
-            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.85, 1.0, 4);
+            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.7, 1.1, 4);
             //TF1 *bgFit = new TF1(Form("bgFitPTbin%d00particle%d", nfile*2+1, i), "gaus(0)", 0.6, 0.95);
             //TF1 *secondFit = new TF1(Form("secondFitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBWGaus, 0.75, 1.1, 7);
 
             fit->SetParNames("BW Area", "Mass", "Width", "PT");
             fit->SetParameters(1.0, 0.89, 0.0474, 0.5);
             fit->SetParLimits(0, .00001, 1.e3);
-            fit->SetParLimits(1, 0.86, 0.93);
-            fit->SetParLimits(2, 0.03, 0.7);
+            fit->SetParLimits(1, 0.80, 1.0);
+            fit->SetParLimits(2, 0.02, 0.1);
             fit->FixParameter(3, meanPT);
             fit->SetLineColor(2);
 /*
