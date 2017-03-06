@@ -13,12 +13,12 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiInvMass_LHC13b";
-   char* output_dir = "output_2016_12_06";
+   char* work_dir = "PhiInvMass_LHC16r";
+   char* output_dir = "output_2017_03_05";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
    Int_t runcycle[]={0,11};
@@ -55,8 +55,8 @@ void RunMacro()
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  alienHandler->SetGridDataDir("//alice/data/2013/LHC13b/");
-  alienHandler->SetDataPattern("*/pass4/AOD/*AOD.root");
+  alienHandler->SetGridDataDir("//alice/data/2016/LHC13r/");
+  alienHandler->SetDataPattern("*/pass1/AOD/*AOD.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
    
@@ -65,7 +65,7 @@ void RunMacro()
   //Int_t runArray[] = {186320, 186319, 186318, 186229, 186208, 186205, 186200, 186167, 186165, 186164, 186163, 185912, 185909, 185784, 185778, 185776, 185775, 185768, 185765, 185764, 185757, 185756, 185738, 185735, 185734, 185701, 185699, 185698, 185697, 185695, 185687, 185680, 185589, 185588, 185583, 185582, 185581, 185580, 185578, 185575, 185574, 185565, 185563, 185474, 185465, 185461, 185457, 185375, 185371, 185363, 185362, 185361, 185360, 185359, 185356, 185351, 185350, 185349, 185303, 185302, 185300, 185299, 185296, 185293, 185292, 185291, 185289, 185288, 185284, 185282, 185221, 185217, 185208, 185206, 185203, 185198, 185196, 185189};
 
  //LHC13b
-    Int_t runArray[] = {195483, 195482, 195481, 195480, 195479, 195478, 195391, 195389, 195351, 195346, 195344}; 
+    //Int_t runArray[] = {195483, 195482, 195481, 195480, 195479, 195478, 195391, 195389, 195351, 195346, 195344}; 
 
  //LHC13c
     //Int_t runArray[] = {195529, 195531, 195566, 195567, 195568, 195592, 195593, 195596, 195633, 195635, 195644, 195673, 195675, 195677};
@@ -73,6 +73,12 @@ void RunMacro()
 //LHC10d4 - MC Data
     //Int_t runArray[] = {119159, 119161, 119163, 119841, 119842, 119844, 119845, 119846, 119849, 119853, 119856, 119859, 119862, 120067, 120069, 120072, 120073, 120076, 120079, 120244, 120503, 120504, 120505, 120616, 120617, 120671, 120741, 120750, 120758, 120820, 120821, 120822, 120823, 120824, 120825, 120829};
    // Int_t runArray[] = {120073}; //for testing why files were being opened but not closed
+
+//LHC16r - 8 TeV pPb data
+    Int_t runArray[] = {266318, 266317, 266316, 266305, 266304, 266300, 266299, 266296, 266208, 266197, 266196, 266193,//
+        266190, 266189, 266187, 266117, 266086, 266085, 266084, 266083, 266081, 266076, 266074, 266034,//
+        265797, 265795, 265789, 265788, 265756, 265754, 265746, 265744, 265742, 265741, 265714, 265713,//
+        265709, 265705, 265701, 265700, 265698, 265697, 265696, 265607, 265596, 265594}
 
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
