@@ -13,16 +13,16 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   const char*  mode = "full"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
    Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
-   Int_t cyclenumber = 1;
+   Int_t cyclenumber = 2;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiInvMass_LHC16r";
-   char* output_dir = "output_2017_03_05";
+   char* work_dir = "PhiCorrelations_LHC16r";
+   char* output_dir = "output_2017_03_07";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
-   Int_t runcycle[]={0,11};
-//   Int_t runcycle[]={0,3,6,12,14};
+//   Int_t runcycle[]={0,11};
+   Int_t runcycle[]={0,3,12};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -55,8 +55,8 @@ void RunMacro()
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  alienHandler->SetGridDataDir("//alice/data/2016/LHC13r/");
-  alienHandler->SetDataPattern("*/pass1/AOD/*AOD.root");
+  alienHandler->SetGridDataDir("//alice/data/2016/LHC16r/");
+  alienHandler->SetDataPattern("*/pass1_CENT_wSDD/AOD/*AOD.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
    
@@ -75,10 +75,8 @@ void RunMacro()
    // Int_t runArray[] = {120073}; //for testing why files were being opened but not closed
 
 //LHC16r - 8 TeV pPb data
-    Int_t runArray[] = {266318, 266317, 266316, 266305, 266304, 266300, 266299, 266296, 266208, 266197, 266196, 266193,//
-        266190, 266189, 266187, 266117, 266086, 266085, 266084, 266083, 266081, 266076, 266074, 266034,//
-        265797, 265795, 265789, 265788, 265756, 265754, 265746, 265744, 265742, 265741, 265714, 265713,//
-        265709, 265705, 265701, 265700, 265698, 265697, 265696, 265607, 265596, 265594}
+    //Int_t runArray[] = {266318, 266317, 266316, 266305, 266304, 266300, 266299, 266296, 266208, 266197, 266196, 266193, 266190, 266189, 266187, 266117, 266086, 266085, 266084, 266083, 266081, 266076, 266074, 266034, 265797, 265795, 265789, 265788, 265756, 265754, 265746, 265744, 265742, 265741, 265714, 265713,265709, 265705, 265701, 265700, 265698, 265697, 265696, 265607, 265596, 265594};
+    Int_t runArray[] = {266318, 266317, 266316, 266208, 266197, 266196, 266187, 265754, 265744, 265607, 265596, 265594};
 
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {

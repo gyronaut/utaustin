@@ -572,7 +572,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                                     phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
                                     phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
                                     phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
-                                    phi.SetE(firstDecayTrack->E()+secondDecayTrack->E());
+                                    phi.SetE(calcE);
                                     phiCandidates.push_back(phi);
                                     phiDaughterTrackNum.push_back(i_track);
                                     phiDaughterTrackNum.push_back(j_track);
@@ -588,7 +588,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                                     phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
                                     phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
                                     phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
-                                    phi.SetE(firstDecayTrack->E()+secondDecayTrack->E());
+                                    phi.SetE(calcE);
                                     phiLikesignCandidates.push_back(phi);
                                     likesignDaughterTrackNum.push_back(i_track);
                                     likesignDaughterTrackNum.push_back(j_track);
@@ -878,117 +878,6 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
                 dphi_point[4] = TMath::Sqrt(phiLikesignCandidates[i_KK].E()*phiLikesignCandidates[i_KK].E() - (phiLikesignCandidates[i_KK].Px()*phiLikesignCandidates[i_KK].Px() + phiLikesignCandidates[i_KK].Py()*phiLikesignCandidates[i_KK].Py() + phiLikesignCandidates[i_KK].Pz()*phiLikesignCandidates[i_KK].Pz()));
                 fDphiHKK->Fill(dphi_point);
             }
-
-           /*
-            for(Int_t j_track = 0; j_track < ntracks; j_track++){
-                //Exclude double counted particles
-                if(j_track == i_track) continue;
-
-                vFirstTrack = fVevent->GetTrack(j_track);
-
-                if(!vFirstTrack) continue;
-
-                firstTrack = dynamic_cast<AliVTrack*>(vFirstTrack);
-                eFirstTrack = dynamic_cast<AliESDtrack*>(vFirstTrack);
-                aFirstTrack = dynamic_cast<AliAODTrack*>(vFirstTrack);
-
-                if(fESD){
-                    if(!esdTrackCutsH->AcceptTrack(eFirstTrack))continue;
-                }
-                if(fAOD){
-                    if(!aFirstTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue; //mimimum cuts
-                }
-
-                //cut on p_T and eta 
-                if(firstTrack->Pt() > 0.15 && TMath::Abs(firstTrack->Eta()) < 0.8){
-
-                    //Get Truth for first particle
-                    Int_t firstLabel = 0, firstPDG = 0;
-                    firstLabel = firstTrack->GetLabel();
-                    if(fESD && firstLabel > 0){
-                        MCFirstParticle = fStack->Particle(firstLabel);
-                        if(MCFirstParticle){
-                            firstPDG = MCFirstParticle->GetPdgCode();
-                            if(TMath::Abs(firstPDG) == 2212){
-                                dphi_point[1] = firstTrack->Pt();
-                                dphi_point[2] = trigger_phi - firstTrack->Phi();
-                                if(dphi_point[2] < -TMath::Pi()/2.0){
-                                    dphi_point[2] += 2.0*TMath::Pi();
-                                }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
-                                    dphi_point[2] -= 2.0*TMath::Pi();
-                                }
-                                fDphiHp->Fill(dphi_point);
-                            }else if(TMath::Abs(firstPDG) == 211){
-                                dphi_point[1] = firstTrack->Pt();
-                                dphi_point[2] = trigger_phi - firstTrack->Phi();
-                                if(dphi_point[2] < -TMath::Pi()/2.0){
-                                    dphi_point[2] += 2.0*TMath::Pi();
-                                }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
-                                    dphi_point[2] -= 2.0*TMath::Pi();
-                                }
-                                fDphiHPi->Fill(dphi_point);
-                            }else if(TMath::Abs(firstPDG) == 321){
-                                dphi_point[1] = firstTrack->Pt();
-                                dphi_point[2] = trigger_phi - firstTrack->Phi();
-                                if(dphi_point[2] < -TMath::Pi()/2.0){
-                                    dphi_point[2] += 2.0*TMath::Pi();
-                                }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
-                                    dphi_point[2] -= 2.0*TMath::Pi();
-                                }
-                                fDphiHK->Fill(dphi_point);
-                            }
-                        }
-                    }
-                    if(fAOD && firstLabel > 0){
-                        MCFirsttrk = (AliAODMCParticle*)mcArray->At(firstLabel);
-                        if(MCFirsttrk)
-                            firstPDG = MCFirsttrk->GetPdgCode();
-                    }
-                }
-            }
-            
-            //Loop over all phi reals
-            Double_t cor_phi = 0, cor_pt = 0;
-
-            for(Int_t i_particle = 0; i_particle < phiReals.size(); i_particle++){
-                 cor_pt = TMath::Sqrt(phiReals[i_particle].Px()*phiReals[i_particle].Px() + phiReals[i_particle].Py()*phiReals[i_particle].Py());
-                 cor_phi = TMath::Pi() + TMath::ATan2(-1*phiReals[i_particle].Py(), -1*phiReals[i_particle].Px());
-                 dphi_point[1] = cor_pt;
-                 dphi_point[2] = trigger_phi - cor_phi;
-                 if(dphi_point[2] < -TMath::Pi()/2.0){
-                     dphi_point[2] += 2.0*TMath::Pi();
-                 }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
-                     dphi_point[2] -= 2.0*TMath::Pi();
-                 }
-                 fDphiHPhi->Fill(dphi_point);
-            }
-            //Loop over all K* reals
-            for(Int_t j_particle = 0; j_particle < KReals.size(); j_particle++){
-                 cor_pt = TMath::Sqrt(KReals[j_particle].Px()*KReals[j_particle].Px() + KReals[j_particle].Py()*KReals[j_particle].Py());
-                 cor_phi = TMath::Pi() + TMath::ATan2(-1*KReals[j_particle].Py(), -1*KReals[j_particle].Px());
-                 dphi_point[1] = cor_pt;
-                 dphi_point[2] = trigger_phi - cor_phi;
-                 if(dphi_point[2] < -TMath::Pi()/2.0){
-                     dphi_point[2] += 2.0*TMath::Pi();
-                 }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
-                     dphi_point[2] -= 2.0*TMath::Pi();
-                 }
-                 fDphiHKstar->Fill(dphi_point);
-            }
-            //Loop over all K0 reals
-            for(Int_t k_particle = 0; k_particle < K0Reals.size(); k_particle++){
-                 cor_pt = TMath::Sqrt(K0Reals[k_particle].Px()*K0Reals[k_particle].Px() + K0Reals[k_particle].Py()*K0Reals[k_particle].Py());
-                 cor_phi = TMath::Pi() + TMath::ATan2(-1*K0Reals[k_particle].Py(), -1*K0Reals[k_particle].Px());
-                 dphi_point[1] = cor_pt;
-                 dphi_point[2] = trigger_phi - cor_phi;
-                 if(dphi_point[2] < -TMath::Pi()/2.0){
-                     dphi_point[2] += 2.0*TMath::Pi();
-                 }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
-                     dphi_point[2] -= 2.0*TMath::Pi();
-                 }
-                 fDphiHK0->Fill(dphi_point);
-            }
-            */
        }
     } //track loop
 //    analysisTimer->Stop();
