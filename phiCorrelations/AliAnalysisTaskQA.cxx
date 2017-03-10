@@ -215,13 +215,6 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fTPCNpts = new TH2F("fTPCNpts","All track TPC Npoints used for dE/dx calculation;p (GeV/c);N points",200,0,20,200,0.,200.);
     fOutputList->Add(fTPCNpts);
     
-    // TPC NSig histogram 
-/*    fTPCKaonNSig = new TH2F("fTPCKaonNSig","All Track TPC Nsigma distribution;p (GeV/c);#sigma_{TPC-dE/dx}",1000,0,50,200,-10,10);
-    fOutputList->Add(fTPCKaonNSig);
-    
-    fPDGCodes = new TH1F("fPDGCodes", "PDG codes of tracks", 2000, -1000, 1000);
-    fOutputList->Add(fPDGCodes);
-*/
     // Histogram for trigger distribution
     Int_t trigBins[3] = {100,100,50};
     Double_t trigMin[3] = {0.1, 0.0, -2.0};
@@ -240,52 +233,7 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 
     fKKLSDist = new THnSparseF("fkkLSDist", "Distribution for all LS Kaon pairs", 4, bins, min, max);
     fOutputList->Add(fKKLSDist);
-/*
-    Int_t lsbins[3] = {100, 1000, 3};
-    Double_t lsmin[3] = {0.0, 0.5, -1.1};
-    Double_t lsmax[3] = {10.0, 2.0, 1.1};
-
-    fPhiUSInvMass = new THnSparseF("fPhiUSInvMass", "Invariant mass dist. of unlike-sign Kaon pairs per p_{T}", 2, lsbins, lsmin, lsmax);
-    fOutputList->Add(fPhiUSInvMass);
-
-    fPhiLSInvMass = new THnSparseF("fPhiLikeSignInvMass", "Invariant mass distribution of like-sign Kaon pairs per p_{T}", 3, lsbins, lsmin, lsmax);
-    fOutputList->Add(fPhiLSInvMass);
-
-    fKLikeSignInvMass = new THnSparseF("fKLikeSignInvMass", "Invariant mass distribution of like-sign Kaon/Pion pairs per p_{T}", 3, lsbins, lsmin, lsmax);
-    fOutputList->Add(fKLikeSignInvMass);
-   
-    // Additional TPC Histograms for different particle species (in relation to Kaon)
-
-    fTPCKaonNSigK = new TH2F("fTPCKaonNSigK", "Only Kaon TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
-    fOutputList->Add(fTPCKaonNSigK);
-
-    fTPCKaonNSigPi = new TH2F("fTPCKaonNSigPi", "Only Pion TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
-    fOutputList->Add(fTPCKaonNSigPi);
-
-    fTPCKaonNSige = new TH2F("fTPCKaonNSige", "Only Electron TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
-    fOutputList->Add(fTPCKaonNSige);
-
-    fTPCKaonNSigp = new TH2F("fTPCKaonNSigp", "Only Proton TPC Nsigma distribution; p (GeV/c); #sigma_{TPC-dE/dx}", 1000, 0, 50, 200, -10, 10);
-    fOutputList->Add(fTPCKaonNSigp);
-
-    fPhiDaughterPTKept = new TH2F("fPhiDaughterPTKept", "Pt distribution of Phi Meson Daughter Particles, Kept; p_{T}^{K+} (GeV/c); p_{T}^{K-} (GeV/c)", 16,0,4,16,0,4);
-    fOutputList->Add(fPhiDaughterPTKept);
-
-    fPhiDaughterPTCut = new TH2F("fPhiDaughterPTCut", "Pt distribution of Phi Meson Daughter Particles, Cut; p_{T}^{K+} (GeV/c); p_{T}^{K-} (GeV/c)", 40,0,10,40,0,10);
-    fOutputList->Add(fPhiDaughterPTCut);
- 
-    fKstarDaughterPTKept = new TH2F("fKstarDaughterPTKept", "Pt distribution of K*(892) Meson Daughter Particles, Kept; p_{T}^{K} (GeV/c); p_{T}^{#pi} (GeV/c)", 16,0,4,16,0,4);
-    fOutputList->Add(fKstarDaughterPTKept);
-
-    fKstarDaughterPTCut = new TH2F("fKstarDaughterPTCut", "Pt distribution of K*(892) Meson Daughter Particles, Cut; p_{T}^{K} (GeV/c); p_{T}^{#pi} (GeV/c)", 40,0,10,40,0,10);
-    fOutputList->Add(fKstarDaughterPTCut);
- 
-    fK0DaughterPTKept = new TH2F("fK0DaughterPTKept", "Pt distribution of K0 Meson Daughter Particles, Kept; p_{T}^{#pi^{+}} (GeV/c); p_{T}^{#pi^{-}} (GeV/c)", 16,0,4,16,0,4);
-    fOutputList->Add(fK0DaughterPTKept);
-
-    fK0DaughterPTCut = new TH2F("fK0DaughterPTCut", "Pt distribution of K0 Meson Daughter Particles, Cut; p_{T}^{#pi^{+}} (GeV/c); p_{T}^{#pi^{-}} (GeV/c)", 40,0,10,40,0,10);
-    fOutputList->Add(fK0DaughterPTCut);
-*/   
+  
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
     Int_t dphi_bins[5]=    {85,   98,    64,   24, 120};
     Double_t dphi_min[5] = {3.0,   0.4, -1.57, -3.0, 0.98};
@@ -302,14 +250,6 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
 //________________________________________________________________________
 void AliAnalysisTaskQA::UserExec(Option_t *)
 {
-    //printf("\n!!!!!!!!!!!!!!\nMade it to UserExec! \n");
-    //fflush(stdout);
-    // Main loop
-    // Called for each event
-    // Post output data.
-    
-//    TStopwatch *initTimer = new TStopwatch();
-//    initTimer->Start();
 
     UInt_t evSelMask=((AliInputEventHandler*)(AliAnalysisManager::GetAnalysisManager()->GetInputEventHandler()))->IsEventSelected();
     
@@ -320,52 +260,6 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     }
      
     fESD = dynamic_cast<AliESDEvent*>(InputEvent());
-
-    /////////////////////////////////
-    // Setting up fStack (MC Only) //
-    /////////////////////////////////
-/*    
-    AliMCEventHandler *fMCHandler = 0x0;
-    AliMCEvent *fMcEvent = 0x0;
-    AliStack *fStack = 0x0;
-    TClonesArray *mcArray = 0x0;
-    
-    if(fESD){
-        fMCHandler = dynamic_cast<AliMCEventHandler*>(AliAnalysisManager::GetAnalysisManager()->GetMCtruthEventHandler()); 
-   
-        
-        if(fMCHandler){
-            fMcEvent = fMCHandler->MCEvent();
-            // printf("handler set up! \n");
-        }else{
-            if(fDebug > 1) printf("AliAnalysisTaskHFDijetMC::UserExec fMcHandler=NULL\n");
-            fprintf(stderr, "no MCHandler!\n");
-            return;
-        }
-
-        if(!fMcEvent){
-            if(fDebug > 1) printf("AliAnalysisTaskHFDijetMC::UserExec fMcEvent=NULL \n");
-            fprintf(stderr, "No MCEvent!\n");
-            return;
-        }else{
-            //fprintf(stdout, "MCEvent Found!\n");
-        }
-
-        fStack = ((AliMCEvent*)fMcEvent)->Stack();
-        if(!fStack){
-            fprintf(stderr, "No Stack :(\n");
-            return;
-        }else{
-            //printf("Stack found!\n");
-        }
-    }else if(fAOD){
-        mcArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
-        if(!mcArray){
-            AliError("Array of MC particles not found");
-            return;
-        }
-    } 
-*/
     ////////////////////
     //cuts initialised//
     ///////////////////
@@ -436,317 +330,144 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     if(fabs(Zvertex>10.0))return;
     fNevents->Fill(2); //events after z vtx cut
 
+    //create a new struct for a kaon track (TLorentzVector + track number)
+    struct TkaonCont{
+        Int_t trackNum;
+        TLorentzVector particle;
+    };
+
+    struct TPhiCont{
+        Int_t daughter1TrackNum;
+        Int_t daughter2TrackNum;
+        TLorentzVector particle;
+    };
+
     //Initialize the vectors/points that will be used to fill the histograms
-    std::vector<TLorentzVector> phiCandidates;
-    std::vector<Int_t> phiDaughterTrackNum;
-//    std::vector<TLorentzVector> phiReals;
-    std::vector<TLorentzVector> phiLikesignCandidates;
-    std::vector<Int_t> likesignDaughterTrackNum;
-    std::vector<TLorentzVector> KCandidates;
-//    std::vector<TLorentzVector> KReals;
-    std::vector<TLorentzVector> K0Reals;
-    TLorentzVector phi;
-    TLorentzVector K;
+    std::vector<TPhiCont> phiCandidates;
+    std::vector<TPhiCont> phiLikeSignCandidates;
+    std::vector<TkaonCont> kPlusList;
+    std::vector<TkaonCont> kMinusList;
 
     Double_t distPoint[4] = {0, 0, 0, 0}; //pt, invmass, phi, eta
     Double_t trigPoint[3] = {0, 0, 0}; //pt, phi, eta
     Double_t dphi_point[5] = {0, 0, 0, 0, 0}; //trigger pt, phi pt, delta-phi, delta-eta, phi invmass
 
-//    TParticle *MCFirstDecay = 0x0;
-//    AliAODMCParticle* MCFirstDecayTrack = 0x0;
-    AliVTrack *firstDecayTrack = 0x0;
-    AliESDtrack *eFirstDecayTrack = 0x0;
-    AliAODTrack *aFirstDecayTrack = 0x0;
-    AliVParticle *vFirstDecayTrack = 0x0;
+    AliVTrack *kaonTrack = 0x0;
+    AliESDtrack *eKaonTrack = 0x0;
+    AliAODTrack *aKaonTrack = 0x0;
+    AliVParticle *vKaonTrack = 0x0;
 
-    /* First Loop - Filling a vector with Lorentz vectors for all
-     * Phi Candidates/real Phi's, as well as K*(892) candidates/reals
-     */
+    /* First Loop - Filling two vector for all Kaons (plus and minus) */
     for(Int_t i_track = 0; i_track < ntracks; i_track++){
-        vFirstDecayTrack = 0x0;
-        vFirstDecayTrack = fVevent->GetTrack(i_track);
+        vKaonTrack = 0x0;
+        vKaonTrack = fVevent->GetTrack(i_track);
 
-        if(!vFirstDecayTrack){
+        if(!vKaonTrack){
             printf("Error: Could not receive track %d\n", i_track);
             continue;
         }
-        firstDecayTrack = dynamic_cast<AliVTrack*>(vFirstDecayTrack);
-        eFirstDecayTrack = dynamic_cast<AliESDtrack*>(vFirstDecayTrack);
-        aFirstDecayTrack = dynamic_cast<AliAODTrack*>(vFirstDecayTrack);
+        kaonTrack = dynamic_cast<AliVTrack*>(vKaonTrack);
+        eKaonTrack = dynamic_cast<AliESDtrack*>(vKaonTrack);
+        aKaonTrack = dynamic_cast<AliAODTrack*>(vKaonTrack);
 
         if(fAOD)
-            if(!aFirstDecayTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue; //mimimum cuts
+            if(!aKaonTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue; //mimimum cuts
 
         if(fESD)
-            if(!esdTrackCutsH->AcceptTrack(eFirstDecayTrack))continue;
+            if(!esdTrackCutsH->AcceptTrack(eKaonTrack))continue;
 
-        if(firstDecayTrack->Pt() > 0.15 && TMath::Abs(firstDecayTrack->Eta()) < 0.8){
+        // Cut on pT and eta for possible Kaons
+        if(kaonTrack->Pt() > 0.15 && TMath::Abs(kaonTrack->Eta()) < 0.8){
             Double_t fTPCnSigma = -999;
             Double_t fTOFnSigma = -999;
             Double_t fpiTPCnSigma = -999;
             //check for labels
             Int_t label = 0;
-            label = firstDecayTrack->GetLabel();
+            label = kaonTrack->GetLabel();
 
-            // Using stack to get actual particle PDG codes (MC Only)
-            /* 
-            Int_t fPDG = 0;
-            Int_t motherPDG = 0;
-            Int_t motherIndex = 0;
-            if(label > 1){             
-                if(fESD){
-                    MCFirstDecay = fStack->Particle(label);
-                    if(MCFirstDecay){
-                        fPDG = MCFirstDecay->GetPdgCode();
-                        if(fPDG > 0){
-                            motherIndex = MCFirstDecay->GetMother(0);
-                            if(motherIndex > 0){
-                                motherPDG = fStack->Particle(motherIndex)->GetPdgCode();
-                            }
-                        }
-                    }
-                }else if(fAOD){
-                    MCFirstDecayTrack = (AliAODMCParticle*)mcArray->At(label);
-                    if(MCFirstDecayTrack){
-                        fPDG = MCFirstDecayTrack->GetPdgCode();
-                    }
-                }
-            }
-            */
-
-            fTPCnSigma = fpidResponse->NumberOfSigmasTPC(firstDecayTrack, AliPID::kKaon);
-            fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(firstDecayTrack, AliPID::kKaon);
-//            TParticle *MCSecondDecay = 0x0;
-//            AliAODMCParticle* MCSecondDecayTrack = 0x0;
-            AliVTrack *secondDecayTrack = 0x0;
-            AliESDtrack *eSecondDecayTrack = 0x0;
-            AliAODTrack *aSecondDecayTrack = 0x0;
-            AliVParticle *vSecondDecayTrack = 0x0;
-
+            fTPCnSigma = fpidResponse->NumberOfSigmasTPC(kaonTrack, AliPID::kKaon);
+            fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(kaonTrack, AliPID::kKaon);
             //Cut on kaon candidates
             if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0)){
-                for(Int_t j_track = 0; j_track < ntracks; j_track++){
-                    if(i_track == j_track) continue;
-                    vSecondDecayTrack = 0x0;
-                    vSecondDecayTrack = fVevent->GetTrack(j_track);
+                TkaonCont kaon;
+                kaon.trackNum = i_track;
+                kaon.particle.SetPx(kaonTrack->Px());
+                kaon.particle.SetPy(kaonTrack->Py());
+                kaon.particle.SetPz(kaonTrack->Pz());
+                Double_t calcE = TMath::Sqrt(0.4937*0.4937 + kaonTrack->P()*kaonTrack->P());
+                kaon.particle.SetE(calcE);
 
-                    if(!vSecondDecayTrack){
-                        printf("Error: Could not receive track %d\n", j_track);
-                        continue;
-                    }
-                    secondDecayTrack = dynamic_cast<AliVTrack*>(vSecondDecayTrack);
-                    eSecondDecayTrack = dynamic_cast<AliESDtrack*>(vSecondDecayTrack);
-                    aSecondDecayTrack = dynamic_cast<AliAODTrack*>(vSecondDecayTrack);
-
-                    if(fAOD)
-                        if(!aSecondDecayTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue; //mimimum cuts
-
-                    if(fESD)
-                        if(!esdTrackCutsH->AcceptTrack(eSecondDecayTrack))continue;
-
-                    if(secondDecayTrack->Pt() > 0.15 && TMath::Abs(secondDecayTrack->Eta()) < 0.8){
-                        fTPCnSigma = -999;
-                        fTOFnSigma = -999;
-                        fTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kKaon);
-                        fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(secondDecayTrack, AliPID::kKaon);
-                        fpiTPCnSigma = fpidResponse->NumberOfSigmasTPC(secondDecayTrack, AliPID::kPion);
-                        Double_t calcPx = 0.0, calcPy = 0.0, calcPz = 0.0;
-                        Double_t calcE = 0.0, calcPt = 0.0, calcInvMass = 0.0, calcE1=0.0, calcE2=0.0;
-                        if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0)){
-                            calcPx = firstDecayTrack->Px()+secondDecayTrack->Px();
-                            calcPy = firstDecayTrack->Py()+secondDecayTrack->Py();
-                            calcPz = firstDecayTrack->Pz()+secondDecayTrack->Pz();
-                            calcPt = TMath::Sqrt(calcPx*calcPx + calcPy*calcPy);
-                            
-                            //calcE = firstDecayTrack->E() + secondDecayTrack->E();
-                          //calculating energy of each kaon candidate assuming k mass
-                            calcE1 = TMath::Sqrt(0.4937*0.4937 + firstDecayTrack->P()*firstDecayTrack->P());
-                            calcE2 = TMath::Sqrt(0.4937*0.4937 + secondDecayTrack->P()*secondDecayTrack->P());
-                            calcE = calcE1 + calcE2;
-                            calcInvMass = TMath::Sqrt(calcE*calcE - (calcPx*calcPx + calcPy*calcPy + calcPz*calcPz));
-                            
-                            //Unlike sign pairs - create phi inv-mass distribution (and add to vector if invmass between 0.98 and 1.1)
-                            if(firstDecayTrack->Charge() == 1 && secondDecayTrack->Charge() == -1){
-                                if(calcInvMass >= 0.98 && calcInvMass <= 1.1){
-                                    //Set-up TLorenztVector (px, py, pz, E), then push to vector
-                                    phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
-                                    phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
-                                    phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
-                                    phi.SetE(calcE);
-                                    phiCandidates.push_back(phi);
-                                    phiDaughterTrackNum.push_back(i_track);
-                                    phiDaughterTrackNum.push_back(j_track);
-
-                                    distPoint[0] = phi.Pt();
-                                    distPoint[1] = calcInvMass;
-                                    distPoint[2] = phi.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
-                                    distPoint[3] = phi.Eta();
-                                    fKKUSDist->Fill(distPoint);
-                                }
-                            }else if(firstDecayTrack->Charge()*secondDecayTrack->Charge() == 1){
-                                if(calcInvMass >= 0.98 && calcInvMass <=1.1){
-                                    phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
-                                    phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
-                                    phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
-                                    phi.SetE(calcE);
-                                    phiLikesignCandidates.push_back(phi);
-                                    likesignDaughterTrackNum.push_back(i_track);
-                                    likesignDaughterTrackNum.push_back(j_track);
-                                    
-                                    distPoint[0] = phi.Pt();
-                                    distPoint[1] = calcInvMass;
-                                    distPoint[2] = phi.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
-                                    distPoint[3] = phi.Eta();
-                                    fKKLSDist->Fill(distPoint);
-                                }
-
-                            }
-                        }
-                        /*
-                        if(TMath::Abs(fpiTPCnSigma) < 2.0){
-                            calcPx = firstDecayTrack->Px()+secondDecayTrack->Px();
-                            calcPy = firstDecayTrack->Py()+secondDecayTrack->Py();
-                            calcPz = firstDecayTrack->Pz()+secondDecayTrack->Pz();
-                            calcPt = TMath::Sqrt(calcPx*calcPx + calcPy*calcPy);
-
-                            calcE = firstDecayTrack->E() + secondDecayTrack->E();
-                            calcInvMass = TMath::Sqrt(calcE*calcE - (calcPx*calcPx + calcPy*calcPy + calcPz*calcPz));
-
-                            point[0] = calcPt;
-                            lspoint[0] = calcPt;
-                            point[1] = calcInvMass;
-                            lspoint[1] = calcInvMass;
-                            lspoint[2] = firstDecayTrack->Charge();
-                            //Unlike sign pairs - create actual K*(892) inv-mass distribution
-                            if(firstDecayTrack->Charge()*secondDecayTrack->Charge() == -1){
-                                fKInvMass->Fill(point);
-                                
-                                //Set-up TLorenztVector (px, py, pz, E), then push to vector
-                                K.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
-                                K.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
-                                K.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
-                                K.SetE(firstDecayTrack->E()+secondDecayTrack->E());
-                                KCandidates.push_back(K);
-                            }else if(firstDecayTrack->Charge()*secondDecayTrack->Charge() == 1){
-                                fKLikeSignInvMass->Fill(lspoint);
-                            }
-                            
-                        }*/
-                    }
+                if(kaonTrack->Charge() == 1){
+                    kPlusList.push_back(kaon);
+                }else{
+                    kMinusList.push_back(kaon);
                 }
             }
-
-            //Cut on just real kaon+ from real phi, or real kaons from real K*(892), or real pi+ from K0 (MC Only)
-            /*
-            if((fPDG == 321 && TMath::Abs(motherPDG) == 333) || ((TMath::Abs(fPDG) == 321 && TMath::Abs(motherPDG) == 313)) || (fPDG == 211 && TMath::Abs(motherPDG)==310)){
-                for(Int_t j_track = 0; j_track < ntracks; j_track++){
-                    if(i_track == j_track) continue;
-                    vSecondDecayTrack = 0x0;
-                    vSecondDecayTrack = fVevent->GetTrack(j_track);
-
-                    if(!vSecondDecayTrack){
-                        printf("Error: Could not receive track %d\n", j_track);
-                        continue;
-                    }
-                    secondDecayTrack = dynamic_cast<AliVTrack*>(vSecondDecayTrack);
-                    eSecondDecayTrack = dynamic_cast<AliESDtrack*>(vSecondDecayTrack);
-                    aSecondDecayTrack = dynamic_cast<AliAODTrack*>(vSecondDecayTrack);
-
-                    if(fAOD)
-                        if(!aSecondDecayTrack->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue; //mimimum cuts
-
-                    if(fESD)
-                        if(!esdTrackCutsH->AcceptTrack(eSecondDecayTrack))continue;
-
-                    if(secondDecayTrack->Pt() > 0.15 && TMath::Abs(secondDecayTrack->Eta()) < 0.8){
-                        Double_t fTPCnSigma = -999;
-                        //check for labels
-                        Int_t label = 0;
-                        label = secondDecayTrack->GetLabel();
-
-                        // Using stack to get actual particle PDG codes
-                        Int_t fsecondPDG = 0;
-                        Int_t secondMotherIndex = 0;
-                        if(label > 1){             
-                            if(fESD){
-                                MCSecondDecay = fStack->Particle(label);
-                                if(MCSecondDecay){
-                                    fsecondPDG = MCSecondDecay->GetPdgCode();
-                                    if(fsecondPDG != 0){
-                                        secondMotherIndex = MCSecondDecay->GetMother(0);
-                                    }
-                                }
-                            }else if(fAOD){
-                                MCSecondDecayTrack = (AliAODMCParticle*)mcArray->At(label);
-                                if(MCSecondDecayTrack){
-                                    fsecondPDG = MCSecondDecayTrack->GetPdgCode();
-                                }
-                            }
-                        }
-                        if(fPDG == 321 && fsecondPDG == -321 && secondMotherIndex == motherIndex){
-                            //Set-up TLorenztVector (px, py, pz, E), then push to vector
-                            phi.SetPx(firstDecayTrack->Px()+secondDecayTrack->Px());
-                            phi.SetPy(firstDecayTrack->Py()+secondDecayTrack->Py());
-                            phi.SetPz(firstDecayTrack->Pz()+secondDecayTrack->Pz());
-                            phi.SetE(firstDecayTrack->E()+secondDecayTrack->E());
-                            if(firstDecayTrack->Pt() < 4 && secondDecayTrack->Pt() < 4){
-                                fPhiDaughterPTKept->Fill(firstDecayTrack->Pt(), secondDecayTrack->Pt());
-                                phiReals.push_back(phi);
-                            }else{
-                                fPhiDaughterPTCut->Fill(firstDecayTrack->Pt(), secondDecayTrack->Pt());
-                            }
-                            point[0] = TMath::Sqrt(phi.Px()*phi.Px() + phi.Py()*phi.Py());
-                            point[1] = TMath::Sqrt(phi.E()*phi.E() - (phi.Px()*phi.Px() + phi.Py()*phi.Py() + phi.Pz()*phi.Pz()));
-                            fTruthTracksPhiInvMass->Fill(point); 
-                        }
-                        if(TMath::Abs(fPDG) == 321 && TMath::Abs(fsecondPDG) == 211 && secondMotherIndex == motherIndex){
-                            K.SetPx(firstDecayTrack->Px() + secondDecayTrack->Px());
-                            K.SetPy(firstDecayTrack->Py() + secondDecayTrack->Py());
-                            K.SetPz(firstDecayTrack->Pz() + secondDecayTrack->Px());
-                            K.SetE(firstDecayTrack->E() + secondDecayTrack->E());
-                            if(firstDecayTrack->Pt() < 4 && secondDecayTrack->Pt()<4){
-                                fKstarDaughterPTKept->Fill(firstDecayTrack->Pt(), secondDecayTrack->Pt());
-                                KReals.push_back(K);
-                            }else{
-                                fKstarDaughterPTCut->Fill(firstDecayTrack->Pt(), secondDecayTrack->Pt());
-                            }
-                        }
-                        if(fPDG == 211 && fsecondPDG == -211 && secondMotherIndex == motherIndex){
-                            K.SetPx(firstDecayTrack->Px() + secondDecayTrack->Px());
-                            K.SetPy(firstDecayTrack->Py() + secondDecayTrack->Py());
-                            K.SetPz(firstDecayTrack->Pz() + secondDecayTrack->Px());
-                            K.SetE(firstDecayTrack->E() + secondDecayTrack->E());
-                            if(firstDecayTrack->Pt() < 4 && secondDecayTrack->Pt()<4){
-                                fK0DaughterPTKept->Fill(firstDecayTrack->Pt(), secondDecayTrack->Pt());
-                                K0Reals.push_back(K);
-                            }else{
-                                fK0DaughterPTCut->Fill(firstDecayTrack->Pt(), secondDecayTrack->Pt());
-                            }
-                        }
-                    }
-                }
-            }
-            */
         }
-    } 
+    }
 
-    ////////////////
-    // Track loop // (MC only right now...) 
-    ////////////////
-    /*
-    TParticle* MCTriggerParticle = 0x0;
-    AliAODMCParticle* MCTriggerTrack = 0x0;
-    */
-    AliVTrack *triggerTrack = 0x0;
-    AliESDtrack *etriggerTrack = 0x0;
-    AliAODTrack *atriggerTrack = 0x0;
-    AliVParticle* VtriggerTrack = 0x0;
-    
+    // Go through the Kaon lists and create the phi candidates and like sign pairs
+    // Also fill in the US and LS K pair distribution histograms
+    TPhiCont phi;
+    for(Int_t i_kplus = 0; i_kplus < kPlusList.size(); i_kplus++){
+        for(Int_t j_kplus = i_kplus+1; j_kplus < kPlusList.size(); j_kplus++){
+            phi.particle.SetPx(kPlusList[i_kplus].particle.Px() + kPlusList[j_kplus].particle.Px());
+            phi.particle.SetPy(kPlusList[i_kplus].particle.Py() + kPlusList[j_kplus].particle.Py());
+            phi.particle.SetPz(kPlusList[i_kplus].particle.Pz() + kPlusList[j_kplus].particle.Pz());
+            phi.particle.SetE(kPlusList[i_kplus].particle.E() + kPlusList[j_kplus].particle.E());
+            phi.daughter1TrackNum = kPlusList[i_kplus].trackNum;
+            phi.daughter2TrackNum = kPlusList[j_kplus].trackNum;
+
+            distPoint[0] = phi.particle.Pt();
+            distPoint[1] = phi.particle.M();
+            distPoint[2] = phi.particle.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
+            distPoint[3] = phi.particle.Eta();
+            fKKLSDist->Fill(distPoint);
+            phiLikeSignCandidates.push_back(phi);
+       }
+        for(Int_t i_kminus =0; i_kminus < kMinusList.size(); i_kminus++){
+            phi.particle.SetPx(kPlusList[i_kplus].particle.Px() + kMinusList[i_kminus].particle.Px());
+            phi.particle.SetPy(kPlusList[i_kplus].particle.Py() + kMinusList[i_kminus].particle.Py());
+            phi.particle.SetPz(kPlusList[i_kplus].particle.Pz() + kMinusList[i_kminus].particle.Pz());
+            phi.particle.SetE(kPlusList[i_kplus].particle.E() + kMinusList[i_kminus].particle.E());
+            phi.daughter1TrackNum = kPlusList[i_kplus].trackNum;
+            phi.daughter2TrackNum = kMinusList[i_kminus].trackNum;
+
+            distPoint[0] = phi.particle.Pt();
+            distPoint[1] = phi.particle.M();
+            distPoint[2] = phi.particle.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
+            distPoint[3] = phi.particle.Eta();
+            fKKUSDist->Fill(distPoint);
+            phiCandidates.push_back(phi);
+       }
+    }
+    for(Int_t i_kminus =0; i_kminus < kMinusList.size(); i_kminus++){
+        for(Int_t j_kminus = i_kminus+1; j_kminus < kMinusList.size(); j_kminus++){
+            phi.particle.SetPx(kMinusList[i_kminus].particle.Px() + kMinusList[j_kminus].particle.Px());
+            phi.particle.SetPy(kMinusList[i_kminus].particle.Py() + kMinusList[j_kminus].particle.Py());
+            phi.particle.SetPz(kMinusList[i_kminus].particle.Pz() + kMinusList[j_kminus].particle.Pz());
+            phi.particle.SetE(kMinusList[i_kminus].particle.E() + kMinusList[j_kminus].particle.E());
+            phi.daughter1TrackNum = kMinusList[i_kminus].trackNum;
+            phi.daughter2TrackNum = kMinusList[j_kminus].trackNum;
+ 
+            distPoint[0] = phi.particle.Pt();
+            distPoint[1] = phi.particle.M();
+            distPoint[2] = phi.particle.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
+            distPoint[3] = phi.particle.Eta();
+            fKKLSDist->Fill(distPoint);
+            phiLikeSignCandidates.push_back(phi); 
+      }        
+    }        
+
     ////////////////////////////////////////////
     // Second loop, building d-phi histograms //
     ////////////////////////////////////////////
+    AliVTrack *triggerTrack = 0x0;
+    AliESDtrack *etriggerTrack = 0x0;
+    AliAODTrack *atriggerTrack = 0x0;
+    AliVParticle* VtriggerTrack = 0x0;   
     for (Int_t i_track = 0; i_track < ntracks; i_track++) {
-        
+
         VtriggerTrack = 0x0;
         VtriggerTrack  = fVevent->GetTrack(i_track);
         
@@ -811,90 +532,41 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             Int_t label = 0;
             label = triggerTrack->GetLabel();
 
-            // Using stack to get actual particle PDG codes (MC Only)
-            /*
-            Int_t fPDG = 0;
-            if(label > 1){             
-                if(fESD){
-                    MCTriggerParticle = fStack->Particle(label);
-                    if(MCTriggerParticle){
-                        fPDG = MCTriggerParticle->GetPdgCode();
-                        fPDGCodes->Fill(fPDG);
-                        if(TMath::Abs(fPDG)==2212)fTPCKaonNSigp->Fill(triggerTrack->P(), fTPCnSigma);
-                        if(TMath::Abs(fPDG)==321)fTPCKaonNSigK->Fill(triggerTrack->P(), fTPCnSigma);
-                        if(TMath::Abs(fPDG)==211)fTPCKaonNSigPi->Fill(triggerTrack->P(), fTPCnSigma);
-                        if(TMath::Abs(fPDG)==11)fTPCKaonNSige->Fill(triggerTrack->P(), fTPCnSigma);
-                    }
-                }else if(fAOD){
-                    MCTriggerTrack = (AliAODMCParticle*)mcArray->At(label);
-                    if(MCTriggerTrack){
-                        fPDG = MCTriggerTrack->GetPdgCode();
-                        if(TMath::Abs(fPDG)==2212)fTPCKaonNSigp->Fill(triggerTrack->P(), fTPCnSigma);
-                        if(TMath::Abs(fPDG)==321)fTPCKaonNSigK->Fill(triggerTrack->P(), fTPCnSigma);
-                        if(TMath::Abs(fPDG)==211)fTPCKaonNSigPi->Fill(triggerTrack->P(), fTPCnSigma);
-                        if(TMath::Abs(fPDG)==11)fTPCKaonNSige->Fill(triggerTrack->P(), fTPCnSigma);
-                    }
-                }
-            }
-            */
-            /*
-            TParticle* MCFirstParticle=0x0;
-            AliAODMCParticle* MCFirsttrk = 0x0;
-            
-            AliVParticle* vFirstTrack = 0x0;
-            AliVTrack* firstTrack = 0x0;
-            AliESDtrack* eFirstTrack = 0x0;
-            AliAODTrack* aFirstTrack = 0x0;
-            */
-            //Do Correlation Track Loop, finding correlation particles
             for(int i_phi = 0; i_phi < phiCandidates.size(); i_phi++){
-                if(i_track == phiDaughterTrackNum[2*i_phi] || i_track == phiDaughterTrackNum[2*i_phi + 1]) continue; //skip if hadron is one of the daughter particles
+                if(i_track == phiCandidates[i_phi].daughter1TrackNum || i_track == phiCandidates[i_phi].daughter2TrackNum) continue; //skip if hadron is one of the daughter particles
                 trigPoint[0] = triggerTrack->Pt();
                 trigPoint[1] = triggerTrack->Phi();
                 trigPoint[2] = triggerTrack->Eta();
                 fTrigDist->Fill(trigPoint);
-                dphi_point[1] = phiCandidates[i_phi].Pt();
-                dphi_point[2] = trigger_phi - phiCandidates[i_phi].Phi();
+                dphi_point[1] = phiCandidates[i_phi].particle.Pt();
+                dphi_point[2] = trigger_phi - phiCandidates[i_phi].particle.Phi();
                 if(dphi_point[2] < -TMath::Pi()/2.0){
                     dphi_point[2] += 2.0*TMath::Pi();
                 }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
                     dphi_point[2] -= 2.0*TMath::Pi();
                 }
-                dphi_point[3] = triggerTrack->Eta() - phiCandidates[i_phi].Eta();
-                dphi_point[4] = TMath::Sqrt(phiCandidates[i_phi].E()*phiCandidates[i_phi].E() - (phiCandidates[i_phi].Px()*phiCandidates[i_phi].Px() + phiCandidates[i_phi].Py()*phiCandidates[i_phi].Py() + phiCandidates[i_phi].Pz()*phiCandidates[i_phi].Pz()));
+                dphi_point[3] = triggerTrack->Eta() - phiCandidates[i_phi].particle.Eta();
+                dphi_point[4] = phiCandidates[i_phi].particle.M();
                 fDphiHPhi->Fill(dphi_point);
             }
 
-             for(int i_KK = 0; i_KK < phiLikesignCandidates.size(); i_KK++){
-                if(i_track == likesignDaughterTrackNum[2*i_KK] || i_track == likesignDaughterTrackNum[2*i_KK + 1]) continue; //skip if hadron is one of the daughter particles
-                dphi_point[1] = phiLikesignCandidates[i_KK].Pt();
-                dphi_point[2] = trigger_phi - phiLikesignCandidates[i_KK].Phi();
+             for(int i_KK = 0; i_KK < phiLikeSignCandidates.size(); i_KK++){
+                if(i_track == phiLikeSignCandidates[i_KK].daughter1TrackNum || i_track == phiLikeSignCandidates[i_KK].daughter2TrackNum) continue; //skip if hadron is one of the daughter particles
+                dphi_point[1] = phiLikeSignCandidates[i_KK].particle.Pt();
+                dphi_point[2] = trigger_phi - phiLikeSignCandidates[i_KK].particle.Phi();
                 if(dphi_point[2] < -TMath::Pi()/2.0){
                     dphi_point[2] += 2.0*TMath::Pi();
                 }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
                     dphi_point[2] -= 2.0*TMath::Pi();
                 }
-                dphi_point[3] = triggerTrack->Eta() - phiLikesignCandidates[i_KK].Eta();
-                dphi_point[4] = TMath::Sqrt(phiLikesignCandidates[i_KK].E()*phiLikesignCandidates[i_KK].E() - (phiLikesignCandidates[i_KK].Px()*phiLikesignCandidates[i_KK].Px() + phiLikesignCandidates[i_KK].Py()*phiLikesignCandidates[i_KK].Py() + phiLikesignCandidates[i_KK].Pz()*phiLikesignCandidates[i_KK].Pz()));
+                dphi_point[3] = triggerTrack->Eta() - phiLikeSignCandidates[i_KK].particle.Eta();
+                dphi_point[4] = phiLikeSignCandidates[i_KK].particle.M();
                 fDphiHKK->Fill(dphi_point);
             }
        }
     } //track loop
-//    analysisTimer->Stop();
-//    printf("ANALYSIS: ");
-//    analysisTimer->Print("u");
-//    printf("\n");  
 
-//    TStopwatch *writeTimer = new TStopwatch();
-//    writeTimer->Start();
     PostData(1, fOutputList);
-//    printf("WRITE: ");
-//    writeTimer->Print("u");
-//    printf("\n");
-
-//    delete initTimer;
-//    delete analysisTimer;
-//    delete writeTimer;
 }      
 //________________________________________________________________________
 void AliAnalysisTaskQA::Terminate(Option_t *) 
