@@ -17,12 +17,12 @@ void RunMacro()
    Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiCorrelations_LHC16r";
-   char* output_dir = "output_2017_03_10";
+   char* work_dir = "PhiCorrelations_LHC16q";
+   char* output_dir = "output_2017_03_14";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
-   Int_t runcycle[]={0,12};
-//   Int_t runcycle[]={0,6,12};
+   Int_t runcycle[]={0,32};
+//   Int_t runcycle[]={0,9,18,32};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -55,8 +55,9 @@ void RunMacro()
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  alienHandler->SetGridDataDir("//alice/data/2016/LHC16r/");
+  alienHandler->SetGridDataDir("//alice/data/2016/LHC16q/");
   alienHandler->SetDataPattern("*/pass1_CENT_wSDD/AOD/*AOD.root");
+  //alienHandler->SetDataPattern("*/pass4/AOD/*AOD.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
    
@@ -76,8 +77,10 @@ void RunMacro()
 
 //LHC16r - 8 TeV pPb data
     //Int_t runArray[] = {266318, 266317, 266316, 266305, 266304, 266300, 266299, 266296, 266208, 266197, 266196, 266193, 266190, 266189, 266187, 266117, 266086, 266085, 266084, 266083, 266081, 266076, 266074, 266034, 265797, 265795, 265789, 265788, 265756, 265754, 265746, 265744, 265742, 265741, 265714, 265713,265709, 265705, 265701, 265700, 265698, 265697, 265696, 265607, 265596, 265594};
-    Int_t runArray[] = {266318, 266317, 266316, 266208, 266197, 266196, 266187, 265754, 265744, 265607, 265596, 265594};
+   //Int_t runArray[] = {266318, 266317, 266316, 266208, 266197, 266196, 266187, 265754, 265744, 265607, 265596, 265594};
 
+//LHC16q - 5 TeV pPb data
+   Int_t runArray[] = {265525, 265521, 265501, 265500, 265499, 265435, 265427, 265426, 265425, 265424, 265422, 265421, 265420, 265419, 265388, 265387, 265385, 265384, 265383, 265381, 265378, 265377, 265344, 265343, 265342, 265339, 265338, 265336, 265335, 265334, 265332, 265309};  
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
     if (i == sizeof(runArray) / sizeof(runArray[1])) break;
