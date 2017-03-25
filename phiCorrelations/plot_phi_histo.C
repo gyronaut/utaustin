@@ -18,13 +18,13 @@ void plot_phi_histo(string inputName){
 
     TFile *histoFile = new TFile(inputName.c_str());
     histoFile->cd("PhiReconstruction");
-    TH1F *fTrigPt = (TH1F*)InvMass->FindObject("fTrigPt");
     THnSparseF *fkkUSDist = (THnSparseF *)InvMass->FindObject("fkkUSDist");
     THnSparseF *fkkLSDist = (THnSparseF *)InvMass->FindObject("fkkLSDist");
     THnSparseF *fTrigDist = (THnSparseF *)InvMass->FindObject("fTrigDist");
     THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
     THnSparseF *dphiHKK = (THnSparseF *)InvMass->FindObject("fDphiHKK");
 
+    TH1D *phiPTSpectrum;
     TH1D *corrInvMass[16];
     TH1D *phiInvMassBinned[16];
     TH1D *likeSignInvMassBinned[16];
@@ -42,10 +42,11 @@ void plot_phi_histo(string inputName){
 
     } 
 
-    Double_t pt_bounds[] = {1.0, 3.0, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 10.0};
-    Int_t pt_bins[] = {10, 30, 8, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 60, 70, 100};
+    Double_t pt_bounds[] = {0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 10.0};
+    Int_t pt_bins[] = {4, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 60, 70, 100};
     Double_t sigmas[16];    
 
+    Double_t error;
     Double_t sideband = 0.0;
     Double_t likeSignSideBand = 0.0;
     Double_t scaleFactor = 0.0;
@@ -54,22 +55,27 @@ void plot_phi_histo(string inputName){
     Int_t numBins = 200 - (int)(((invMin-0.98)+(1.1-invMax))*200./(1.1-0.98));
 
     /* Setting up the invariant mass dist for LS and US Kaon pairs (scaled to the sideband region),
-     * and a "BG corrected" invmass per pt dist */
+     * and a "BG corrected" invmass per pt bin*/
+    phiPTSpectrum = new TH1D("phiPTspectrum", "p_{T}^{#Phi} Spectrum Corrected with LS BG", 15, pt_bounds);
     if(fkkUSDist && fkkLSDist){
         double bins_per_mass = numBins/(invMax-invMin);
 
         fkkUSDist->GetAxis(1)->SetRange(200-numBins,200);
         fkkUSDist->GetAxis(1)->SetTitle("Inv Mass (GeV/c^2)");
+        //fkkUSDist->Sumw2();
         fkkLSDist->GetAxis(1)->SetRange(200-numBins,200);
         fkkLSDist->SetTitle("Inv Mass (GeV/c^2)");
+        //fkkLSDist->Sumw2();
         
         for(int i =0; i<15; i++){
             fkkUSDist->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
             phiInvMassBinned[i] = (TH1D*)fkkUSDist->Projection(1);
+            //phiInvMassBinned[i]->Sumw2();
             phiInvMassBinned[i]->SetTitle(Form("%.1f < p_{T} < %.1f GeV/c", pt_bounds[i], pt_bounds[i+1]));
             sideband = phiInvMassBinned[i]->Integral((int)(bins_per_mass*(1.04-invMin)),(int)(bins_per_mass*(1.06-invMin))); //integrating from mass of 1.04 to ~1.06 for the sideband scaling
             fkkLSDist->GetAxis(0)->SetRange(pt_bins[i], pt_bins[i+1]);
             likeSignInvMassBinned[i] = (TH1D*)fkkLSDist->Projection(1);
+            //likeSignInvMassBinned[i]->Sumw2();
             likeSignInvMassBinned[i]->SetTitle(Form("%.1f < p_{T} < %.1f GeV/c", pt_bounds[i], pt_bounds[i+1]));
             likeSignSideBand = likeSignInvMassBinned[i]->Integral((int)(bins_per_mass*(1.04-invMin)),(int)(bins_per_mass*(1.06-invMin)));
             likeSignInvMassBinned[i]->Scale(sideband/likeSignSideBand);
@@ -77,13 +83,25 @@ void plot_phi_histo(string inputName){
             likeSignInvMassBinned[i]->SetLineColor(2);
             corrInvMass[i] = (TH1D*)phiInvMassBinned[i]->Clone(Form("corrInvMass_%i_%i", pt_bins[i], pt_bins[i]));
             corrInvMass[i]->Add(likeSignInvMassBinned[i], -1.0);
+            //corrInvMass[i]->Sumw2();
             corrInvMass[i]->Fit(Form("f%i", i), "R");
-            sigmas[i] = fits[i]->GetParameter("Sigma");
+            phiPTSpectrum->SetBinContent(i+1, (corrInvMass[i]->IntegralAndError((Int_t)(bins_per_mass*(1.01-invMin)),(Int_t)(bins_per_mass*(1.03-invMin)), error, "width"))/((pt_bounds[i+1] - pt_bounds[i])*1.6));
+            //phiPTSpectrum->SetBinError(i, error);
+            phiPTSpectrum->SetBinError(i+1, TMath::Sqrt(phiPTSpectrum->GetBinContent(i)));
         }
     }else{
       printf("couldn't open kk distributions!\n");
       return 0;
     }
+
+    //Plot the Like-sign background corrected phi(1020) pT distribution:
+    TCanvas *ptCanvas = new TCanvas("ptCanvas", "ptCanvas", 50, 50, 800, 800);
+    ptCanvas->cd();
+    phiPTSpectrum->GetXaxis()->SetTitle("p_{T} (GeV/c^{2})");
+    phiPTSpectrum->GetYaxis()->SetTitle("d^{2}N/dp_{T}d#eta");
+    phiPTSpectrum->SetMarkerStyle(3);
+    phiPTSpectrum->SetMarkerSize(0.8);
+    phiPTSpectrum->Draw();
 
     // Plotting distributions for KK pairs (US and LS) and trigger particles
 
@@ -250,14 +268,14 @@ void plot_phi_histo(string inputName){
 
     TCanvas *cCorrDPhi = new TCanvas("cCorrDPhi", "cCorrDPhi", 30, 30, 600, 600);
     cCorrDPhi->cd();
-    TF1 *corrFit = new TF1("corrFit", "gaus(0) + gaus(3) + pol0(6)", -1.57, 4.71);
+    TF1 *corrFit = new TF1("corrFit", "gaus(0) + gaus(3) + pol0(6)", -1.4, 4.6);
     corrFit->SetParameter(6, 500);
     corrFit->SetParameter(0, 100);
     corrFit->SetParameter(1, 0.0);
     corrFit->SetParameter(2, 1.0);
     corrFit->SetParameter(3, 50);
     corrFit->SetParameter(4, 3.14);
-    corrFit->SetParLimits(4, 3.1, 3.2);
+    corrFit->SetParLimits(4, 3.0, 3.25);
     corrFit->SetParameter(5, 1.5);
 
     corrDPhi->Fit("corrFit", "R");
@@ -366,13 +384,13 @@ void plot_phi_histo(string inputName){
     cDphiHPhi4->cd();
 
     TF1* dphifit = new TF1("dphifit", "gaus(0) + gaus(3) + pol0(6)", -1.3, 4.5);
-    dphifit->SetParameter(6, 1000);
+    dphifit->SetParameter(6, hnew->GetBinContent(9));
     dphifit->SetParameter(0, 200);
-    dphifit->SetParLimits(0, 100.0, 800.0); 
+    dphifit->SetParLimits(0, 100.0, 10000.0); 
     dphifit->SetParameter(1, 0.0);
     dphifit->SetParameter(2, 1.0);
     dphifit->SetParameter(3, 100);
-    dphifit->SetParLimits(3, 1.0, 200.0);
+    dphifit->SetParLimits(3, 1.0, 10000.0);
     dphifit->SetParameter(4, 3.14);
     dphifit->SetParLimits(4, 3.1, 3.2);
     dphifit->SetParameter(5, 1.5);
@@ -382,9 +400,9 @@ void plot_phi_histo(string inputName){
 
     hnew->SetTitle("Corrected #Delta#varphi for Hadron-#Phi(1020) in Peak Region");
     hnew->GetXaxis()->SetTitle("#Delta#varphi");
+    hnew->GetXaxis()->SetRangeUser(-1.3, 4.4);
     
     hnew->Draw("SAME HIST E");
-
 
 
 }

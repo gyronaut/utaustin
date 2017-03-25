@@ -14,11 +14,11 @@ void RunMacro()
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
    const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiCorrelations_LHC16q";
-   char* output_dir = "output_2017_03_14";
+   char* output_dir = "output_2017_03_24";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
    Int_t runcycle[]={0,32};
@@ -56,7 +56,7 @@ void RunMacro()
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
   alienHandler->SetGridDataDir("//alice/data/2016/LHC16q/");
-  alienHandler->SetDataPattern("*/pass1_CENT_wSDD/AOD/*AOD.root");
+  alienHandler->SetDataPattern("*/pass1_FAST/AOD/*AOD.root");
   //alienHandler->SetDataPattern("*/pass4/AOD/*AOD.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
