@@ -16,7 +16,7 @@ Double_t PS(Double_t m, Double_t pT, Double_t T)
 
 Double_t bw(Double_t m, Double_t m0, Double_t Gamma)
 {
-    return m*m0*Gamma/(pow(m*m-m0*m0,2.0)+m0*m0*Gamma*Gamma);
+    return m*m*Gamma/(pow(m*m-m0*m0,2.0)+m*m*Gamma*Gamma);
     //return m*m*Gamma/(pow(m*m-m0*m0,2.0)+m*m*m*m*Gamma*Gamma/(m0*m0));
 }
 
@@ -24,9 +24,12 @@ Double_t bw1(Double_t *x, Double_t *par)
 {
     const Double_t MassK = 0.49368;
     const Double_t MassPi = 0.13957;
-    //Double_t Gamma = par[2]*pow(par[1]/x[0],4.0);
-    //Gamma *= pow(s(x[0],MassK,MassPi)/s(par[1],MassK,MassPi),1.5);
-    Double_t Gamma = par[2];
+    const Double_t MassKstar = 0.892;
+    const Double_t Gamma0 = 0.042;
+    Double_t Gamma = Gamma0*pow(MassKstar/x[0],5.0);
+    Gamma *= pow(s(x[0],MassK,MassPi)/s(MassKstar,MassK,MassPi),1.5);
+    Double_t Gamma += par[2];
+    //Double_t Gamma = par[2];
     return bw(x[0],par[1],Gamma);
 }
 
