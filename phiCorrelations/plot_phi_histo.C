@@ -193,14 +193,67 @@ void plot_phi_histo(string inputName){
     corrInvMass[0]->Draw();
     fits[0]->Draw("SAME");    
 */
-    TH3D *HPhiDphi = dphiHPhi->Projection(0,1,2);
    
     dphiHPhi->GetAxis(0)->SetRangeUser(4.0, 8.0); //cutting on trigger pt between 3 GeV/c and 6 GeV/c
     dphiHPhi->GetAxis(1)->SetRangeUser(2.0,4.0); //cutting on phi pt between 1 GeV/c and 3 GeV/c
-    
+  
     //performing same cuts for KK pairs:
     dphiHKK->GetAxis(0)->SetRangeUser(4.0, 8.0);
     dphiHKK->GetAxis(1)->SetRangeUser(2.0,4.0);
+ 
+    //3D delta eta, delta phi, inv mass dist (all candidates)
+    TH3D *dEtadPhiDist = dphiHPhi->Projection(2, 3, 4);
+    dEtadPhiDist->Rebin3D(4,2,1);
+    TH3D *dEtadPhiLSDist = dphiHKK->Projection(2, 3, 4);
+    dEtadPhiLSDist->Rebin3D(4,2,1);
+
+    dEtadPhiDist->GetZaxis()->SetRangeUser(1.04, 1.06);
+    dEtadPhiLSDist->GetZaxis()->SetRangeUser(1.04, 1.06);
+
+    TH1D *scaleProj = dEtadPhiDist->Project3D("x");
+    TH1D *LSscaleProj = dEtadPhiLSDist->Project3D("x");
+    Double_t testScale = (scaleProj->Integral())/(LSscaleProj->Integral());
+
+    dEtadPhiDist->GetZaxis()->SetRange(0,0);
+    dEtadPhiLSDist->GetZaxis()->SetRange(0,0);
+
+    dEtadPhiLSDist->Scale(testScale);
+    dEtadPhiDist->Add(dEtadPhiLSDist, -1.0);
+
+    dEtadPhiDist->GetZaxis()->SetRangeUser(1.01, 1.03);
+    
+    TH2D *twoCorr = dEtadPhiDist->Project3D("xy");
+
+    twoCorr->GetYaxis()->SetRange(7,9);
+    TH1D *dEta = twoCorr->ProjectionX();
+    twoCorr->GetYaxis()->SetRange(0,0);
+    TF1 *dEtaFit = new TF1("dEtaFit", "[0] - [1]*TMath::Abs(x)", -1.6, 1.6);
+    dEtaFit->SetParameters(1000.0, 500.0);
+   
+    TCanvas *dEtaCanvas = new TCanvas("cdeta", "cdeta", 50, 50, 800, 800);
+    dEtaCanvas->cd();
+    dEta->Fit("dEtaFit", "R");
+    dEta->Draw();
+
+    TH2D *correctedTwoCorr = twoCorr->Clone("correctedTwoCorr");
+    for(int iphi = 1; iphi < 16+1; iphi++){
+        for(int ieta = 4; ieta < 10; ieta++){
+            Double_t value = correctedTwoCorr->GetBinContent(ieta, iphi);
+            value = 2.0*value/(dEtaFit->Eval(-2.75+(0.5*(ieta-1))));
+            correctedTwoCorr->SetBinContent(ieta, iphi, value);
+        }
+    }
+    TCanvas *twocanvas = new TCanvas("2dcanvas", "2dcanvas", 50,50,800,800);
+    twocanvas->cd();
+    twoCorr->GetXaxis()->SetRangeUser(-1.5, 1.5);
+    twoCorr->Draw("SURF1");
+
+    TCanvas *twoCorrcanvas = new TCanvas("2dCorrcanvas", "2dCorrcanvas", 50,50,800,800);
+    twoCorrcanvas->cd();
+    correctedTwoCorr->GetXaxis()->SetRangeUser(-1.5, 1.5);
+    correctedTwoCorr->Draw("SURF1");
+
+
 
     TH1D *phiInvMassPerDPhi[16];
     TH1D *likesignInvMassPerDPhi[16]; 
@@ -295,27 +348,6 @@ void plot_phi_histo(string inputName){
     dphiHPhi->GetAxis(4)->SetRangeUser(1.040, 1.060);
     dphiPhiSideband = dphiHPhi->Projection(2);
     dphiPhiSideband->SetTitle("#Delta#varphi for Hadron-#Phi(1020) in Sideband");
- 
-// Setting up different trigger/assoc momentum cuts for delta-phi distribution
-    TH1D *dphiHPhiArray[5];
-    dphiHPhiArray[0] = HPhiDphi->ProjectionZ("ptH4_ptPhiInc", 20, 100, 0, 100);
-    dphiHPhiArray[0]->SetTitle("p_{T}^{H} > 4 GeV/c, p_{T}^{#Phi} Inclusive");
-    dphiHPhiArray[1] = HPhiDphi->ProjectionZ("ptH4_1ptPhi2", 20, 100, 5, 10);
-    dphiHPhiArray[1]->SetTitle("p_{T}^{H} > 4 GeV/c, 1 < p_{T}^{#Phi} < 2 GeV/c");
-    dphiHPhiArray[2] = HPhiDphi->ProjectionZ("ptH4_2ptPhi4", 20, 100, 10, 20);
-    dphiHPhiArray[2]->SetTitle("p_{T}^{H} > 4 GeV/c, 2 < p_{T}^{#Phi} < 4 GeV/c");
-    dphiHPhiArray[3] = HPhiDphi->ProjectionZ("2ptH_ptPhi2", 0, 10, 0, 10);
-    dphiHPhiArray[3]->SetTitle("p_{T}^{H} < 2 GeV/c, p_{T}^{#Phi} < 2 GeV/c");
-    dphiHPhiArray[4] = HPhiDphi->ProjectionZ("ptH4_2ptPhi", 20, 100, 10, 100);
-    dphiHPhiArray[4]->SetTitle("p_{T}^{H} > 4 GeV/c, p_{T}^{#Phi} > 2 GeV/c");
-
-// Plotting delta-phi distribution for different trigger/assoc. momentum cuts
-    TCanvas *cDphiHPhi = new TCanvas("cDphiHPhi", "cDphiHPhi", 50, 50, 600, 600);
-    cDphiHPhi->Divide(2,2);
-    for(int i =0; i<4; i++){
-        cDphiHPhi->cd(i+1);
-        dphiHPhiArray[i]->Draw("SAME");
-    }  
     
 // Setting & plotting Delta Phi distribution for Unlike sign and Likesign pairs in the
 // sideband region (scaled by the ratio of the integral of the sideband region)
