@@ -110,7 +110,7 @@ void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist, Double_t 
     phiPTSpectrum->SetMarkerColor(4);
     phiPTSpectrum->Draw("C");
 
-    printf("numphi: %i, numphiPTRange: %f\n\n\n",phiPTSpectrum->Integral("width"), phiPTSpectrum->Integral(4,10, "width")); 
+    printf("numphi: %i, numphiPTRange: %i\n\n\n",phiPTSpectrum->Integral("width"), phiPTSpectrum->Integral(4,10, "width")); 
 
     TPaveText *ptNumbers = new TPaveText(0.394, 0.268, 0.883, 0.380, "NDC NB");
     ptNumbers->SetFillColor(0);
@@ -416,6 +416,23 @@ void plotPhiCorrelationsV2(THnSparse *dphiHPhi, THnSparse *dphiHKK){
     hnew->Draw("SAME HIST E");
 }
 
+void fitZVtx(TH1D* zVtx){
+    TF1 *fit = new TF1("zVtxFit", "gaus(0)",-20, 20);
+    fit->SetParameters(1000000.0, 1.5, 10.0);
+
+    TCanvas *cZFit = new TCanvas("cZFit", "cZFit", 50,50,600,600);
+    cZFit->cd();
+    zVtx->Fit("zVtxFit");
+    zVtx->Draw();
+
+    Double_t x[11] = {-10.0, -6.15, -3.90, -2.13, -0.59, 0.86, 2.29, 3.77, 5.39, 7.30, 10.0};
+    Int_t integral= 0;
+    for(int i=0; i<10; i++){
+        integral = zVtx->Integral(zVtx->GetXaxis()->FindBin(x[i]), zVtx->GetXaxis()->FindBin(x[i+1]));
+        printf("zVtx bin%i: %i\n", i, integral);
+    }
+}
+
 /************************
  ***   MAIN FUNCTION  ***
  ************************/
@@ -440,6 +457,8 @@ void plot_phi_histo(string inputName){
     THnSparseF *fTrigDist = (THnSparseF *)InvMass->FindObject("fTrigDist");
     THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
     THnSparseF *dphiHKK = (THnSparseF *)InvMass->FindObject("fDphiHKK");
+    TH1D* zVtx = InvMass->FindObject("fVtxZ");
+
 
     if(fkkUSDist && fkkLSDist && fTrigDist){
         //fkkUSDist->Sumw2();
@@ -468,7 +487,7 @@ void plot_phi_histo(string inputName){
     plotRawAndCorrectedPT(fkkUSDist, fkkLSDist, pt_bounds, pt_bins);
 
     // Plotting distributions for KK pairs (US and LS) and trigger particles 
-//    plotAllDistributions(fkkLSDist, fkkUSDist, fTrigDist);
+    plotAllDistributions(fkkLSDist, fkkUSDist, fTrigDist);
     
     TString suffix;
     //Set the Pt ranges for trigger and assoc particles
@@ -526,13 +545,15 @@ void plot_phi_histo(string inputName){
     plot2DCorrelations(dEtadPhiDist5, dEtadPhiLSDist5, suffix);
 
 
-    //    plotPhiCorrelationsV1(dphiHPhi, dphiHKK);
+//    plotPhiCorrelationsV1(dphiHPhi, dphiHKK);
 
     //Reset the Delta-phi axis range after the dphi binned projections are done being created above.
     dphiHPhi->GetAxis(2)->SetRange(0,0);
     dphiHKK->GetAxis(2)->SetRange(0,0);
 
-   //plotPhiCorrelationsV2(dphiHPhi, dphiHKK);
+//    plotPhiCorrelationsV2(dphiHPhi, dphiHKK);
+
+    fitZVtx(zVtx);
 }
 
 
