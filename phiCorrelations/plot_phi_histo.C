@@ -115,9 +115,9 @@ void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist, Double_t 
     TPaveText *ptNumbers = new TPaveText(0.394, 0.268, 0.883, 0.380, "NDC NB");
     ptNumbers->SetFillColor(0);
     Int_t totPhi = (Int_t)phiPTSpectrum->Integral("width");
-    Int_t ptRangePhi = (Int_t)phiPTSpectrum->Integral(4,10, "width");
+    Int_t ptRangePhi = (Int_t)phiPTSpectrum->Integral(9,11, "width");
     ptNumbers->AddText(Form("Total #phi(1020): %i", totPhi));
-    ptNumbers->AddText(Form("In range 1 < p_{T}^{#phi} < 3 GeV/c^{2}: %i", ptRangePhi));
+    ptNumbers->AddText(Form("In range (2 < p_{T}^{#phi} < 4) GeV/c^{2}: %i", ptRangePhi));
     ptNumbers->Draw();
 }
 
@@ -198,7 +198,7 @@ void plot2DCorrelations(TH3D* dEtadPhiDist, TH3D* dEtadPhiLSDist, TString suffix
     TH2D *twoCorr = dEtadPhiDist->Project3D("xy")->Clone(Form("twoCorr_%s", suffix.Data()));
     twoCorr->GetXaxis()->SetTitle("#Delta#eta");
     twoCorr->GetYaxis()->SetTitle("#Delta#varphi");
-    twoCorr->GetZaxis()->SetTitle("Counts");
+    twoCorr->GetZaxis()->SetTitle("");
     twoCorr->SetTitle("Hadron-(K+K-) Correlations");
 
     twoCorr->GetYaxis()->SetRange(7,9);
@@ -309,8 +309,15 @@ void plotPhiCorrelationsV1(THnSparse *dphiHPhi, THnSparse *dphiHKK){
     corrFit->SetParLimits(4, 3.0, 3.25);
     corrFit->SetParameter(5, 1.5);
 
+    corrFit->SetLineColor(4);
+    corrFit->SetLineWidth(3);
+    corrFit->SetLineStyle(7);
+
     corrDPhi->Fit("corrFit", "R");
-    corrDPhi->Draw();
+    corrDPhi->SetLineWidth(2);
+    corrDPhi->GetYaxis()->SetRangeUser(0, 1200);
+    corrDPhi->GetXaxis()->SetTitle("#Delta#varphi");
+    corrDPhi->Draw("H E");
 }
 
 void plotPhiCorrelationsV2(THnSparse *dphiHPhi, THnSparse *dphiHKK){
@@ -423,14 +430,20 @@ void fitZVtx(TH1D* zVtx){
     TCanvas *cZFit = new TCanvas("cZFit", "cZFit", 50,50,600,600);
     cZFit->cd();
     zVtx->Fit("zVtxFit");
+    zVtx->GetXaxis()->SetRangeUser(-20, 20);
     zVtx->Draw();
 
     Double_t x[11] = {-10.0, -6.15, -3.90, -2.13, -0.59, 0.86, 2.29, 3.77, 5.39, 7.30, 10.0};
     Int_t integral= 0;
+    TLine *lines[11];
     for(int i=0; i<10; i++){
+        lines[i] = new TLine(x[i], 0.0, x[i], zVtx->GetBinContent(zVtx->GetXaxis()->FindBin(x[i])));
+        lines[i]->Draw("SAME");
         integral = zVtx->Integral(zVtx->GetXaxis()->FindBin(x[i]), zVtx->GetXaxis()->FindBin(x[i+1]));
         printf("zVtx bin%i: %i\n", i, integral);
     }
+    lines[10] = new TLine(x[10], 0.0, x[10], zVtx->GetBinContent(zVtx->GetXaxis()->FindBin(x[i])));
+    lines[10]->Draw("SAME");
 }
 
 /************************
@@ -461,8 +474,6 @@ void plot_phi_histo(string inputName){
 
 
     if(fkkUSDist && fkkLSDist && fTrigDist){
-        //fkkUSDist->Sumw2();
-        //fkkLSDist->Sumw2();
         fkkLSDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
         fkkUSDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
         fTrigDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
@@ -545,7 +556,7 @@ void plot_phi_histo(string inputName){
     plot2DCorrelations(dEtadPhiDist5, dEtadPhiLSDist5, suffix);
 
 
-//    plotPhiCorrelationsV1(dphiHPhi, dphiHKK);
+    plotPhiCorrelationsV1(dphiHPhi, dphiHKK);
 
     //Reset the Delta-phi axis range after the dphi binned projections are done being created above.
     dphiHPhi->GetAxis(2)->SetRange(0,0);
