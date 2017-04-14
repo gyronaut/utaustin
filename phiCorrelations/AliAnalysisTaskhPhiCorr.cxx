@@ -31,6 +31,9 @@
 #include "AliAODEvent.h"
 #include "AliAODHandler.h"
 #include "AliAODMCParticle.h"
+#include "AliCFParticle.h"
+
+#include "AliEventPoolManager.h"
 
 #include "AliPID.h"
 #include "AliESDpid.h"
@@ -41,16 +44,17 @@
 #include "AliStack.h"
 #include "AliMCEventHandler.h"
 
-#include "AliAnalysisTaskQA.h"
+#include "AliAnalysisTaskhPhiCorr.h"
 
 using std::cout;
 using std::endl;
 
-ClassImp(AliAnalysisTaskQA)
+ClassImp(AliAnalysisTaskhPhiCorr)
 //________________________________________________________________________
-AliAnalysisTaskQA::AliAnalysisTaskQA(const char *name)
+AliAnalysisTaskhPhiCorr::AliAnalysisTaskhPhiCorr(const char *name)
 : AliAnalysisTaskSE(name),
 fVevent(0),
+fPoolMgr(0x0),
 fESD(0),
 fAOD(0),
 fpidResponse(0),
@@ -74,8 +78,12 @@ fTPCNpts(0),
 fKKUSDist(0),
 fKKLSDist(0),
 fTrigDist(0),
+fMixStatZVtx(0),
+fNoMixEvents(0),
 fDphiHPhi(0),
-fDphiHKK(0)
+fDphiHKK(0),
+fDphiHPhiMixed(0),
+fDphiHKKMixed(0)
 {
     // Constructor
     // Define input and output slots here
@@ -89,9 +97,10 @@ fDphiHKK(0)
 
 }
 //________________________________________________________________________
-AliAnalysisTaskQA::AliAnalysisTaskQA()
+AliAnalysisTaskhPhiCorr::AliAnalysisTaskhPhiCorr()
 : AliAnalysisTaskSE("DefaultTask_HfeEMCQA"),
 fVevent(0),
+fPoolMgr(0),
 fESD(0),
 fAOD(0),
 fpidResponse(0),
@@ -115,8 +124,12 @@ fTPCNpts(0),
 fKKUSDist(0),
 fKKLSDist(0),
 fTrigDist(0),
+fMixStatZVtx(0),
+fNoMixEvents(0),
 fDphiHPhi(0),
-fDphiHKK(0)
+fDphiHKK(0),
+fDphiHPhiMixed(0),
+fDphiHKKMixed(0)
 {
     //Default constructor
     // Define input and output slots here
@@ -129,13 +142,13 @@ fDphiHKK(0)
     //DefineOutput(3, TTree::Class());
 }
 //________________________________________________________________________
-AliAnalysisTaskQA::~AliAnalysisTaskQA()
+AliAnalysisTaskhPhiCorr::~AliAnalysisTaskhPhiCorr()
 {
     //Destructor
     delete fOutputList;
 }
 //________________________________________________________________________
-void AliAnalysisTaskQA::UserCreateOutputObjects()
+void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
 {
     //printf("\n!!!!!\n Starting UserCreateOutputObjects \n\n");
     //fflush(stdout);
@@ -153,7 +166,23 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
         SetESDAnalysis();
     }
     printf("Analysis Mode: %s Analysis\n", IsAODanalysis() ? "AOD" : "ESD");
-    
+   
+    ////////////////////////////
+    // Set-up for Mixed Event //
+    ////////////////////////////
+
+    Int_t poolSize = 1000;
+    Int_t trackDepth = 100000;
+
+    Int_t numVtxZBins = 10;
+    Double_t vtxZBins[11] = {-10.0, -6.15, -3.90, -2.13, -0.59, 0.86, 2.29, 3.77, 5.39, 7.30, 10.0};
+
+    Int_t numMultBins = 1;
+    Double_t multBins[2] = {0.0, 10000.0};
+
+    fPoolMgr = new AliEventPoolManager(poolSize, trackDepth, numMultBins, multBins, numVtxZBins, vtxZBins);
+
+
     ////////////////
     //Output list//
     ///////////////
@@ -223,6 +252,13 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fTrigDist = new THnSparseF("fTrigDist", "Distribution for trigger particles", 3, trigBins, trigMin, trigMax);
     fOutputList->Add(fTrigDist);
 
+    //Histograms for Mixed Event Stats
+    fMixStatZVtx = new TH2D("fMixStatZVtx", "Mixed Event Statistics;NEvent in pool;Vtx_z", 200, 0, 5000, numVtxZBins, vtxZBins);
+    fOutputList->Add(fMixStatZVtx);
+
+    fNoMixEvents = new TH1D("fNoMixEvents", "Number of Mixed Events", 1, -0.5, 0.5);
+    fOutputList->Add(fNoMixEvents);
+
     // Additional Histograms for US and LS Kaon pairs:
     Int_t bins[4] = {100, 200, 100, 50}; //pt, invmass, phi, eta
     Double_t min[4] = {0.1, 0.98, 0.0, -2.0};
@@ -235,20 +271,117 @@ void AliAnalysisTaskQA::UserCreateOutputObjects()
     fOutputList->Add(fKKLSDist);
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
-    Int_t dphi_bins[5]=    {85,   98,    64,   24, 120};
-    Double_t dphi_min[5] = {3.0,   0.4, -1.57, -3.0, 0.98};
-    Double_t dphi_max[5] = {20.0, 20.0,  4.71,  3.0, 1.1};
+    Int_t dphi_bins[5]=    {85,   98,    128,   128, 120};
+    Double_t dphi_min[5] = {3.0,   0.4, -1.57, -2.0, 0.98};
+    Double_t dphi_max[5] = {20.0, 20.0,  4.71,  2.0, 1.1};
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 5, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHPhi);
 
     fDphiHKK = new THnSparseF("fDphiHKK", "Hadron-#KK likesign #Delta#phi correlations", 5, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHKK);
+
+    fDphiHPhiMixed = new THnSparseF("fDphiHPhiMixed", "Hadron-#Phi #Delta#phi mixed event Correlations", 5, dphi_bins, dphi_min, dphi_max);
+    fOutputList->Add(fDphiHPhiMixed);
+
+    fDphiHKKMixed = new THnSparseF("fDphiHKKMixed", "Hadron-#KK likesign #Delta#phi mixed event Correlations", 5, dphi_bins, dphi_min, dphi_max);
+    fOutputList->Add(fDphiHKKMixed);
+
     PostData(1,fOutputList);
 }
 
+//___________________________________________________________________________
+TObjArray* AliAnalysisTaskhPhiCorr::AddToTracks(){
+    TObjArray* fArrayTracksMix = new TObjArray;
+    fArrayTracksMix->SetOwner(kTRUE);
+
+    Int_t ntracks = fVevent->GetNumberOfTracks();
+    AliVParticle *particle= 0x0;
+    AliAODTrack *aparticle= 0x0;
+    for(int itrack=0; itrack<ntracks; itrack++){
+        particle = fVevent->GetTrack(itrack);
+        aparticle = dynamic_cast<AliAODTrack*>(particle);
+
+        //cuts for the hadron track
+        if(!aparticle->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue;
+        if(aparticle->Pt() > 0.15 && TMath::Abs(aparticle->Eta()) < 0.8){
+            AliCFParticle *cfPart = new AliCFParticle(aparticle->Pt(), aparticle->Eta(), aparticle->Phi(), aparticle->Charge(), 0);
+            fArrayTracksMix->Add(cfPart);
+        } 
+    }
+    return fArrayTracksMix;
+}
+
+//___________________________________________________________________________
+void AliAnalysisTaskhPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi){
+
+    Double_t dphi_point[5];
+
+    dphi_point[0] = trigger->Pt();
+    for(int iphi = 0; iphi < phiVec.size(); iphi++){
+        AliPhiContainer phi = phiVec[iphi];
+        if(triggerIndex == phi.daughter1TrackNum || triggerIndex == phi.daughter2TrackNum) continue; //skip if hadron is one of the daughter particles
+        dphi_point[1] = phi.particle.Pt();
+        dphi_point[2] = trigger->Phi() - phi.particle.Phi();
+        if(dphi_point[2] < -TMath::Pi()/2.0){
+            dphi_point[2] += 2.0*TMath::Pi();
+        }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
+            dphi_point[2] -= 2.0*TMath::Pi();
+        }
+        dphi_point[3] = trigger->Eta() - phi.particle.Eta();
+        dphi_point[4] = phi.particle.M();
+        fDphi->Fill(dphi_point);
+    }
+}
+
+//___________________________________________________________________________
+void AliAnalysisTaskhPhiCorr::MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Int_t mult, Double_t zVtx){
+
+    Double_t dphi_point[5];
+    AliEventPool* fPool;
+    fPool = fPoolMgr->GetEventPool(mult, zVtx); // Get the buffer associated with the current multiplicity and z-vtx
+    if (!fPool)
+    {
+        AliFatal(Form("No pool found for centrality = %f, zVtx = %f", mult, zVtx));
+        return;
+    }
+    
+    Int_t nMix = fPool->GetCurrentNEvents();
+    fMixStatZVtx->Fill(nMix, zVtx);
+    
+    if(nMix >=5){
+        fNoMixEvents->Fill(0);
+        for(int iMix=0; iMix < nMix; iMix++){            
+            TObjArray *tracks = fPool->GetEvent(iMix);
+            
+            for(int ihadron = 0; ihadron < tracks->GetEntriesFast(); ihadron++){
+                AliVParticle *hadron = (AliVParticle*) tracks->At(ihadron);
+                if(!hadron){
+                    printf("ERROR: Could not receive mix pool track %d\n",ihadron);
+                    continue;
+                }
+                for(int iphi = 0; iphi < phiVec.size(); iphi++){
+                    AliPhiContainer phi = phiVec[iphi];
+                    dphi_point[0] = hadron->Pt();
+                    dphi_point[1] = phi.particle.Pt();
+                    dphi_point[2] = hadron->Phi() - phi.particle.Phi();
+                    if(dphi_point[2] < -TMath::Pi()/2.0){
+                        dphi_point[2] += 2.0*TMath::Pi();
+                    }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
+                        dphi_point[2] -= 2.0*TMath::Pi();
+                    }
+                    dphi_point[3] = hadron->Eta() - phi.particle.Eta();
+                    dphi_point[4] = phi.particle.M();
+                    fDphiMixed->Fill(dphi_point);
+                }
+            }
+        }
+    }
+}
+
+
 //________________________________________________________________________
-void AliAnalysisTaskQA::UserExec(Option_t *)
+void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 {
 
     UInt_t evSelMask=((AliInputEventHandler*)(AliAnalysisManager::GetAnalysisManager()->GetInputEventHandler()))->IsEventSelected();
@@ -327,26 +460,14 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     ////////////////////
     //event selection//
     ///////////////////
-    if(fabs(Zvertex>10.0))return;
+    if(fabs(Zvertex)>10.0)return;
     fNevents->Fill(2); //events after z vtx cut
 
-    //create a new struct for a kaon track (TLorentzVector + track number)
-    struct TkaonCont{
-        Int_t trackNum;
-        TLorentzVector particle;
-    };
-
-    struct TPhiCont{
-        Int_t daughter1TrackNum;
-        Int_t daughter2TrackNum;
-        TLorentzVector particle;
-    };
-
     //Initialize the vectors/points that will be used to fill the histograms
-    std::vector<TPhiCont> phiCandidates;
-    std::vector<TPhiCont> phiLikeSignCandidates;
-    std::vector<TkaonCont> kPlusList;
-    std::vector<TkaonCont> kMinusList;
+    std::vector<AliPhiContainer> phiCandidates;
+    std::vector<AliPhiContainer> phiLikeSignCandidates;
+    std::vector<AliKaonContainer> kPlusList;
+    std::vector<AliKaonContainer> kMinusList;
 
     Double_t distPoint[4] = {0, 0, 0, 0}; //pt, invmass, phi, eta
     Double_t trigPoint[3] = {0, 0, 0}; //pt, phi, eta
@@ -358,12 +479,12 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
     AliVParticle *vKaonTrack = 0x0;
 
     /* First Loop - Filling two vector for all Kaons (plus and minus) */
-    for(Int_t i_track = 0; i_track < ntracks; i_track++){
+    for(Int_t itrack = 0; itrack < ntracks; itrack++){
         vKaonTrack = 0x0;
-        vKaonTrack = fVevent->GetTrack(i_track);
+        vKaonTrack = fVevent->GetTrack(itrack);
 
         if(!vKaonTrack){
-            printf("Error: Could not receive track %d\n", i_track);
+            printf("Error: Could not receive track %d\n", itrack);
             continue;
         }
         kaonTrack = dynamic_cast<AliVTrack*>(vKaonTrack);
@@ -389,8 +510,8 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(kaonTrack, AliPID::kKaon);
             //Cut on kaon candidates
             if((TMath::Abs(fTPCnSigma) < 2.0) && (TMath::Abs(fTOFnSigma) < 2.0)){
-                TkaonCont kaon;
-                kaon.trackNum = i_track;
+                AliKaonContainer kaon;
+                kaon.trackNum = itrack;
                 kaon.particle.SetPx(kaonTrack->Px());
                 kaon.particle.SetPy(kaonTrack->Py());
                 kaon.particle.SetPz(kaonTrack->Pz());
@@ -408,7 +529,7 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
 
     // Go through the Kaon lists and create the phi candidates and like sign pairs
     // Also fill in the US and LS K pair distribution histograms
-    TPhiCont phi;
+    AliPhiContainer phi;
     for(Int_t i_kplus = 0; i_kplus < kPlusList.size(); i_kplus++){
         for(Int_t j_kplus = i_kplus+1; j_kplus < kPlusList.size(); j_kplus++){
             phi.particle.SetPx(kPlusList[i_kplus].particle.Px() + kPlusList[j_kplus].particle.Px());
@@ -459,20 +580,20 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
       }        
     }        
 
-    ////////////////////////////////////////////
-    // Second loop, building d-phi histograms //
-    ////////////////////////////////////////////
+    ///////////////////////////////
+    // Building d-phi histograms //
+    ///////////////////////////////
     AliVTrack *triggerTrack = 0x0;
     AliESDtrack *etriggerTrack = 0x0;
     AliAODTrack *atriggerTrack = 0x0;
     AliVParticle* VtriggerTrack = 0x0;   
-    for (Int_t i_track = 0; i_track < ntracks; i_track++) {
+    for (Int_t itrack = 0; itrack < ntracks; itrack++) {
 
         VtriggerTrack = 0x0;
-        VtriggerTrack  = fVevent->GetTrack(i_track);
+        VtriggerTrack  = fVevent->GetTrack(itrack);
         
         if (!VtriggerTrack) {
-            printf("ERROR: Could not receive track %d\n", i_track);
+            printf("ERROR: Could not receive track %d\n", itrack);
             continue;
         }
         triggerTrack = dynamic_cast<AliVTrack*>(VtriggerTrack);
@@ -499,8 +620,6 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             fTrketa->Fill(triggerTrack->Eta());
             fTrkphi->Fill(triggerTrack->Phi());
         }
-
-
 
         ////////////////////
         //Apply track cuts//
@@ -532,44 +651,39 @@ void AliAnalysisTaskQA::UserExec(Option_t *)
             Int_t label = 0;
             label = triggerTrack->GetLabel();
 
-            for(int i_phi = 0; i_phi < phiCandidates.size(); i_phi++){
-                if(i_track == phiCandidates[i_phi].daughter1TrackNum || i_track == phiCandidates[i_phi].daughter2TrackNum) continue; //skip if hadron is one of the daughter particles
-                trigPoint[0] = triggerTrack->Pt();
-                trigPoint[1] = triggerTrack->Phi();
-                trigPoint[2] = triggerTrack->Eta();
-                fTrigDist->Fill(trigPoint);
-                dphi_point[1] = phiCandidates[i_phi].particle.Pt();
-                dphi_point[2] = trigger_phi - phiCandidates[i_phi].particle.Phi();
-                if(dphi_point[2] < -TMath::Pi()/2.0){
-                    dphi_point[2] += 2.0*TMath::Pi();
-                }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
-                    dphi_point[2] -= 2.0*TMath::Pi();
-                }
-                dphi_point[3] = triggerTrack->Eta() - phiCandidates[i_phi].particle.Eta();
-                dphi_point[4] = phiCandidates[i_phi].particle.M();
-                fDphiHPhi->Fill(dphi_point);
-            }
-
-             for(int i_KK = 0; i_KK < phiLikeSignCandidates.size(); i_KK++){
-                if(i_track == phiLikeSignCandidates[i_KK].daughter1TrackNum || i_track == phiLikeSignCandidates[i_KK].daughter2TrackNum) continue; //skip if hadron is one of the daughter particles
-                dphi_point[1] = phiLikeSignCandidates[i_KK].particle.Pt();
-                dphi_point[2] = trigger_phi - phiLikeSignCandidates[i_KK].particle.Phi();
-                if(dphi_point[2] < -TMath::Pi()/2.0){
-                    dphi_point[2] += 2.0*TMath::Pi();
-                }else if(dphi_point[2] > 3.0*TMath::Pi()/2.0){
-                    dphi_point[2] -= 2.0*TMath::Pi();
-                }
-                dphi_point[3] = triggerTrack->Eta() - phiLikeSignCandidates[i_KK].particle.Eta();
-                dphi_point[4] = phiLikeSignCandidates[i_KK].particle.M();
-                fDphiHKK->Fill(dphi_point);
-            }
-       }
+            trigPoint[0] = triggerTrack->Pt();
+            trigPoint[1] = triggerTrack->Phi();
+            trigPoint[2] = triggerTrack->Eta();
+            fTrigDist->Fill(trigPoint);
+            
+            MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi);
+            MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK);
+        }
     } //track loop
+
+
+    ntracks = fVevent->GetNumberOfTracks();
+
+    if(ntracks > 0 && TMath::Abs(Zvertex) < 10.0){
+        MakeMixCorrelations(phiCandidates, fDphiHPhiMixed, ntracks, Zvertex);
+        MakeMixCorrelations(phiLikeSignCandidates, fDphiHKKMixed, ntracks, Zvertex);
+    
+
+        AliEventPool *fPool;
+        fPool = fPoolMgr->GetEventPool(ntracks, Zvertex); // Get the buffer associated with the current centrality and z-vtx
+        if(!fPool){
+            AliFatal(Form("No pool found for multiplicity = %f, zVtx = %f", ntracks, Zvertex));
+            return;
+        }
+        TObjArray * fArrayTracksMix = AddToTracks();
+        fArrayTracksMix->SetOwner(kTRUE);
+        fPool->UpdatePool(fArrayTracksMix);
+    }
 
     PostData(1, fOutputList);
 }      
 //________________________________________________________________________
-void AliAnalysisTaskQA::Terminate(Option_t *) 
+void AliAnalysisTaskhPhiCorr::Terminate(Option_t *) 
 {
     // Draw result to the screen
     // Called once at the end of the query

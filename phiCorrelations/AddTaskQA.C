@@ -24,8 +24,8 @@ AliAnalysisTask *AddTaskQA(){
 
     printf("\n!!!!!!!!!!!!\nSetting up AliAnalysisTaskQA\n");
     fflush(stdout); 
-    AliAnalysisTaskQA *hfecalqa7 = new AliAnalysisTaskQA("emcqa");
-    mgr->AddTask(hfecalqa7);
+    AliAnalysisTaskhPhiCorr *hPhiCorr = new AliAnalysisTaskhPhiCorr("hPhiCOrr");
+    mgr->AddTask(hPhiCorr);
     //hfecalqa7->SelectCollisionCandidates(AliVEvent::kINT7);
     
     TString containerName7 = mgr->GetCommonFileName();
@@ -36,8 +36,8 @@ AliAnalysisTask *AddTaskQA(){
     AliAnalysisDataContainer *coutput1 = mgr->CreateContainer("InvMass", TList::Class(),AliAnalysisManager::kOutputContainer, containerName7.Data());
     printf("\n!!!!!!!!!!!!!\n Connecting input and output containers\n");
     fflush(stdout);
-    mgr->ConnectInput(hfecalqa7, 0, cinput);
-    mgr->ConnectOutput(hfecalqa7, 1, coutput1);
+    mgr->ConnectInput(hPhiCorr, 0, cinput);
+    mgr->ConnectOutput(hPhiCorr, 1, coutput1);
     printf("\n!!!!!!!!!!!!\n Done with addtask macro \n");
     fflush(stdout);
     return NULL;

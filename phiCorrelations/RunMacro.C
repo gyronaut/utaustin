@@ -18,11 +18,11 @@ void RunMacro()
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiCorrelations_LHC16q";
-   char* output_dir = "output_2017_03_24";
+   char* output_dir = "output_2017_04_10";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
-   Int_t runcycle[]={0,32};
-//   Int_t runcycle[]={0,9,18,32};
+//   Int_t runcycle[]={0,32};
+   Int_t runcycle[]={0,5,11,18,24,32};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -31,19 +31,11 @@ void RunMacro()
  // load libraries
    LoadLibraries();
    
-    alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros  -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_PHYSICS/PWG/EMCAL -g");
+    alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros -I$ALICE_PHYSICS/PWGCF/Correlations -I$ALICE_PHYSICS/PWGCF -I$ALICE_PHYSICS/PWGCF/Correlations/Base -I$ALICE_PHYSICS/include -g");
+     
+    alienHandler->SetAdditionalLibs("AliAnalysisTaskhPhiCorr.cxx AliAnalysisTaskhPhiCorr.h AddTaskQA.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libPWGTools.so libPWGCFCorrelationsBase.so");
     
-    alienHandler->SetAdditionalLibs("AliAnalysisTaskQA.cxx AliAnalysisTaskQA.h AddTaskQA.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libTENDER.so libTENDERSupplies.so libPWGTools.so libPWGEMCAL.so");
-    
-  if(UseParfiles){
-    alienHandler->SetupPar("PWGHFhfe");
-    alienHandler->EnablePackage("PWGHFhfe.par");  
-  }
-
-// Trying to add new PHYSICS package
-//  alienHandler->AddExternalPackage("AliPhysics::vAN-20160606-1");
-
-  alienHandler->SetAnalysisSource("AliAnalysisTaskQA.cxx");
+  alienHandler->SetAnalysisSource("AliAnalysisTaskhPhiCorr.cxx");
   //alienHandler->SetOverwriteMode();
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(2);
@@ -56,7 +48,7 @@ void RunMacro()
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
   alienHandler->SetGridDataDir("//alice/data/2016/LHC16q/");
-  alienHandler->SetDataPattern("*/pass1_FAST/AOD/*AOD.root");
+  alienHandler->SetDataPattern("*/pass1_FAST/AOD/*/*AOD.root");
   //alienHandler->SetDataPattern("*/pass4/AOD/*AOD.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
@@ -104,7 +96,7 @@ void RunMacro()
    alienHandler->SetMergeExcludes("EventStat_temp.root");
    alienHandler->SetOutputToRunNo(kTRUE);
    alienHandler->SetKeepLogs(kTRUE);
-   alienHandler->SetMaxMergeFiles(20);
+   alienHandler->SetMaxMergeFiles(5);
 //   alienHandler->SetMaxMergeStages(5);
    alienHandler->SetMergeViaJDL(pre_final_stage);
 //    alienHandler->SetOneStageMerging(kFALSE);   //???????????????????????????????-------------------
@@ -117,13 +109,12 @@ void RunMacro()
 // Use AliRoot includes to compile our task
    gROOT->ProcessLine(".include $ALICE_ROOT/include");
    gROOT->ProcessLine(".include $ALICE_ROOT/EMCAL");
-   gROOT->ProcessLine(".include $ALICE_PHYSICS/PWGGA/");
+   gROOT->ProcessLine(".include $ALICE_PHYSICS/include");
    gROOT->ProcessLine(".include $ALICE_ROOT/ANALYSIS/");
    gROOT->ProcessLine(".include $PWD/.");
-   gROOT->ProcessLine(".include $ALICE_PHYSICS/PWGHF");
-   gROOT->ProcessLine(".include $ALICE_PHYSICS/PWGHF/hfe");
 
-gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB -I$ALICE_ROOT/PWG/FLOW/Base -g ");
+   gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB -I$ALICE_ROOT/PWG/FLOW/Base -I$ALICE_PHYSICS/PWGCF/Correlations/Base -I$ALICE_PHYSICS/PWGCF/Correlations -g ");
+
 
    //printf("\n!!!!!!!!!!!!!!!!!!!!!!\n AliAnalysis Manager \n\n");
    AliAnalysisManager *mgr = new AliAnalysisManager("PhiAnalysis");
@@ -139,7 +130,7 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
 //    mcH->SetReadTR(kFALSE);
 
    gROOT->LoadMacro("AddTaskQA.C");
-   gROOT->LoadMacro("AliAnalysisTaskQA.cxx++g");
+   gROOT->LoadMacro("AliAnalysisTaskhPhiCorr.cxx++g");
    gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
    gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
 
@@ -151,7 +142,7 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
     Bool_t isMC = kFALSE;
    AddTaskPIDResponse(isMC);
     //create a task
-   AliAnalysisTaskQA *taskQA = AddTaskQA();
+   AliAnalysisTaskhPhiCorr *taskQA = AddTaskQA();
 
    if (!mgr->InitAnalysis())
      return;
@@ -197,14 +188,12 @@ void LoadLibraries()
   gSystem->Load("libT0base");
   gSystem->Load("libT0rec");
   gSystem->Load("libCORRFW");
-  gSystem->Load("libTENDER");
-  gSystem->Load("libTENDERSupplies");
 
-    gSystem->Load("libPWGTools");
-    gSystem->Load("libPWGEMCAL");
+  gSystem->Load("libPWGTools");
     gSystem->Load("libPWGHFhfe");
   gSystem->Load("libPWGflowBase");
   gSystem->Load("libPWGflowTasks");
+    gSystem->Load("libPWGCFCorrelationsBase.so");
 
   gSystem->Load("libEMCALbase.so");
   gSystem->Load("libEMCALUtils.so");
