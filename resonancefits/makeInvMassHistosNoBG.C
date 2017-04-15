@@ -5,7 +5,8 @@
 // To call, use the TF1 with FitFunRelBW
 Double_t s(Double_t x0, Double_t x1, Double_t x2)
 {
-    return pow(x0*x0-x1*x1-x2*x2,2.0)-4.*x1*x1*x2*x2;
+    //return pow(x0*x0-x1*x1-x2*x2,2.0)-4.*x1*x1*x2*x2;
+    return ((x0**2 - (x1 + x2)**2)*(x0**2 - (x1 - x2)**2));
 }
 
 Double_t PS(Double_t m, Double_t pT, Double_t T)
@@ -30,6 +31,18 @@ Double_t Gamma(Double_t m, Double_t gammaColl){
     G += gammaColl;
     return G;
 }
+
+Double_t GammaDerivative(Double_t m){
+    const Double_t MassK = 0.49368;
+    const Double_t MassPi = 0.13957;
+    const Double_t MassKstar = 0.892;
+    const Double_t Gamma0 = 0.042;
+    Double_t r = -5.0*(pow(MassKstar, 5.0)/pow(m, 6.0))*pow(s(m,MassK, MassPi)/s(MassKstar,MassK,MassPi), 1.5);
+    r += 3.0*pow(MassKstar/m,5.0)*pow(s(m,MassK, MassPi)/s(MassKstar,MassK,MassPi), 0.5)*(2.0*m*(m*m - MassK*MassK - MassPi*MassPi))/s(MassKstar,MassK,MassPi);
+    r *= Gamma0;
+    return r;
+}
+
 Double_t bw1(Double_t *x, Double_t *par)
 {
     //Double_t G = par[2];
@@ -125,15 +138,19 @@ int makeInvMassHistosNoBG(){
 
 
 
-    TFile *output = new TFile("output_invm_norescatter_correctedRBW_masswidth_2017_03_27.root", "RECREATE");
+    TFile *output = new TFile("output_invm_norescatter_correctedRBW_masswidth_2017_04_12.root", "RECREATE");
 
     TH1D *kstar0mass = new TH1D("kstar0mass", "K*^{0} Mass vs. p_{T}", 20, 0.0, 4.0);
-    TH1D *kstar0width = new TH1D("kstar0width", "K*^{0} Width vs. p_{T}", 20, 0.0, 4.0);
-    TH1D *kstar0collWidth = new TH1D("kstar0collWidth", "Collision Width component", 20,0.0, 4.0);
+    TH1D *kstar0width = new TH1D("kstar0width", "#Gamma_{tot}(M_{0}*) for K*^{0} vs p_{T}", 20, 0.0, 4.0);
+    TH1D *kstar0collWidth = new TH1D("kstar0collWidth", "#Gamma_{coll} component for K*^{0} vs. p_{T}", 20,0.0, 4.0);
+    TH1D *kstar0decWidth = new TH1D("kstar0decWidth", "#Gamma_{dec}(M_{0}*) component for K*^{0} vs. p_{T};p_{T} (GeV/c);Width (GeV/c^2)", 20,0.0, 4.0);
+   
     kstar0mass->GetXaxis()->SetTitle("p_{T} (GeV/c)");
     kstar0mass->GetYaxis()->SetTitle("Mass (GeV/c^{2})");
     kstar0width->GetXaxis()->SetTitle("p_{T} (GeV/c)");
     kstar0width->GetYaxis()->SetTitle("Width (GeV/c^2)");
+    kstar0collWidth->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+    kstar0collWidth->GetYaxis()->SetTitle("Width (GeV/c^2)");
 
     double mass = 0.0, width = 0.0, collWidth = 0.0, massBG=0.0;
     double massError = 0.0, widthError= 0.0, collWidthError = 0.0, massBGError=0.0;
@@ -211,7 +228,7 @@ int makeInvMassHistosNoBG(){
 
             printf("%s\n", fit->GetName());
             histos[i]->Fit(Form("fitPTbin%d00particle%d", nfile*2+1, i), "R", "SAME");
-
+            TVirtualFitter *fitter = TVirtualFitter::GetFitter();
             histos[i]->Draw("HIST SAME");
             fit->Draw("SAME");
 
@@ -232,10 +249,16 @@ int makeInvMassHistosNoBG(){
                 kstar0mass->SetBinError(nfile+1, massError);
 
                 kstar0width->SetBinContent(nfile+1, width);
+                Double_t widthError = TMath::Sqrt((GammaDerivative(mass)**2)*fitter->GetCovarianceMatrixElement(1,1) + fitter->GetCovarianceMatrixElement(2,2) + 2.0*GammaDerivative(mass)*fitter->GetCovarianceMatrixElement(1,2));
+                kstar0width->SetBinError(nfile+1, widthError);
 
                 kstar0collWidth->SetBinContent(nfile+1, collWidth);
                 kstar0collWidth->SetBinError(nfile+1, collWidthError);
-               
+
+                kstar0decWidth->SetBinContent(nfile+1, width - collWidth);
+                Double_t decWidthError = TMath::Sqrt((GammaDerivative(mass)**2)*fitter->GetCovarianceMatrixElement(1,1));
+                kstar0decWidth->SetBinError(nfile+1, decWidthError);
+
                 if(nfile==4){
                     TCanvas *singlecanvas = new TCanvas("singlecanvas", "singlecanvas", 0,0,600,600);
                     singlecanvas->cd();
@@ -246,17 +269,32 @@ int makeInvMassHistosNoBG(){
                     fit->SetLineStyle(1);
                     
                     fit->Draw("SAME");
+                    if(fitter){
+                        printf("sig11: %f, sig12: %f, sig21: %f, sig22: %f GammaDer(0.8): %f GammaDer(0.85): %f GammaDer(0.9): %f\n", TMath::Sqrt(fitter->GetCovarianceMatrixElement(1,1)), fitter->GetCovarianceMatrixElement(2,1), fitter->GetCovarianceMatrixElement(1,2), TMath::Sqrt(fitter->GetCovarianceMatrixElement(2,2)), GammaDerivative(0.8), GammaDerivative(0.85), GammaDerivative(0.9));
+                    }
                 }
             }
         }
         printf("************************************************************\n");
          
     }
+/*
+    TH2D *gammaPlot = new TH2D("gammaPlot", "#Gamma_{tot}(M_{0}*);M_{0}*;#Gamma_{coll};#Gamma_{tot}", 100, 0.82, 0.9, 100, 0.0, 0.08);
+    for(int im = 0; im<100; im++){
+        for(int ig = 0; ig < 100; ig++){
+            gammaPlot->SetBinContent(im+1, ig+1, Gamma(((0.9-0.82)/(100.0))*((double)(im)) + 0.82, ((0.08)/100.0)*((double)(ig))));
+        }
+    }
 
+    TH1D *gammaMassDpnd = gammaPlot->ProjectionX("gammaMassDpnd");
+*/
     for(int i=3; i<4; i++){
         canvas[i]->Write();
     }
     kstar0mass->Write();
     kstar0collWidth->Write();
+    kstar0decWidth->Write();
     kstar0width->Write();
+//    gammaPlot->Write();
+//    gammaMassDpnd->Write();
 }
