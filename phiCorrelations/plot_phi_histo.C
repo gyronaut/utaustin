@@ -209,7 +209,8 @@ void plot2DCorrelations(TH3D* dEtadPhiDist, TH3D* dEtadPhiLSDist, TString suffix
     twocanvas->cd();
     twoCorr->GetXaxis()->SetRangeUser(-1.5, 1.5);
     twoCorr->Draw("SURF1");
-/*
+
+    /*
     TF1 *dEtaFit = new TF1(Form("dEtaFit_%s", suffix.Data()), "[0] - [1]*TMath::Abs(x)", -1.6, 1.6);
     dEtaFit->SetParameters(1000.0, 500.0);
    
@@ -315,7 +316,7 @@ void plotPhiCorrelationsV1(THnSparse *dphiHPhi, THnSparse *dphiHKK){
 
     corrDPhi->Fit("corrFit", "R");
     corrDPhi->SetLineWidth(2);
-    corrDPhi->GetYaxis()->SetRangeUser(0, 1200);
+    //corrDPhi->GetYaxis()->SetRangeUser(0, 1200);
     corrDPhi->GetXaxis()->SetTitle("#Delta#varphi");
     corrDPhi->Draw("H E");
 }
@@ -412,6 +413,12 @@ void plotPhiCorrelationsV2(THnSparse *dphiHPhi, THnSparse *dphiHKK){
     dphifit->SetParameter(4, 3.14);
     dphifit->SetParLimits(4, 3.1, 3.2);
     dphifit->SetParameter(5, 1.5);
+
+    dphifit->SetLineColor(4);
+    dphifit->SetLineStyle(7);
+    dphifit->SetLineWidth(3);
+
+    hnew->SetLineWidth(2);
 
     hnew->Fit("dphifit", "R");
 
@@ -513,8 +520,8 @@ void plot_phi_histo(string inputName){
     TH3D *dEtadPhiLSDist = dphiHKK->Projection(2, 3, 4);
     dEtadPhiLSDist->Rebin3D(4,1,1);
 
-    plot2DCorrelations(dEtadPhiDist, dEtadPhiLSDist, suffix);
-
+    //plot2DCorrelations(dEtadPhiDist, dEtadPhiLSDist, suffix);
+/*
     dphiHPhi->GetAxis(1)->SetRangeUser(1.0,2.0); 
     dphiHKK->GetAxis(1)->SetRangeUser(1.0,2.0); 
     //Do 2D Correlation plot (and rough "corrected" 2D correaltion plot)
@@ -554,7 +561,7 @@ void plot_phi_histo(string inputName){
     TH3D *dEtadPhiLSDist5 = dphiHKK->Projection(2, 3, 4);
     dEtadPhiLSDist5->Rebin3D(4,1,1);
     plot2DCorrelations(dEtadPhiDist5, dEtadPhiLSDist5, suffix);
-
+*/
 
     plotPhiCorrelationsV1(dphiHPhi, dphiHKK);
 
@@ -562,7 +569,7 @@ void plot_phi_histo(string inputName){
     dphiHPhi->GetAxis(2)->SetRange(0,0);
     dphiHKK->GetAxis(2)->SetRange(0,0);
 
-//    plotPhiCorrelationsV2(dphiHPhi, dphiHKK);
+    plotPhiCorrelationsV2(dphiHPhi, dphiHKK);
 
     fitZVtx(zVtx);
 }
