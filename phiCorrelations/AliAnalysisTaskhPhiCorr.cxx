@@ -60,6 +60,7 @@ fAOD(0),
 fpidResponse(0),
 fOutputList(0),
 fNevents(0),
+fNumTracks(0),
 fVtxZ(0),
 fVtxX(0),
 fVtxY(0),
@@ -106,6 +107,7 @@ fAOD(0),
 fpidResponse(0),
 fOutputList(0),
 fNevents(0),
+fNumTracks(0),
 fVtxZ(0),
 fVtxX(0),
 fVtxY(0),
@@ -172,7 +174,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     ////////////////////////////
 
     Int_t poolSize = 1000;
-    Int_t trackDepth = 100000;
+    Int_t trackDepth = 5000;
 
     Int_t numVtxZBins = 10;
     Double_t vtxZBins[11] = {-10.0, -6.15, -3.90, -2.13, -0.59, 0.86, 2.29, 3.77, 5.39, 7.30, 10.0};
@@ -195,6 +197,9 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fNevents->GetXaxis()->SetBinLabel(1,"All");
     fNevents->GetXaxis()->SetBinLabel(2,"With >2 Trks");
     fNevents->GetXaxis()->SetBinLabel(3,"Vtx_{z}<10cm");
+
+    fNumTracks = new TH1F("fNumTracks", "Number of Tracks/evt", 1000, 0, 1000);
+    fOutputList->Add(fNumTracks);
     
     fVtxZ = new TH1F("fVtxZ","Z vertex position;Vtx_{z};counts",1000,-50,50);
     fOutputList->Add(fVtxZ);
@@ -271,9 +276,9 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fKKLSDist);
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
-    Int_t dphi_bins[5]=    {85,   98,    128,   128, 120};
-    Double_t dphi_min[5] = {3.0,   0.4, -1.57, -2.0, 0.98};
-    Double_t dphi_max[5] = {20.0, 20.0,  4.71,  2.0, 1.1};
+    Int_t dphi_bins[5]=    {34,   39,    64,  64, 90};
+    Double_t dphi_min[5] = {3.0,   0.5, -1.57, -2.0, 0.98};
+    Double_t dphi_max[5] = {20.0, 20.0,  4.71,  2.0, 1.07};
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 5, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHPhi);
@@ -290,27 +295,6 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     PostData(1,fOutputList);
 }
 
-//___________________________________________________________________________
-TObjArray* AliAnalysisTaskhPhiCorr::AddToTracks(){
-    TObjArray* fArrayTracksMix = new TObjArray;
-    fArrayTracksMix->SetOwner(kTRUE);
-
-    Int_t ntracks = fVevent->GetNumberOfTracks();
-    AliVParticle *particle= 0x0;
-    AliAODTrack *aparticle= 0x0;
-    for(int itrack=0; itrack<ntracks; itrack++){
-        particle = fVevent->GetTrack(itrack);
-        aparticle = dynamic_cast<AliAODTrack*>(particle);
-
-        //cuts for the hadron track
-        if(!aparticle->TestFilterMask(AliAODTrack::kTrkGlobalNoDCA)) continue;
-        if(aparticle->Pt() > 0.15 && TMath::Abs(aparticle->Eta()) < 0.8){
-            AliCFParticle *cfPart = new AliCFParticle(aparticle->Pt(), aparticle->Eta(), aparticle->Phi(), aparticle->Charge(), 0);
-            fArrayTracksMix->Add(cfPart);
-        } 
-    }
-    return fArrayTracksMix;
-}
 
 //___________________________________________________________________________
 void AliAnalysisTaskhPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi){
@@ -417,9 +401,10 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
     ///////////////
     Int_t ntracks = -999;
     ntracks = fVevent->GetNumberOfTracks();
-    if(ntracks < 1) printf("There are %d tracks in this event\n",ntracks);
-
+    //if(ntracks < 1) printf("There are %d tracks in this event\n",ntracks);
+    
     fNevents->Fill(0); //all events
+    fNumTracks->Fill(ntracks);
     Double_t Zvertex = -100, Xvertex = -100, Yvertex = -100;
     const AliVVertex *pVtx = fVevent->GetPrimaryVertex();
     Double_t NcontV = pVtx->GetNContributors();
@@ -527,6 +512,9 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
         }
     }
 
+    //if there aren't enough kaons to make pairs in this event, return
+    if((kPlusList.size() + kMinusList.size()) < 2) return;
+
     // Go through the Kaon lists and create the phi candidates and like sign pairs
     // Also fill in the US and LS K pair distribution histograms
     AliPhiContainer phi;
@@ -583,10 +571,14 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
     ///////////////////////////////
     // Building d-phi histograms //
     ///////////////////////////////
+    TObjArray* fArrayTracksMix = new TObjArray;
+    fArrayTracksMix->SetOwner(kTRUE);
+
     AliVTrack *triggerTrack = 0x0;
     AliESDtrack *etriggerTrack = 0x0;
     AliAODTrack *atriggerTrack = 0x0;
     AliVParticle* VtriggerTrack = 0x0;   
+    AliCFParticle *cfPart = 0x0;
     for (Int_t itrack = 0; itrack < ntracks; itrack++) {
 
         VtriggerTrack = 0x0;
@@ -638,7 +630,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
         dEdx = triggerTrack->GetTPCsignal();
        
         //Cut on p_T and eta
-        if(triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8){
+        if(triggerTrack->Pt() > 2.0 && TMath::Abs(triggerTrack->Eta()) < 0.8){
             //fTrkPt->Fill(triggerTrack->Pt());
             //fTrketa->Fill(triggerTrack->Eta());
             //fTrkphi->Fill(triggerTrack->Phi());
@@ -658,6 +650,9 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             
             MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi);
             MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK);
+
+            cfPart = new AliCFParticle(atriggerTrack->Pt(), atriggerTrack->Eta(), atriggerTrack->Phi(), atriggerTrack->Charge(), 0);
+            fArrayTracksMix->Add(cfPart);
         }
     } //track loop
 
@@ -665,9 +660,12 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
     ntracks = fVevent->GetNumberOfTracks();
 
     if(ntracks > 0 && TMath::Abs(Zvertex) < 10.0){
-        MakeMixCorrelations(phiCandidates, fDphiHPhiMixed, ntracks, Zvertex);
-        MakeMixCorrelations(phiLikeSignCandidates, fDphiHKKMixed, ntracks, Zvertex);
-    
+        if(phiCandidates.size() > 0){
+            MakeMixCorrelations(phiCandidates, fDphiHPhiMixed, ntracks, Zvertex);
+        }
+        if(phiLikeSignCandidates.size() > 0){
+            MakeMixCorrelations(phiLikeSignCandidates, fDphiHKKMixed, ntracks, Zvertex);
+        }
 
         AliEventPool *fPool;
         fPool = fPoolMgr->GetEventPool(ntracks, Zvertex); // Get the buffer associated with the current centrality and z-vtx
@@ -675,8 +673,6 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             AliFatal(Form("No pool found for multiplicity = %f, zVtx = %f", ntracks, Zvertex));
             return;
         }
-        TObjArray * fArrayTracksMix = AddToTracks();
-        fArrayTracksMix->SetOwner(kTRUE);
         fPool->UpdatePool(fArrayTracksMix);
     }
 

@@ -18,11 +18,11 @@ void RunMacro()
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiCorrelations_LHC16q";
-   char* output_dir = "output_2017_04_10";
+   char* output_dir = "output_2017_04_16";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
-//   Int_t runcycle[]={0,32};
-   Int_t runcycle[]={0,5,11,18,24,32};
+   Int_t runcycle[]={0,32};
+//   Int_t runcycle[]={0,5,11,18,24,32};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler

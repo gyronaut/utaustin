@@ -53,6 +53,7 @@ private:
     
     TList       *fOutputList; //!Output list
     TH1F        *fNevents;//! no of events
+    TH1F        *fNumTracks;//! number of Tracks/evt
     TH1F        *fVtxZ;//!Vertex z
     TH1F        *fVtxX;//!Vertex x
     TH1F        *fVtxY;//!Vertex y
