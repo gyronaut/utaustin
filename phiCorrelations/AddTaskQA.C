@@ -26,7 +26,7 @@ AliAnalysisTask *AddTaskQA(){
     fflush(stdout); 
     AliAnalysisTaskhPhiCorr *hPhiCorr = new AliAnalysisTaskhPhiCorr("hPhiCOrr");
     mgr->AddTask(hPhiCorr);
-    //hfecalqa7->SelectCollisionCandidates(AliVEvent::kINT7);
+    hPhiCorr->SelectCollisionCandidates(AliVEvent::kINT7);
     
     TString containerName7 = mgr->GetCommonFileName();
     containerName7 += ":PhiReconstruction";
