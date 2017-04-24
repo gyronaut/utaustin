@@ -114,6 +114,7 @@ int makeInvMassHistosNoBG(){
     particles[7] = "K*^{+} + K*^{-}";
 
     string folder = "/Users/jtblair/Downloads/invm_decayed/pt02/";
+//    string folder = "/Users/jtblair/Downloads/invm/pt02/";
     string files[20];
     files[0] = "invm_[0.0,0.2].dat";
     files[1] = "invm_[0.2,0.4].dat";
@@ -138,12 +139,12 @@ int makeInvMassHistosNoBG(){
 
 
 
-    TFile *output = new TFile("output_invm_norescatter_correctedRBW_masswidth_2017_04_12.root", "RECREATE");
+    TFile *output = new TFile("output_invm_norescatter_masswidth_2017_04_24.root", "RECREATE");
 
-    TH1D *kstar0mass = new TH1D("kstar0mass", "K*^{0} Mass vs. p_{T}", 20, 0.0, 4.0);
-    TH1D *kstar0width = new TH1D("kstar0width", "#Gamma_{tot}(M_{0}*) for K*^{0} vs p_{T}", 20, 0.0, 4.0);
-    TH1D *kstar0collWidth = new TH1D("kstar0collWidth", "#Gamma_{coll} component for K*^{0} vs. p_{T}", 20,0.0, 4.0);
-    TH1D *kstar0decWidth = new TH1D("kstar0decWidth", "#Gamma_{dec}(M_{0}*) component for K*^{0} vs. p_{T};p_{T} (GeV/c);Width (GeV/c^2)", 20,0.0, 4.0);
+    TH1D *kstar0mass = new TH1D("kstar0mass", "Fit value of M*_{0} vs. p_{T} for K*^{0}", 20, 0.0, 4.0);
+    TH1D *kstar0width = new TH1D("kstar0width", "#Gamma_{tot}(M=M*_{0}) vs p_{T} for K*^{0}", 20, 0.0, 4.0);
+    TH1D *kstar0collWidth = new TH1D("kstar0collWidth", "Fit value of #Gamma_{coll} component vs. p_{T} for K*^{0}", 20,0.0, 4.0);
+    TH1D *kstar0decWidth = new TH1D("kstar0decWidth", "#Gamma_{dec}(M=M*_{0}) component vs. p_{T} for K*^{0};p_{T} (GeV/c);Width (GeV/c^2)", 20,0.0, 4.0);
    
     kstar0mass->GetXaxis()->SetTitle("p_{T} (GeV/c)");
     kstar0mass->GetYaxis()->SetTitle("Mass (GeV/c^{2})");
@@ -151,6 +152,19 @@ int makeInvMassHistosNoBG(){
     kstar0width->GetYaxis()->SetTitle("Width (GeV/c^2)");
     kstar0collWidth->GetXaxis()->SetTitle("p_{T} (GeV/c)");
     kstar0collWidth->GetYaxis()->SetTitle("Width (GeV/c^2)");
+
+    kstar0mass->SetStats(kFALSE);
+    kstar0width->SetStats(kFALSE);
+    kstar0collWidth->SetStats(kFALSE);
+    kstar0decWidth->SetStats(kFALSE);
+
+    TF1 *massline = new TF1("massline", "[0]", 0.0, 4.0);
+    massline->SetParameter(0, 0.892);
+    massline->SetLineColor(2);
+    massline->SetLineStyle(7);
+
+    TF1 *widthline = new TF1("widthline", "[0]", 0.0, 4.0);
+    widthline->SetParameter(0, 0.042);
 
     double mass = 0.0, width = 0.0, collWidth = 0.0, massBG=0.0;
     double massError = 0.0, widthError= 0.0, collWidthError = 0.0, massBGError=0.0;
@@ -216,7 +230,7 @@ int makeInvMassHistosNoBG(){
 
             printf("mean PT: %f", meanPT);
 
-            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.7, 1.1, 4);
+            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.70, 1.1, 4);
 
             fit->SetParNames("BW Area", "Mass", "Width", "PT");
             fit->SetParameters(1.0, 0.89, 0.0474, 0.5);
@@ -288,6 +302,12 @@ int makeInvMassHistosNoBG(){
 
     TH1D *gammaMassDpnd = gammaPlot->ProjectionX("gammaMassDpnd");
 */
+    TCanvas *masscanvas = new TCanvas("masscanvas", "masscanvas", 50,50, 600, 600);
+    masscanvas->cd();
+    kstar0mass->Draw();
+    massline->Draw("SAME");
+    masscanvas->Write();
+
     for(int i=3; i<4; i++){
         canvas[i]->Write();
     }
