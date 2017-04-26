@@ -13,16 +13,16 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiCorrelations_LHC16q";
-   char* output_dir = "output_2017_04_16";
+   char* output_dir = "output_2017_04_25";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
-   Int_t runcycle[]={0,32};
-//   Int_t runcycle[]={0,5,11,18,24,32};
+//   Int_t runcycle[]={0,32};
+   Int_t runcycle[]={0,1,5,11,18,24,32};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -40,9 +40,9 @@ void RunMacro()
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(2);
   alienHandler->SetAPIVersion("V1.1x");
-  alienHandler->SetROOTVersion("v5-34-30-alice7-2");
-  alienHandler->SetAliROOTVersion("v5-08-23-1");
-  alienHandler->SetAliPhysicsVersion("v5-08-23-01-1");
+  //alienHandler->SetROOTVersion("v5-34-30-alice7-2");
+  //alienHandler->SetAliROOTVersion("v5-08-23-1");
+  alienHandler->SetAliPhysicsVersion("vAN-20170425-1");
   //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
   //alienHandler->SetDataPattern("*ESDs.root");
@@ -136,13 +136,13 @@ void RunMacro()
 
 
     //switch on aliphysicsselection
-//    AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(kTRUE); 
+    AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(kFALSE, kTRUE); 
  
     //Only set true for MC
     Bool_t isMC = kFALSE;
-   AddTaskPIDResponse(isMC);
+    AddTaskPIDResponse(isMC);
     //create a task
-   AliAnalysisTaskhPhiCorr *taskQA = AddTaskQA();
+    AliAnalysisTaskhPhiCorr *taskQA = AddTaskQA();
 
    if (!mgr->InitAnalysis())
      return;

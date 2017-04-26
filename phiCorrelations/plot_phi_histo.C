@@ -5,7 +5,7 @@
 /* function to plot the Raw PT spectrum of US and LS Kaon pairs, as well as the
  * (LS BG) corrected PT spectrum of Phi mesons
  */
-void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist, Double_t *ptbounds, Int_t *ptbins){
+void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist){
     Double_t error;
     Double_t sideband = 0.0;
     Double_t likeSignSideBand = 0.0;
@@ -21,6 +21,8 @@ void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist, Double_t 
     //Int_t numPTBins = (Int_t)((sizeof(ptbounds)/sizeof(ptbounds[0]))); 
     //printf("sizeof(ptbounds): %i, sizeof(ptbounds[0]): %i, numPTBins: %i\n", sizeof(ptbounds), sizeof(ptbounds[0]), numPTBins);
     const Int_t numPTBins = 15;
+    Double_t ptbounds[] = {0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 10.0};
+    Int_t ptbins[] = {4, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 60, 70, 100};
 
     TH1D *phiPTSpectrum = new TH1D("phiPTspectrum", "p_{T}^{#Phi} Spectrum Corrected with LS BG", numPTBins, ptbounds);
     TH1D *corrInvMass[numPTBins];
@@ -28,8 +30,9 @@ void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist, Double_t 
     TH1D *likeSignInvMassBinned[numPTBins];
 
     TF1 *fits[numPTBins];
+    TF1 *bgFits[numPTBins];
     for(int n = 0; n < numPTBins; n++){
-        fits[n] = new TF1(Form("f%i", n),  "[0]*TMath::Voigt(x - [1], [2], [3], 4) + pol0(4)",0.99, 1.1);
+        fits[n] = new TF1(Form("f%i", n),  "[0]*TMath::Voigt(x - [1], [2], [3], 4) + pol2(4)",1.0, 1.06);
         fits[n]->SetParameter(1, 1.020);
         fits[n]->SetParameter(2, 0.0002);
         fits[n]->SetParameter(0, 600);
@@ -38,6 +41,8 @@ void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist, Double_t 
         //fits[n]->SetParLimits(0, 225, 400);
         //fits[n]->SetParLimits(2, 0.0010, 0.007);
         //fits[n]->SetParLimits(3, 0.0010, 0.010);
+        bgFits[n] = new TF1(Form("bgfit%i", n), "pol2(0)", 1.0, 1.06);
+
     } 
 
     Double_t numPhiPT[15];
@@ -63,9 +68,11 @@ void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist, Double_t 
         corrInvMass[i]->Fit(Form("f%i", i), "R");
 
         //Get the number of phi mesons in each pT bin by integrating the corrected distribution in the
-        //mass peak range, subtracting the 0th order polynomial contribution in that range, and 
+        //mass peak range, subtracting the 2nd order polynomial contribution in that range, and 
         //dividing by the bin width
-        numPhiPT[i] = (corrInvMass[i]->IntegralAndError((Int_t)(binsPerMass*(peakBounds[0]-invMin)),(Int_t)(binsPerMass*(peakBounds[1]-invMin)), error) - ((peakBounds[1]-peakBounds[0])*fits[i]->GetParameter(4)));
+        bgFits[i]->SetParameters(fits[i]->GetParameter(4), fits[i]->GetParameter(5), fits[i]->GetParameter(6));
+
+        numPhiPT[i] = (corrInvMass[i]->IntegralAndError((Int_t)(binsPerMass*(peakBounds[0]-invMin)),(Int_t)(binsPerMass*(peakBounds[1]-invMin)), error) - bgFits[i]->Integral(peakBounds[0], peakBounds[1]));
        
         printf("lowInvMassBin: %i, lowInvMassBinCenter: %.4f, upBin: %i, upBinCenter: %.4f\n", (Int_t)(binsPerMass*(peakBounds[0]-invMin)), corrInvMass[i]->GetBinCenter((Int_t)(binsPerMass*(peakBounds[0]-invMin))), (Int_t)(binsPerMass*(peakBounds[1]-invMin)), corrInvMass[i]->GetBinCenter((Int_t)(binsPerMass*(peakBounds[1]-invMin))));
         printf("ptbin: (%.1f, %.1f), binwidth: %f, numphiPT: %i\n", ptbounds[i], ptbounds[i+1], phiPTSpectrum->GetBinWidth(i+1), numPhiPT[i]);
@@ -96,6 +103,8 @@ void plotRawAndCorrectedPT(THnSparseF *kkUSDist, THnSparseF *kkLSDist, Double_t 
         cCorrInvMassPtBins->cd(k+1);
         corrInvMass[k]->Draw();
         fits[k]->Draw("SAME");
+        bgFits[k]->SetLineColor(2);
+        bgFits[k]->Draw("SAME");
         corrText->Draw();
     }
 
@@ -178,7 +187,7 @@ void plotAllDistributions(THnSparse *kkLSDist, THnSparse *kkUSDist, THnSparse *t
     } 
 }
 
-void plot2DCorrelations(TH3D* dEtadPhiDist, TH3D* dEtadPhiLSDist, TString suffix){
+void plot2DCorrelations(TH3D* dEtadPhiDist, TH3D* dEtadPhiLSDist, TH3D* dEtadPhiMixed, TH3D* dEtadPhiLSMixed, TString suffix){
 
     dEtadPhiDist->GetZaxis()->SetRangeUser(1.04, 1.06);
     dEtadPhiLSDist->GetZaxis()->SetRangeUser(1.04, 1.06);
@@ -457,6 +466,8 @@ void fitZVtx(TH1D* zVtx){
  ***   MAIN FUNCTION  ***
  ************************/
 void plot_phi_histo(string inputName){
+
+    //Set global style stuff
     gROOT->Reset();
     gROOT->SetStyle("Plain");
     gStyle->SetPalette(1);
@@ -470,6 +481,7 @@ void plot_phi_histo(string inputName){
     gStyle->SetTitleSize(0.05, "xyz");
     gStyle->SetTitleSize(0.06, "h");
 
+    //open file, get necessary histograms
     TFile *histoFile = new TFile(inputName.c_str());
     histoFile->cd("PhiReconstruction");
     THnSparseF *fkkUSDist = (THnSparseF *)InvMass->FindObject("fkkUSDist");
@@ -477,9 +489,12 @@ void plot_phi_histo(string inputName){
     THnSparseF *fTrigDist = (THnSparseF *)InvMass->FindObject("fTrigDist");
     THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
     THnSparseF *dphiHKK = (THnSparseF *)InvMass->FindObject("fDphiHKK");
+    THnSparseF *dphiHPhiMixed = (THnSparseF *)InvMass->FindObject("fDphiHPhiMixed");
+    THnSparseF *dphiHKKMixed = (THnSParseF *)InvMass->FindObject("fDphiHKKMixed");
     TH1D* zVtx = InvMass->FindObject("fVtxZ");
 
 
+    //set titles for the various distribution historgram axes
     if(fkkUSDist && fkkLSDist && fTrigDist){
         fkkLSDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
         fkkUSDist->GetAxis(0)->SetTitle("p_{T} (GeV/c)");
@@ -500,9 +515,7 @@ void plot_phi_histo(string inputName){
 
     //plot the invariant mass distributions for different pT bins for US KK, LS KK, and Corrected
     //phi's, as well as a phi pT spectrum
-    Double_t pt_bounds[] = {0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 10.0};
-    Int_t pt_bins[] = {4, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 60, 70, 100};
-    plotRawAndCorrectedPT(fkkUSDist, fkkLSDist, pt_bounds, pt_bins);
+    plotRawAndCorrectedPT(fkkUSDist, fkkLSDist);
 
     // Plotting distributions for KK pairs (US and LS) and trigger particles 
     plotAllDistributions(fkkLSDist, fkkUSDist, fTrigDist);
@@ -520,7 +533,9 @@ void plot_phi_histo(string inputName){
     TH3D *dEtadPhiLSDist = dphiHKK->Projection(2, 3, 4);
     dEtadPhiLSDist->Rebin3D(4,1,1);
 
-    //plot2DCorrelations(dEtadPhiDist, dEtadPhiLSDist, suffix);
+    TH3D *dEtadPhiUS = mixedEventCorrection(dphiHPhi, dphiHPhiMixed);
+    TH3D *dEtadPhiLS = mixedEventCorrection(dphiHKK, dphiHKKMixed);
+//    plot2DCorrelations(dEtadPhiDist, dEtadPhiLSDist, suffix);
 /*
     dphiHPhi->GetAxis(1)->SetRangeUser(1.0,2.0); 
     dphiHKK->GetAxis(1)->SetRangeUser(1.0,2.0); 
@@ -563,15 +578,15 @@ void plot_phi_histo(string inputName){
     plot2DCorrelations(dEtadPhiDist5, dEtadPhiLSDist5, suffix);
 */
 
-    plotPhiCorrelationsV1(dphiHPhi, dphiHKK);
+//    plotPhiCorrelationsV1(dphiHPhi, dphiHKK);
 
     //Reset the Delta-phi axis range after the dphi binned projections are done being created above.
     dphiHPhi->GetAxis(2)->SetRange(0,0);
     dphiHKK->GetAxis(2)->SetRange(0,0);
 
-    plotPhiCorrelationsV2(dphiHPhi, dphiHKK);
+//    plotPhiCorrelationsV2(dphiHPhi, dphiHKK);
 
-    fitZVtx(zVtx);
+//    fitZVtx(zVtx);
 }
 
 
