@@ -270,7 +270,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
 
     // Additional Histograms for US and LS Kaon pairs:
     Int_t bins[4] = {100, 200, 100, 50}; //pt, invmass, phi, eta
-    Double_t min[4] = {0.1, 0.98, 0.0, -2.0};
+    Double_t min[4] = {0.1, 0.98, 0, -2.0};
     Double_t max[4] = {10.1, 1.1, 6.28, 2.0};
  
     fKKUSDist = new THnSparseF("fkkUSDist", "Distribution for all US Kaon pairs", 4, bins, min, max);
@@ -280,7 +280,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fKKLSDist);
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
-    Int_t dphi_bins[5]=    {34,   39,    64,  32, 80};
+    Int_t dphi_bins[5]=    {17,   39,    64,  64, 40};
     Double_t dphi_min[5] = {3.0,   0.5, -1.57, -1.5, 0.98};
     Double_t dphi_max[5] = {20.0, 20.0,  4.71,  1.5, 1.06};
 
@@ -580,7 +580,10 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 
             distPoint[0] = phi.particle.Pt();
             distPoint[1] = phi.particle.M();
-            distPoint[2] = phi.particle.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
+            distPoint[2] = phi.particle.Phi();
+            if(distPoint[2] < 0){
+                distPoint[2] += 2.0*TMath::Pi(); //change from range (-Pi, Pi) to (0, 2Pi)
+            }
             distPoint[3] = phi.particle.Eta();
             fKKLSDist->Fill(distPoint);
             phiLikeSignCandidates.push_back(phi);
@@ -595,7 +598,10 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 
             distPoint[0] = phi.particle.Pt();
             distPoint[1] = phi.particle.M();
-            distPoint[2] = phi.particle.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
+            distPoint[2] = phi.particle.Phi();
+            if(distPoint[2] < 0){
+                distPoint[2] += 2.0*TMath::Pi();
+            }
             distPoint[3] = phi.particle.Eta();
             fKKUSDist->Fill(distPoint);
             phiCandidates.push_back(phi);
@@ -612,7 +618,10 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
  
             distPoint[0] = phi.particle.Pt();
             distPoint[1] = phi.particle.M();
-            distPoint[2] = phi.particle.Phi() + TMath::Pi(); //adding pi to get number in range (0, 2pi)
+            distPoint[2] = phi.particle.Phi();
+            if(distPoint[2] < 0){
+                distPoint[2] += 2.0*TMath::Pi();
+            }
             distPoint[3] = phi.particle.Eta();
             fKKLSDist->Fill(distPoint);
             phiLikeSignCandidates.push_back(phi); 
