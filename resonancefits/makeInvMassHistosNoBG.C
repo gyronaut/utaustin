@@ -45,8 +45,8 @@ Double_t GammaDerivative(Double_t m){
 
 Double_t bw1(Double_t *x, Double_t *par)
 {
-    //Double_t G = par[2];
-    Double_t G = Gamma(x[0], par[2]);
+    Double_t G = par[2];
+    //Double_t G = Gamma(x[0], par[2]);
     return bw(x[0],par[1],G);
 }
 
@@ -100,7 +100,7 @@ Double_t rbwWithBG(Double_t *x, Double_t *par){
 
 
 int makeInvMassHistosNoBG(){
-    int NUM_MASS_BINS = 100;
+    int NUM_MASS_BINS = 1000;
     double MASS_LOW = 0.0;
     double MASS_HIGH = 2.0;
     string particles [8];
@@ -113,7 +113,8 @@ int makeInvMassHistosNoBG(){
     particles[6] = "K*^{0} + #bar{K}*^{0}";
     particles[7] = "K*^{+} + K*^{-}";
 
-    string folder = "/Users/jtblair/Downloads/invm_decayed/pt02/";
+    string folder = "/Users/jtblair/Downloads/kstar_ptbins/pt02/";
+//    string folder = "/Users/jtblair/Downloads/invm_decayed/pt02/";
 //    string folder = "/Users/jtblair/Downloads/invm/pt02/";
     string files[20];
     files[0] = "invm_[0.0,0.2].dat";
@@ -139,7 +140,7 @@ int makeInvMassHistosNoBG(){
 
 
 
-    TFile *output = new TFile("output_invm_norescatter_masswidth_2017_04_24.root", "RECREATE");
+    TFile *output = new TFile("output_SMinvm_simplewidth_20170501.root", "RECREATE");
 
     TH1D *kstar0mass = new TH1D("kstar0mass", "Fit value of M*_{0} vs. p_{T} for K*^{0}", 20, 0.0, 4.0);
     TH1D *kstar0width = new TH1D("kstar0width", "#Gamma_{tot}(M=M*_{0}) vs p_{T} for K*^{0}", 20, 0.0, 4.0);
@@ -180,9 +181,9 @@ int makeInvMassHistosNoBG(){
         TH1D* bg[8];
         for(int i=0; i<8; i++){
             if(nfile<5){
-                histos[i] = new TH1D(Form("ptbin0%dparticle%d",nfile*2+1, i), Form("Invariant Mass for (%s), %s < p_{T} < %s",particles[i].c_str(), ptLower.c_str(), ptHigher.c_str()), 100, 0.0, 2.0);
+                histos[i] = new TH1D(Form("ptbin0%dparticle%d",nfile*2+1, i), Form("Invariant Mass for (%s), %s < p_{T} < %s",particles[i].c_str(), ptLower.c_str(), ptHigher.c_str()), NUM_MASS_BINS, MASS_LOW, MASS_HIGH);
             }else{
-                histos[i] = new TH1D(Form("ptbin%dparticle%d",nfile*2+1, i), Form("Invariant Mass for (%s), %s < p_{T} < %s",particles[i].c_str(), ptLower.c_str(), ptHigher.c_str()), 100, 0.0, 2.0);
+                histos[i] = new TH1D(Form("ptbin%dparticle%d",nfile*2+1, i), Form("Invariant Mass for (%s), %s < p_{T} < %s",particles[i].c_str(), ptLower.c_str(), ptHigher.c_str()), NUM_MASS_BINS, MASS_LOW, MASS_HIGH);
             }
             histos[i]->GetXaxis()->SetTitle("Invariant Mass (GeV/c^{2})");
             histos[i]->GetYaxis()->SetTitle("Counts");
@@ -209,34 +210,39 @@ int makeInvMassHistosNoBG(){
             }
             lineNumber++;
         }
-        
+         
 
         printf("****** Fits for file: %s ******\n", filename.c_str());
         for(int i=3; i<4; i++){
            
-            //histos[i]->Sumw2(); 
             if(nfile==0){
                 canvas[i] = new TCanvas(Form("c%i", i),Form("c%i", i), 0,0,900,900);
                 canvas[i]->Divide(5,4);
             }
             canvas[i]->cd(nfile+1);
-            //canvas[i]->SetLogy();
             histos[i]->SetLineColor(1);
             histos[i]->SetLineWidth(1);
             histos[i]->GetXaxis()->SetRangeUser(0.7, 1.2);
             histos[i]->GetYaxis()->SetRangeUser(0, 1.5*histos[i]->GetBinContent(histos[i]->GetMaximumBin()));
             histos[i]->SetStats(kFALSE);
+            
+            histos[i]->Sumw2(); 
+            //excluding exact vaccuum value from the fit by setting bin content and error to 0
+            histos[i]->SetBinContent(histos[i]->GetXaxis()->FindBin(0.892), 0.0);
+            histos[i]->SetBinError(histos[i]->GetXaxis()->FindBin(0.892), 0.0);
             //histos[i]->Draw("HIST");
 
             printf("mean PT: %f", meanPT);
 
             TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.70, 1.1, 4);
+            //TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), "[0]*gaus(1)", 0.7, 1.1);
 
             fit->SetParNames("BW Area", "Mass", "Width", "PT");
             fit->SetParameters(1.0, 0.89, 0.0474, 0.5);
-            fit->SetParLimits(0, .00001, 1.e3);
+            //fit->SetParameters(100, 0.89, 0.0474);
+            fit->SetParLimits(0, 1, 1.e5);
             fit->SetParLimits(1, 0.80, 1.0);
-            fit->SetParLimits(2, 0.01, 0.1);
+            fit->SetParLimits(2, 0.01, 1.0);
             fit->FixParameter(3, meanPT);
             fit->SetLineColor(2);
 
