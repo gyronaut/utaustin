@@ -42,9 +42,9 @@ private:
     };
    
     TObjArray* AddToTracks();
-    void MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi);
-    void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Int_t mult, Double_t zVtx);
-    void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Int_t mult, Double_t zVtx);
+    void MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Float_t mult, Double_t zVtx);
+    void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
+    void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
   
     AliVEvent   *fVevent;  //!event object
     AliEventPoolManager *fPoolMgr; //! Event pool manager for mixed event

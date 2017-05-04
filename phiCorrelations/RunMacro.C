@@ -13,12 +13,12 @@ void RunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "full"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
    Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiCorrelations_LHC16q";
-   char* output_dir = "output_2017_05_02";
+   char* output_dir = "output_2017_05_03";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
 //   Int_t runcycle[]={0,32};
@@ -27,21 +27,19 @@ void RunMacro()
 
 // create and customize the alien handler
   AliAnalysisAlien *alienHandler = new AliAnalysisAlien();
-    
- // load libraries
-   LoadLibraries();
-   
+      
     alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros -I$ALICE_PHYSICS/PWGCF/Correlations -I$ALICE_PHYSICS/PWGCF -I$ALICE_PHYSICS/PWGCF/Correlations/Base -I$ALICE_PHYSICS/include -g");
-     
+    
     alienHandler->SetAdditionalLibs("AliAnalysisTaskhPhiCorr.cxx AliAnalysisTaskhPhiCorr.h AddTaskQA.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libPWGTools.so libPWGCFCorrelationsBase.so");
+
+  // load libraries
+   LoadLibraries();
     
   alienHandler->SetAnalysisSource("AliAnalysisTaskhPhiCorr.cxx");
   //alienHandler->SetOverwriteMode();
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(2);
   alienHandler->SetAPIVersion("V1.1x");
-  //alienHandler->SetROOTVersion("v5-34-30-alice7-2");
-  //alienHandler->SetAliROOTVersion("v5-08-23-1");
   alienHandler->SetAliPhysicsVersion("vAN-20170425-1");
   //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
@@ -95,7 +93,7 @@ void RunMacro()
    alienHandler->SetMergeExcludes("EventStat_temp.root");
    alienHandler->SetOutputToRunNo(kTRUE);
    alienHandler->SetKeepLogs(kTRUE);
-   alienHandler->SetMaxMergeFiles(10);
+   alienHandler->SetMaxMergeFiles(5);
 //   alienHandler->SetMaxMergeStages(5);
    alienHandler->SetMergeViaJDL(pre_final_stage);
 //    alienHandler->SetOneStageMerging(kFALSE);   //???????????????????????????????-------------------
@@ -112,8 +110,8 @@ void RunMacro()
    gROOT->ProcessLine(".include $ALICE_ROOT/ANALYSIS/");
    gROOT->ProcessLine(".include $PWD/.");
 
-   gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB -I$ALICE_ROOT/PWG/FLOW/Base -I$ALICE_PHYSICS/PWGCF/Correlations/Base -I$ALICE_PHYSICS/PWGCF/Correlations -g ");
-
+   //gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB -I$ALICE_ROOT/PWG/FLOW/Base -I$ALICE_PHYSICS/PWGCF/Correlations/Base -I$ALICE_PHYSICS/PWGCF/Correlations -g ");
+    gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/include -I$ALICE_ROOT/macros -I$ALICE_PHYSICS/include -g");
 
    //printf("\n!!!!!!!!!!!!!!!!!!!!!!\n AliAnalysis Manager \n\n");
    AliAnalysisManager *mgr = new AliAnalysisManager("PhiAnalysis");
@@ -131,15 +129,17 @@ void RunMacro()
    gROOT->LoadMacro("AddTaskQA.C");
    gROOT->LoadMacro("AliAnalysisTaskhPhiCorr.cxx++g");
    gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
+   gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
    gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
 
 
     //switch on aliphysicsselection
+    AddTaskMultSelection();
     AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(kFALSE, kTRUE); 
- 
     //Only set true for MC
     Bool_t isMC = kFALSE;
     AddTaskPIDResponse(isMC);
+
     //create a task
     AliAnalysisTaskhPhiCorr *taskQA = AddTaskQA();
 
@@ -202,6 +202,7 @@ void LoadLibraries()
 
   gSystem->Load("libpythia6.so");
 
+  printf("!!!!!!!!!!!!!! loaded all libraries\n\n");
   //    if(use_parFiles)
   //    {
   // //     AliAnalysisAlien::SetupPar("PWGflowBase");
