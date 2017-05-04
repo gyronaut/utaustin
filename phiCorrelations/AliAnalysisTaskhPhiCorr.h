@@ -51,6 +51,7 @@ private:
     AliESDEvent *fESD;    //!ESD object
     AliAODEvent *fAOD;    //!AOD object
     AliPIDResponse *fpidResponse; //!pid response
+    AliMultSelection *fMultSelection; //!mult selection
     
     TList       *fOutputList; //!Output list
     TH1F        *fNevents;//! no of events

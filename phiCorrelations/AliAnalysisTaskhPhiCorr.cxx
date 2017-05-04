@@ -184,7 +184,6 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     Int_t numVtxZBins = 10;
     //Double_t vtxZBins[11] = {-10.0, -6.15, -3.90, -2.13, -0.59, 0.86, 2.29, 3.77, 5.39, 7.30, 10.0};
     Double_t vtxZBins[11] = {-10.0, -8.0, -6.0, -4.0, -2.0, 0.0, 2.0, 4.0, 6.0, 8.0, 10.0};
-
     Int_t numMultBins = 3;
     Double_t multBins[4] = {0.0, 20.0, 50.0, 100.0};
 
@@ -281,10 +280,10 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fKKLSDist = new THnSparseF("fkkLSDist", "Distribution for all LS Kaon pairs", 4, bins, min, max);
     fOutputList->Add(fKKLSDist);
   
-    // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, zvtx, multPercentile, invmass)
-    Int_t dphi_bins[7]=    {  17,   15,    64,   32,  10,     3,   45};
-    Double_t dphi_min[7] = { 3.0,  1.0, -1.57, -1.5, -10,   0.0, 0.98};
-    Double_t dphi_max[7] = {20.0, 15.0,  4.71,  1.5,  10, 100.0, 1.07};
+    // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
+    Int_t dphi_bins[7]=    {17,   39,    64,  64, 10, 3, 40};
+    Double_t dphi_min[7] = {3.0,   0.5, -1.57, -1.5, -10.0, 0.0, 0.98};
+    Double_t dphi_max[7] = {20.0, 20.0,  4.71,  1.5, 10.0, 100.0, 1.06};
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 7, dphi_bins, dphi_min, dphi_max);
     fDphiHPhi->SetBinEdges(5, multBins);
@@ -432,7 +431,6 @@ void AliAnalysisTaskhPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPart, TH
 void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 {
 
-
     UInt_t evSelMask=((AliInputEventHandler*)(AliAnalysisManager::GetAnalysisManager()->GetInputEventHandler()))->IsEventSelected();
     
     fVevent = dynamic_cast<AliVEvent*>(InputEvent());
@@ -440,8 +438,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
         printf("ERROR: fVEvent not available\n");
         return;
     }
- 
-    
+     
     fESD = dynamic_cast<AliESDEvent*>(InputEvent());
     ////////////////////
     //cuts initialised//
@@ -453,13 +450,6 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 
     fAOD = dynamic_cast<AliAODEvent*>(InputEvent());
     if (fAOD) {
-        AliMultSelection *MultSelection = (AliMultSelection*) fAOD->FindListObject("MultSelection");    
-        if(!MultSelection->IsEventSelected()){
-            printf("ERROR: mult selection didn't have selected event!\n");
-            return;
-        }
-    }
-
         // printf("fAOD available\n");
         //return;
     }
@@ -491,20 +481,26 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
     fVtxX->Fill(Xvertex);
     fVtxY->Fill(Yvertex);
 
-    Float_t multPercentile = MultSelection->GetMultiplicityPercentile("V0M");
-
     /////////////////
     //trigger check//
     /////////////////
     fVevent->GetFiredTriggerClasses();
 
     Int_t trigger = -1;
+    //Multiplicity stuff
+    Double_t multPercentile;
     if (fAOD){
         //Double_t multiplicity=fAOD->GetHeader()->GetRefMultiplicity();
         AliAODHeader *header = dynamic_cast<AliAODHeader*>(fAOD->GetHeader());
         if(!header) AliFatal("Not a standard AOD");
         Double_t multiplicity = header->GetRefMultiplicity();
-        
+ 
+        fMultSelection = (AliMultSelection*)fAOD->FindListObject("MultSelection");
+        if(fMultSelection){
+            multPercentile = fMultSelection->GetMultiplicityPercentile("V0M");
+        }else{
+            return;
+        }
         fTrigMulti->Fill(-0.5, multiplicity);
         if(evSelMask & AliVEvent::kAny) fTrigMulti->Fill(0.5, multiplicity);
         if(evSelMask & AliVEvent::kMB) fTrigMulti->Fill(1.5, multiplicity);
@@ -531,7 +527,8 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 
     Double_t distPoint[4] = {0, 0, 0, 0}; //pt, invmass, phi, eta
     Double_t trigPoint[3] = {0, 0, 0}; //pt, phi, eta
-    Double_t hhdphi_point[6] = {0, 0, 0, 0, 0, 0}; //trigger pt, phi pt, delta-phi, delta-eta, zvtx, multPercentile
+    Double_t dphi_point[5] = {0, 0, 0, 0, 0}; //trigger pt, phi pt, delta-phi, delta-eta, phi invmass
+    Double_t hhdphi_point[6] = {0, 0, 0, 0, 0, 0};
 
     AliVTrack *kaonTrack = 0x0;
     AliESDtrack *eKaonTrack = 0x0;
@@ -722,6 +719,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             fTPCNpts->Fill(triggerTrack->P(),triggerTrack->GetTPCsignalN());
             
             Double_t trigger_phi = triggerTrack->Phi();
+            dphi_point[0] = triggerTrack->Pt();
             //check for labels
             Int_t label = 0;
             label = triggerTrack->GetLabel();
@@ -731,8 +729,8 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             trigPoint[2] = triggerTrack->Eta();
             fTrigDist->Fill(trigPoint);
             
-            MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi, Zvertex, multPercentile);
-            MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK, Zvertex, multPercentile);
+            MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi, multPercentile, Zvertex);
+            MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK, multPercentile, Zvertex);
 
             for(Int_t jtrack = 0; jtrack < ntracks; jtrack++){
                 if(itrack != jtrack){
@@ -763,7 +761,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 
             cfPart = new AliCFParticle(atriggerTrack->Pt(), atriggerTrack->Eta(), atriggerTrack->Phi(), atriggerTrack->Charge(), 0);
             
-            if(multPercentile > 0.0 && multPercentile < 100.0 && TMath::Abs(Zvertex) < 10.0){
+            if(multPercentile <= 100.0 && TMath::Abs(Zvertex) < 10.0){
                 MakeHHMixCorrelations(cfPart, fDphiHHMixed, multPercentile, Zvertex);
             }
             fArrayTracksMix->Add(cfPart);
@@ -773,7 +771,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 
     ntracks = fVevent->GetNumberOfTracks();
 
-    if(multPercentile > 0.0 && multPercentile < 100.0 && TMath::Abs(Zvertex) < 10.0){
+    if(multPercentile <= 100. && TMath::Abs(Zvertex) < 10.0){
         if(phiCandidates.size() > 0){
             MakeMixCorrelations(phiCandidates, fDphiHPhiMixed, multPercentile, Zvertex);
         }
