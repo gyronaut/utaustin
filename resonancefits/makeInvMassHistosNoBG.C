@@ -140,7 +140,7 @@ int makeInvMassHistosNoBG(){
 
 
 
-    TFile *output = new TFile("output_SMinvm_simplewidth_20170501.root", "RECREATE");
+    TFile *output = new TFile("output_SMinvm_simplewidth_20170504.root", "RECREATE");
 
     TH1D *kstar0mass = new TH1D("kstar0mass", "Fit value of M*_{0} vs. p_{T} for K*^{0}", 20, 0.0, 4.0);
     TH1D *kstar0width = new TH1D("kstar0width", "#Gamma_{tot}(M=M*_{0}) vs p_{T} for K*^{0}", 20, 0.0, 4.0);
