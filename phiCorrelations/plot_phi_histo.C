@@ -580,6 +580,7 @@ void plot_phi_histo(string inputName){
     gStyle->SetPadBorderMode(0);
     gStyle->SetTitleBorderSize(0);
     gStyle->SetOptStat(0);
+    gStyle->SetOptFit(1);
     gStyle->SetErrorX(0);
     gStyle->SetTitleW(0.9);
     gStyle->SetTitleSize(0.05, "xyz");
