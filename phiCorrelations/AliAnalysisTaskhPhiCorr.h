@@ -42,7 +42,7 @@ private:
     };
    
     TObjArray* AddToTracks();
-    void MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Float_t mult, Double_t zVtx);
+    void MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi);
     void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
     void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
   
@@ -79,12 +79,12 @@ private:
     THnSparseF  *fKKUSDist;//! unlike sign kaon distribution
     THnSparseF  *fKKLSDist;//! like sign kaon distribution
     
-    THnSparseF  *fDphiHPhi;//! delta-phi distribution with unlike sign kaon pairs
-    THnSparseF  *fDphiHKK;//! delta-phi distribution with like sign kaon pairs
-    THnSparseF  *fDphiHPhiMixed;//! hadron-US mixed correlation
-    THnSparseF  *fDphiHKKMixed;//! hadron-LS mixed correlation
-    THnSparseF  *fDphiHH;//! hadron-hadron correlation
-    THnSparseF  *fDphiHHMixed;//! hadron-hadron mixed correlation
+    THnSparseF  ***fDphiHPhi;//! delta-phi distribution with unlike sign kaon pairs
+    THnSparseF  ***fDphiHKK;//! delta-phi distribution with like sign kaon pairs
+    THnSparseF  ***fDphiHPhiMixed;//! hadron-US mixed correlation
+    THnSparseF  ***fDphiHKKMixed;//! hadron-LS mixed correlation
+    THnSparseF  ***fDphiHH;//! hadron-hadron correlation
+    THnSparseF  ***fDphiHHMixed;//! hadron-hadron mixed correlation
 
     AliAnalysisTaskhPhiCorr(const AliAnalysisTaskhPhiCorr&); // not implemented
     AliAnalysisTaskhPhiCorr& operator=(const AliAnalysisTaskhPhiCorr&); // not implemented
