@@ -1,0 +1,133 @@
+void massPlots(){
+
+    TLegend* legend = new TLegend(0.4614,0.1658,0.8826,0.3944);
+
+    TFile *file1 = new TFile("output_SMinvm_masswidth_pf160_error05.root");
+    TH1D* mass1 = file1->Get("kstar0mass");
+    mass1->SetName("mwError05");
+    mass1->SetTitle("Fit Mass Peak for (K*^0 + #bar{K}*^0)");
+    mass1->SetMarkerStyle(20);
+    mass1->SetMarkerSize(1.5);
+    mass1->SetMarkerColor(1);
+    TH1D* width1 = file1->Get("kstar0width");
+    width1->SetName("mwWidth05");
+    width1->SetTitle("Fit Width for (K*^0 + #bar{K}*^0)");
+    width1->SetMarkerStyle(20);
+    width1->SetMarkerSize(1.5);
+    width1->SetMarkerColor(1);
+    TH1D* single1 = file1->Get("ptbin21particle6");
+    TF1* fit1 = file1->Get("fitPTbin2100particle6");
+    fit1->SetLineColor(1);
+    fit1->SetLineWidth(3);
+
+
+    TFile *file2 = new TFile("output_SMinvm_masswidth_pf160_error10.root");
+    TH1D* mass2 = file2->Get("kstar0mass");
+    mass2->SetName("mwError10");
+    mass2->SetTitle("mass width, error: 10%");
+    mass2->SetMarkerStyle(24);
+    mass2->SetMarkerSize(1.5);
+    mass2->SetMarkerColor(3);
+
+    TFile *file3 = new TFile("output_SMinvm_simplewidth_pf160_error05.root");
+    TH1D* mass3 = file3->Get("kstar0mass");
+    mass3->SetName("swError05");
+    mass3->SetTitle("simple width, error: 5%");
+    mass3->SetMarkerStyle(21);
+    mass3->SetMarkerSize(1.5);
+    mass3->SetMarkerColor(4);
+    mass3->SetLineColor(4);
+    TH1D* width3 = file3->Get("kstar0collWidth");
+    width3->SetName("swWidth05");
+    width3->SetTitle("Fit Width for (K*^0 + #bar{K}*^0)");
+    width3->SetMarkerStyle(21);
+    width3->SetMarkerSize(1.5);
+    width3->SetMarkerColor(4);
+    width3->SetLineColor(4);
+    TF1* fit3 = file3->Get("fitPTbin2100particle6");
+    fit3->SetLineColor(4);
+    fit3->SetLineStyle(7);
+    fit3->SetLineWidth(3);
+ 
+    TFile *file4 = new TFile("output_SMinvm_simplewidth_pf160_error10.root");
+    TH1D* mass4 = file4->Get("kstar0mass");
+    mass4->SetName("swError10");
+    mass4->SetTitle("simple width, error: 10%");
+    mass4->SetMarkerStyle(25);
+    mass4->SetMarkerSize(1.5);
+    mass4->SetMarkerColor(3);
+
+    TFile *file5 = new TFile("output_SMinvm_fixedwidth_pf160_error05.root");
+    TH1D* mass5 = file5->Get("kstar0mass");
+    mass5->SetName("fwError05");
+    mass5->SetTitle("fixed width, error: 5%");
+    mass5->SetMarkerStyle(22);
+    mass5->SetMarkerSize(1.5);
+    mass5->SetMarkerColor(2);
+    mass5->SetLineColor(2);
+    TH1D* width5 = file5->Get("kstar0collWidth");
+    width5->SetName("mwWidth05");
+    width5->SetTitle("Fit Width for (K*^0 + #bar{K}*^0)");
+    width5->SetMarkerStyle(22);
+    width5->SetMarkerSize(1.5);
+    width5->SetMarkerColor(2);
+    width5->SetLineColor(2);
+    TF1* fit5 = file5->Get("fitPTbin2100particle6");
+    fit5->SetLineColor(2);
+    fit5->SetLineStyle(3);
+    fit5->SetLineWidth(3);
+
+    TFile *file6 = new TFile("output_SMinvm_fixedwidth_pf160_error10.root");
+    TH1D* mass6 = file6->Get("kstar0mass");
+    mass6->SetName("fwError05");
+    mass6->SetTitle("fixed width, error: 10%");
+    mass6->SetMarkerStyle(26);
+    mass6->SetMarkerSize(1.5);
+    mass6->SetMarkerColor(3);
+
+
+    TCanvas *cMass = new TCanvas("cMass", "cMass", 50, 50, 600, 600);
+    cMass->cd();
+    legend->AddEntry(mass1, "Mass Width, 5% Error", "lpe");
+    legend->AddEntry(mass3, "Simple Width, 5% Error", "lpe");
+    legend->AddEntry(mass5, "Fixed Width (50 MeV/c^{2}), 5% Error", "lpe");
+    mass1->GetYaxis()->SetRangeUser(0.887, 0.896);
+    mass1->GetYaxis()->SetLabelSize(0.03);
+    mass1->GetYaxis()->SetTitleOffset(1.4);
+    mass1->Draw("P E1");
+    //mass2->Draw("SAME");
+    mass3->Draw("SAME P E1");
+    //mass4->Draw("SAME");
+    mass5->Draw("SAME P E1");
+    //mass6->Draw("SAME");
+
+    legend->Draw();
+
+    TLegend *widthLegend = new TLegend(0.4614,0.1658,0.8826,0.3944);
+    widthLegend->AddEntry(width1, "Mass Width, 5% Error", "lpe");
+    widthLegend->AddEntry(width3, "Simple Width, 5% Error", "lpe");
+    widthLegend->AddEntry(width5, "Fixed Width (50 MeV/c^{2}), 5% Error", "lpe");
+    
+    TCanvas *cWidth = new TCanvas("cWidth", "cWidth", 60, 60, 600, 600);
+    cWidth->cd();
+    width1->GetYaxis()->SetLabelSize(0.03);
+    width1->GetYaxis()->SetTitleOffset(1.4);
+    width1->Draw("P E1");
+    width3->Draw("SAME P E1");
+    width5->Draw("SAME P E1");
+    widthLegend->Draw();
+
+    TLegend *singleLegend = new TLegend(0.4614, 0.1658, 0.8826, 0.3944);
+    singleLegend->AddEntry(fit1, "Mass Width Fit", "l");
+    singleLegend->AddEntry(fit3, "Simple Width Fit", "l");
+    singleLegend->AddEntry(fit5, "Fixed Width Fit", "l");
+    TCanvas *cSingle = new TCanvas("single", "single", 70, 70, 600, 600);
+    cSingle->cd();
+    single1->SetStats(kFALSE);
+    single1->Draw("H");
+    fit1->Draw("SAME");
+    fit3->Draw("SAME");
+    fit5->Draw("SAME");
+    singleLegend->Draw();
+
+}

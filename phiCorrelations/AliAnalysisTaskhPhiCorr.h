@@ -14,7 +14,7 @@ class AliAODEvent;
 class AliAnalysisTaskhPhiCorr : public AliAnalysisTaskSE {
 public:
     AliAnalysisTaskhPhiCorr();
-    AliAnalysisTaskhPhiCorr(const char *name);
+    AliAnalysisTaskhPhiCorr(const char *name, Float_t multLow, Float_t multHigh);
     virtual ~AliAnalysisTaskhPhiCorr();
     
     virtual void   UserCreateOutputObjects();
@@ -26,6 +26,10 @@ public:
     Bool_t IsAODanalysis() const { return TestBit(kAODanalysis); };
     
 private:
+
+    Float_t MULT_LOW;
+    Float_t MULT_HIGH;
+
     enum{
         kAODanalysis = BIT(20),
     };
@@ -42,7 +46,7 @@ private:
     };
    
     TObjArray* AddToTracks();
-    void MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi);
+    void MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
     void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
     void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
   
@@ -79,12 +83,12 @@ private:
     THnSparseF  *fKKUSDist;//! unlike sign kaon distribution
     THnSparseF  *fKKLSDist;//! like sign kaon distribution
     
-    THnSparseF  ***fDphiHPhi;//! delta-phi distribution with unlike sign kaon pairs
-    THnSparseF  ***fDphiHKK;//! delta-phi distribution with like sign kaon pairs
-    THnSparseF  ***fDphiHPhiMixed;//! hadron-US mixed correlation
-    THnSparseF  ***fDphiHKKMixed;//! hadron-LS mixed correlation
-    THnSparseF  ***fDphiHH;//! hadron-hadron correlation
-    THnSparseF  ***fDphiHHMixed;//! hadron-hadron mixed correlation
+    THnSparseF  *fDphiHPhi;//! delta-phi distribution with unlike sign kaon pairs
+    THnSparseF  *fDphiHKK;//! delta-phi distribution with like sign kaon pairs
+    THnSparseF  *fDphiHPhiMixed;//! hadron-US mixed correlation
+    THnSparseF  *fDphiHKKMixed;//! hadron-LS mixed correlation
+    THnSparseF  *fDphiHH;//! hadron-hadron correlation
+    THnSparseF  *fDphiHHMixed;//! hadron-hadron mixed correlation
 
     AliAnalysisTaskhPhiCorr(const AliAnalysisTaskhPhiCorr&); // not implemented
     AliAnalysisTaskhPhiCorr& operator=(const AliAnalysisTaskhPhiCorr&); // not implemented

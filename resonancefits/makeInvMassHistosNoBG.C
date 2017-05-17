@@ -54,8 +54,8 @@ Double_t KstarFun(Double_t *x, Double_t *par)
 {
     const Double_t Temp = 0.160;
     //return par[0]*bw1(x, par)*PS(x[0], par[3], Temp);
-    return par[0]*bw1(x, par);
-    //return par[0]*bw1(x, par)*PS(x[0], par[3], Temp)*1.e6;
+    //return par[0]*bw1(x, par);
+    return par[0]*bw1(x, par)*PS(x[0], par[3], Temp)*1.e6;
     
 }
 
@@ -100,6 +100,22 @@ Double_t rbwWithBG(Double_t *x, Double_t *par){
 
 
 int makeInvMassHistosNoBG(){
+    //Set global style stuff
+    gROOT->Reset();
+    gROOT->SetStyle("Plain");
+    gStyle->SetPalette(1);
+    gStyle->SetCanvasColor(kWhite);
+    gStyle->SetCanvasBorderMode(0);
+    gStyle->SetPadBorderMode(0);
+    gStyle->SetTitleBorderSize(0);
+    gStyle->SetOptStat(0);
+    gStyle->SetOptFit(1);
+    gStyle->SetErrorX(0);
+    gStyle->SetTitleW(0.9);
+    gStyle->SetTitleSize(0.05, "xyz");
+    gStyle->SetTitleSize(0.06, "h");
+
+    int NUM_PT_BINS = 20;
     int NUM_MASS_BINS = 1000;
     double MASS_LOW = 0.0;
     double MASS_HIGH = 2.0;
@@ -113,9 +129,10 @@ int makeInvMassHistosNoBG(){
     particles[6] = "K*^{0} + #bar{K}*^{0}";
     particles[7] = "K*^{+} + K*^{-}";
 
-    string folder = "/Users/jtblair/Downloads/kstar_ptbins/pt02/";
+    string folder = "/Users/jtblair/Downloads/ks_dndm/pt02/";
 //    string folder = "/Users/jtblair/Downloads/invm_decayed/pt02/";
 //    string folder = "/Users/jtblair/Downloads/invm/pt02/";
+
     string files[20];
     files[0] = "invm_[0.0,0.2].dat";
     files[1] = "invm_[0.2,0.4].dat";
@@ -137,15 +154,25 @@ int makeInvMassHistosNoBG(){
     files[17] = "invm_[3.4,3.6].dat";
     files[18] = "invm_[3.6,3.8].dat";
     files[19] = "invm_[3.8,4.0].dat";
+/*
+    string files[8];
+    files[0] = "invm_[0.0,0.5].dat";
+    files[1] = "invm_[0.5,1.0].dat";
+    files[2] = "invm_[1.0,1.5].dat";
+    files[3] = "invm_[1.5,2.0].dat";
+    files[4] = "invm_[2.0,2.5].dat";
+    files[5] = "invm_[2.5,3.0].dat";
+    files[6] = "invm_[3.0,3.5].dat";
+    files[7] = "invm_[3.5,4.0].dat";
+*/
 
 
+    TFile *output = new TFile("output_SMinvm_fixedwidth_pf160_error05.root", "RECREATE");
 
-    TFile *output = new TFile("output_SMinvm_simplewidth_20170504.root", "RECREATE");
-
-    TH1D *kstar0mass = new TH1D("kstar0mass", "Fit value of M*_{0} vs. p_{T} for K*^{0}", 20, 0.0, 4.0);
-    TH1D *kstar0width = new TH1D("kstar0width", "#Gamma_{tot}(M=M*_{0}) vs p_{T} for K*^{0}", 20, 0.0, 4.0);
-    TH1D *kstar0collWidth = new TH1D("kstar0collWidth", "Fit value of #Gamma_{coll} component vs. p_{T} for K*^{0}", 20,0.0, 4.0);
-    TH1D *kstar0decWidth = new TH1D("kstar0decWidth", "#Gamma_{dec}(M=M*_{0}) component vs. p_{T} for K*^{0};p_{T} (GeV/c);Width (GeV/c^2)", 20,0.0, 4.0);
+    TH1D *kstar0mass = new TH1D("kstar0mass", "Fit value of M*_{0} vs. p_{T} for K*^{0} + #bar{K}*^{0}", NUM_PT_BINS, 0.0, 4.0);
+    TH1D *kstar0width = new TH1D("kstar0width", "#Gamma_{tot}(M=M*_{0}) vs p_{T} for K*^{0} + #bar{K}*^{0}", NUM_PT_BINS, 0.0, 4.0);
+    TH1D *kstar0collWidth = new TH1D("kstar0collWidth", "Fit value of #Gamma_{coll} component vs. p_{T} for K*^{0} + #bar{K}*^{0}", NUM_PT_BINS,0.0, 4.0);
+    TH1D *kstar0decWidth = new TH1D("kstar0decWidth", "#Gamma_{dec}(M=M*_{0}) component vs. p_{T} for K*^{0} + #bar{K}*^{0};p_{T} (GeV/c);Width (GeV/c^2)", NUM_PT_BINS,0.0, 4.0);
    
     kstar0mass->GetXaxis()->SetTitle("p_{T} (GeV/c)");
     kstar0mass->GetYaxis()->SetTitle("Mass (GeV/c^{2})");
@@ -171,13 +198,17 @@ int makeInvMassHistosNoBG(){
     double massError = 0.0, widthError= 0.0, collWidthError = 0.0, massBGError=0.0;
 
     TCanvas *canvas[9];
+    TCanvas *diffCanvas[9];
+    TPaveStats *st;
+    TPad *pad;
 
-    for(int nfile = 0; nfile < 20; nfile++){
+    for(int nfile = 0; nfile < NUM_PT_BINS; nfile++){
         double meanPT = (double)(nfile*2+1)/10.0;
         string filename = folder+files[nfile];
         string ptLower = filename.substr(filename.find("[")+1, 3);
         string ptHigher = filename.substr(filename.find(",")+1, 3);   
         TH1D* histos[8];
+        TH1D* diffHistos[8];
         TH1D* bg[8];
         for(int i=0; i<8; i++){
             if(nfile<5){
@@ -213,50 +244,78 @@ int makeInvMassHistosNoBG(){
          
 
         printf("****** Fits for file: %s ******\n", filename.c_str());
-        for(int i=3; i<4; i++){
+        for(int i=6; i<7; i++){
            
             if(nfile==0){
                 canvas[i] = new TCanvas(Form("c%i", i),Form("c%i", i), 0,0,900,900);
                 canvas[i]->Divide(5,4);
+                diffCanvas[i] = new TCanvas(Form("diffC%i", i),Form("diffC%i", i), 0,0,900,900);
+                diffCanvas[i]->Divide(5,4);
             }
-            canvas[i]->cd(nfile+1);
+            //rebin
+            histos[i]->Rebin(4);
+
+            //Fixing the errors to a percentage of the signal region:
+            for(int ibin=1; ibin < histos[i]->GetNbinsX(); ibin++){
+                histos[i]->SetBinError(ibin, histos[i]->GetBinContent((int)(0.892*(250.0/2.0)))*0.05);
+            }
+
+            pad = (TPad*)canvas[i]->cd(nfile+1);
             histos[i]->SetLineColor(1);
             histos[i]->SetLineWidth(1);
             histos[i]->GetXaxis()->SetRangeUser(0.7, 1.2);
             histos[i]->GetYaxis()->SetRangeUser(0, 1.5*histos[i]->GetBinContent(histos[i]->GetMaximumBin()));
-            histos[i]->SetStats(kFALSE);
+            //histos[i]->SetStats(kFALSE);
             
             histos[i]->Sumw2(); 
-            //excluding exact vaccuum value from the fit by setting bin content and error to 0
-            histos[i]->SetBinContent(histos[i]->GetXaxis()->FindBin(0.892), 0.0);
-            histos[i]->SetBinError(histos[i]->GetXaxis()->FindBin(0.892), 0.0);
             //histos[i]->Draw("HIST");
 
             printf("mean PT: %f", meanPT);
 
             TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.70, 1.1, 4);
-            //TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), "[0]*gaus(1)", 0.7, 1.1);
+            //TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), "gaus(0)", 0.86, 0.92);
 
             fit->SetParNames("BW Area", "Mass", "Width", "PT");
             fit->SetParameters(1.0, 0.89, 0.0474, 0.5);
+            //fit->SetParNames("BW Area", "Mass", "Width");
             //fit->SetParameters(100, 0.89, 0.0474);
-            fit->SetParLimits(0, 1, 1.e5);
+            fit->SetParLimits(0, 10.0, 1.5e9);
             fit->SetParLimits(1, 0.80, 1.0);
-            fit->SetParLimits(2, 0.01, 1.0);
+            //fit->SetParLimits(2, 0.01, 0.1);
+            fit->FixParameter(2, 0.050);
             fit->FixParameter(3, meanPT);
             fit->SetLineColor(2);
 
             printf("%s\n", fit->GetName());
-            histos[i]->Fit(Form("fitPTbin%d00particle%d", nfile*2+1, i), "R", "SAME");
-            TVirtualFitter *fitter = TVirtualFitter::GetFitter();
-            histos[i]->Draw("HIST SAME");
-            fit->Draw("SAME");
 
+            histos[i]->Fit(Form("fitPTbin%d00particle%d", nfile*2+1, i), "BRMEIP", "SAME");
+            TVirtualFitter *fitter = TVirtualFitter::GetFitter();
+           
+            histos[i]->SetStats(1);
+            histos[i]->Draw();
+            gPad->Update();
+            pad->Update();
+            st = (TPaveStats*)histos[i]->FindObject("stats");
+            st->SetX1NDC(0.524);
+            st->SetY1NDC(0.680);
+            st->SetX2NDC(0.884);
+            st->SetY2NDC(0.876);
+            //fit->Draw("SAME");
+            histos[i]->Draw();
+            gPad->Update();
+            pad->Update();
             printf("\n");
+    
+            diffHistos[i] = (TH1D*)histos[i]->Clone(Form("diffPTbin%d00particl%d", nfile*2+1, i));
+            diffHistos[i]->Add(fit, -1);
+            diffCanvas[i]->cd(nfile+1);
+            diffHistos[i]->Draw("HIST E");
+            diffHistos[i]->Write();
+
             histos[i]->Write();
             fit->Write();
             //Do mass and width vs. pT plots just for K*0
-            if(i==3){
+            if(i==6){
                 mass = fit->GetParameter(1);
                 massError = fit->GetParError(1);
 
@@ -283,7 +342,7 @@ int makeInvMassHistosNoBG(){
                     TCanvas *singlecanvas = new TCanvas("singlecanvas", "singlecanvas", 0,0,600,600);
                     singlecanvas->cd();
                     printf("Got here! \n");
-                    histos[i]->Draw("HIST SAME");
+                    histos[i]->Draw("HIST E SAME");
 
                     fit->SetLineColor(8);
                     fit->SetLineStyle(1);
@@ -314,7 +373,7 @@ int makeInvMassHistosNoBG(){
     massline->Draw("SAME");
     masscanvas->Write();
 
-    for(int i=3; i<4; i++){
+    for(int i=6; i<7; i++){
         canvas[i]->Write();
     }
     kstar0mass->Write();

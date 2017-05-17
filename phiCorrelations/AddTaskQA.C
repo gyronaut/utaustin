@@ -1,4 +1,4 @@
-AliAnalysisTask *AddTaskQA(){
+AliAnalysisTask *AddTaskQA(Float_t multLow = 0.0, Float_t multHigh = 100.0){
     //get the current analysis manager
     AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
     if (!mgr) {
@@ -23,16 +23,28 @@ AliAnalysisTask *AddTaskQA(){
     //    sprintf(calib,"QA");
 
     printf("\n!!!!!!!!!!!!\nSetting up AliAnalysisTaskQA\n");
-    fflush(stdout); 
-    AliAnalysisTaskhPhiCorr *hPhiCorr = new AliAnalysisTaskhPhiCorr("hPhiCOrr"); 
+    fflush(stdout);
+    
+    stringstream taskStream;
+    taskStream << "hPhiCorr_mult_" << multLow << "_" << multHigh;
+
+    TString taskName = taskStream.str();
+
+    AliAnalysisTaskhPhiCorr *hPhiCorr = new AliAnalysisTaskhPhiCorr(taskName.Data(), multLow, multHigh); 
     hPhiCorr->SelectCollisionCandidates(AliVEvent::kINT7);
     
-    TString containerName7 = mgr->GetCommonFileName();
-    containerName7 += ":PhiReconstruction";
+    stringstream fileStream;
+    fileStream << "phiCorrelations_mult_" << multLow << "_" << multHigh << ".root";
+    TString filename = fileStream.str();
+
+    stringstream containerStream;
+    containerStream << "phiCorr_mult_" << multLow << "_" << multHigh;
+    TString containerName = containerStream.str();
+
     printf("\n!!!!!!!!!!!!!\n Setting up input/output containers\n");
     fflush(stdout);
     AliAnalysisDataContainer *cinput  = mgr->GetCommonInputContainer();
-    AliAnalysisDataContainer *coutput1 = mgr->CreateContainer("InvMass", TList::Class(),AliAnalysisManager::kOutputContainer, containerName7.Data());
+    AliAnalysisDataContainer *coutput1 = mgr->CreateContainer(containerName, TList::Class(),AliAnalysisManager::kOutputContainer, filename.Data());
     printf("\n!!!!!!!!!!!!!\n Connecting input and output containers\n");
     fflush(stdout);
     mgr->ConnectInput(hPhiCorr, 0, cinput);
