@@ -167,7 +167,7 @@ int makeInvMassHistosNoBG(){
 */
 
 
-    TFile *output = new TFile("output_SMinvm_fixedwidth_pf160_error05.root", "RECREATE");
+    TFile *output = new TFile("NSW2output_SMinvm_fixedwidth70_pf160_error05.root", "RECREATE");
 
     TH1D *kstar0mass = new TH1D("kstar0mass", "Fit value of M*_{0} vs. p_{T} for K*^{0} + #bar{K}*^{0}", NUM_PT_BINS, 0.0, 4.0);
     TH1D *kstar0width = new TH1D("kstar0width", "#Gamma_{tot}(M=M*_{0}) vs p_{T} for K*^{0} + #bar{K}*^{0}", NUM_PT_BINS, 0.0, 4.0);
@@ -208,13 +208,18 @@ int makeInvMassHistosNoBG(){
         string ptLower = filename.substr(filename.find("[")+1, 3);
         string ptHigher = filename.substr(filename.find(",")+1, 3);   
         TH1D* histos[8];
+        TH1D* newHistos[8];
         TH1D* diffHistos[8];
         TH1D* bg[8];
         for(int i=0; i<8; i++){
             if(nfile<5){
                 histos[i] = new TH1D(Form("ptbin0%dparticle%d",nfile*2+1, i), Form("Invariant Mass for (%s), %s < p_{T} < %s",particles[i].c_str(), ptLower.c_str(), ptHigher.c_str()), NUM_MASS_BINS, MASS_LOW, MASS_HIGH);
+            newHistos[i] = new TH1D(Form("newptbin0%dparticle%d",nfile*2+1, i), Form("Invariant Mass for (%s), %s < p_{T} < %s",particles[i].c_str(), ptLower.c_str(), ptHigher.c_str()), 250, MASS_LOW, MASS_HIGH);
+
             }else{
                 histos[i] = new TH1D(Form("ptbin%dparticle%d",nfile*2+1, i), Form("Invariant Mass for (%s), %s < p_{T} < %s",particles[i].c_str(), ptLower.c_str(), ptHigher.c_str()), NUM_MASS_BINS, MASS_LOW, MASS_HIGH);
+                newHistos[i] = new TH1D(Form("newptbin%dparticle%d",nfile*2+1, i), Form("Invariant Mass for (%s), %s < p_{T} < %s",particles[i].c_str(), ptLower.c_str(), ptHigher.c_str()), 250, MASS_LOW, MASS_HIGH);
+
             }
             histos[i]->GetXaxis()->SetTitle("Invariant Mass (GeV/c^{2})");
             histos[i]->GetYaxis()->SetTitle("Counts");
@@ -255,10 +260,15 @@ int makeInvMassHistosNoBG(){
             //rebin
             histos[i]->Rebin(4);
 
+            //histos[i]->Sumw2();
             //Fixing the errors to a percentage of the signal region:
             for(int ibin=1; ibin < histos[i]->GetNbinsX(); ibin++){
                 histos[i]->SetBinError(ibin, histos[i]->GetBinContent((int)(0.892*(250.0/2.0)))*0.05);
+                newHistos[i]->SetBinContent(ibin, histos[i]->GetBinContent(ibin));
+                newHistos[i]->SetBinError(ibin, histos[i]->GetBinError(ibin));
             }
+            
+            //histos[i]->Sumw2();
 
             pad = (TPad*)canvas[i]->cd(nfile+1);
             histos[i]->SetLineColor(1);
@@ -267,28 +277,28 @@ int makeInvMassHistosNoBG(){
             histos[i]->GetYaxis()->SetRangeUser(0, 1.5*histos[i]->GetBinContent(histos[i]->GetMaximumBin()));
             //histos[i]->SetStats(kFALSE);
             
-            histos[i]->Sumw2(); 
+            //histos[i]->Sumw2(); 
             //histos[i]->Draw("HIST");
 
-            printf("mean PT: %f", meanPT);
+            printf("mean PT: %f\n", meanPT);
 
-            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.70, 1.1, 4);
+            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.7, 1.05, 4);
             //TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), "gaus(0)", 0.86, 0.92);
 
             fit->SetParNames("BW Area", "Mass", "Width", "PT");
-            fit->SetParameters(1.0, 0.89, 0.0474, 0.5);
+            fit->SetParameters(0, 0.89, 0.0474, 0.5);
             //fit->SetParNames("BW Area", "Mass", "Width");
             //fit->SetParameters(100, 0.89, 0.0474);
-            fit->SetParLimits(0, 10.0, 1.5e9);
+            //fit->SetParLimits(0, -10, 1.5e9);
             fit->SetParLimits(1, 0.80, 1.0);
             //fit->SetParLimits(2, 0.01, 0.1);
-            fit->FixParameter(2, 0.050);
+            fit->FixParameter(2, 0.070);
             fit->FixParameter(3, meanPT);
             fit->SetLineColor(2);
 
             printf("%s\n", fit->GetName());
 
-            histos[i]->Fit(Form("fitPTbin%d00particle%d", nfile*2+1, i), "BRMEIP", "SAME");
+            histos[i]->Fit(Form("fitPTbin%d00particle%d", nfile*2+1, i), "BRIM", "SAME");
             TVirtualFitter *fitter = TVirtualFitter::GetFitter();
            
             histos[i]->SetStats(1);
@@ -301,7 +311,7 @@ int makeInvMassHistosNoBG(){
             st->SetX2NDC(0.884);
             st->SetY2NDC(0.876);
             //fit->Draw("SAME");
-            histos[i]->Draw();
+            //histos[i]->Draw();
             gPad->Update();
             pad->Update();
             printf("\n");
