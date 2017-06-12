@@ -570,8 +570,8 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
                 kaon.particle.SetPx(kaonTrack->Px());
                 kaon.particle.SetPy(kaonTrack->Py());
                 kaon.particle.SetPz(kaonTrack->Pz());
-                Double_t calcP = TMath::Sqrt(kaonTrack->Px()**2 + kaonTrack->Py()**2 + kaonTrack->Pz()**2);
-                Double_t calcE = TMath::Sqrt(0.4937**2 + calcP**2);
+                Double_t calcP = TMath::Sqrt(kaonTrack->Px()*kaonTrack->Px() + kaonTrack->Py()*kaonTrack->Py() + kaonTrack->Pz()*kaonTrack->Pz());
+                Double_t calcE = TMath::Sqrt(0.4937*0.4937 + calcP*calcP);
                 kaon.particle.SetE(calcE);
 
                 if(kaonTrack->Charge() == 1){
