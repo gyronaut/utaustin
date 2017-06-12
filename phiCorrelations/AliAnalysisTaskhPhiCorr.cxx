@@ -274,9 +274,9 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fNoMixEvents);
 
     // Additional Histograms for US and LS Kaon pairs:
-    Int_t bins[4] = {100, 200, 100, 50}; //pt, invmass, phi, eta
-    Double_t min[4] = {0.1, 0.98, 0, -2.0};
-    Double_t max[4] = {10.1, 1.1, 6.28, 2.0};
+    Int_t bins[4] = {100, 400, 100, 50}; //pt, invmass, phi, eta
+    Double_t min[4] = {0.1, 1.0, 0, -2.0};
+    Double_t max[4] = {10.1, 4.0, 6.28, 2.0};
  
     fKKUSDist = new THnSparseF("fkkUSDist", "Distribution for all US Kaon pairs", 4, bins, min, max);
     fOutputList->Add(fKKUSDist);
@@ -285,9 +285,9 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fKKLSDist);
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
-    Int_t dphi_bins[7]=    {17,   39,    64,  64, 10, 40};
+    Int_t dphi_bins[7]=    {17,   39,    64,  64, 10, 45};
     Double_t dphi_min[7] = {3.0,   0.5, -1.57, -1.5, -10.0, 0.98};
-    Double_t dphi_max[7] = {20.0, 20.0,  4.71,  1.5, 10.0, 1.06};
+    Double_t dphi_max[7] = {20.0, 20.0,  4.71,  1.5, 10.0, 1.07};
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 6, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHPhi);
@@ -570,7 +570,8 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
                 kaon.particle.SetPx(kaonTrack->Px());
                 kaon.particle.SetPy(kaonTrack->Py());
                 kaon.particle.SetPz(kaonTrack->Pz());
-                Double_t calcE = TMath::Sqrt(0.4937*0.4937 + kaonTrack->P()*kaonTrack->P());
+                Double_t calcP = TMath::Sqrt(kaonTrack->Px()**2 + kaonTrack->Py()**2 + kaonTrack->Pz()**2);
+                Double_t calcE = TMath::Sqrt(0.4937**2 + calcP**2);
                 kaon.particle.SetE(calcE);
 
                 if(kaonTrack->Charge() == 1){
@@ -596,7 +597,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             phi.particle.SetE(kPlusList[i_kplus].particle.E() + kPlusList[j_kplus].particle.E());
             phi.daughter1TrackNum = kPlusList[i_kplus].trackNum;
             phi.daughter2TrackNum = kPlusList[j_kplus].trackNum;
-
+            
             distPoint[0] = phi.particle.Pt();
             distPoint[1] = phi.particle.M();
             distPoint[2] = phi.particle.Phi();
@@ -605,8 +606,12 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             }
             distPoint[3] = phi.particle.Eta();
             fKKLSDist->Fill(distPoint);
+ 
+            //accept only those kaon pairs that fall within our mass range:
+            if(phi.particle.M() > 1.07 || phi.particle.M()<0.98) continue;
+
             phiLikeSignCandidates.push_back(phi);
-       }
+        }
         for(Int_t i_kminus =0; i_kminus < kMinusList.size(); i_kminus++){
             phi.particle.SetPx(kPlusList[i_kplus].particle.Px() + kMinusList[i_kminus].particle.Px());
             phi.particle.SetPy(kPlusList[i_kplus].particle.Py() + kMinusList[i_kminus].particle.Py());
@@ -623,6 +628,10 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             }
             distPoint[3] = phi.particle.Eta();
             fKKUSDist->Fill(distPoint);
+ 
+            //accept only those kaon pairs that fall within our mass range:
+            if(phi.particle.M() > 1.07 || phi.particle.M()<0.98) continue;
+
             phiCandidates.push_back(phi);
        }
     }
@@ -634,7 +643,8 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             phi.particle.SetE(kMinusList[i_kminus].particle.E() + kMinusList[j_kminus].particle.E());
             phi.daughter1TrackNum = kMinusList[i_kminus].trackNum;
             phi.daughter2TrackNum = kMinusList[j_kminus].trackNum;
- 
+
+
             distPoint[0] = phi.particle.Pt();
             distPoint[1] = phi.particle.M();
             distPoint[2] = phi.particle.Phi();
@@ -643,6 +653,10 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             }
             distPoint[3] = phi.particle.Eta();
             fKKLSDist->Fill(distPoint);
+ 
+            //accept only those kaon pairs that fall within our mass range for our phi list:
+            if(phi.particle.M() > 1.07 || phi.particle.M()<0.98) continue;
+ 
             phiLikeSignCandidates.push_back(phi); 
       }        
     }        

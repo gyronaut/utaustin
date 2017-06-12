@@ -14,15 +14,15 @@ void RunMacro()
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
    const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiCorrelations_LHC16q";
-   char* output_dir = "output_2017_05_13";
+   char* output_dir = "output_2017_05_14";
    Int_t ttl = 50000;
    Int_t noffiles = 20;
-//   Int_t runcycle[]={0,32};
-   Int_t runcycle[]={0,1,2,5,11,18,24,32};
+   Int_t runcycle[]={0,32};
+//   Int_t runcycle[]={0,1,5,11,18,24,32};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -93,7 +93,7 @@ void RunMacro()
    alienHandler->SetMergeExcludes("EventStat_temp.root");
    alienHandler->SetOutputToRunNo(kTRUE);
    alienHandler->SetKeepLogs(kTRUE);
-   //alienHandler->SetMaxMergeFiles(20);
+   alienHandler->SetMaxMergeFiles(15);
    alienHandler->SetMaxMergeStages(7);
    alienHandler->SetMergeViaJDL(pre_final_stage);
 //    alienHandler->SetOneStageMerging(kFALSE);   //???????????????????????????????-------------------
@@ -141,7 +141,9 @@ void RunMacro()
     AddTaskPIDResponse(isMC);
 
     //create a task
-    AliAnalysisTaskhPhiCorr *taskQA = AddTaskQA();
+    AliAnalysisTaskhPhiCorr *task1 = AddTaskQA(0.0, 20.0);
+    AliAnalysisTaskhPhiCorr *task2 = AddTaskQA(20.0, 50.0);
+    AliAnalysisTaskhPhiCorr *task3 = AddTaskQA(50.0, 100.0);
 
    if (!mgr->InitAnalysis())
      return;
