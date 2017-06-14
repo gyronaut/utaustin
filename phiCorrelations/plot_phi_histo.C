@@ -276,9 +276,9 @@ void plot2DCorrelations(TH3D* dEtadPhiDist, TH3D* dEtadPhiLSDist, TH3D* dEtadPhi
 
 TH1D* plotPhiCorrelationsV1(THnSparse *dphiHPhi, THnSparse *dphiHKK){
 
-    Int_t numBins = dphiHPhi->GetAxis(4)->GetNbins();
-    Double_t invMin = dphiHPhi->GetAxis(4)->GetBinLowEdge(1);
-    Double_t invMax = dphiHPhi->GetAxis(4)->GetBinUpEdge(numBins);
+    Int_t numBins = dphiHPhi->GetAxis(5)->GetNbins();
+    Double_t invMin = dphiHPhi->GetAxis(5)->GetBinLowEdge(1);
+    Double_t invMax = dphiHPhi->GetAxis(5)->GetBinUpEdge(numBins);
     Double_t binsPerMass = (Double_t)(numBins)/(invMax-invMin);
 
     TH1D *phiInvMassPerDPhi[16];
@@ -293,9 +293,9 @@ TH1D* plotPhiCorrelationsV1(THnSparse *dphiHPhi, THnSparse *dphiHKK){
         dphiHPhi->GetAxis(2)->SetRange((4*i)+1, 4*(i+1));
         dphiHKK->GetAxis(2)->SetRange((4*i)+1, 4*(i+1));
         
-        phiInvMassPerDPhi[i] = dphiHPhi->Projection(4);
+        phiInvMassPerDPhi[i] = dphiHPhi->Projection(5);
         phiInvMassPerDPhi[i]->Sumw2();
-        likesignInvMassPerDPhi[i] = dphiHKK->Projection(4);
+        likesignInvMassPerDPhi[i] = dphiHKK->Projection(5);
         likesignInvMassPerDPhi[i]->Sumw2();
 
         Double_t sideband = phiInvMassPerDPhi[i]->Integral((int)((1.04-invMin)*binsPerMass), (int)((1.06-invMin)*binsPerMass));
@@ -368,25 +368,25 @@ TH1D* plotPhiCorrelationsV1(THnSparse *dphiHPhi, THnSparse *dphiHKK){
 
 TH1D* plotPhiCorrelationsV2(THnSparse *dphiHPhi, THnSparse *dphiHKK){
 
-    Int_t numBins = dphiHPhi->GetAxis(4)->GetNbins();
-    Double_t invMin = dphiHPhi->GetAxis(4)->GetBinLowEdge(1);
-    Double_t invMax = dphiHPhi->GetAxis(4)->GetBinUpEdge(numBins);
+    Int_t numBins = dphiHPhi->GetAxis(5)->GetNbins();
+    Double_t invMin = dphiHPhi->GetAxis(5)->GetBinLowEdge(1);
+    Double_t invMax = dphiHPhi->GetAxis(5)->GetBinUpEdge(numBins);
     Double_t binsPerMass = (Double_t)(numBins)/(invMax-invMin);
 
 // Setting & plotting Delta Phi distribution for Unlike sign and Likesign pairs in the
 // sideband region (scaled by the ratio of the integral of the sideband region)
-    dphiHPhi->GetAxis(4)->SetRangeUser(1.040,1.060);
+    dphiHPhi->GetAxis(5)->SetRangeUser(1.040,1.060);
     TH1D* dphiUSSideband = dphiHPhi->Projection(2);
     dphiUSSideband->SetName("dphiUSSideband");
     dphiUSSideband->Sumw2();
-    dphiHKK->GetAxis(4)->SetRangeUser(1.040,1.060);
+    dphiHKK->GetAxis(5)->SetRangeUser(1.040,1.060);
     TH1D* dphiLSSideband = dphiHKK->Projection(2);
     dphiLSSideband->SetName("dphiLSSideband");
     dphiLSSideband->Sumw2();
-    dphiHKK->GetAxis(4)->SetRangeUser(0.98, 1.1);
-    dphiHPhi->GetAxis(4)->SetRangeUser(0.98, 1.1);
-    Double_t sideband = dphiHPhi->Projection(4)->Integral((int)((1.040-invMin)*binsPerMass), (int)((1.060-invMin)*binsPerMass));
-    Double_t likeSignSideBand = dphiHKK->Projection(4)->Integral((int)((1.040-invMin)*binsPerMass), (int)((1.060-invMin)*binsPerMass));
+    dphiHKK->GetAxis(5)->SetRangeUser(0.98, 1.1);
+    dphiHPhi->GetAxis(5)->SetRangeUser(0.98, 1.1);
+    Double_t sideband = dphiHPhi->Projection(5)->Integral((int)((1.040-invMin)*binsPerMass), (int)((1.060-invMin)*binsPerMass));
+    Double_t likeSignSideBand = dphiHKK->Projection(5)->Integral((int)((1.040-invMin)*binsPerMass), (int)((1.060-invMin)*binsPerMass));
     Double_t scaleFactor = sideband/likeSignSideBand;
     printf("sideband: %f, likeSignSideBand: %f, scaleFactor: %f \n", sideband, likeSignSideBand, scaleFactor);
     dphiLSSideband->Scale(scaleFactor);
@@ -409,18 +409,18 @@ TH1D* plotPhiCorrelationsV2(THnSparse *dphiHPhi, THnSparse *dphiHKK){
     sidebandText->SetBorderSize(1);
     sidebandText->Draw("SAME");
 
-    dphiHPhi->GetAxis(4)->SetRangeUser(0.994,1.006);
+    dphiHPhi->GetAxis(5)->SetRangeUser(0.994,1.006);
     TH1D* dphiUSLSideband = dphiHPhi->Projection(2);
     dphiUSLSideband->SetName("dphiUSLSideband");
     dphiUSLSideband->Sumw2();
-    dphiHKK->GetAxis(4)->SetRangeUser(0.994,1.006);
+    dphiHKK->GetAxis(5)->SetRangeUser(0.994,1.006);
     TH1D* dphiLSLSideband = dphiHKK->Projection(2);
     dphiLSLSideband->SetName("dphiLSLSideband");
     dphiLSLSideband->Sumw2();
-    dphiHKK->GetAxis(4)->SetRangeUser(0.98, 1.1);
-    dphiHPhi->GetAxis(4)->SetRangeUser(0.98, 1.1);
-    Double_t Lsideband = dphiHPhi->Projection(4)->Integral((int)((0.994-invMin)*binsPerMass), (int)((1.006-invMin)*binsPerMass));
-    Double_t likeSignLSideBand = dphiHKK->Projection(4)->Integral((int)((0.994-invMin)*binsPerMass), (int)((1.006-invMin)*binsPerMass));
+    dphiHKK->GetAxis(5)->SetRangeUser(0.98, 1.1);
+    dphiHPhi->GetAxis(5)->SetRangeUser(0.98, 1.1);
+    Double_t Lsideband = dphiHPhi->Projection(5)->Integral((int)((0.994-invMin)*binsPerMass), (int)((1.006-invMin)*binsPerMass));
+    Double_t likeSignLSideBand = dphiHKK->Projection(5)->Integral((int)((0.994-invMin)*binsPerMass), (int)((1.006-invMin)*binsPerMass));
     Double_t LscaleFactor = Lsideband/likeSignLSideBand;
     printf("sideband: %f, likeSignSideBand: %f, scaleFactor: %f \n", Lsideband, likeSignLSideBand, LscaleFactor);
     dphiLSLSideband->Scale(LscaleFactor);
@@ -445,11 +445,11 @@ TH1D* plotPhiCorrelationsV2(THnSparse *dphiHPhi, THnSparse *dphiHKK){
 
 // Setting & plotting delta-phi distribution for Unlike and Like sign pairs in the phi mass peak
 // region (scaled by the ratio of the integral of the sideband region).
-    dphiHPhi->GetAxis(4)->SetRangeUser(1.010,1.030);
+    dphiHPhi->GetAxis(5)->SetRangeUser(1.010,1.030);
     TH1D* dphiUSPeak = dphiHPhi->Projection(2);
     dphiUSPeak->SetName("dphiUSPeak");
     dphiUSPeak->Sumw2();
-    dphiHKK->GetAxis(4)->SetRangeUser(1.010,1.030);
+    dphiHKK->GetAxis(5)->SetRangeUser(1.010,1.030);
     TH1D* dphiLSPeak = dphiHKK->Projection(2);
     dphiLSPeak->SetName("dphiLSPeak");
     dphiLSPeak->Sumw2();
@@ -566,6 +566,19 @@ void fitZVtx(TH1D* zVtx){
     lines[10]->Draw("SAME");
 }
 
+TH2D* mixedEventCorrection(TH3D* same, TH3D* mixed, Float_t lowMass, Float_t highMass){
+    same->GetZaxis()->SetRangeUser(lowMass, highMass);
+    TH2D* same2D = same->Project3D("xye");
+    mixed->GetZaxis()->SetRangeUser(lowMass, highMass);
+    TH2D* mix2D = mixed->Project3D("xye");
+
+    same2D->Divide(mix2D);
+    Float_t scale = 0.5*(float)(mix2D->GetBinContent(mix2D->GetXaxis()->FindBin(0), mix2D->GetYaxis()->FindBin(0.01)) + mix2D->GetBinContent(mix2D->GetXaxis()->FindBin(0), mix2D->GetYaxis()->FindBin(-0.01)));
+    same2D->Scale(scale);
+    return same2D;
+}
+
+
 /************************
  ***   MAIN FUNCTION  ***
  ************************/
@@ -588,7 +601,8 @@ void plot_phi_histo(string inputName){
 
     //open file, get necessary histograms
     TFile *histoFile = new TFile(inputName.c_str());
-    histoFile->cd("PhiReconstruction");
+    //histoFile->cd("PhiReconstruction");
+/*
     THnSparseF *fkkUSDist = (THnSparseF *)InvMass->FindObject("fkkUSDist");
     THnSparseF *fkkLSDist = (THnSparseF *)InvMass->FindObject("fkkLSDist");
     THnSparseF *fTrigDist = (THnSparseF *)InvMass->FindObject("fTrigDist");
@@ -597,7 +611,15 @@ void plot_phi_histo(string inputName){
     THnSparseF *dphiHPhiMixed = (THnSparseF *)InvMass->FindObject("fDphiHPhiMixed");
     THnSparseF *dphiHKKMixed = (THnSparseF *)InvMass->FindObject("fDphiHKKMixed");
     TH1D* zVtx = InvMass->FindObject("fVtxZ");
-
+*/
+    THnSparseF *fkkUSDist = (THnSparseF *)phiCorr_mult_0_20->FindObject("fkkUSDist");
+    THnSparseF *fkkLSDist = (THnSparseF *)phiCorr_mult_0_20->FindObject("fkkLSDist");
+    THnSparseF *fTrigDist = (THnSparseF *)phiCorr_mult_0_20->FindObject("fTrigDist");
+    THnSparseF *dphiHPhi = (THnSparseF *)phiCorr_mult_0_20->FindObject("fDphiHPhi");
+    THnSparseF *dphiHKK = (THnSparseF *)phiCorr_mult_0_20->FindObject("fDphiHKK");
+    THnSparseF *dphiHPhiMixed = (THnSparseF *)phiCorr_mult_0_20->FindObject("fDphiHPhiMixed");
+    THnSparseF *dphiHKKMixed = (THnSparseF *)phiCorr_mult_0_20->FindObject("fDphiHKKMixed");
+    TH1D* zVtx = phiCorr_mult_0_20->FindObject("fVtxZ");
 
     //set titles for the various distribution historgram axes
     if(fkkUSDist && fkkLSDist && fTrigDist){
@@ -627,20 +649,63 @@ void plot_phi_histo(string inputName){
     
     TString suffix;
     //Set the Pt ranges for trigger and assoc particles
+    
+    dphiHPhi->GetAxis(3)->SetRangeUser(-1.0, 1.0);
+    dphiHKK->GetAxis(3)->SetRangeUser(-1.0, 1.0);
+    dphiHPhiMixed->GetAxis(3)->SetRangeUser(-1.0, 1.0);
+    dphiHKKMixed->GetAxis(3)->SetRangeUser(-1.0, 1.0);
+
     dphiHPhi->GetAxis(0)->SetRangeUser(4.0, 8.0); 
     dphiHPhi->GetAxis(1)->SetRangeUser(2.0,4.0); 
     dphiHKK->GetAxis(0)->SetRangeUser(4.0, 8.0);
     dphiHKK->GetAxis(1)->SetRangeUser(2.0,4.0); 
-    //Do 2D Correlation plot (and rough "corrected" 2D correaltion plot)
     suffix = "2_4";
-    TH3D *dEtadPhiDist = dphiHPhi->Projection(2, 3, 4);
+    TH3D *dEtadPhiDist = dphiHPhi->Projection(2, 3, 5);
     dEtadPhiDist->Rebin3D(4,1,1);
-    TH3D *dEtadPhiLSDist = dphiHKK->Projection(2, 3, 4);
+    TH3D *dEtadPhiLSDist = dphiHKK->Projection(2, 3, 5);
     dEtadPhiLSDist->Rebin3D(4,1,1);
 
-//    TH3D *dEtadPhiUS = mixedEventCorrection(dphiHPhi, dphiHPhiMixed);
-//    TH3D *dEtadPhiLS = mixedEventCorrection(dphiHKK, dphiHKKMixed);
-//d    plot2DCorrelations(dEtadPhiDist, dEtadPhiLSDist, suffix);
+    //Do same projection for mixed histograms:
+    dphiHPhiMixed->GetAxis(0)->SetRangeUser(4.0, 8.0); 
+    dphiHPhiMixed->GetAxis(1)->SetRangeUser(2.0,4.0); 
+    dphiHKKMixed->GetAxis(0)->SetRangeUser(4.0, 8.0);
+    dphiHKKMixed->GetAxis(1)->SetRangeUser(2.0,4.0); 
+    TH3D *dEtadPhiDistMixed = dphiHPhiMixed->Projection(2, 3, 5);
+    dEtadPhiDistMixed->Rebin3D(4,1,1);
+    TH3D *dEtadPhiLSDistMixed = dphiHKKMixed->Projection(2, 3, 5);
+    dEtadPhiLSDistMixed->Rebin3D(4,1,1);
+
+
+
+    //dphiHPhi->Divide(dphiHPhiMixed);
+    
+
+    TH2D *dEtadPhiUSPeak = mixedEventCorrection(dEtadPhiDist, dEtadPhiDistMixed, 1.01, 1.03);
+    dEtadPhiUSPeak->SetName("dEtadPhiUSPeak_corrected");
+    TH2D *dEtadPhiLSPeak = mixedEventCorrection(dEtadPhiLSDist, dEtadPhiLSDistMixed, 1.01, 1.03);
+    dEtadPhiLSPeak->SetName("dEtadPhiLSPeak_corrected");
+    TH2D *dEtadPhiUSSideband = mixedEventCorrection(dEtadPhiDist, dEtadPhiDistMixed, 1.04, 1.06);
+    dEtadPhiUSSideband->SetName("dEtadPhiUSSideband_corrected");
+    TH2D *dEtadPhiLSSideband = mixedEventCorrection(dEtadPhiLSDist, dEtadPhiLSDistMixed, 1.04, 1.06);
+    dEtadPhiLSSideband->SetName("dEtadPhiLSSideband_corrected");
+
+    dEtadPhiDist->GetZaxis()->SetRangeUser(1.01, 1.03);
+    dEtadPhiDistMixed->GetZaxis()->SetRangeUser(1.01, 1.03);
+    TFile *output = new TFile("testoutput.root", "RECREATE");
+    dEtadPhiUSPeak->Write();
+    dEtadPhiLSPeak->Write();
+    dEtadPhiUSSideband->Write();
+    dEtadPhiLSSideband->Write();
+    dEtadPhiDist->Write();
+    dEtadPhiDistMixed->Write();
+    TH2D *test = dEtadPhiDist->Project3D("xy");
+    test->SetName("dEtadPhiUSPeak");
+    test->Write();
+    TH2D *testMixed = dEtadPhiDistMixed->Project3D("xy");
+    testMixed->SetName("dEtadPhiUSPeakMixed");
+    testMixed->Write();
+
+//    plot2DCorrelations(dEtadPhiDist, dEtadPhiLSDist, suffix);
 /*
     dphiHPhi->GetAxis(1)->SetRangeUser(1.0,2.0); 
     dphiHKK->GetAxis(1)->SetRangeUser(1.0,2.0); 
@@ -704,7 +769,7 @@ void plot_phi_histo(string inputName){
     line->SetLineStyle(7);
     line->Draw("SAME");
 
-//    fitZVtx(zVtx);
+    //fitZVtx(zVtx);
 }
 
 
