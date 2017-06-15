@@ -162,25 +162,31 @@ void massPlots(){
 
     TPaveText *pdgtext = new TPaveText(0.5520, 0.5637, 0.8322, 0.6946, "NDC");
     pdgtext->AddText("PHSD vacuum mass");
-    pdgtext->SetTextSizePixels(20);
+    pdgtext->SetTextSizePixels(32);
     pdgtext->SetBorderSize(0);
+    pdgtext->SetTextFont(42);
     pdgtext->SetFillStyle(0);
 
     cMass->cd();
     TLegend* legend = new TLegend(0.1611,0.6370,0.4832,0.8935);
     legend->AddEntry(mass1, "Mass Dep. Width", "lpe");
-    legend->AddEntry(mass2, "#splitline{Mass Dep. Width}{+5% Error}", "lpe");
-    legend->AddEntry(mass3, "#splitline{Simple Width}{+5% Error}", "lpe");
-    legend->AddEntry(mass5, "#splitline{Fixed #Gamma = 50 MeV/c^{2}}{+5% Error}", "lpe");
-    legend->SetTextSizePixels(20);
+    legend->AddEntry(mass2, "Mass Dep. Width (+5% Error)", "lpe");
+    legend->AddEntry(mass3, "Simple Width (+5% Error)", "lpe");
+    legend->AddEntry(mass5, "Fixed #Gamma = 50 MeV/c^{2} (+5% Error)", "lpe");
+    legend->SetMargin(0.1);
+    legend->SetTextSizePixels(28);
     //legend->AddEntry(mass7, "Fixed Width (70 MeV/c^{2}), 5% Error", "lpe");
 
-    mass1->GetYaxis()->SetRangeUser(0.84, 0.915);
-    mass1->GetYaxis()->SetLabelSize(0.03);
-    mass1->GetYaxis()->SetTitleOffset(1.5);
-    mass1->GetYaxis()->SetTitleSize(0.04);
-    mass1->GetXaxis()->SetLabelSize(0.03);
-    mass1->GetXaxis()->SetTitleSize(0.04);
+    mass1->GetYaxis()->SetRangeUser(0.845, 0.91);
+    mass1->GetYaxis()->SetLabelSize(0.06);
+    mass1->GetYaxis()->SetTitleOffset(1.3);
+    mass1->GetYaxis()->SetTitleSize(0.07);
+    mass1->GetYaxis()->SetTitleFont(42);
+    mass1->GetYaxis()->SetLabelFont(42);
+    mass1->GetXaxis()->SetLabelSize(0.06);
+    mass1->GetXaxis()->SetTitleSize(0.07);
+    mass1->GetXaxis()->SetLabelFont(42);
+    mass1->GetXaxis()->SetTitleFont(42);
     mass1->SetTitle("");
     mass1->Draw("P E1");
     mass3->Draw("SAME P E1");
@@ -192,31 +198,36 @@ void massPlots(){
     //mass6->Draw("SAME");
     //mass7->Draw("SAME P E1");
     TPaveText *masstext = new TPaveText(0.5520, 0.7208, 0.8389, 0.8517, "NDC");
-    masstext->AddText("Fit Mass Peak of");
-    masstext->AddText("Reconstructed K*^{0}");
+    masstext->AddText("K*^{0} Mass");
+    masstext->AddText("Reconstructed");
     masstext->SetBorderSize(0);
     masstext->SetFillStyle(0);
-    masstext->SetTextSizePixels(26);
+    masstext->SetTextSizePixels(36);
+    masstext->SetTextFont(42);
     masstext->Draw();
 
     legend->Draw();
 
     TLegend *widthLegend = new TLegend(0.1913,0.6108,0.5134,0.8656);
     widthLegend->AddEntry(width1, "Mass Dep. Width", "lpe");
-    widthLegend->AddEntry(width2, "#splitline{Mass Dep. Width}{+5% Error}", "lpe");
-    widthLegend->AddEntry(width3, "#splitline{Simple Width}{+5% Error}", "lpe");
-    widthLegend->AddEntry(width5, "#splitline{Fixed #Gamma = 50 MeV/c^{2}}{+5% Error}", "lpe");
+    widthLegend->AddEntry(width2, "Mass Dep. Width (+5% Error)", "lpe");
+    widthLegend->AddEntry(width3, "Simple Width (+5% Error)", "lpe");
+    widthLegend->AddEntry(width5, "Fixed #Gamma = 50 MeV/c^{2} (+5% Error)", "lpe");
     widthLegend->SetTextSizePixels(20);
     //widthLegend->AddEntry(width7, "Fixed Width (70 MeV/c^{2}), 5% Error", "lpw");
     
     TCanvas *cWidth = new TCanvas("cWidth", "cWidth", 60, 60, 600, 600);
     cWidth->cd();
-    width1->GetYaxis()->SetLabelSize(0.03);
-    width1->GetYaxis()->SetTitleOffset(1.5);
+    width1->GetYaxis()->SetLabelSize(0.06);
+    width1->GetYaxis()->SetTitleOffset(1.4);
     width1->GetYaxis()->SetRangeUser(0.03, 0.17);
-    width1->GetYaxis()->SetTitleSize(0.04);
-    width1->GetXaxis()->SetTitleSize(0.04);
-    width1->GetXaxis()->SetLabelSize(0.03);
+    width1->GetYaxis()->SetTitleSize(0.07);
+    width1->GetYaxis()->SetTitleFont(42);
+    width1->GetYaxis()->SetLabelFont(42);
+    width1->GetXaxis()->SetTitleSize(0.07);
+    width1->GetXaxis()->SetLabelSize(0.06);
+    width1->GetXaxis()->SetTitleFont(42);
+    width1->GetXaxis()->SetLabelFont(42);
     width1->GetYaxis()->SetTitle("Width (GeV/c^{2})");
     width1->SetTitle("");
     width1->Draw("P E1");
@@ -228,11 +239,12 @@ void massPlots(){
     widthLegend->Draw();
 
     TPaveText *widthtext = new TPaveText(0.5822, 0.7024, 0.8675, 0.8333, "NDC");
-    widthtext->AddText("Fit Width of");
-    widthtext->AddText("Reconstructed K*^{0}");
+    widthtext->AddText("K*^{0} Width");
+    widthtext->AddText("Reconstructed");
     widthtext->SetBorderSize(0);
     widthtext->SetFillStyle(0);
-    widthtext->SetTextSizePixels(26);
+    widthtext->SetTextSizePixels(36);
+    widthtext->SetTextFont(42);
     widthtext->Draw();
 
     TExec *exec1 = new TExec("exec1", "gStyle->SetErrorX(0)");
@@ -300,12 +312,16 @@ void massPlots(){
     othersingle1->SetStats(kFALSE);
     othersingle1->SetTitle("");
     othersingle1->GetYaxis()->SetTitleOffset(1.50);
-    othersingle1->GetYaxis()->SetTitleSize(0.04);
-    othersingle1->GetYaxis()->SetLabelSize(0.03);
+    othersingle1->GetYaxis()->SetTitleSize(0.06);
+    othersingle1->GetYaxis()->SetLabelSize(0.07);
+    othersingle1->GetYaxis()->SetTitleFont(42);
+    othersingle1->GetYaxis()->SetLabelFont(42);
     othersingle1->GetYaxis()->SetTitle("Counts / 8 MeV/c^{2}");
     othersingle1->GetXaxis()->SetRangeUser(0.61, 1.09);
-    othersingle1->GetXaxis()->SetLabelSize(0.03);
-    othersingle1->GetXaxis()->SetTitleSize(0.04);
+    othersingle1->GetXaxis()->SetLabelSize(0.06);
+    othersingle1->GetXaxis()->SetTitleSize(0.07);
+    othersingle1->GetXaxis()->SetLabelFont(42);
+    othersingle1->GetXaxis()->SetTitleFont(42);
     othersingle1->GetXaxis()->SetTitle("K^{+}#pi^{-} invariant mass (GeV/c^{2})");
     othersingle1->Draw("E");
     othersingle2->SetStats(kFALSE);
@@ -338,4 +354,36 @@ void massPlots(){
     othersingleLegend->Draw();
     othersingleLegend2->Draw();
     othertext->Draw();  
+
+    //testing drawing mass and width on same plot
+    TCanvas* cMassWidth = new TCanvas("cmasswidth", "cmasswidth", 50, 50, 1000, 500);
+    cMassWidth->SetMargin(0.0, 0.0, 0.0, 0.0);
+
+    cMassWidth->Divide(2, 1, 0.0);
+    
+    cMassWidth->cd(1)->SetMargin(0.1827, 0.0, 0.1543, 0.0994);
+    cMassWidth->cd(1)->SetTicks(0,1);
+   
+    mass1->Draw("P E1");
+    mass3->Draw("SAME P E1");
+    //mass4->Draw("SAME");
+    mass5->Draw("SAME P E1");
+    mass2->Draw("SAME P E1");
+    pdg->Draw("SAME");
+    pdgtext->Draw("SAME");
+    masstext->Draw();
+    legend->Draw();
+
+    cMassWidth->cd(2)->SetMargin(0.0, 0.1968, 0.1543, 0.0994);
+    cMassWidth->cd(2)->SetTicks(0,1);
+
+    width1->Draw("P E1 Y+");
+    width3->Draw("SAME P E1");
+    width1->Draw("SAME P E1");
+    width5->Draw("SAME P E1");
+    width2->Draw("SAME P E1");
+    //widthLegend->Draw("SAME");
+    widthtext->Draw();
+
+
 }
