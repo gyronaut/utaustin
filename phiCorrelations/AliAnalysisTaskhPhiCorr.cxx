@@ -226,7 +226,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fTrkPt = new TH1F("fTrkPt","p_{T} distribution of all tracks;p_{T} (GeV/c);counts",1000,0,100);
     fOutputList->Add(fTrkPt);
     
-    fTrketa = new TH1F("fTrketa","All Track #eta distribution;#eta;counts",100,-1.5,1.5);
+    fTrketa = new TH1F("fTrketa","All Track #eta distribution;#eta;counts",100,-2.0,2.0);
     fOutputList->Add(fTrketa);
     
     fTrkphi = new TH1F("fTrkphi","All Track #phi distribution;#phi;counts",100,0,6.3);
@@ -236,7 +236,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fHybridTrkPt = new TH1F("fHybridTrkPt","p_{T} distribution of all hybrid tracks;p_{T} (GeV/c);counts",1000,0,100);
     fOutputList->Add(fHybridTrkPt);
     
-    fHybridTrketa = new TH1F("fHybridTrketa","All Hybrid Track #eta distribution;#eta;counts",100,-1.5,1.5);
+    fHybridTrketa = new TH1F("fHybridTrketa","All Hybrid Track #eta distribution;#eta;counts",100,-2.0,2.0);
     fOutputList->Add(fHybridTrketa);
     
     fHybridTrkphi = new TH1F("fHybridTrkphi","All Hybrid Track #phi distribution;#phi;counts",100,0,6.3);
@@ -246,7 +246,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fHybridGlobalTrkPt = new TH1F("fHybridGlobalTrkPt","p_{T} distribution of all hybrid tracks;p_{T} (GeV/c);counts",1000,0,100);
     fOutputList->Add(fHybridGlobalTrkPt);
     
-    fHybridGlobalTrketa = new TH1F("fHybridGlobalTrketa","All HybridGlobal Track #eta distribution;#eta;counts",100,-1.5,1.5);
+    fHybridGlobalTrketa = new TH1F("fHybridGlobalTrketa","All HybridGlobal Track #eta distribution;#eta;counts",100,-2.0,2.0);
     fOutputList->Add(fHybridGlobalTrketa);
     
     fHybridGlobalTrkphi = new TH1F("fHybridGlobalTrkphi","All HybridGlobal Track #phi distribution;#phi;counts",100,0,6.3);
@@ -286,8 +286,8 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
     Int_t dphi_bins[7]=    {17,   39,    64,  64, 10, 45};
-    Double_t dphi_min[7] = {3.0,   0.5, -1.57, -1.5, -10.0, 0.98};
-    Double_t dphi_max[7] = {20.0, 20.0,  4.71,  1.5, 10.0, 1.07};
+    Double_t dphi_min[7] = {3.0,   0.5, -1.57, -2.0, -10.0, 0.98};
+    Double_t dphi_max[7] = {20.0, 20.0,  4.71,  2.0, 10.0, 1.07};
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 6, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHPhi);
