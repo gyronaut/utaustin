@@ -46,12 +46,13 @@ private:
     };
    
     TObjArray* AddToTracks();
-    void MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
-    void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
+    Bool_t MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
+    void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, Bool_t isLS);
     void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
   
     AliVEvent   *fVevent;  //!event object
     AliEventPoolManager *fPoolMgr; //! Event pool manager for mixed event
+    AliEventPoolManager *fLSPoolMgr; //! Event pool manager for LS mixed event
     AliESDEvent *fESD;    //!ESD object
     AliAODEvent *fAOD;    //!AOD object
     AliPIDResponse *fpidResponse; //!pid response
@@ -82,6 +83,10 @@ private:
     TH1D        *fNoMixEvents;//! number of mixed events
     THnSparseF  *fKKUSDist;//! unlike sign kaon distribution
     THnSparseF  *fKKLSDist;//! like sign kaon distribution
+    TH1D        *fkplusPerEvent;//! K+ per Event
+    TH1D        *fkminusPerEvent;//! K- per Event
+    TH1D        *fLSpairsPerEvent;//! LS pairs per Event in mass range
+    TH1D        *fUSpairsPerEvent;//! US pairs per Event in mass range
     
     THnSparseF  *fDphiHPhi;//! delta-phi distribution with unlike sign kaon pairs
     THnSparseF  *fDphiHKK;//! delta-phi distribution with like sign kaon pairs

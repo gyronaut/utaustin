@@ -56,6 +56,7 @@ AliAnalysisTaskhPhiCorr::AliAnalysisTaskhPhiCorr(const char *name, Float_t multL
 : AliAnalysisTaskSE(name),
 fVevent(0),
 fPoolMgr(0x0),
+fLSPoolMgr(0x0),
 fESD(0),
 fAOD(0),
 fpidResponse(0),
@@ -79,6 +80,10 @@ fdEdx(0),
 fTPCNpts(0),
 fKKUSDist(0),
 fKKLSDist(0),
+fkplusPerEvent(0),
+fkminusPerEvent(0),
+fLSpairsPerEvent(0),
+fUSpairsPerEvent(0),
 fTrigDist(0),
 fMixStatZVtx(0),
 fNoMixEvents(0),
@@ -106,7 +111,8 @@ fDphiHHMixed(0)
 AliAnalysisTaskhPhiCorr::AliAnalysisTaskhPhiCorr()
 : AliAnalysisTaskSE("DefaultTask_HfeEMCQA"),
 fVevent(0),
-fPoolMgr(0),
+fPoolMgr(0x0),
+fLSPoolMgr(0x0),
 fESD(0),
 fAOD(0),
 fpidResponse(0),
@@ -130,6 +136,10 @@ fdEdx(0),
 fTPCNpts(0),
 fKKUSDist(0),
 fKKLSDist(0),
+fkplusPerEvent(0),
+fkminusPerEvent(0),
+fLSpairsPerEvent(0),
+fUSpairsPerEvent(0),
 fTrigDist(0),
 fMixStatZVtx(0),
 fNoMixEvents(0),
@@ -192,6 +202,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     Double_t multBins[4] = {0.0, 20.0, 50.0, 100.0};
 
     fPoolMgr = new AliEventPoolManager(poolSize, trackDepth, numMultBins, multBins, numVtxZBins, vtxZBins);
+    fLSPoolMgr = new AliEventPoolManager(poolSize, trackDepth, numMultBins, multBins, numVtxZBins, vtxZBins);
 
 
     ////////////////
@@ -283,6 +294,18 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
 
     fKKLSDist = new THnSparseF("fkkLSDist", "Distribution for all LS Kaon pairs", 4, bins, min, max);
     fOutputList->Add(fKKLSDist);
+
+    fkplusPerEvent = new TH1D("fkplusPerEvent", "K^{+} per Event", 100, 0, 100);
+    fOutputList->Add(fkplusPerEvent);
+
+    fkminusPerEvent = new TH1D("fkminusPerEvent", "K^{-} per Event", 100, 0, 100);
+    fOutputList->Add(fkminusPerEvent);
+
+    fLSpairsPerEvent = new TH1D("fLSpairsPerEvent", "LS KK pairs per event", 100, 0, 100);
+    fOutputList->Add(fLSpairsPerEvent);
+
+    fUSpairsPerEvent = new TH1D("fUSpairsPerEvent", "US KK pairs per event", 100, 0, 100);
+    fOutputList->Add(fUSpairsPerEvent);
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
     Int_t dphi_bins[7]=    {17,   39,    64,  64, 10, 45};
@@ -312,14 +335,18 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
 
 
 //___________________________________________________________________________
-void AliAnalysisTaskhPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
+Bool_t AliAnalysisTaskhPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
 
     Double_t dphi_point[6];
+    AliPhiContainer phi;
+    for(int iphi = 0; iphi < phiVec.size(); iphi++){
+        phi = phiVec[iphi];
+        if(triggerIndex == phi.daughter1TrackNum || triggerIndex == phi.daughter2TrackNum) return kTRUE; //skip if hadron is one of the daughter particles
+    }
 
     dphi_point[0] = trigger->Pt();
     for(int iphi = 0; iphi < phiVec.size(); iphi++){
-        AliPhiContainer phi = phiVec[iphi];
-        if(triggerIndex == phi.daughter1TrackNum || triggerIndex == phi.daughter2TrackNum) continue; //skip if hadron is one of the daughter particles
+        phi = phiVec[iphi];
         dphi_point[1] = phi.particle.Pt();
         dphi_point[2] = trigger->Phi() - phi.particle.Phi();
         if(dphi_point[2] < -TMath::Pi()/2.0){
@@ -332,14 +359,20 @@ void AliAnalysisTaskhPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle 
         dphi_point[5] = phi.particle.M();
         fDphi->Fill(dphi_point);
     }
+    return kFALSE;
 }
 
 //___________________________________________________________________________
-void AliAnalysisTaskhPhiCorr::MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx){
+void AliAnalysisTaskhPhiCorr::MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, Bool_t isLS){
 
     Double_t dphi_point[6];
     AliEventPool* fPool;
-    fPool = fPoolMgr->GetEventPool(mult, zVtx); // Get the buffer associated with the current multiplicity and z-vtx
+    if(isLS==kFALSE){
+        fPool = fPoolMgr->GetEventPool(mult, zVtx); // Get the buffer associated with the current multiplicity and z-vtx
+    }else{
+        fPool = fLSPoolMgr->GetEventPool(mult, zVtx); // Get the buffer associated with the current multiplicity and z-vtx
+    }
+
     if (!fPool)
     {
         AliFatal(Form("No pool found for centrality = %f, zVtx = %f", mult, zVtx));
@@ -630,9 +663,9 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             fKKUSDist->Fill(distPoint);
  
             //accept only those kaon pairs that fall within our mass range:
-            if(phi.particle.M() > 1.07 || phi.particle.M()<0.98) continue;
-
-            phiCandidates.push_back(phi);
+            if(phi.particle.M() < 1.07 && phi.particle.M() > 0.98){
+                phiCandidates.push_back(phi);
+            }
        }
     }
     for(Int_t i_kminus =0; i_kminus < kMinusList.size(); i_kminus++){
@@ -655,17 +688,27 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             fKKLSDist->Fill(distPoint);
  
             //accept only those kaon pairs that fall within our mass range for our phi list:
-            if(phi.particle.M() > 1.07 || phi.particle.M()<0.98) continue;
- 
-            phiLikeSignCandidates.push_back(phi); 
+            if(phi.particle.M() < 1.07 && phi.particle.M() > 0.98){ 
+                phiLikeSignCandidates.push_back(phi); 
+            }
       }        
     }        
+
+    // Record how many kaons and kaon pairs are in the event
+    fkplusPerEvent->Fill(kPlusList.size());
+    fkminusPerEvent->Fill(kMinusList.size());
+    fLSpairsPerEvent->Fill(phiLikeSignCandidates.size());
+    fUSpairsPerEvent->Fill(phiCandidates.size());
 
     ///////////////////////////////
     // Building d-phi histograms //
     ///////////////////////////////
     TObjArray* fArrayTracksMix = new TObjArray;
     fArrayTracksMix->SetOwner(kTRUE);
+
+    TObjArray* fArrayLSTracksMix = new TObjArray;
+    fArrayLSTracksMix->SetOwner(kTRUE);
+
 
     AliVTrack *triggerTrack = 0x0;
     AliESDtrack *etriggerTrack = 0x0;
@@ -741,8 +784,8 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             trigPoint[2] = triggerTrack->Eta();
             fTrigDist->Fill(trigPoint);
             
-            MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi, Zvertex);
-            MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK, Zvertex);
+            Bool_t isTriggerDaughter = MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi, Zvertex);
+            Bool_t isTriggerLSDaughter = MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK, Zvertex);
 
             for(Int_t jtrack = 0; jtrack < ntracks; jtrack++){
                 if(itrack != jtrack){
@@ -776,7 +819,12 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             if(multPercentile <= 100.0 && TMath::Abs(Zvertex) < 10.0){
                 MakeHHMixCorrelations(cfPart, fDphiHHMixed, multPercentile, Zvertex);
             }
-            fArrayTracksMix->Add(cfPart);
+            if(!isTriggerDaughter){
+                fArrayTracksMix->Add(cfPart);
+            }
+            if(!isTriggerLSDaughter){
+                fArrayLSTracksMix->Add(cfPart);
+            }
         }
     } //track loop
 
@@ -785,13 +833,13 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 
     if(multPercentile <= 100. && TMath::Abs(Zvertex) < 10.0){
         if(phiCandidates.size() > 0){
-            MakeMixCorrelations(phiCandidates, fDphiHPhiMixed, multPercentile, Zvertex);
+            MakeMixCorrelations(phiCandidates, fDphiHPhiMixed, multPercentile, Zvertex, kFALSE);
         }
         if(phiLikeSignCandidates.size() > 0){
-            MakeMixCorrelations(phiLikeSignCandidates, fDphiHKKMixed, multPercentile, Zvertex);
+            MakeMixCorrelations(phiLikeSignCandidates, fDphiHKKMixed, multPercentile, Zvertex, kTRUE);
         }
 
-        if(phiCandidates.size() > 0 || phiLikeSignCandidates.size() > 0){
+        if(phiCandidates.size() > 0){
             AliEventPool *fPool;
             fPool = fPoolMgr->GetEventPool(multPercentile, Zvertex); // Get the buffer associated with the current centrality and z-vtx
             if(!fPool){
@@ -800,6 +848,17 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             }
             fPool->UpdatePool(fArrayTracksMix);
         }
+        
+        if(phiLikeSignCandidates.size() > 0){
+            AliEventPool *fPool;
+            fPool = fLSPoolMgr->GetEventPool(multPercentile, Zvertex); // Get the buffer associated with the current centrality and z-vtx
+            if(!fPool){
+                AliFatal(Form("No pool found for multiplicity = %f, zVtx = %f", multPercentile, Zvertex));
+                return;
+            }
+            fPool->UpdatePool(fArrayLSTracksMix);
+        }
+
     }
 
     PostData(1, fOutputList);

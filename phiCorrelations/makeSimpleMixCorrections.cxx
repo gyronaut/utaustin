@@ -1,56 +1,32 @@
 TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_t highmass){
     same->GetAxis(3)->SetRangeUser(lowmass, highmass);
     mixed->GetAxis(3)->SetRangeUser(lowmass, highmass);
-    TH3D* same3D = same->Projection(0, 1, 2);
-    TH3D* mix3D = mixed->Projection(0, 1, 2);
+    TH2D* same2D = same->Projection(0, 1);
+    TH2D* mix2D = mixed->Projection(0, 1);
 
-    same3D->RebinX();
-    mix3D->RebinX();
-    same3D->RebinY();
-    mix3D->RebinY();
+    same2D->RebinX();
+    mix2D->RebinX();
+    same2D->RebinY();
+    mix2D->RebinY();
 
-    //same3D->GetYaxis()->SetRangeUser(-1.2, 1.2);
-    //mix3D->GetYaxis()->SetRangeUser(-1.2, 1.2);
-    same3D->GetYaxis()->SetRange(0,0);
-    mix3D->GetYaxis()->SetRange(0,0);
+    same2D->GetYaxis()->SetRange(0,0);
+    mix2D->GetYaxis()->SetRange(0,0);
 
     Float_t scale = 0.0;
-    TH2D* same2D[10];
-    TH2D* mix2D[10];
-    TH2D* same2DTotal;
 
-    for(int zbin = 0; zbin < 10; zbin++){
-        same3D->GetZaxis()->SetRange(zbin+1, zbin+1);
-        same2D[zbin] = (TH2D*)same3D->Project3D("xye");
-        same2D[zbin]->SetName(Form("2dproj_zbin%i", zbin));
-        
-        mix3D->GetZaxis()->SetRange(zbin+1, zbin+1);
-        mix2D[zbin] = (TH2D*)mix3D->Project3D("xye");
-        mix2D[zbin]->SetName(Form("mix2droj_zbin%i", zbin));
-
-        scale = 0.5*(float)(mix2D[zbin]->GetBinContent(mix2D[zbin]->GetXaxis()->FindBin(0.01), mix2D[zbin]->GetYaxis()->FindBin(0.0)) + mix2D[zbin]->GetBinContent(mix2D[zbin]->GetXaxis()->FindBin(-0.01), mix2D[zbin]->GetYaxis()->FindBin(0.0)));
-        printf("scale: %e \n", scale);
-        same2D[zbin]->Divide(mix2D[zbin]);
-        same2D[zbin]->Scale(scale);
-        if(zbin==0){
-            same2DTotal = (TH2D*)same2D[zbin]->Clone("2dproj_total");
-        }else{
-            same2DTotal->Add(same2D[zbin]);
-        }
-        
-        same3D->GetZaxis()->SetRange(0,0);
-        mix3D->GetZaxis()->SetRange(0,0);
-    }
+    scale = 0.5*(float)(mix2D->GetBinContent(mix2D->GetXaxis()->FindBin(0), mix2D->GetYaxis()->FindBin(0.01)) + mix2D->GetBinContent(mix2D->GetXaxis()->FindBin(0), mix2D->GetYaxis()->FindBin(-0.01)));
+    printf("scale: %e \n", scale);
+    same2D->Divide(mix2D);
+    same2D->Scale(scale);
 
     same->GetAxis(3)->SetRange(0,0);
     mixed->GetAxis(3)->SetRange(0,0);
-    return same2DTotal;
+    return same2D;
 }
 
-makeMixCorrections(string inputName){
+makeSimpleMixCorrections(string inputName){
     TFile *histoFile = new TFile(inputName.c_str());
-    string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
-
+    string mult = "_0_20"; 
     TList* list = (TList*) histoFile->Get(Form("phiCorr_mult%s", mult.c_str()));
     //histoFile->cd("PhiReconstruction");
 /*
@@ -69,7 +45,24 @@ makeMixCorrections(string inputName){
     THnSparseF *dphiHKKMixed = (THnSparseF *)list->FindObject("fDphiHKKMixed");
 
     //make 4D THnProjections projection to do mixed event corrections
-    
+
+    mult = "_20_50"; 
+    list = (TList*) histoFile->Get(Form("phiCorr_mult%s", mult.c_str()));
+
+    dphiHPhi->Add((THnSparseF *)list->FindObject("fDphiHPhi"));
+    dphiHKK->Add((THnSparseF *)list->FindObject("fDphiHKK"));
+    dphiHPhiMixed->Add((THnSparseF *)list->FindObject("fDphiHPhiMixed"));
+    dphiHKKMixed->Add((THnSparseF *)list->FindObject("fDphiHKKMixed"));
+
+    mult = "_50_100"; 
+    list = (TList*) histoFile->Get(Form("phiCorr_mult%s", mult.c_str()));
+
+    dphiHPhi->Add((THnSparseF *)list->FindObject("fDphiHPhi"));
+    dphiHKK->Add((THnSparseF *)list->FindObject("fDphiHKK"));
+    dphiHPhiMixed->Add((THnSparseF *)list->FindObject("fDphiHPhiMixed"));
+    dphiHKKMixed->Add((THnSparseF *)list->FindObject("fDphiHKKMixed"));
+
+
     dphiHPhi->GetAxis(0)->SetRangeUser(4.0, 8.0); 
     dphiHPhi->GetAxis(1)->SetRangeUser(2.0,4.0); 
     dphiHKK->GetAxis(0)->SetRangeUser(4.0, 8.0);
@@ -89,6 +82,8 @@ makeMixCorrections(string inputName){
     THnSparseF* hKK = dphiHKK->Projection(4, axes);
     THnSparseF* hPhiMixed = dphiHPhiMixed->Projection(4, axes);
     THnSparseF* hKKMixed = dphiHKKMixed->Projection(4, axes);
+
+
 
     TH2D* hPhi2Dpeak = makeCorrections(hPhi, hPhiMixed, 1.010, 1.030);
     hPhi2Dpeak->SetName("hPhi2Dpeak");
@@ -143,49 +138,8 @@ makeMixCorrections(string inputName){
     TH2D* uncorrhKKMixed2DLside = hKKMixed->Projection(0,1);
     uncorrhKKMixed2DLside->SetName("uncorrhKKMixed2DLside");
 
-    //Make some ratio plots of mixed event US over LS for sidbeand and peak regions
-    //also make projections onto delta eta and delta phi (on restricted delta eta range)
-    TH2D* mixedratioRSB = uncorrhPhiMixed2DRside->Clone("mixedratioRSB");
-    mixedratioRSB->Divide(uncorrhKKMixed2DRside);
-    TH1D* mixedratioRSBdeta = mixedratioRSB->ProjectionX("mixedratioRSBdeta");
-    mixedratioRSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
-    TH1D* mixedratioRSBdphi = mixedratioRSB->ProjectionY("mixedratioRSBdphi");
-    mixedratioRSB->GetXaxis()->SetRange(0,0);
 
-    TH2D* mixedratioLSB = uncorrhPhiMixed2DLside->Clone("mixedratioLSB");
-    mixedratioLSB->Divide(uncorrhKKMixed2DLside);
-    TH1D* mixedratioLSBdeta = mixedratioLSB->ProjectionX("mixedratioLSBdeta");
-    mixedratioLSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
-    TH1D* mixedratioLSBdphi = mixedratioLSB->ProjectionY("mixedratioLSBdphi");
-    mixedratioLSB->GetXaxis()->SetRange(0,0);
-
-    TH2D* mixedratioPeak = uncorrhPhiMixed2Dpeak->Clone("mixedratioPeak");
-    mixedratioPeak->Divide(uncorrhKKMixed2Dpeak);
-    TH1D* mixedratioPeakdeta = mixedratioPeak->ProjectionX("mixedratioPeakdeta");
-    mixedratioPeak->GetXaxis()->SetRangeUser(-1.2, 1.2);
-    TH1D* mixedratioPeakdphi = mixedratioPeak->ProjectionY("mixedratioPeakdphi");
-    mixedratioPeak->GetXaxis()->SetRange(0,0);
-
-    //make ratio plot of just 1 zvtx bin as a check:
-    hPhiMixed->GetAxis(3)->SetRangeUser(1.01, 1.03);
-    hPhiMixed->GetAxis(2)->SetRange(6,6);
-    TH2D* mixedratioPeakZ2 = hPhiMixed->Projection(0,1);
-    hKKMixed->GetAxis(3)->SetRangeUser(1.01, 1.03);
-    hKKMixed->GetAxis(2)->SetRange(6,6);
-    TH2D* hist = hKKMixed->Projection(0,1);
-    mixedratioPeakZ2->Divide(hist);
-    TH1D* mixedratioPeakZ2deta = mixedratioPeakZ2->ProjectionX("mixedratioPeakZ2deta");
-
-
-    //project just zvtx distributions for hPhiMixed points and hKKMixed points in peak region:
-    hPhiMixed->GetAxis(2)->SetRange(0,0);
-    hKKMixed->GetAxis(2)->SetRange(0,0);
-    TH1D* mixedUSzvtx = hPhiMixed->Projection(2);
-    mixedUSzvtx->SetName("mixedUSzvtx");
-    TH1D* mixedLSzvtx = hKKMixed->Projection(2);
-    mixedLSzvtx->SetName("mixedLSzvtx");
-
-    TFile* output = new TFile(Form("eta20_corrected_%s", inputName.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("eta12_corrected_%s", inputName.c_str()), "RECREATE");
     hPhi2Dpeak->Write();
     hKK2Dpeak->Write();
     hPhi2DRside->Write();
@@ -204,22 +158,6 @@ makeMixCorrections(string inputName){
     uncorrhKK2DLside->Write();
     uncorrhPhiMixed2DLside->Write();
     uncorrhKKMixed2DLside->Write();
-
-    mixedratioRSB->Write();
-    mixedratioRSBdeta->Write();
-    mixedratioRSBdphi->Write();
-    mixedratioLSB->Write();
-    mixedratioLSBdeta->Write();
-    mixedratioLSBdphi->Write();
-    mixedratioPeak->Write();
-    mixedratioPeakdeta->Write();
-    mixedratioPeakdphi->Write();
-
-    mixedratioPeakZ2->Write();
-    mixedratioPeakZ2deta->Write();
-
-    mixedUSzvtx->Write();
-    mixedLSzvtx->Write();
 
 /*    
     hPhi->Write();
