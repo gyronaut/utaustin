@@ -8,11 +8,13 @@ void mixedCheck(){
     corrhUSPeak_dphi->SetStats(kFALSE);
     corrhUSPeak_dphi->SetTitle("");
     corrhUSPeak_dphi->GetXaxis()->SetTitle("#Delta#varphi");
+    corrhUSPeak_dphi->Scale(1.0/corrhUSPeak_dphi->Integral());
     TH2D* uncorrhUSPeak = (TH2D*)uncorrhPhi2Dpeak;
     uncorrhUSPeak->Sumw2();
     TH1D* uncorrhUSPeak_dphi = uncorrhUSPeak->ProjectionY("uncorrhUSPeak_dphi", uncorrhUSPeak->GetXaxis()->FindBin(-1.2), uncorrhUSPeak->GetXaxis()->FindBin(1.2));
     uncorrhUSPeak_dphi->SetLineColor(kRed);
     uncorrhUSPeak_dphi->SetLineWidth(2);
+    uncorrhUSPeak_dphi->Scale(1.0/uncorrhUSPeak_dphi->Integral());
 
     TH2D* corrhLSPeak = (TH2D*)hKK2Dpeak;
     TH1D* corrhLSPeak_dphi = corrhLSPeak->ProjectionY("corrhLSPeak_dphi", corrhLSPeak->GetXaxis()->FindBin(-1.2), corrhLSPeak->GetXaxis()->FindBin(1.2));
@@ -20,16 +22,18 @@ void mixedCheck(){
     corrhLSPeak_dphi->SetStats(kFALSE);
     corrhLSPeak_dphi->SetTitle("");
     corrhLSPeak_dphi->GetXaxis()->SetTitle("");
+    corrhLSPeak_dphi->Scale(1.0/corrhLSPeak_dphi->Integral());
     TH2D* uncorrhLSPeak = (TH2D*)uncorrhKK2Dpeak;
     uncorrhLSPeak->Sumw2();
     TH1D* uncorrhLSPeak_dphi = uncorrhLSPeak->ProjectionY("uncorrhLSPeak_dphi", uncorrhLSPeak->GetXaxis()->FindBin(-1.2), uncorrhLSPeak->GetXaxis()->FindBin(1.2));
     uncorrhLSPeak_dphi->SetLineColor(kRed);
     uncorrhLSPeak_dphi->SetLineWidth(2);
+    uncorrhLSPeak_dphi->Scale(1.0/uncorrhLSPeak_dphi->Integral());
 
     TH1D* USPeakRatio = corrhUSPeak_dphi->Clone("USPeakRatio");
     uncorrhUSPeak_dphi->Rebin();
     USPeakRatio->Divide(uncorrhUSPeak_dphi);
-    USPeakRatio->Scale((uncorrhUSPeak_dphi->Integral())/(corrhUSPeak_dphi->Integral()));
+    //USPeakRatio->Scale((uncorrhUSPeak_dphi->Integral())/(corrhUSPeak_dphi->Integral()));
     USPeakRatio->SetLineColor(kViolet);
     USPeakRatio->SetStats(kFALSE);
     USPeakRatio->SetTitle("");
@@ -39,10 +43,26 @@ void mixedCheck(){
     TH1D* LSPeakRatio = corrhLSPeak_dphi->Clone("LSPeakRatio");
     uncorrhLSPeak_dphi->Rebin();
     LSPeakRatio->Divide(uncorrhLSPeak_dphi);
-    LSPeakRatio->Scale((uncorrhLSPeak_dphi->Integral())/(corrhLSPeak_dphi->Integral()));
+    //LSPeakRatio->Scale((uncorrhLSPeak_dphi->Integral())/(corrhLSPeak_dphi->Integral()));
     LSPeakRatio->SetLineColor(kBlue);
     LSPeakRatio->SetStats(kFALSE);
 
+    //hh ratio plots
+    TH2D* corrHH = (TH2D*)hh2D;
+    TH2D* uncorrHH = (TH2D*)uncorrhh2D;
+    TH1D* corrHH_dphi = corrHH->ProjectionY("corrHH_dphi", corrHH->GetXaxis()->FindBin(-1.2), corrHH->GetXaxis()->FindBin(1.2));
+    corrHH_dphi->SetLineColor(kBlue);
+    corrHH_dphi->SetLineWidth(2.0);
+    corrHH_dphi->Scale(1.0/corrHH_dphi->Integral());
+    TH1D* uncorrHH_dphi = uncorrHH->ProjectionY("uncorrHH_dphi", uncorrHH->GetXaxis()->FindBin(-1.2), uncorrHH->GetXaxis()->FindBin(1.2));
+    uncorrHH_dphi->SetLineColor(kRed);
+    uncorrHH_dphi->SetLineWidth(2.0);
+    uncorrHH_dphi->Scale(1.0/uncorrHH_dphi->Integral());
+
+    TH1D* hhratio = corrHH_dphi->Clone("hhratio");
+    hhratio->Divide(uncorrHH_dphi);
+    //hhratio->Scale(uncorrHH_dphi->Integral()/corrHH_dphi->Integral());
+    hhratio->SetStats(kFALSE);
     
     TLegend* uspeaklegend = new TLegend(0.4513, 0.6108, 0.8775, 0.7504);
     uspeaklegend->SetMargin(0.15);
@@ -54,6 +74,16 @@ void mixedCheck(){
     uspeaktext->AddText("1.010 < m_{KK} < 1.030 GeV/c^{2}");
     uspeaktext->SetBorderSize(0);
     uspeaktext->SetFillColor(kWhite);
+
+    TCanvas* chh = new TCanvas("chh", "chh", 50, 50, 600, 600);
+    chh->cd();
+    corrHH_dphi->Draw("H");
+    uncorrHH_dphi->Draw("H SAME");
+    uspeaklegend->Draw();
+
+    TCanvas* chhratio = new TCanvas("chhratio", "chhratio", 50, 50, 600, 600);
+    chhratio->cd();
+    hhratio->Draw("H");
 
     TCanvas* cUSpeak = new TCanvas("cUSpeak", "cUSpeak", 50, 50, 600, 600);
     cUSpeak->cd();
@@ -115,6 +145,33 @@ void mixedCheck(){
     USPeakRatioCenter->Draw("H");
     LSPeakRatioCenter->Draw("H SAME");
     ratiopeaklegend->Draw();
+
+//Histograms for Corr/Uncorr for just center Delta-eta region (-0.3, 0.3);
+    TH1D* USPeakRatioCenter2 = corrhUSPeak->ProjectionY("USPeakRatioCenter2", corrhUSPeak->GetXaxis()->FindBin(-0.3), corrhUSPeak->GetXaxis()->FindBin(0.3));
+    TH1D* uncorr2= uncorrhUSPeak->ProjectionY("uncorr", uncorrhUSPeak->GetXaxis()->FindBin(-0.3), uncorrhUSPeak->GetXaxis()->FindBin(0.3));
+    uncorr2->Rebin();
+    Float_t scale = uncorr2->Integral()/USPeakRatioCenter2->Integral();
+    USPeakRatioCenter2->Divide(uncorr2);
+    USPeakRatioCenter2->Scale(scale);
+    USPeakRatioCenter2->SetLineWidth(2);
+    USPeakRatioCenter2->SetLineColor(kViolet);
+    USPeakRatioCenter2->SetTitle("");
+    USPeakRatioCenter2->SetStats(kFALSE);
+    TH1D* LSPeakRatioCenter2 = corrhLSPeak->ProjectionY("LSPeakRatioCenter2", corrhLSPeak->GetXaxis()->FindBin(-0.3), corrhLSPeak->GetXaxis()->FindBin(0.3));
+    uncorr2= uncorrhLSPeak->ProjectionY("uncorr", uncorrhLSPeak->GetXaxis()->FindBin(-0.3), uncorrhLSPeak->GetXaxis()->FindBin(0.3));
+    uncorr2->Rebin();
+    Float_t scale = uncorr2->Integral()/LSPeakRatioCenter2->Integral();
+    LSPeakRatioCenter2->Divide(uncorr);
+    LSPeakRatioCenter2->Scale(scale);
+    LSPeakRatioCenter2->SetLineWidth(2);
+    LSPeakRatioCenter2->SetLineColor(kBlue);
+
+    TCanvas* cratiopeakcenter2 = new TCanvas("cratiopeakcenter2", "cratiopeakcenter2", 50, 50, 600, 600);
+    cratiopeakcenter2->cd();
+    USPeakRatioCenter2->Draw("H");
+    LSPeakRatioCenter2->Draw("H SAME");
+    ratiopeaklegend->Draw();
+
 
 
     TH2D* corrhUSRside = (TH2D*)hPhi2DRside;

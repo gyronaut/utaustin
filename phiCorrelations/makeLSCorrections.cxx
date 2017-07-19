@@ -10,25 +10,27 @@ void makeLSCorrections(string inputFile){
     hPhi2Dpeak->SetName("uncorrectedhPhi2Dpeak");
 
 
-    Float_t leftscale = hPhi2DLside->Integral()/hKK2DLside->Integral();
+    //Float_t leftscale = hPhi2DLside->Integral(1, hPhi2DLside->GetXaxis()->GetNbins(), 1, hPhi2DLside->GetYaxis()->GetNbins())/hKK2DLside->Integral(1, hPhi2DLside->GetXaxis()->GetNbins(), 1, hPhi2DLside->GetYaxis()->GetNbins());
+    Float_t leftscale = hPhi2DLside->Integral(hPhi2DLside->GetXaxis()->FindBin(-1.2), hPhi2DLside->GetXaxis()->FindBin(1.2), 1, hPhi2DLside->GetYaxis()->GetNbins())/hKK2DLside->Integral(hPhi2DLside->GetXaxis()->FindBin(-1.2), hPhi2DLside->GetXaxis()->FindBin(1.2), 1, hPhi2DLside->GetYaxis()->GetNbins());
     TH2D* LLSsubhPhi2DLside = hPhi2DLside->Clone("LLSsubhPhi2DLside");
     TH2D* LLSsubhPhi2Dpeak = hPhi2Dpeak->Clone("LLSsubhPhi2Dpeak");
     LLSsubhPhi2DLside->Add(hKK2DLside, -1.0*leftscale);
     LLSsubhPhi2Dpeak->Add(hKK2Dpeak, -1.0*leftscale);
 
-    TH1D* LLSsubhPhi2DLside_deta = LLSsubhPhi2DLside->ProjectionX("LLSsubhPhi2DLside_deta");
+    TH1D* LLSsubhPhi2DLside_deta = LLSsubhPhi2DLside->ProjectionX("LLSsubhPhi2DLside_deta", 1, LLSsubhPhi2DLside->GetYaxis()->GetNbins());
     TH1D* LLSsubhPhi2DLside_dphi = LLSsubhPhi2DLside->ProjectionY("LLSsubhPhi2DLside_dphi", LLSsubhPhi2DLside->GetXaxis()->FindBin(-1.2), LLSsubhPhi2DLside->GetXaxis()->FindBin(1.2));
 
-    Float_t rightscale = hPhi2DRside->Integral()/hKK2DRside->Integral();
+    //Float_t rightscale = hPhi2DRside->Integral(1, hPhi2DRside->GetXaxis()->GetNbins(), 1, hPhi2DRside->GetYaxis()->GetNbins())/hKK2DRside->Integral(1, hPhi2DRside->GetXaxis()->GetNbins(), 1, hPhi2DRside->GetYaxis()->GetNbins());
+    Float_t rightscale = hPhi2DRside->Integral(hPhi2DRside->GetXaxis()->FindBin(-1.2), hPhi2DRside->GetXaxis()->FindBin(1.2), 1, hPhi2DRside->GetYaxis()->GetNbins())/hKK2DRside->Integral(hPhi2DRside->GetXaxis()->FindBin(-1.2), hPhi2DRside->GetXaxis()->FindBin(1.2), 1, hPhi2DRside->GetYaxis()->GetNbins());
     TH2D* RLSsubhPhi2DRside = hPhi2DRside->Clone("RLSsubhPhi2DRside");
     TH2D* RLSsubhPhi2Dpeak = hPhi2Dpeak->Clone("RLSsubhPhi2Dpeak");
     RLSsubhPhi2DRside->Add(hKK2DRside, -1.0*rightscale);
     RLSsubhPhi2Dpeak->Add(hKK2Dpeak, -1.0*rightscale);
 
-    TH1D* RLSsubhPhi2DRside_deta = RLSsubhPhi2DRside->ProjectionX("RLSsubhPhi2DRside_deta");
+    TH1D* RLSsubhPhi2DRside_deta = RLSsubhPhi2DRside->ProjectionX("RLSsubhPhi2DRside_deta", 1, RLSsubhPhi2DRside->GetYaxis()->GetNbins());
     TH1D* RLSsubhPhi2DRside_dphi = RLSsubhPhi2DRside->ProjectionY("RLSsubhPhi2DRside_dphi", RLSsubhPhi2DRside->GetXaxis()->FindBin(-1.2), RLSsubhPhi2DRside->GetXaxis()->FindBin(1.2));
 
-    TH1D* RLSsubhPhi2Dpeak_deta = RLSsubhPhi2Dpeak->ProjectionX("RLSsubhPhi2Dpeak_deta");
+    TH1D* RLSsubhPhi2Dpeak_deta = RLSsubhPhi2Dpeak->ProjectionX("RLSsubhPhi2Dpeak_deta", 1, RLSsubhPhi2Dpeak->GetYaxis()->GetNbins());
     TH1D* RLSsubhPhi2Dpeak_dphi = RLSsubhPhi2Dpeak->ProjectionY("RLSsubhPhi2Dpeak_dphi", RLSsubhPhi2Dpeak->GetXaxis()->FindBin(-1.2), RLSsubhPhi2Dpeak->GetXaxis()->FindBin(1.2));
 
 

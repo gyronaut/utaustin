@@ -341,7 +341,7 @@ Bool_t AliAnalysisTaskhPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticl
     AliPhiContainer phi;
     for(int iphi = 0; iphi < phiVec.size(); iphi++){
         phi = phiVec[iphi];
-        if(triggerIndex == phi.daughter1TrackNum || triggerIndex == phi.daughter2TrackNum) return kTRUE; //skip if hadron is one of the daughter particles
+        if(triggerIndex == phi.daughter1TrackNum || triggerIndex == phi.daughter2TrackNum) return kTRUE; //skip if trigger hadron is one of the daughter particles
     }
 
     dphi_point[0] = trigger->Pt();

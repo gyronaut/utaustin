@@ -1,5 +1,5 @@
 void plotUncorrected(){
-    TFile* eta20File = new TFile("eta20_corrected_phiCorrelations_mult_0_20.root");
+    TFile* eta20File = new TFile("eta20_corrected_phiCorrelations_mult_50_100.root");
 
     TH2D* eta20peak = uncorrhPhi2Dpeak->Clone("eta20peak");
     TH2D* eta20RSB = uncorrhPhi2DRside->Clone("eta20RSB");
@@ -156,10 +156,16 @@ void plotUncorrected(){
     cuncorrUSpeak->cd()->SetPhi(50);
     eta20peak->Draw("SURF1");
 
-    TCanvas* cuncorrUSRside = new TCanvas("cuncorrUSRside", "cuncorrUSRide", 50, 50, 800, 800);
+    TCanvas* cuncorrUSRside = new TCanvas("cuncorrUSRside", "cuncorrUSRside", 50, 50, 800, 800);
     cuncorrUSRside->cd()->SetTheta(50);
     cuncorrUSRside->cd()->SetPhi(50);
     eta20RSB->Draw("SURF1");
+
+    TCanvas* cuncorrUSLside = new TCanvas("cuncorrUSLside", "cuncorrUSLside", 50, 50, 800, 800);
+    cuncorrUSLside->cd()->SetTheta(50);
+    cuncorrUSLside->cd()->SetPhi(50);
+    eta20LSB->Draw("SURF1");
+
 
     TCanvas* cuncorrLSpeak = new TCanvas("cuncorrLSpeak", "cuncorrLSpeak", 50, 50, 800, 800);
     cuncorrLSpeak->cd()->SetTheta(50);
@@ -170,6 +176,12 @@ void plotUncorrected(){
     cuncorrLSRside->cd()->SetTheta(50);
     cuncorrLSRside->cd()->SetPhi(50);
     LSeta20RSB->Draw("SURF1");
+
+    TCanvas* cuncorrLSLside = new TCanvas("cuncorrLSLside", "cuncorrLSLside", 50, 50, 800, 800);
+    cuncorrLSLside->cd()->SetTheta(50);
+    cuncorrLSLside->cd()->SetPhi(50);
+    LSeta20LSB->Draw("SURF1");
+
 
     TH2D* mixedUSpeak = uncorrhPhiMixed2Dpeak->Clone("MixedUSpeak");
     mixedUSpeak->SetStats(kFALSE);
@@ -213,7 +225,9 @@ void plotUncorrected(){
     TH2D* sameratioRSB = uncorrhPhi2DRside->Clone("sameratioRSB");
     sameratioRSB->SetTitle("");
     sameratioRSB->SetStats(kFALSE);
+    Float_t scale = uncorrhKK2DRside->Integral()/sameratioRSB->Integral();
     sameratioRSB->Divide(uncorrhKK2DRside);
+    sameratioRSB->Scale(scale);
     TH1D* sameratioRSBdeta = sameratioRSB->ProjectionX("sameratioRSBdeta");
     sameratioRSBdeta->SetStats(kFALSE);
     sameratioRSBdeta->SetTitle("");
@@ -231,5 +245,27 @@ void plotUncorrected(){
     csameratioRSB->cd(3);
     sameratioRSBdphi->Draw("H");
 
+    TH2D* sameratiopeak = uncorrhPhi2Dpeak->Clone("sameratiopeak");
+    sameratiopeak->SetTitle("");
+    sameratiopeak->SetStats(kFALSE);
+    Float_t scale = uncorrhKK2Dpeak->Integral()/sameratiopeak->Integral();
+    sameratiopeak->Divide(uncorrhKK2Dpeak);
+    sameratiopeak->Scale(scale);
+    TH1D* sameratiopeakdeta = sameratiopeak->ProjectionX("sameratiopeakdeta");
+    sameratiopeakdeta->SetStats(kFALSE);
+    sameratiopeakdeta->SetTitle("");
+    TH1D* sameratiopeakdphi = sameratiopeak->ProjectionY("sameratiopeakdphi", sameratiopeak->GetXaxis()->FindBin(-1.2), sameratiopeak->GetXaxis()->FindBin(1.2));
+    sameratiopeakdphi->SetStats(kFALSE);
+    sameratiopeakdphi->SetTitle("");
+
+    TCanvas* csameratiopeak = new TCanvas("csameratiopeak", "csameratiopeak", 70, 70, 800, 800);
+    csameratiopeak->Divide(2,2);
+    csameratiopeak->cd(1)->SetTheta(50);
+    csameratiopeak->cd(1)->SetPhi(50);
+    sameratiopeak->Draw("SURF1");
+    csameratiopeak->cd(2);
+    sameratiopeakdeta->Draw("H");
+    csameratiopeak->cd(3);
+    sameratiopeakdphi->Draw("H");
 
 }
