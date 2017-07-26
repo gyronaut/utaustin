@@ -524,7 +524,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
  
         fMultSelection = (AliMultSelection*)fAOD->FindListObject("MultSelection");
         if(fMultSelection){
-            multPercentile = fMultSelection->GetMultiplicityPercentile("V0M");
+            multPercentile = fMultSelection->GetMultiplicityPercentile("V0A");
         }else{
             return;
         }
