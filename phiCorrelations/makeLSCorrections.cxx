@@ -15,6 +15,8 @@ void makeLSCorrections(string inputFile){
     TH2D* LLSsubhPhi2DLside = hPhi2DLside->Clone("LLSsubhPhi2DLside");
     TH2D* LLSsubhPhi2Dpeak = hPhi2Dpeak->Clone("LLSsubhPhi2Dpeak");
     LLSsubhPhi2DLside->Add(hKK2DLside, -1.0*leftscale);
+    //LLSsubhPhi2DLside->Divide(hKK2DLside);
+    //LLSsubhPhi2DLside->Scale(1.0/leftscale);
     LLSsubhPhi2Dpeak->Add(hKK2Dpeak, -1.0*leftscale);
 
     TH1D* LLSsubhPhi2DLside_deta = LLSsubhPhi2DLside->ProjectionX("LLSsubhPhi2DLside_deta", 1, LLSsubhPhi2DLside->GetYaxis()->GetNbins());
@@ -25,6 +27,8 @@ void makeLSCorrections(string inputFile){
     TH2D* RLSsubhPhi2DRside = hPhi2DRside->Clone("RLSsubhPhi2DRside");
     TH2D* RLSsubhPhi2Dpeak = hPhi2Dpeak->Clone("RLSsubhPhi2Dpeak");
     RLSsubhPhi2DRside->Add(hKK2DRside, -1.0*rightscale);
+    //RLSsubhPhi2DRside->Divide(hKK2DRside);
+    //RLSsubhPhi2DRside->Scale(1.0/rightscale);
     RLSsubhPhi2Dpeak->Add(hKK2Dpeak, -1.0*rightscale);
 
     TH1D* RLSsubhPhi2DRside_deta = RLSsubhPhi2DRside->ProjectionX("RLSsubhPhi2DRside_deta", 1, RLSsubhPhi2DRside->GetYaxis()->GetNbins());

@@ -6,10 +6,10 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
     TH3D* mix3D = mixed->Projection(0, 1, 2);
     mix3D->Sumw2();
 
-    same3D->RebinX();
-    mix3D->RebinX();
-    same3D->RebinY();
-    mix3D->RebinY();
+    same3D->RebinX(4);
+    mix3D->RebinX(4);
+    same3D->RebinY(4);
+    mix3D->RebinY(4);
 
     //same3D->GetYaxis()->SetRangeUser(-1.2, 1.2);
     //mix3D->GetYaxis()->SetRangeUser(-1.2, 1.2);
@@ -118,20 +118,25 @@ makeMixCorrections(string inputName){
     THnSparseF *dphiHHMixed = (THnSparseF*)list->FindObject("fDPhiHHMixed");
 
     //make 4D THnProjections projection to do mixed event corrections
+
+    Float_t trigPTLow = 4.0;
+    Float_t trigPTHigh = 8.0;
+    Float_t assocPTlow = 2.0;
+    Float_t assocPTHigh = 4.0;
     
-    dphiHPhi->GetAxis(0)->SetRangeUser(4.0, 8.0); 
-    dphiHPhi->GetAxis(1)->SetRangeUser(2.0,4.0); 
-    dphiHKK->GetAxis(0)->SetRangeUser(4.0, 8.0);
-    dphiHKK->GetAxis(1)->SetRangeUser(2.0,4.0);
-    dphiHH->GetAxis(0)->SetRangeUser(4.0,8.0);
-    dphiHH->GetAxis(1)->SetRangeUser(2.0,4.0);
+    dphiHPhi->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
+    dphiHPhi->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
+    dphiHKK->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
+    dphiHKK->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
+    dphiHH->GetAxis(0)->SetRangeUser(trigPTLow,trigPTHigh);
+    dphiHH->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
    
-    dphiHPhiMixed->GetAxis(0)->SetRangeUser(4.0, 8.0); 
-    dphiHPhiMixed->GetAxis(1)->SetRangeUser(2.0,4.0); 
-    dphiHKKMixed->GetAxis(0)->SetRangeUser(4.0, 8.0);
-    dphiHKKMixed->GetAxis(1)->SetRangeUser(2.0,4.0);
-    dphiHHMixed->GetAxis(0)->SetRangeUser(4.0,8.0);
-    dphiHHMixed->GetAxis(1)->SetRangeUser(2.0,4.0);
+    dphiHPhiMixed->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
+    dphiHPhiMixed->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
+    dphiHKKMixed->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
+    dphiHKKMixed->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
+    dphiHHMixed->GetAxis(0)->SetRangeUser(trigPTLow,trigPTHigh);
+    dphiHHMixed->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
 
     dphiHPhi->GetAxis(5)->SetRange(1,dphiHPhi->GetAxis(5)->GetNbins());
     dphiHPhi->GetAxis(4)->SetRangeUser(-10.0, 10.0);
@@ -258,7 +263,7 @@ makeMixCorrections(string inputName){
     TH1D* mixedLSzvtx = hKKMixed->Projection(2);
     mixedLSzvtx->SetName("mixedLSzvtx");
 
-    TFile* output = new TFile(Form("eta20_corrected_%s", inputName.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_mixcorr_%s", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, inputName.c_str()), "RECREATE");
     hPhi2Dpeak->Write();
     hKK2Dpeak->Write();
     hPhi2DRside->Write();

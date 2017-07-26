@@ -75,9 +75,9 @@ void plotLSCorrected(string inputname){
 
 
     //reset eta range to narrow view for 2D plotting and rebin
-    eta20peak->Rebin2D(2,2);
-    eta20RSB->Rebin2D(2,2);
-    eta20LSB->Rebin2D(2,2);
+//    eta20peak->Rebin2D(2,2);
+//    eta20RSB->Rebin2D(2,2);
+//    eta20LSB->Rebin2D(2,2);
     eta20peak->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20RSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20LSB->GetXaxis()->SetRangeUser(-1.2, 1.2);

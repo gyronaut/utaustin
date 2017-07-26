@@ -65,9 +65,9 @@ void plotUncorrected(){
 
 
     //reset eta range to narrow view for 2D plotting and rebin
-    eta20peak->Rebin2D(2,2);
-    eta20RSB->Rebin2D(2,2);
-    eta20LSB->Rebin2D(2,2);
+    eta20peak->Rebin2D(4,4);
+    eta20RSB->Rebin2D(4,4);
+    eta20LSB->Rebin2D(4,4);
     eta20peak->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20RSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20LSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
@@ -104,9 +104,9 @@ void plotUncorrected(){
     LSeta20LSB->SetTitle("");
     LSeta20LSB->SetStats(kFALSE);
 
-    LSeta20peak->Rebin2D(2,2);
-    LSeta20RSB->Rebin2D(2,2);
-    LSeta20LSB->Rebin2D(2,2);
+    LSeta20peak->Rebin2D(4,4);
+    LSeta20RSB->Rebin2D(4,4);
+    LSeta20LSB->Rebin2D(4,4);
     LSeta20peak->GetXaxis()->SetRangeUser(-1.2, 1.2);
     LSeta20RSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
     LSeta20LSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
