@@ -47,7 +47,7 @@ private:
    
     TObjArray* AddToTracks();
     Bool_t MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
-    void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, Bool_t isLS);
+    void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS);
     void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
   
     AliVEvent   *fVevent;  //!event object
@@ -79,8 +79,14 @@ private:
     TH2F        *fTPCKaonNSig;//!TPC Nsigma
 
     THnSparseF  *fTrigDist;//! trigger distribution
-    TH2D        *fMixStatZVtx;//! stats for mixed events
-    TH1D        *fNoMixEvents;//! number of mixed events
+    
+    TH2D        *fLSMixStatZVtx;//! stats for mixed events
+    TH2D        *fLSMixTrackStatZVtx;//! stats for mixed events
+    TH1D        *fLSNoMixEvents;//! number of mixed events
+    TH2D        *fUSMixStatZVtx;//! stats for mixed events
+    TH2D        *fUSMixTrackStatZVtx;//! stats for mixed events
+    TH1D        *fUSNoMixEvents;//! number of mixed events
+
     THnSparseF  *fKKUSDist;//! unlike sign kaon distribution
     THnSparseF  *fKKLSDist;//! like sign kaon distribution
     TH1D        *fkplusPerEvent;//! K+ per Event
