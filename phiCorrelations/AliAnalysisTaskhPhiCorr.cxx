@@ -85,6 +85,10 @@ fkminusPerEvent(0),
 fLSpairsPerEvent(0),
 fUSpairsPerEvent(0),
 fTrigDist(0),
+fTrigSameUSDist(0),
+fTrigMixUSDist(0),
+fTrigSameLSDist(0),
+fTrigMixLSDist(0),
 fLSMixStatZVtx(0),
 fLSMixTrackStatZVtx(0),
 fLSNoMixEvents(0),
@@ -145,6 +149,10 @@ fkminusPerEvent(0),
 fLSpairsPerEvent(0),
 fUSpairsPerEvent(0),
 fTrigDist(0),
+fTrigSameUSDist(0),
+fTrigMixUSDist(0),
+fTrigSameLSDist(0),
+fTrigMixLSDist(0),
 fLSMixStatZVtx(0),
 fLSMixTrackStatZVtx(0),
 fLSNoMixEvents(0),
@@ -282,10 +290,23 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     // Histogram for trigger distribution
     Int_t trigBins[3] = {100,100,50};
     Double_t trigMin[3] = {0.1, 0.0, -2.0};
-    Double_t trigMax[3] = {10.1, 6.28, 2.0};
+    Double_t trigMax[3] = {20.1, 6.28, 2.0};
 
     fTrigDist = new THnSparseF("fTrigDist", "Distribution for trigger particles", 3, trigBins, trigMin, trigMax);
     fOutputList->Add(fTrigDist);
+
+     //Trigger Distribution for doing trigger particle scaling (same and mixed, hadron triggers for US or LS pairs are separate) 
+    fTrigSameUSDist = new TH2D("fTrigSameUSDist", "Trigger count for same event, US pairs;p_{t}^{trig};Vtx_{z}", 17, 3.0, 20.0, 10, -10.0, 10.0);
+    fOutputList->Add(fTrigSameUSDist);
+
+    fTrigMixUSDist = new TH2D("fTrigMixUSDist", "Trigger count for mixed event, US pairs;p_{t}^{trig};Vtx_{z}", 17, 3.0, 20.0, 10, -10.0, 10.0);
+    fOutputList->Add(fTrigMixUSDist);
+
+    fTrigSameLSDist = new TH2D("fTrigSameLSDist", "Trigger count for same event, LS pairs;p_{t}^{trig};Vtx_{z}",17, 3.0, 20.0, 10, -10.0, 10.0);
+    fOutputList->Add(fTrigSameLSDist);
+
+    fTrigMixLSDist = new TH2D("fTrigMixLSDist", "Trigger count for mixed event, LS pairs;p_{t}^{trig};Vtx_{z}", 17, 3.0, 20.0, 10, -10.0, 10.0);
+    fOutputList->Add(fTrigMixLSDist);
 
     //Histograms for Mixed Event Stats
     fLSMixStatZVtx = new TH2D("fLSMixStatZVtx", "LS Mixed Event Statistics;NEvent in pool;Vtx_z", 100, 1, 1001, numVtxZBins, vtxZBins);
@@ -327,7 +348,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fLSpairsPerEvent);
 
     fUSpairsPerEvent = new TH1D("fUSpairsPerEvent", "US KK pairs per event", 100, 0, 100);
-    fOutputList->Add(fUSpairsPerEvent);
+    fOutputList->Add(fUSpairsPerEvent); 
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
     Int_t dphi_bins[7]=    {17,   39,    64,  64, 10, 45};
@@ -400,6 +421,11 @@ void AliAnalysisTaskhPhiCorr::MakeMixCorrelations(std::vector<AliPhiContainer> p
                 printf("ERROR: Could not receive mix pool track %d\n",ihadron);
                 continue;
             }
+            if(isLS){
+                fTrigMixLSDist->Fill(hadron->Pt(), zVtx);
+            }else{
+                fTrigMixUSDist->Fill(hadron->Pt(), zVtx);
+            }
             for(int iphi = 0; iphi < phiVec.size(); iphi++){
                 AliPhiContainer phi = phiVec[iphi];
                 dphi_point[0] = hadron->Pt();
@@ -468,11 +494,12 @@ void AliAnalysisTaskhPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPart, TH
             }
         }
     }
-}
+}    
+
 
 //________________________________________________________________________
-void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
-{
+void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
+
 
     UInt_t evSelMask=((AliInputEventHandler*)(AliAnalysisManager::GetAnalysisManager()->GetInputEventHandler()))->IsEventSelected();
     
@@ -571,9 +598,9 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
     std::vector<AliKaonContainer> kPlusList;
     std::vector<AliKaonContainer> kMinusList;
 
-    Double_t distPoint[4] = {0, 0, 0, 0}; //pt, invmass, phi, eta
-    Double_t trigPoint[3] = {0, 0, 0}; //pt, phi, eta
-    Double_t dphi_point[5] = {0, 0, 0, 0, 0}; //trigger pt, phi pt, delta-phi, delta-eta, phi invmass
+    Double_t distPoint[4] = {0, 0, 0, 0};
+    Double_t trigPoint[3] = {0, 0, 0};
+    Double_t dphi_point[5] = {0, 0, 0, 0, 0};
     Double_t hhdphi_point[6] = {0, 0, 0, 0, 0};
 
     AliVTrack *kaonTrack = 0x0;
@@ -637,8 +664,8 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
     // Go through the Kaon lists and create the phi candidates and like sign pairs
     // Also fill in the US and LS K pair distribution histograms
     AliPhiContainer phi;
-    for(Int_t i_kplus = 0; i_kplus < kPlusList.size(); i_kplus++){
-        for(Int_t j_kplus = i_kplus+1; j_kplus < kPlusList.size(); j_kplus++){
+    for(Int_t i_kplus = 0; i_kplus < (int)kPlusList.size(); i_kplus++){
+        for(Int_t j_kplus = i_kplus+1; j_kplus < (int)kPlusList.size(); j_kplus++){
             phi.particle.SetPx(kPlusList[i_kplus].particle.Px() + kPlusList[j_kplus].particle.Px());
             phi.particle.SetPy(kPlusList[i_kplus].particle.Py() + kPlusList[j_kplus].particle.Py());
             phi.particle.SetPz(kPlusList[i_kplus].particle.Pz() + kPlusList[j_kplus].particle.Pz());
@@ -660,7 +687,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
 
             phiLikeSignCandidates.push_back(phi);
         }
-        for(Int_t i_kminus =0; i_kminus < kMinusList.size(); i_kminus++){
+        for(Int_t i_kminus =0; i_kminus < (int)kMinusList.size(); i_kminus++){
             phi.particle.SetPx(kPlusList[i_kplus].particle.Px() + kMinusList[i_kminus].particle.Px());
             phi.particle.SetPy(kPlusList[i_kplus].particle.Py() + kMinusList[i_kminus].particle.Py());
             phi.particle.SetPz(kPlusList[i_kplus].particle.Pz() + kMinusList[i_kminus].particle.Pz());
@@ -683,8 +710,8 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             }
        }
     }
-    for(Int_t i_kminus =0; i_kminus < kMinusList.size(); i_kminus++){
-        for(Int_t j_kminus = i_kminus+1; j_kminus < kMinusList.size(); j_kminus++){
+    for(Int_t i_kminus =0; i_kminus < (int)kMinusList.size(); i_kminus++){
+        for(Int_t j_kminus = i_kminus+1; j_kminus < (int)kMinusList.size(); j_kminus++){
             phi.particle.SetPx(kMinusList[i_kminus].particle.Px() + kMinusList[j_kminus].particle.Px());
             phi.particle.SetPy(kMinusList[i_kminus].particle.Py() + kMinusList[j_kminus].particle.Py());
             phi.particle.SetPz(kMinusList[i_kminus].particle.Pz() + kMinusList[j_kminus].particle.Pz());
@@ -709,6 +736,11 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
       }        
     }        
 
+    //if there aren't any phi or LS candidates in the right mass range, return
+    if(phiCandidates.size()==0 && phiLikeSignCandidates.size()==0){
+        return;
+    }
+    
     // Record how many kaons and kaon pairs are in the event
     fkplusPerEvent->Fill(kPlusList.size());
     fkminusPerEvent->Fill(kMinusList.size());
@@ -834,11 +866,13 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
             if(multPercentile <= 100.0 && TMath::Abs(Zvertex) < 10.0){
                 MakeHHMixCorrelations(cfPart, fDphiHHMixed, multPercentile, Zvertex);
             }
-            if(!isTriggerDaughter){
+            if(!isTriggerDaughter && phiCandidates.size() > 0){
                 fArrayTracksMix->Add(cfPart);
+                fTrigSameUSDist->Fill(triggerTrack->Pt(), Zvertex); //filled once per trigger, only if the trigger isn't a US pair daughter
             }
-            if(!isTriggerLSDaughter){
+            if(!isTriggerLSDaughter && phiLikeSignCandidates.size() > 0){
                 fArrayLSTracksMix->Add(cfPart);
+                fTrigSameLSDist->Fill(triggerTrack->Pt(), Zvertex); //filled once per trigger, only if the trigger isn't a LS pair daughter
             }
         }
     } //track loop
@@ -878,7 +912,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *)
     }
 
     PostData(1, fOutputList);
-}      
+}    
 //________________________________________________________________________
 void AliAnalysisTaskhPhiCorr::Terminate(Option_t *) 
 {

@@ -1,4 +1,4 @@
-TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_t highmass){
+TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_t highmass, TH1D** sameEta, TH1D** mixedEta, float* trigMixScale, float totalTrigSame){
     same->GetAxis(3)->SetRangeUser(lowmass, highmass);
     mixed->GetAxis(3)->SetRangeUser(lowmass, highmass);
     TH3D* same3D = same->Projection(0, 1, 2);
@@ -30,6 +30,13 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
         mix2D[zbin] = (TH2D*)mix3D->Project3D("xye");
         mix2D[zbin]->SetName(Form("mix2droj_zbin%i", zbin));
 
+        //get d-eta 1D plots for same and mixed distributions for each zbin
+        sameEta[zbin] = same2D[zbin]->ProjectionX(Form("sameEta_zvtx_%i", zbin), 1, same2D[zbin]->GetYaxis()->GetNbins());
+        mixedEta[zbin] = mix2D[zbin]->ProjectionX(Form("mixedEta_zvtx_%i", zbin), 1, mix2D[zbin]->GetYaxis()->GetNbins());
+
+        //scale mixed by number of triggers in zvtx bin
+        mix2D[zbin]->Scale(1.0/trigMixScale[zbin]);
+
         scale = 0.5*(float)(mix2D[zbin]->GetBinContent(mix2D[zbin]->GetXaxis()->FindBin(0.01), mix2D[zbin]->GetYaxis()->FindBin(0.0)) + mix2D[zbin]->GetBinContent(mix2D[zbin]->GetXaxis()->FindBin(-0.01), mix2D[zbin]->GetYaxis()->FindBin(0.0)));
         printf("scale: %e \n", scale);
         same2D[zbin]->Divide(mix2D[zbin]);
@@ -46,6 +53,7 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
 
     same->GetAxis(3)->SetRange(0,0);
     mixed->GetAxis(3)->SetRange(0,0);
+    same2DTotal->Scale(1.0/totalTrigSame);
     return same2DTotal;
 }
 
@@ -93,7 +101,7 @@ TH2D* makehhCorrections(TH3D* same3D, TH3D* mix3D){
 }
 
 //--------------------------------------------------------------------------------------------
-makeMixCorrections(string inputName){
+makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
     TFile *histoFile = new TFile(inputName.c_str());
     string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
 
@@ -109,6 +117,23 @@ makeMixCorrections(string inputName){
     THnSparseF *dphiHKKMixed = (THnSparseF *)InvMass->FindObject("fDphiHKKMixed");
     TH1D* zVtx = InvMass->FindObject("fVtxZ");
 */
+
+    TH2D trigSameUSDist = (TH2D*)list->FindObject("fTrigSameUSDist");
+    TH2D trigMixUSDist = (TH2D*)list->FindObject("fTrigMixUSDist");
+    TH2D trigSameLSDist = (TH2D*)list->FindObject("fTrigSameLSDist");
+    TH2D trigMixLSDist = (TH2D*)list->FindObject("fTrigMixLSDist");
+
+    float trigMixScalesUS[10] = new float[10];
+    float trigMixScalesLS[10] = new float[10];
+    for(int i = 0; i < 10; i++){
+        trigMixScaleUS[i] = (float) trigMixUSDist->Integral(trigMixUSDist->GetXaxis()->FindBin(trigPTLow), trigMixUSDist->GetXaxis()->FindBin(trigPTHigh), i+1, i+1);
+        trigMixScaleLS[i] = (float) trigMixLSDist->Integral(trigMixLSDist->GetXaxis()->FindBin(trigPTLow), trigMixLSDist->GetXaxis()->FindBin(trigPTHigh), i+1, i+1);
+    }
+
+    float totalTrigSameUS = (float)trigSameUSDist->Integral(trigSameUSDist->GetXaxis()->FindBin(trigPTLow), trigSameUSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameUSDist->GetYaxis()->GetNbins());
+    float totalTrigSameLS = (float)trigSameUSDist->Integral(trigSameLSDist->GetXaxis()->FindBin(trigPTLow), trigSameLSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameLSDist->GetYaxis()->GetNbins());
+   
+
     THnSparseF *dphiHPhi = (THnSparseF *)list->FindObject("fDphiHPhi");
     THnSparseF *dphiHKK = (THnSparseF *)list->FindObject("fDphiHKK");
     THnSparseF *dphiHPhiMixed = (THnSparseF *)list->FindObject("fDphiHPhiMixed");
@@ -117,13 +142,7 @@ makeMixCorrections(string inputName){
     THnSparseF *dphiHH = (THnSparseF*)list->FindObject("fDphiHH");
     THnSparseF *dphiHHMixed = (THnSparseF*)list->FindObject("fDPhiHHMixed");
 
-    //make 4D THnProjections projection to do mixed event corrections
-
-    Float_t trigPTLow = 4.0;
-    Float_t trigPTHigh = 8.0;
-    Float_t assocPTlow = 2.0;
-    Float_t assocPTHigh = 4.0;
-    
+    //make 4D THnProjections projection to do mixed event corrections    
     dphiHPhi->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
     dphiHPhi->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
     dphiHKK->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
@@ -152,18 +171,55 @@ makeMixCorrections(string inputName){
     TH3D* hhMixed = dphiHHMixed->Projection(2,3,4);
     hhMixed->Sumw2();
 
-    TH2D* hPhi2Dpeak = makeCorrections(hPhi, hPhiMixed, 1.010, 1.030);
+    TH1D* sameUSPeakEta[10];
+    TH1D* mixedUSPeakEta[10];
+    TH1D* sameLSPeakEta[10];
+    TH1D* mixedLSPeakEta[10];
+    TH1D* sameUSRsideEta[10];
+    TH1D* mixedUSRsideEta[10];
+    TH1D* sameLSRsideEta[10];
+    TH1D* mixedLSRsideEta[10];
+    TH1D* sameUSLsideEta[10];
+    TH1D* mixedUSLsideEta[10];
+    TH1D* sameLSLsideEta[10];
+    TH1D* mixedLSLsideEta[10];
+
+    TH2D* hPhi2Dpeak = makeCorrections(hPhi, hPhiMixed, 1.010, 1.030, sameUSPeakEta, mixedUSPeakEtai, trigMixScaleUS, totalTrigSameUS);
     hPhi2Dpeak->SetName("hPhi2Dpeak");
-    TH2D* hKK2Dpeak = makeCorrections(hKK, hKKMixed, 1.010, 1.030);
+    for(int i = 0; i<10; i++){
+        sameUSPeakEta[i]->SetName(Form("sameUSPeakEta_zvtx_%i", i));
+        mixedUSPeakEta[i]->SetName(Form("mixedUSPeakEta_zvtx_%i", i));
+    }
+    TH2D* hKK2Dpeak = makeCorrections(hKK, hKKMixed, 1.010, 1.030, sameLSPeakEta, mixedLSPeakEta, trigMixScaleLS, totalTrigSameLS);
     hKK2Dpeak->SetName("hKK2Dpeak");
-    TH2D* hPhi2DRside = makeCorrections(hPhi, hPhiMixed, 1.040, 1.060);
+    for(int i = 0; i<10; i++){
+        sameLSPeakEta[i]->SetName(Form("sameLSPeakEta_zvtx_%i", i));
+        mixedLSPeakEta[i]->SetName(Form("mixedLSPeakEta_zvtx_%i", i));
+    } 
+    TH2D* hPhi2DRside = makeCorrections(hPhi, hPhiMixed, 1.040, 1.060, sameUSRsideEta, mixedUSRsideEta, trigMixScaleUS, totalTrigSameUS);
     hPhi2DRside->SetName("hPhi2DRside");
-    TH2D* hKK2DRside = makeCorrections(hKK, hKKMixed, 1.040, 1.060);
+    for(int i = 0; i<10; i++){
+        sameUSRsideEta[i]->SetName(Form("sameUSRsideEta_zvtx_%i", i));
+        mixedUSRsideEta[i]->SetName(Form("mixedUSRsideEta_zvtx_%i", i));
+    }
+    TH2D* hKK2DRside = makeCorrections(hKK, hKKMixed, 1.040, 1.060, sameLSRsideEta, mixedLSRsideEta, trigMixScaleLS, totalTrigSameLS);
     hKK2DRside->SetName("hKK2DRside");
-    TH2D* hPhi2DLside = makeCorrections(hPhi, hPhiMixed, 0.995, 1.005);
+    for(int i = 0; i<10; i++){
+        sameLSRsideEta[i]->SetName(Form("sameLSRsideEta_zvtx_%i", i));
+        mixedLSRsideEta[i]->SetName(Form("mixedLSRsideEta_zvtx_%i", i));
+    }
+    TH2D* hPhi2DLside = makeCorrections(hPhi, hPhiMixed, 0.995, 1.005, sameUSLsideEta, mixedUSLsideEta, trigMixUSDist, totalTrigSameUS);
     hPhi2DLside->SetName("hPhi2DLside");
-    TH2D* hKK2DLside = makeCorrections(hKK, hKKMixed, 0.995, 1.005);
+    for(int i = 0; i<10; i++){
+        sameUSLsideEta[i]->SetName(Form("sameUSLsideEta_zvtx_%i", i));
+        mixedUSLsideEta[i]->SetName(Form("mixedUSLsideEta_zvtx_%i", i));
+    }
+    TH2D* hKK2DLside = makeCorrections(hKK, hKKMixed, 0.995, 1.005, sameLSLsideEta, mixedLSLsideEta, trigMixLSDist, totalTrigSameLS);
     hKK2DLside->SetName("hKK2DLside");
+    for(int i = 0; i<10; i++){
+        sameLSLsideEta[i]->SetName(Form("sameLSLsideEta_zvtx_%i", i));
+        mixedLSLsideEta[i]->SetName(Form("mixedLSLsideEta_zvtx_%i", i));
+    }
 
     TH2D* hh2D = makehhCorrections(hh, hhMixed);
     hh2D->SetName("hh2D");
@@ -300,6 +356,21 @@ makeMixCorrections(string inputName){
 
     mixedUSzvtx->Write();
     mixedLSzvtx->Write();
+
+    for(int i=0; i< 10; i++){
+        sameUSPeakEta[i]->Write();
+        mixedUSPeakEta[i]->Write();
+        sameLSPeakEta[i]->Write();
+        mixedLSPeakEta[i]->Write();
+        sameUSRsideEta[i]->Write();
+        mixedUSRsideEta[i]->Write();
+        sameLSRsideEta[i]->Write();
+        mixedLSRsideEta[i]->Write();
+        sameUSLsideEta[i]->Write();
+        mixedUSLsideEta[i]->Write();
+        sameLSLsideEta[i]->Write();
+        mixedLSLsideEta[i]->Write();
+    }
 
 /*    
     hPhi->Write();

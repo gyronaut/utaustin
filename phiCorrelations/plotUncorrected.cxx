@@ -1,5 +1,5 @@
-void plotUncorrected(){
-    TFile* eta20File = new TFile("eta20_corrected_phiCorrelations_mult_50_100.root");
+void plotUncorrected(TString inputfile){
+    TFile* eta20File = new TFile(inputfile.Data());
 
     TH2D* eta20peak = uncorrhPhi2Dpeak->Clone("eta20peak");
     TH2D* eta20RSB = uncorrhPhi2DRside->Clone("eta20RSB");
@@ -183,8 +183,10 @@ void plotUncorrected(){
     LSeta20LSB->Draw("SURF1");
 
 
+    //Plot some mixed event ratios, and also an overlaying 1D dEta plot of both same/mixed dEta distributions
     TH2D* mixedUSpeak = uncorrhPhiMixed2Dpeak->Clone("MixedUSpeak");
     mixedUSpeak->SetStats(kFALSE);
+    TH1D* mixedUSpeakEta = mixedUSpeak->ProjectionX("mixedUSpeakEta", 1, mixedUSpeak->GetYaxis()->GetNbins());
     mixedUSpeak->SetTitle("");
     Float_t scale = 0.5*(mixedUSpeak->GetBinContent(mixedUSpeak->GetXaxis()->FindBin(-0.01), mixedUSpeak->GetYaxis()->FindBin(0.0)) + mixedUSpeak->GetBinContent(mixedUSpeak->GetXaxis()->FindBin(0.01), mixedUSpeak->GetYaxis()->FindBin(0.0)));
     mixedUSpeak->Scale(1.0/scale);
@@ -195,6 +197,7 @@ void plotUncorrected(){
 
     TH2D* mixedLSpeak = uncorrhKKMixed2Dpeak->Clone("MixedLSpeak");
     mixedLSpeak->SetStats(kFALSE);
+    TH1D* mixedLSpeakEta = mixedLSpeak->ProjectionX("mixedLSpeakEta", 1, mixedLSpeak->GetYaxis()->GetNbins());
     mixedLSpeak->SetTitle("");
     TCanvas* cMixedLSpeak = new TCanvas("cMixedLSpeak", "cMixedLSpeak", 50, 50, 800, 800);
     cMixedLSpeak->cd()->SetTheta(50);
@@ -267,5 +270,37 @@ void plotUncorrected(){
     sameratiopeakdeta->Draw("H");
     csameratiopeak->cd(3);
     sameratiopeakdphi->Draw("H");
+
+    //plotting delta-eta for same and mixed (scaling mixed to the larger dEta regions)
+    TCanvas* cUSdeta = new TCanvas("cUSdeta", "cUSdeta", 80, 80, 600, 600);
+    cUSdeta->cd();
+    //cUSdeta->SetLogy();
+    eta20peakEta->SetLineWidth(2);
+    eta20peakEta->SetLineColor(kBlack);
+    mixedUSpeakEta->SetLineWidth(2);
+    //mixedUSpeakEta->SetLineStyle(2);
+    mixedUSpeakEta->SetLineColor(kBlue);
+    TAxis* etaAxis = eta20peakEta->GetXaxis();
+    Float_t USscale = 0.5*((Float_t)eta20peakEta->Integral(etaAxis->FindBin(-1.5), etaAxis->FindBin(-0.8))/((Float_t) mixedUSpeakEta->Integral(etaAxis->FindBin(-1.5), etaAxis->FindBin(-0.8))) + (eta20peakEta->Integral(etaAxis->FindBin(0.8), etaAxis->FindBin(1.5))/mixedUSpeakEta->Integral(etaAxis->FindBin(0.8), etaAxis->FindBin(1.5))));
+    mixedUSpeakEta->Scale(USscale);
+    eta20peakEta->Draw("H SAME");
+    mixedUSpeakEta->Draw("H SAME");
+
+    TCanvas* cUSPeakEta = new TCanvas("cUSPeakEta", "cUSPeakEta", 80, 80, 600, 600);
+    cUSPeakEta->Divide(3,4);
+    TH1D* sameUSPeakEta = 0x0;
+    TH1D* mixedUSPeakEta = 0x0;
+    for(int i = 0; i<10; i++){
+        cUSPeakEta->cd(i+1);
+        sameUSPeakEta = (TH1D*)eta20File->Get(Form("sameUSPeakEta_zvtx_%i", i));
+        sameUSPeakEta->SetLineColor(kBlack);
+        mixedUSPeakEta = (TH1D*)eta20File->Get(Form("mixedUSPeakEta_zvtx_%i", i));
+        mixedUSPeakEta->SetLineColor(kRed);
+        etaAxis = sameUSPeakEta->GetXaxis();
+        Float_t etaScale = 0.5*((Float_t)sameUSPeakEta->Integral(etaAxis->FindBin(-1.5), etaAxis->FindBin(-0.8))/((Float_t) mixedUSPeakEta->Integral(etaAxis->FindBin(-1.5), etaAxis->FindBin(-0.8))) + (sameUSPeakEta->Integral(etaAxis->FindBin(0.8), etaAxis->FindBin(1.5))/mixedUSPeakEta->Integral(etaAxis->FindBin(0.8), etaAxis->FindBin(1.5))));
+        sameUSPeakEta->Draw("H SAME");
+        mixedUSPeakEta->Scale(etaScale);
+        mixedUSPeakEta->Draw("H SAME");
+    }
 
 }

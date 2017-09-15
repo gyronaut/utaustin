@@ -79,6 +79,10 @@ private:
     TH2F        *fTPCKaonNSig;//!TPC Nsigma
 
     THnSparseF  *fTrigDist;//! trigger distribution
+    TH2D        *fTrigSameUSDist;//! trigger count for same dist, US pairs
+    TH2D        *fTrigMixUSDist;//! trigger count for mix dist, US pairs
+    TH2D        *fTrigSameLSDist;//! trigger count for same dist, LS pairs
+    TH2D        *fTrigMixLSDist;//! trigger count for mix dist, LS pairs
     
     TH2D        *fLSMixStatZVtx;//! stats for mixed events
     TH2D        *fLSMixTrackStatZVtx;//! stats for mixed events

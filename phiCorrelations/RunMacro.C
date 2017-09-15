@@ -18,11 +18,11 @@ void RunMacro()
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiCorrelations_LHC16q";
-   char* output_dir = "output_2017_06_23";
+   char* output_dir = "output_2017_09_13_FAST_0_20";
    Int_t ttl = 50000;
-   Int_t noffiles = 20;
+   Int_t noffiles = 40;
    Int_t runcycle[]={0,32};
-//   Int_t runcycle[]={0,1,18,24,32};
+//   Int_t runcycle[]={0,18,32};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -40,7 +40,7 @@ void RunMacro()
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(2);
   //alienHandler->SetAPIVersion("V1.1x");
-  alienHandler->SetAliPhysicsVersion("vAN-20170623-1");
+  alienHandler->SetAliPhysicsVersion("vAN-20170731-1");
   //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
   //alienHandler->SetDataPattern("*ESDs.root");
@@ -142,8 +142,8 @@ void RunMacro()
 
     //create a task
     AliAnalysisTaskhPhiCorr *task1 = AddTaskQA(0.0, 20.0);
-    AliAnalysisTaskhPhiCorr *task2 = AddTaskQA(20.0, 50.0);
-    AliAnalysisTaskhPhiCorr *task3 = AddTaskQA(50.0, 100.0);
+    //AliAnalysisTaskhPhiCorr *task2 = AddTaskQA(20.0, 50.0);
+    //AliAnalysisTaskhPhiCorr *task3 = AddTaskQA(50.0, 100.0);
 
    if (!mgr->InitAnalysis())
      return;

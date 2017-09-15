@@ -91,18 +91,18 @@ void plotLSCorrected(string inputname){
     legend->SetBorderSize(0);
 
     TCanvas* ceta20peak = new TCanvas("ceta20peak", "ceta20peak", 50, 50, 800, 800);
-    ceta20peak->Divide(2,2);
+    //ceta20peak->Divide(2,2);
     ceta20peak->cd(1)->SetTheta(50);
     ceta20peak->cd(1)->SetPhi(50);
     eta20peak->Draw("SURF1");
-    ceta20peak->cd(2);
-    eta20peakEta->Draw("H");
-    ceta20peak->cd(3);
-    eta20peakPhiNarrow->GetYaxis()->SetRangeUser(0.5*eta20peakPhiNarrowest->GetMinimum(), 1.2*eta20peakPhiNarrow->GetMaximum());
+    //ceta20peak->cd(2);
+    //eta20peakEta->Draw("H");
+    //ceta20peak->cd(3);
+    //eta20peakPhiNarrow->GetYaxis()->SetRangeUser(0.5*eta20peakPhiNarrowest->GetMinimum(), 1.2*eta20peakPhiNarrow->GetMaximum());
 //    eta20peakPhi->Draw("H");
-    eta20peakPhiNarrow->Draw("H");
-    eta20peakPhiNarrowest->Draw("H SAME");
-    legend->Draw();
+    //eta20peakPhiNarrow->Draw("H");
+    //eta20peakPhiNarrowest->Draw("H SAME");
+    //legend->Draw();
 
     TCanvas* ceta20RSB = new TCanvas("ceta20RSB", "ceta20RSB", 60, 60, 800, 800);
     ceta20RSB->Divide(2,2);
