@@ -47,12 +47,13 @@ private:
    
     TObjArray* AddToTracks();
     Bool_t MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
-    void MakeMixCorrelations(std::vector<AliPhiContainer> phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS);
+    void MakeMixCorrelations(AliPhiContainer* phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS);
     void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
   
     AliVEvent   *fVevent;  //!event object
     AliEventPoolManager *fPoolMgr; //! Event pool manager for mixed event
     AliEventPoolManager *fLSPoolMgr; //! Event pool manager for LS mixed event
+    AliEventPoolManager *fHHPoolMgr; //! Event pool manager for HH
     AliESDEvent *fESD;    //!ESD object
     AliAODEvent *fAOD;    //!AOD object
     AliPIDResponse *fpidResponse; //!pid response
@@ -80,9 +81,8 @@ private:
 
     THnSparseF  *fTrigDist;//! trigger distribution
     TH2D        *fTrigSameUSDist;//! trigger count for same dist, US pairs
-    TH2D        *fTrigMixUSDist;//! trigger count for mix dist, US pairs
     TH2D        *fTrigSameLSDist;//! trigger count for same dist, LS pairs
-    TH2D        *fTrigMixLSDist;//! trigger count for mix dist, LS pairs
+    TH2D        *fTrigHHDist;//! trigger count for hh pairs
     
     TH2D        *fLSMixStatZVtx;//! stats for mixed events
     TH2D        *fLSMixTrackStatZVtx;//! stats for mixed events
@@ -90,6 +90,9 @@ private:
     TH2D        *fUSMixStatZVtx;//! stats for mixed events
     TH2D        *fUSMixTrackStatZVtx;//! stats for mixed events
     TH1D        *fUSNoMixEvents;//! number of mixed events
+    TH2D        *fHHMixStatZVtx;//! stats for mixed events
+    TH2D        *fHHMixTrackStatZVtx;//! stats for mixed events
+    TH1D        *fHHNoMixEvents;//! number of mixed events
 
     THnSparseF  *fKKUSDist;//! unlike sign kaon distribution
     THnSparseF  *fKKLSDist;//! like sign kaon distribution
