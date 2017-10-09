@@ -35,7 +35,7 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
         mixedEta[zbin] = mix2D[zbin]->ProjectionX(Form("mixedEta_zvtx_%i", zbin), 1, mix2D[zbin]->GetYaxis()->GetNbins());
 
         //scale mixed by number of triggers in zvtx bin
-        mix2D[zbin]->Scale(1.0/trigMixScale[zbin]);
+        //mix2D[zbin]->Scale(1.0/trigMixScale[zbin]);
 
         scale = 0.5*(float)(mix2D[zbin]->GetBinContent(mix2D[zbin]->GetXaxis()->FindBin(0.01), mix2D[zbin]->GetYaxis()->FindBin(0.0)) + mix2D[zbin]->GetBinContent(mix2D[zbin]->GetXaxis()->FindBin(-0.01), mix2D[zbin]->GetYaxis()->FindBin(0.0)));
         printf("scale: %e \n", scale);
@@ -104,7 +104,6 @@ TH2D* makehhCorrections(TH3D* same3D, TH3D* mix3D){
 makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
     TFile *histoFile = new TFile(inputName.c_str());
     string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
-
     TList* list = (TList*) histoFile->Get(Form("phiCorr_mult%s", mult.c_str()));
     //histoFile->cd("PhiReconstruction");
 /*
@@ -118,16 +117,14 @@ makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float as
     TH1D* zVtx = InvMass->FindObject("fVtxZ");
 */
 
-    TH2D trigSameUSDist = (TH2D*)list->FindObject("fTrigSameUSDist");
-    TH2D trigMixUSDist = (TH2D*)list->FindObject("fTrigMixUSDist");
-    TH2D trigSameLSDist = (TH2D*)list->FindObject("fTrigSameLSDist");
-    TH2D trigMixLSDist = (TH2D*)list->FindObject("fTrigMixLSDist");
+    TH2D *trigSameUSDist = (TH2D*)list->FindObject("fTrigSameUSDist");
+    TH2D *trigSameLSDist = (TH2D*)list->FindObject("fTrigSameLSDist");
 
-    float trigMixScalesUS[10] = new float[10];
-    float trigMixScalesLS[10] = new float[10];
+    float trigMixScalesUS[10] = {};
+    float trigMixScalesLS[10] = {};
     for(int i = 0; i < 10; i++){
-        trigMixScaleUS[i] = (float) trigMixUSDist->Integral(trigMixUSDist->GetXaxis()->FindBin(trigPTLow), trigMixUSDist->GetXaxis()->FindBin(trigPTHigh), i+1, i+1);
-        trigMixScaleLS[i] = (float) trigMixLSDist->Integral(trigMixLSDist->GetXaxis()->FindBin(trigPTLow), trigMixLSDist->GetXaxis()->FindBin(trigPTHigh), i+1, i+1);
+        trigMixScalesUS[i] = (float) trigSameUSDist->Integral(trigSameUSDist->GetXaxis()->FindBin(trigPTLow), trigSameUSDist->GetXaxis()->FindBin(trigPTHigh), i+1, i+1);
+        trigMixScalesLS[i] = (float) trigSameLSDist->Integral(trigSameLSDist->GetXaxis()->FindBin(trigPTLow), trigSameLSDist->GetXaxis()->FindBin(trigPTHigh), i+1, i+1);
     }
 
     float totalTrigSameUS = (float)trigSameUSDist->Integral(trigSameUSDist->GetXaxis()->FindBin(trigPTLow), trigSameUSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameUSDist->GetYaxis()->GetNbins());
@@ -160,6 +157,16 @@ makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float as
     dphiHPhi->GetAxis(5)->SetRange(1,dphiHPhi->GetAxis(5)->GetNbins());
     dphiHPhi->GetAxis(4)->SetRangeUser(-10.0, 10.0);
 
+    dphiHKK->GetAxis(5)->SetRange(1,dphiHKK->GetAxis(5)->GetNbins());
+    dphiHKK->GetAxis(4)->SetRangeUser(-10.0, 10.0);
+
+    dphiHPhiMixed->GetAxis(5)->SetRange(1,dphiHPhiMixed->GetAxis(5)->GetNbins());
+    dphiHPhiMixed->GetAxis(4)->SetRangeUser(-10.0, 10.0);
+
+    dphiHKKMixed->GetAxis(5)->SetRange(1,dphiHKKMixed->GetAxis(5)->GetNbins());
+    dphiHKKMixed->GetAxis(4)->SetRangeUser(-10.0, 10.0);
+
+
     Int_t axes[] = {2,3,4,5};
 
     THnSparseF* hPhi = dphiHPhi->Projection(4, axes);
@@ -184,50 +191,50 @@ makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float as
     TH1D* sameLSLsideEta[10];
     TH1D* mixedLSLsideEta[10];
 
-    TH2D* hPhi2Dpeak = makeCorrections(hPhi, hPhiMixed, 1.010, 1.030, sameUSPeakEta, mixedUSPeakEtai, trigMixScaleUS, totalTrigSameUS);
+    TH2D* hPhi2Dpeak = makeCorrections(hPhi, hPhiMixed, 1.010, 1.030, sameUSPeakEta, mixedUSPeakEta, trigMixScalesUS, totalTrigSameUS);
     hPhi2Dpeak->SetName("hPhi2Dpeak");
     for(int i = 0; i<10; i++){
         sameUSPeakEta[i]->SetName(Form("sameUSPeakEta_zvtx_%i", i));
         mixedUSPeakEta[i]->SetName(Form("mixedUSPeakEta_zvtx_%i", i));
     }
-    TH2D* hKK2Dpeak = makeCorrections(hKK, hKKMixed, 1.010, 1.030, sameLSPeakEta, mixedLSPeakEta, trigMixScaleLS, totalTrigSameLS);
+    TH2D* hKK2Dpeak = makeCorrections(hKK, hKKMixed, 1.010, 1.030, sameLSPeakEta, mixedLSPeakEta, trigMixScalesLS, totalTrigSameLS);
     hKK2Dpeak->SetName("hKK2Dpeak");
     for(int i = 0; i<10; i++){
         sameLSPeakEta[i]->SetName(Form("sameLSPeakEta_zvtx_%i", i));
         mixedLSPeakEta[i]->SetName(Form("mixedLSPeakEta_zvtx_%i", i));
     } 
-    TH2D* hPhi2DRside = makeCorrections(hPhi, hPhiMixed, 1.040, 1.060, sameUSRsideEta, mixedUSRsideEta, trigMixScaleUS, totalTrigSameUS);
+    TH2D* hPhi2DRside = makeCorrections(hPhi, hPhiMixed, 1.040, 1.060, sameUSRsideEta, mixedUSRsideEta, trigMixScalesUS, totalTrigSameUS);
     hPhi2DRside->SetName("hPhi2DRside");
     for(int i = 0; i<10; i++){
         sameUSRsideEta[i]->SetName(Form("sameUSRsideEta_zvtx_%i", i));
         mixedUSRsideEta[i]->SetName(Form("mixedUSRsideEta_zvtx_%i", i));
     }
-    TH2D* hKK2DRside = makeCorrections(hKK, hKKMixed, 1.040, 1.060, sameLSRsideEta, mixedLSRsideEta, trigMixScaleLS, totalTrigSameLS);
+    TH2D* hKK2DRside = makeCorrections(hKK, hKKMixed, 1.040, 1.060, sameLSRsideEta, mixedLSRsideEta, trigMixScalesLS, totalTrigSameLS);
     hKK2DRside->SetName("hKK2DRside");
     for(int i = 0; i<10; i++){
         sameLSRsideEta[i]->SetName(Form("sameLSRsideEta_zvtx_%i", i));
         mixedLSRsideEta[i]->SetName(Form("mixedLSRsideEta_zvtx_%i", i));
     }
-    TH2D* hPhi2DLside = makeCorrections(hPhi, hPhiMixed, 0.995, 1.005, sameUSLsideEta, mixedUSLsideEta, trigMixUSDist, totalTrigSameUS);
+    TH2D* hPhi2DLside = makeCorrections(hPhi, hPhiMixed, 0.995, 1.005, sameUSLsideEta, mixedUSLsideEta, trigMixScalesUS, totalTrigSameUS);
     hPhi2DLside->SetName("hPhi2DLside");
     for(int i = 0; i<10; i++){
         sameUSLsideEta[i]->SetName(Form("sameUSLsideEta_zvtx_%i", i));
         mixedUSLsideEta[i]->SetName(Form("mixedUSLsideEta_zvtx_%i", i));
     }
-    TH2D* hKK2DLside = makeCorrections(hKK, hKKMixed, 0.995, 1.005, sameLSLsideEta, mixedLSLsideEta, trigMixLSDist, totalTrigSameLS);
+    TH2D* hKK2DLside = makeCorrections(hKK, hKKMixed, 0.995, 1.005, sameLSLsideEta, mixedLSLsideEta, trigMixScalesLS, totalTrigSameLS);
     hKK2DLside->SetName("hKK2DLside");
     for(int i = 0; i<10; i++){
         sameLSLsideEta[i]->SetName(Form("sameLSLsideEta_zvtx_%i", i));
         mixedLSLsideEta[i]->SetName(Form("mixedLSLsideEta_zvtx_%i", i));
     }
-
+    /*
     TH2D* hh2D = makehhCorrections(hh, hhMixed);
     hh2D->SetName("hh2D");
 
     hh->GetZaxis()->SetRangeUser(-10.0, 10.0);
     TH2D* uncorrhh2D = hh->Project3D("xye");
     uncorrhh2D->SetName("uncorrhh2D");
-
+    */
     //Create some uncorrected same/mixed event 2D histos
     hPhi->GetAxis(3)->SetRangeUser(1.010, 1.030);
     hPhiMixed->GetAxis(3)->SetRangeUser(1.010, 1.030);
@@ -326,8 +333,6 @@ makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float as
     hKK2DRside->Write();
     hPhi2DLside->Write();
     hKK2DLside->Write();
-    hh2D->Write();
-    uncorrhh2D->Write();
     uncorrhPhi2Dpeak->Write();
     uncorrhKK2Dpeak->Write();
     uncorrhPhiMixed2Dpeak->Write();
