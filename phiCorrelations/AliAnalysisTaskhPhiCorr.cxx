@@ -343,7 +343,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
 
     
     // Additional Histograms for US and LS Kaon pairs:
-    Int_t bins[4] = {100, 120, 100, 50}; //pt, invmass, phi, eta
+    Int_t bins[4] = {10, 12, 64, 64}; //pt, invmass, phi, eta
     Double_t min[4] = {0.1, 0.98, 0, -2.0};
     Double_t max[4] = {10.1, 1.1, 6.28, 2.0};
  
@@ -366,8 +366,8 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fUSpairsPerEvent); 
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
-    Int_t dphi_bins[7]=    {18,   39,    64,  64, 10, 45};
-    Double_t dphi_min[7] = {2.0,   0.5, -1.57, -2.0, -10.0, 0.98};
+    Int_t dphi_bins[7]=    {18,   19,    64,  64,      10,    9};
+    Double_t dphi_min[7] = {2.0,   1.0, -1.57, -2.0, -10.0, 0.98};
     Double_t dphi_max[7] = {20.0, 20.0,  4.71,  2.0, 10.0, 1.07};
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 6, dphi_bins, dphi_min, dphi_max);
@@ -770,6 +770,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
     AliAODTrack *atriggerTrack = 0x0;
     AliVParticle* VtriggerTrack = 0x0;   
     AliCFParticle *cfPart = 0x0;
+    AliCFParticle *hhAssoc = new AliCFParticle(0.0, 0.0, 0.0, 0, 0);
     for (Int_t itrack = 0; itrack < ntracks; itrack++) {
 
         VtriggerTrack = 0x0;
@@ -865,18 +866,21 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
                         hhdphi_point[4] = Zvertex;
                         hhdphi_point[5] = multPercentile;
                         fDphiHH->Fill(hhdphi_point);
-                        //AliCFParticle *hhAssoc = new AliCFParticle(aassocTrack->Pt(), aassocTrack->Eta(), aassocTrack->Phi(), aassocTrack->Charge(), 0);
-                        //if(fHHPoolMgr->GetEventPool(multPercentile, Zvertex)->IsReady()){
-                        //    MakeHHMixCorrelations(hhAssoc, fDphiHHMixed, multPercentile, Zvertex);
-                        //}
+                        hhAssoc->SetPt(aassocTrack->Pt());
+                        hhAssoc->SetEta(aassocTrack->Eta());
+                        hhAssoc->SetPhi(aassocTrack->Phi());
+                        hhAssoc->SetCharge(aassocTrack->Charge());
+                        if(fHHPoolMgr->GetEventPool(multPercentile, Zvertex)->IsReady()){
+                            MakeHHMixCorrelations(hhAssoc, fDphiHHMixed, multPercentile, Zvertex);
+                        }
                     }
                 }
             } 
             
             if(multPercentile <= 100.0 && TMath::Abs(Zvertex) < 10.0){
-                //fTrigHHDist->Fill(triggerTrack->Pt(), Zvertex);
-                //cfPart = new AliCFParticle(triggerTrack->Pt(), triggerTrack->Eta(), triggerTrack->Phi(), triggerTrack->Charge(), 0);
-                //fArrayHHTracksMix->Add(cfPart);
+                cfPart = new AliCFParticle(triggerTrack->Pt(), triggerTrack->Eta(), triggerTrack->Phi(), triggerTrack->Charge(), 0);
+                fTrigHHDist->Fill(triggerTrack->Pt(), Zvertex);
+                fArrayHHTracksMix->Add(cfPart);
             }
             if(!isTriggerDaughter){
                 cfPart = new AliCFParticle(triggerTrack->Pt(), triggerTrack->Eta(), triggerTrack->Phi(), triggerTrack->Charge(), 0);
@@ -890,11 +894,12 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
             }
         }
     } //track loop
-
+    delete hhAssoc;
 
     ntracks = fVevent->GetNumberOfTracks();
 
     if(multPercentile <= 100. && TMath::Abs(Zvertex) < 10.0){
+        
         if(phiCandidates.size() > 0){
             AliEventPool *fPool = 0x0;
             fPool = fPoolMgr->GetEventPool(multPercentile, Zvertex); // Get the buffer associated with the current centrality and z-vtx
@@ -928,7 +933,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
                     fLSPool->UpdatePool(fArrayLSTracksMix);
                 }
             }
-        }
+        }        
         AliEventPool *fHHPool = 0x0;
         fHHPool = fHHPoolMgr->GetEventPool(multPercentile, Zvertex);
         if(!fHHPool){

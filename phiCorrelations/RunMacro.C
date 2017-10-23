@@ -17,11 +17,11 @@ void RunMacro()
    Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiCorrelations_LHC16q";
-   char* output_dir = "output_2017_10_08_FAST_0_20_test";
+   char* work_dir = "PhiCorrelations_LHC16q_20_50";
+   char* output_dir = "output_2017_10_23_FAST";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   Int_t runcycle[]={0,32};
+   Int_t runcycle[]={0,1,32};
 //   Int_t runcycle[]={0,18,32};
    Bool_t UseParfiles = kFALSE;
 
@@ -90,7 +90,7 @@ void RunMacro()
    alienHandler->SetPrice(1);
    alienHandler->SetSplitMode("se");
    alienHandler->SetMasterResubmitThreshold(10);
-   alienHandler->SetMergeExcludes("EventStat_temp.root");
+   alienHandler->SetMergeExcludes("AnalysisResults.root,EventStat_temp.root");
    alienHandler->SetOutputToRunNo(kTRUE);
    alienHandler->SetKeepLogs(kTRUE);
    alienHandler->SetMaxMergeFiles(15);
@@ -141,8 +141,8 @@ void RunMacro()
     AddTaskPIDResponse(isMC);
 
     //create a task
-    AliAnalysisTaskhPhiCorr *task1 = AddTaskQA(0.0, 20.0);
-    //AliAnalysisTaskhPhiCorr *task2 = AddTaskQA(20.0, 50.0);
+    //AliAnalysisTaskhPhiCorr *task1 = AddTaskQA(0.0, 20.0);
+    AliAnalysisTaskhPhiCorr *task2 = AddTaskQA(20.0, 50.0);
     //AliAnalysisTaskhPhiCorr *task3 = AddTaskQA(50.0, 100.0);
 
    if (!mgr->InitAnalysis())
