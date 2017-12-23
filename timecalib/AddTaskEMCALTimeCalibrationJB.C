@@ -28,7 +28,7 @@
 
 AliAnalysisTaskEMCALTimeCalibJB* AddTaskEMCALTimeCalibrationJB(TString  outputFile = "", // timeResults.root
 							     TString  geometryName = "",//EMCAL_COMPLETE12SMV1_DCAL_8SM
-							     Double_t minClusterEne = 1.0,
+							     Double_t minClusterEne = 0.9,
 							     Double_t maxClusterEne = 500,
 							     Int_t    minNcells = 2,
 							     Int_t    maxNcells = 200,
@@ -41,11 +41,11 @@ AliAnalysisTaskEMCALTimeCalibJB* AddTaskEMCALTimeCalibrationJB(TString  outputFi
 							     Double_t minTime = -20.,
 							     Double_t maxTime = 20.,
 							     Bool_t   pileupFromSPDFlag = kFALSE,
-							     TString  referenceFileName = "",//Reference.root
-							     TString  referenceSMFileName = "",//ReferenceSM.root
+							     TString  referenceFileName = "alien:///alice/cern.ch/user/j/jblair/TimeCalibRef/Reference_LHC17n_mcp1_step3.root",//Reference.root
+							     TString  referenceSMFileName = "alien:///alice/cern.ch/user/j/jblair/TimeCalibRef/ReferenceSM_LHC17n_mcp1_step1.root",//ReferenceSM.root
 							     Bool_t   badReconstruction = kFALSE,
-							     Bool_t   fillHeavyHistos = kFALSE,
-							     Int_t    badMapType = 0,
+							     Bool_t   fillHeavyHistos = kTRUE,
+							     Int_t    badMapType = 1,
 							     TString  badMapFileName = "")
 {
   // Get the pointer to the existing analysis manager via the static access method.

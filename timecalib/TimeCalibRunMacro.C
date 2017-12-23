@@ -14,14 +14,15 @@ void TimeCalibRunMacro()
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
    const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "TimeCalibWork";
-   char* output_dir = "QMPlots";
+   char* output_dir = "LHC16k_check";
    Int_t ttl = 50000;
-   Int_t noffiles = 20;
-   Int_t runcycle[]={0,1};
+   Int_t noffiles = 40;
+   //Int_t runcycle[]={0,10,40,60,80,95,110,125,140,155,170};
+   Int_t runcycle[] ={0,70,140};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -47,15 +48,15 @@ void TimeCalibRunMacro()
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(5);
   alienHandler->SetAPIVersion("V1.1x");
-  alienHandler->SetROOTVersion("v5-34-30-alice5-2");
-  alienHandler->SetAliROOTVersion("v5-08-16-1");
-  alienHandler->SetAliPhysicsVersion("vAN-20160901-1");
+  //alienHandler->SetROOTVersion("v5-34-30-alice5-2");
+  //alienHandler->SetAliROOTVersion("v5-08-16-1");
+  alienHandler->SetAliPhysicsVersion("vAN-20171125-1");
   //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  alienHandler->SetGridDataDir("//alice/data/2015/LHC15j/");
-  alienHandler->SetDataPattern("*/muon_calo_pass2/*/*ESDs.root");
+  alienHandler->SetGridDataDir("//alice/data/2016/LHC16k/");
+  alienHandler->SetDataPattern("*/muon_calo_pass1/*/*ESDs.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
    
@@ -67,11 +68,17 @@ void TimeCalibRunMacro()
  //   Int_t runArray[] = {244628, 244627, 244626, 244619, 244618, 244617, 244542, 244540, 244531, 244484, 244483, 244482, 244481, 244480, 244456, 244453, 244421, 244418, 244416, 244411, 244377, 244364, 244359, 244355, 244351, 244340};
 
 //LHC15j_mcp2
-    Int_t runArray[] = {237050};
+    //Int_t runArray[] = {237050};
 
 //LHC10d4 - MC Data
     //Int_t runArray[] = {119159, 119161, 119163, 119841, 119842, 119844, 119845, 119846, 119849, 119853, 119856, 119859, 119862, 120067, 120069, 120072, 120073, 120076, 120079, 120244, 120503, 120504, 120505, 120616, 120617, 120671, 120741, 120750, 120758, 120820, 120821, 120822, 120823, 120824, 120825, 120829};
    // Int_t runArray[] = {120073}; //for testing why files were being opened but not closed
+
+//LHC17n Xe-Xe run
+   // Int_t runArray[] = {280234, 280235};
+
+  //LHC16k
+  Int_t runArray[] = {258048, 258049, 257026, 257539, 257540, 257541, 257537, 258059, 256514, 258062, 258063, 257560, 257561, 257562, 257563, 257564, 257566, 256506, 256552, 256554, 256556, 256560, 256561, 256562, 256564, 257077, 257590, 256567, 257080, 256692, 257594, 258107, 258108, 258109, 258113, 258114, 257092, 257605, 257606, 257100, 256589, 256591, 256592, 256697, 257635, 257642, 256619, 256620, 257136, 257137, 257138, 257139, 257140, 257141, 257142, 257144, 257145, 258178, 257474, 257682, 258197, 258198, 257687, 257689, 258202, 258203, 258204, 257694, 257697, 256676, 256677, 256681, 256684, 256694, 256691, 257204, 257206, 256695, 257209, 257724, 257733, 257734, 257735, 257224, 257737, 258256, 258257, 258258, 257754, 258270, 258271, 258273, 258274, 257765, 258278, 258280, 257260, 257773, 258299, 258301, 258302, 258303, 258306, 258307, 257797, 257798, 257799, 257800, 257803, 257318, 257320, 257322, 257587, 258359, 257850, 257855, 256941, 258387, 258388, 256512, 258393, 257082, 257083, 257892, 257893, 257084, 256658, 257912, 258426, 256565, 257936, 257937, 257939, 258454, 258456, 257433, 258117, 257691, 257958, 257960, 257692, 257963, 258477, 256942, 256944, 257457, 258498, 258499, 257487, 257490, 257491, 257492, 258012, 257530, 258014, 258017, 258019, 258537, 257021, 257011, 257012, 256504, 257364, 258042, 257531, 258045, 256510};
 
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
@@ -144,7 +151,7 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
 //   AddTaskPIDResponse(isMC);
     //create a task
     if(!TGrid::Connect("alien://")) return;
-   AliAnalysisTaskEMCALTimeCalibJB *task = AddTaskEMCALTimeCalibrationJB("AnalysisResults.root","",0.9,500,2,200,0.1,4.,0.1,4.,0.025,0.4,0.0,1000.,kFALSE,"","",kFALSE,kTRUE,1,"");
+   AliAnalysisTaskEMCALTimeCalibJB *task = AddTaskEMCALTimeCalibrationJB("AnalysisResults.root","",0.9,500,2,200,0.1,4.,0.1,4.,0.025,0.4,-20., 20., kFALSE, "alien:///alice/cern.ch/user/a/amatyja/TimeCalibRef/Reference_LHC16k.root", "alien:///alice/cern.ch/user/a/amatyja/TimeCalibRef/ReferenceSM_LHC16k_pass1_v2.root",kFALSE, kFALSE, 1, "");
 
    if (!mgr->InitAnalysis())
      return;

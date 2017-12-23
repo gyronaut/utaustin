@@ -51,6 +51,7 @@ class TH1F;
 class TH1D;
 class TH2D;
 class TH1C;
+class TH3F;
 
 //class AliESDEvent;
 //class AliESDCaloCluster;
@@ -132,6 +133,7 @@ class AliAnalysisTaskEMCALTimeCalibJB : public AliAnalysisTaskSE
     fhAllAverageLGBC(),
     fhRefRuns(0),
     fhTimeDsup(),
+    fhTimeDsup3(),
     fhTimeDsupBC(),
     fhTimeDsupLG(),
     fhTimeDsupLGBC(),
@@ -364,6 +366,8 @@ class AliAnalysisTaskEMCALTimeCalibJB : public AliAnalysisTaskSE
   TH2F		*fhTimeDsupBC[kNSM][kNBCmask];  //!<! 20 x 4 high gain
   TH2F		*fhTimeDsupLG  [kNSM];            //!<! 20 SM low gain
   TH2F		*fhTimeDsupLGBC[kNSM][kNBCmask];  //!<! 20 x 4 low gain
+
+  TH3F      *fhTimeDsup3; //!
 
   //main histos for raw time
   TH2F          *fhRawTimeVsIdBC     [kNBCmask]; //!<! 4 BCmask HG
