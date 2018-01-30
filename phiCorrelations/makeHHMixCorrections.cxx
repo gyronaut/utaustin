@@ -162,7 +162,8 @@ makeHHMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float 
     
     TH2D* hh2D = makehhCorrections(hh, hhMixed);
     hh2D->SetName("hh2D");
-    hh2D->Scale(1.0/(hh2D->Integral(hh2D->GetXaxis()->FindBin(-1.2), hh2D->GetXaxis()->FindBin(1.2), 1, hh2D->GetYaxis()->GetNbins())));
+    hh2D->Scale(1.0/totalTrig);
+    //hh2D->Scale(1.0/(hh2D->Integral(hh2D->GetXaxis()->FindBin(-1.2), hh2D->GetXaxis()->FindBin(1.2), 1, hh2D->GetYaxis()->GetNbins())));
 
     TH1D* hhdphi = hh2D->ProjectionY("hhdphi", hh2D->GetXaxis()->FindBin(-1.2), hh2D->GetXaxis()->FindBin(1.2));
     hhdphi->Scale(1.0/(hhdphi->Integral()));
@@ -172,7 +173,7 @@ makeHHMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float 
     uncorrhh2D->SetName("uncorrhh2D");
     uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2), uncorrhh2D->GetXaxis()->FindBin(1.2), 1, uncorrhh2D->GetYaxis()->GetNbins())));
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_mixcorr_%s", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, inputName.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_hh_%s", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, inputName.c_str()), "RECREATE");
     hh2D->Write();
     hhdphi->Write();
     uncorrhh2D->Write(); 

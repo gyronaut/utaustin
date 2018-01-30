@@ -12,8 +12,8 @@ plotDPhiFits(string inputfile){
     hPhidphi_0_20->SetLineColor(kBlack);
     hPhidphi_0_20->GetXaxis()->SetTitle("#Delta#varphi");
     hPhidphi_0_20->SetTitle("");
-    hPhidphi_0_20->Scale(1.0/(hPhidphi_0_20->Integral()));
-    hPhidphi_0_20->GetYaxis()->SetTitle("Normalized Arb. Units");
+    //hPhidphi_0_20->Scale(1.0/(hPhidphi_0_20->Integral()));
+    hPhidphi_0_20->GetYaxis()->SetTitle("Arb. Units");
     hPhidphi_0_20->GetYaxis()->SetTitleOffset(1.70);
     hPhidphi_0_20->GetXaxis()->SetTitleSize(0.05);
     hPhidphi_0_20->GetXaxis()->SetTitleOffset(0.90);
@@ -96,7 +96,7 @@ plotDPhiFits(string inputfile){
  TPaveText *text = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
     text->AddText("ALICE Work in Progress");
     text->AddText("p-Pb #sqrt{s_{NN}} = 5 TeV");
-    text->AddText("0%-20% Multiplicity");
+    text->AddText("50%-100% Multiplicity");
     text->SetTextSizePixels(20);
     text->SetFillColor(kWhite);
 

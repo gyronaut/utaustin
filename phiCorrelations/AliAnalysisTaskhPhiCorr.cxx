@@ -649,7 +649,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
             fTPCnSigma = fpidResponse->NumberOfSigmasTPC(kaonTrack, AliPID::kKaon);
             fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(kaonTrack, AliPID::kKaon);
             //Cut on kaon candidates
-            if((TMath::Abs(fTPCnSigma) < 2.0) /*&& (TMath::Abs(fTOFnSigma) < 2.0)*/){
+            if((TMath::Abs(fTPCnSigma) < 3.0) && (TMath::Abs(fTOFnSigma) < 3.0)){
                 AliKaonContainer kaon;
                 kaon.trackNum = itrack;
                 kaon.particle.SetPx(kaonTrack->Px());
@@ -840,9 +840,11 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
             trigPoint[2] = triggerTrack->Eta();
             fTrigDist->Fill(trigPoint);
             
-            Bool_t isTriggerDaughter = MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi, Zvertex);
-            Bool_t isTriggerLSDaughter = MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK, Zvertex);
+            //Bool_t isTriggerDaughter = MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi, Zvertex);
+            //Bool_t isTriggerLSDaughter = MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK, Zvertex);
 
+            //di-hadron correlations
+            
             for(Int_t jtrack = 0; jtrack < ntracks; jtrack++){
                 if(itrack != jtrack){
                     AliVTrack *assocTrack = 0x0;
@@ -875,13 +877,17 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
                         }
                     }
                 }
-            } 
+                
+            }
+            
+            
             
             if(multPercentile <= 100.0 && TMath::Abs(Zvertex) < 10.0){
                 cfPart = new AliCFParticle(triggerTrack->Pt(), triggerTrack->Eta(), triggerTrack->Phi(), triggerTrack->Charge(), 0);
                 fTrigHHDist->Fill(triggerTrack->Pt(), Zvertex);
                 fArrayHHTracksMix->Add(cfPart);
             }
+            /*
             if(!isTriggerDaughter){
                 cfPart = new AliCFParticle(triggerTrack->Pt(), triggerTrack->Eta(), triggerTrack->Phi(), triggerTrack->Charge(), 0);
                 fTrigSameUSDist->Fill(triggerTrack->Pt(), Zvertex); //filled once per trigger, only if the trigger isn't a US pair daughter
@@ -892,6 +898,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
                 fTrigSameLSDist->Fill(triggerTrack->Pt(), Zvertex); //filled once per trigger, only if the trigger isn't a LS pair daughter
                 fArrayLSTracksMix->Add(cfPart);
             }
+            */
         }
     } //track loop
     delete hhAssoc;
@@ -899,7 +906,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
     ntracks = fVevent->GetNumberOfTracks();
 
     if(multPercentile <= 100. && TMath::Abs(Zvertex) < 10.0){
-        
+        /*
         if(phiCandidates.size() > 0){
             AliEventPool *fPool = 0x0;
             fPool = fPoolMgr->GetEventPool(multPercentile, Zvertex); // Get the buffer associated with the current centrality and z-vtx
@@ -933,7 +940,10 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
                     fLSPool->UpdatePool(fArrayLSTracksMix);
                 }
             }
-        }        
+        }
+        */
+        //di-hadron event pool
+        
         AliEventPool *fHHPool = 0x0;
         fHHPool = fHHPoolMgr->GetEventPool(multPercentile, Zvertex);
         if(!fHHPool){
@@ -942,6 +952,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
         }else{
             fHHPool->UpdatePool(fArrayHHTracksMix);
         }
+        
     }
 
     PostData(1, fOutputList);

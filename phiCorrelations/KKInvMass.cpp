@@ -3,11 +3,14 @@
 KKInvMass(){
     gStyle->SetOptStat(0);
     
-    TFile* file = new TFile("/Users/jtblair/phiStudies/phiCorrelations_LHC16q_20170314.root");
-    file->cd("PhiReconstruction");
-    THnSparseF* kkUSDist = (THnSparseF*)InvMass->FindObject("fkkUSDist");
-    THnSparseF* kkLSDist = (THnSparseF*)InvMass->FindObject("fkkLSDist");
-    
+    TFile* file = new TFile("phiCorrelations_mult_20_50.root");
+    //file->cd("PhiReconstruction");
+    //THnSparseF* kkUSDist = (THnSparseF*)InvMass->FindObject("fkkUSDist");
+    //THnSparseF* kkLSDist = (THnSparseF*)InvMass->FindObject("fkkLSDist");
+    TList* list = (TList*) file->Get("phiCorr_mult_20_50");
+    THnSparseF* kkUSDist= (THnSparseF*)list->FindObject("fkkUSDist");
+    THnSparseF* kkLSDist= (THnSparseF*)list->FindObject("fkkLSDist");
+
     kkUSDist->GetAxis(0)->SetRangeUser(2.0, 4.0);
     kkLSDist->GetAxis(0)->SetRangeUser(2.0, 4.0);
     
