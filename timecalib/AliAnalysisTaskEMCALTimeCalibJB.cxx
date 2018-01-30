@@ -570,7 +570,7 @@ void AliAnalysisTaskEMCALTimeCalibJB::UserCreateOutputObjects()
   }
  
   //New code!! for checking SM 3
-  fhTimeDsup3 = new TH3F("SupMod3Detail", "SupMod3Detail time_vs_E, high gain", fEnergyNbins, fEnergyMin, fEnergyMax, 300, -75.0, 75.0, 1152, 3456, 4607);
+  fhTimeDsup3 = new TH3F("SupMod3Detail", "SupMod3Detail time_vs_E, high gain", fEnergyNbins, fEnergyMin, fEnergyMax, 300, -75.0, 75.0, 1151, 3456, 4607);
   
 
   fhTimeVsBC = new TH2F("TimeVsBC"," SupMod time_vs_BC ", 4001,-0.5,4000.5,(Int_t)(fRawTimeNbins/2.),fRawTimeMin,fRawTimeMax); 
