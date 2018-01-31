@@ -90,26 +90,32 @@ intRatioPlot(){
     hphiBG->SetParameter(0, 1.0*corrFit2->GetParameter(6));
     hphiBG->SetLineStyle(2);
 
-    float near = hPhidphi_0_20->Integral(2,7);
-    near  = near - hphiBG->GetParameter(0)*6.0;
-    near = near/(hhdphi_0_20->Integral(2,7) - hhBG->GetParameter(0)*6.0);
+    float near0_20hPhiYield = hPhidphi_0_20->Integral(2,7) - hphiBG->GetParameter(0)*6.0;
+    float near0_20hhYield = hhdphi_0_20->Integral(2,7) - hhBG->GetParameter(0)*6.0;
+    float away0_20hPhiYield = hPhidphi_0_20->Integral(9,16) - hphiBG->GetParameter(0)*8.0;
+    float away0_20hhYield = hhdphi_0_20->Integral(9,16)- hhBG->GetParameter(0)*8.0;
+    float mid0_20hPhiYield = hphiBG->GetParameter(0)*16.0;
+    float mid0_20hhYield = hhBG->GetParameter(0)*16.0;
+    float total0_20hPhiYield = hPhidphi_0_20->Integral(1, 16);
+    float total0_20hhYield = hhdphi_0_20->Integral(1, 16);
 
-    float away = hPhidphi_0_20->Integral(9,16);
-    away  = away - hphiBG->GetParameter(0)*8.0;
-    away = away/(hhdphi_0_20->Integral(9,16) - hhBG->GetParameter(0)*8.0);
+    float near020 = near0_20hPhiYield/near0_20hhYield;
+    float away020 = away0_20hPhiYield/away0_20hhYield;
+    float mid020 = mid0_20hPhiYield/mid0_20hhYield;
+    float total020 = total0_20hPhiYield/total0_20hhYield;
 
-    float mid = hphiBG->GetParameter(0)/hhBG->GetParameter(0);
-
-    TH1D *ratios = new TH1D("ratios", "(h-#phi / h-h) Ratios", 3, 0, 3);
-    ratios->GetXaxis()->SetBinLabel(1, "near-side");
-    ratios->SetBinContent(1, near);
-    ratios->GetXaxis()->SetBinLabel(2, "mid");
-    ratios->SetBinContent(2, mid);
-    ratios->GetXaxis()->SetBinLabel(3, "away-side");
-    ratios->SetBinContent(3, away);
-    ratios->SetMarkerStyle(22);
-    ratios->SetMarkerColor(kRed+2);
-    ratios->SetMarkerSize(4);
+    TH1D *ratios020 = new TH1D("ratios020", "(h-#phi / h-h) Ratios", 4, 0, 4);
+    ratios020->GetXaxis()->SetBinLabel(1, "near-side");
+    ratios020->SetBinContent(1, near020);
+    ratios020->GetXaxis()->SetBinLabel(2, "mid");
+    ratios020->SetBinContent(2, mid020);
+    ratios020->GetXaxis()->SetBinLabel(3, "away-side");
+    ratios020->SetBinContent(3, away020);
+    ratios020->GetXaxis()->SetBinLabel(4, "total");
+    ratios020->SetBinContent(4, total020);
+    ratios020->SetMarkerStyle(22);
+    ratios020->SetMarkerColor(kRed+2);
+    ratios020->SetMarkerSize(4);
 
    //20-50 section 
     TFile *hhFile = new TFile("~/phiStudies/LHC16q_FAST_hh_20_50/trig_4_8_assoc_2_4_hh_phiCorrelations_mult_20_50.root");
@@ -200,23 +206,29 @@ intRatioPlot(){
     hphiBG_20_50->SetParameter(0, 1.0*corrFit2_2050->GetParameter(6));
     hphiBG_20_50->SetLineStyle(2);
 
-    float near2050 = hPhidphi_20_50->Integral(2,7);
-    near2050  = near2050 - hphiBG_20_50->GetParameter(0)*6.0;
-    near2050 = near2050/(hhdphi_20_50->Integral(2,7) - hhBG_20_50->GetParameter(0)*6.0);
+    float near20_50hPhiYield = hPhidphi_20_50->Integral(2,7) - hphiBG_20_50->GetParameter(0)*6.0;
+    float near20_50hhYield = hhdphi_20_50->Integral(2,7) - hhBG_20_50->GetParameter(0)*6.0;
+    float away20_50hPhiYield = hPhidphi_20_50->Integral(9,16) - hphiBG_20_50->GetParameter(0)*8.0;
+    float away20_50hhYield = hhdphi_20_50->Integral(9,16)- hhBG_20_50->GetParameter(0)*8.0;
+    float mid20_50hPhiYield = hphiBG_20_50->GetParameter(0)*16.0;
+    float mid20_50hhYield = hhBG_20_50->GetParameter(0)*16.0;
+    float total20_50hPhiYield = hPhidphi_20_50->Integral(1, 16);
+    float total20_50hhYield = hhdphi_20_50->Integral(1, 16);
 
-    float away2050 = hPhidphi_20_50->Integral(9,16);
-    away2050  = away2050 - hphiBG_20_50->GetParameter(0)*8.0;
-    away2050 = away2050/(hhdphi_20_50->Integral(9,16) - hhBG_20_50->GetParameter(0)*8.0);
+    float near2050 = near20_50hPhiYield/near20_50hhYield;
+    float away2050 = away20_50hPhiYield/away20_50hhYield;
+    float mid2050 = mid20_50hPhiYield/mid20_50hhYield;
+    float total2050 = total20_50hPhiYield/total20_50hhYield;
 
-    float mid2050 = hphiBG_20_50->GetParameter(0)/hhBG_20_50->GetParameter(0);
-
-    TH1D *ratios2050 = new TH1D("ratios2050", "(h-#phi / h-h) Ratios", 3, 0, 3);
+    TH1D *ratios2050 = new TH1D("ratios2050", "(h-#phi / h-h) Ratios", 4, 0, 4);
     ratios2050->GetXaxis()->SetBinLabel(1, "near-side");
     ratios2050->SetBinContent(1, near2050);
     ratios2050->GetXaxis()->SetBinLabel(2, "mid");
     ratios2050->SetBinContent(2, mid2050);
     ratios2050->GetXaxis()->SetBinLabel(3, "away-side");
     ratios2050->SetBinContent(3, away2050);
+    ratios2050->GetXaxis()->SetBinLabel(4, "total");
+    ratios2050->SetBinContent(4, total2050);
     ratios2050->SetMarkerStyle(21);
     ratios2050->SetMarkerColor(kBlue+2);
     ratios2050->SetMarkerSize(4);
@@ -311,46 +323,137 @@ intRatioPlot(){
     hphiBG_50_100->SetParameter(0, 1.0*corrFit2_50100->GetParameter(6));
     hphiBG_50_100->SetLineStyle(2);
 
-    float near50100 = hPhidphi_50_100->Integral(2,7);
-    near50100  = near50100 - hphiBG_50_100->GetParameter(0)*6.0;
-    near50100 = near50100/(hhdphi_50_100->Integral(2,7) - hhBG_50_100->GetParameter(0)*6.0);
+    float near50_100hPhiYield = hPhidphi_50_100->Integral(2,7) - hphiBG_50_100->GetParameter(0)*6.0;
+    float near50_100hhYield = hhdphi_50_100->Integral(2,7) - hhBG_50_100->GetParameter(0)*6.0;
+    float away50_100hPhiYield = hPhidphi_50_100->Integral(9,16) - hphiBG_50_100->GetParameter(0)*8.0;
+    float away50_100hhYield = hhdphi_50_100->Integral(9,16)- hhBG_50_100->GetParameter(0)*8.0;
+    float mid50_100hPhiYield = hphiBG_50_100->GetParameter(0)*16.0;
+    float mid50_100hhYield = hhBG_50_100->GetParameter(0)*16.0;
+    float total50_100hPhiYield = hPhidphi_50_100->Integral(1, 16);
+    float total50_100hhYield = hhdphi_50_100->Integral(1, 16);
 
-    float away50100 = hPhidphi_50_100->Integral(9,16);
-    away50100  = away50100 - hphiBG_50_100->GetParameter(0)*8.0;
-    away50100 = away50100/(hhdphi_50_100->Integral(9,16) - hhBG_50_100->GetParameter(0)*8.0);
-
-    float mid50100 = hphiBG_50_100->GetParameter(0)/hhBG_50_100->GetParameter(0);
-
-    TH1D *ratios50100 = new TH1D("ratios50100", "(h-#phi / h-h) Ratios", 3, 0, 3);
+    float near50100 = near50_100hPhiYield/near50_100hhYield;
+    float away50100 = away50_100hPhiYield/away50_100hhYield;
+    float mid50100 = mid50_100hPhiYield/mid50_100hhYield;
+    float total50100 = total50_100hPhiYield/total50_100hhYield;
+ 
+    TH1D *ratios50100 = new TH1D("ratios50100", "(h-#phi / h-h) Ratios", 4, 0, 4);
     ratios50100->GetXaxis()->SetBinLabel(1, "near-side");
     ratios50100->SetBinContent(1, near50100);
     ratios50100->GetXaxis()->SetBinLabel(2, "mid");
     ratios50100->SetBinContent(2, mid50100);
     ratios50100->GetXaxis()->SetBinLabel(3, "away-side");
     ratios50100->SetBinContent(3, away50100);
+    ratios50100->GetXaxis()->SetBinLabel(4, "total");
+    ratios50100->SetBinContent(4, total50100);
     ratios50100->SetMarkerStyle(20);
     ratios50100->SetMarkerColor(kGreen+2);
     ratios50100->SetMarkerSize(4);
 
+    float near0100 = (near0_20hPhiYield + near20_50hPhiYield + near50_100hPhiYield)/(near0_20hhYield + near20_50hhYield + near50_100hhYield);
+    float away0100 = (away0_20hPhiYield + away20_50hPhiYield + away50_100hPhiYield)/(away0_20hhYield + away20_50hhYield + away50_100hhYield);
+    float mid0100 = (mid0_20hPhiYield + mid20_50hPhiYield + mid50_100hPhiYield)/(mid0_20hhYield + mid20_50hhYield + mid50_100hhYield);
+    float total0100 = (total0_20hPhiYield + total20_50hPhiYield + total50_100hPhiYield)/(total0_20hhYield + total20_50hhYield + total50_100hhYield);
+
+
+    TH1D *ratios0100 = new TH1D("ratios0100", "(h-#phi / h-h) Ratios", 4, 0, 4);
+    ratios0100->GetXaxis()->SetBinLabel(1, "near-side");
+    ratios0100->SetBinContent(1, near0100);
+    ratios0100->GetXaxis()->SetBinLabel(2, "mid");
+    ratios0100->SetBinContent(2, mid0100);
+    ratios0100->GetXaxis()->SetBinLabel(3, "away-side");
+    ratios0100->SetBinContent(3, away0100);
+    ratios0100->GetXaxis()->SetBinLabel(4, "total");
+    ratios0100->SetBinContent(4, total0100);
+    ratios0100->SetMarkerStyle(29);
+    ratios0100->SetMarkerColor(kViolet-1);
+    ratios0100->SetMarkerSize(4);
 
     TLegend  *ratioslegend = new TLegend(0.3791, 0.1518, 0.8772, 0.2688);
     ratioslegend->SetMargin(0.35);
-    ratioslegend->AddEntry(ratios, "0-20%", "p");
+    ratioslegend->AddEntry(ratios020, "0-20%", "p");
     ratioslegend->AddEntry(ratios2050, "20-50%", "p");
     ratioslegend->AddEntry(ratios50100, "50-100%", "p");
+    ratioslegend->AddEntry(ratios0100, "0-100%", "p");
     
+    TLine *line = new TLine(3.0, 0.0, 3.0, 0.0040);
+    line->SetLineStyle(7);
+    line->SetLineWidth(2);
   
     TCanvas *testc = new TCanvas("test", "test",50, 50, 600, 600);
     testc->cd();
-    ratios2050->GetYaxis()->SetRangeUser(0.0012, 0.0035);
+    ratios2050->GetYaxis()->SetRangeUser(0.0000, 0.0040);
     ratios2050->GetXaxis()->SetLabelSize(0.07);
     ratios2050->Draw("P SAME");
     ratios50100->Draw("P SAME");
-    ratios->Draw("P SAME");
+    ratios020->Draw("P SAME");
+    ratios0100->Draw("P SAME");
+    line->Draw("SAME");
+    ratioslegend->Draw("SAME");
+
+    //Double Ratio plots:
+    float doublenear020 = near020/mid020;
+    float doubleaway020 = away020/mid020;
+
+    float doublenear2050 = near2050/mid2050;
+    float doubleaway2050 = away2050/mid2050;
+
+    float doublenear50100 = near50100/mid50100;
+    float doubleaway50100 = away50100/mid50100;
+
+    float doublenear0100 = near0100/mid0100;
+    float doubleaway0100 = away0100/mid0100;
+    
+    TH1D *doubleratios020 = new TH1D("doubleratios020", "(h-#phi / h-h) Double Ratios", 2, 0, 2);
+    doubleratios020->GetXaxis()->SetBinLabel(1, "#frac{near-side}{mid}");
+    doubleratios020->SetBinContent(1, doublenear020);
+    doubleratios020->GetXaxis()->SetBinLabel(2, "#frac{away-side}{mid}");
+    doubleratios020->SetBinContent(2, doubleaway020);
+    doubleratios020->SetMarkerStyle(22);
+    doubleratios020->SetMarkerColor(kRed+2);
+    doubleratios020->SetMarkerSize(4);
+
+    TH1D *doubleratios2050 = new TH1D("doubleratios2050", "(h-#phi / h-h) Double Ratios", 2, 0, 2);
+    doubleratios2050->GetXaxis()->SetBinLabel(1, "#frac{near-side}{mid}");
+    doubleratios2050->SetBinContent(1, doublenear2050);
+    doubleratios2050->GetXaxis()->SetBinLabel(2, "#frac{away-side}{mid}");
+    doubleratios2050->SetBinContent(2, doubleaway2050);
+    doubleratios2050->SetMarkerStyle(21);
+    doubleratios2050->SetMarkerColor(kBlue+2);
+    doubleratios2050->SetMarkerSize(4);
+
+    TH1D *doubleratios50100 = new TH1D("doubleratios50100", "(h-#phi / h-h) Double Ratios", 2, 0, 2);
+    doubleratios50100->GetXaxis()->SetBinLabel(1, "#frac{near-side}{mid}");
+    doubleratios50100->SetBinContent(1, doublenear50100);
+    doubleratios50100->GetXaxis()->SetBinLabel(2, "#frac{away-side}{mid}");
+    doubleratios50100->SetBinContent(2, doubleaway50100);
+    doubleratios50100->SetMarkerStyle(20);
+    doubleratios50100->SetMarkerColor(kGreen+2);
+    doubleratios50100->SetMarkerSize(4);
+
+    TH1D *doubleratios0100 = new TH1D("doubleratios0100", "(h-#phi / h-h) Double Ratios", 2, 0, 2);
+    doubleratios0100->GetXaxis()->SetBinLabel(1, "#frac{near-side}{mid}");
+    doubleratios0100->SetBinContent(1, doublenear0100);
+    doubleratios0100->GetXaxis()->SetBinLabel(2, "#frac{away-side}{mid}");
+    doubleratios0100->SetBinContent(2, doubleaway0100);
+    doubleratios0100->SetMarkerStyle(29);
+    doubleratios0100->SetMarkerColor(kViolet-1);
+    doubleratios0100->SetMarkerSize(4);
+
+
+    TCanvas *testDoublec = new TCanvas("testdouble", "testdouble",50, 50, 600, 600);
+    testDoublec->cd();
+    //doubleratios2050->GetYaxis()->SetRangeUser(0.0000, 0.0040);
+    doubleratios2050->GetXaxis()->SetLabelSize(0.07);
+    doubleratios2050->Draw("P SAME");
+    doubleratios50100->Draw("P SAME");
+    doubleratios020->Draw("P SAME");
+    doubleratios0100->Draw("P SAME");
+    //line->Draw("SAME");
     ratioslegend->Draw("SAME");
 
 
-
+/*
     TH1D *ratio = hPhidphi_0_20->Clone("ratio");
     ratio->Divide(hhdphi_0_20);
     
@@ -400,7 +503,7 @@ intRatioPlot(){
     cratio->cd();
     cratio->SetMargin(0.12, 0.05, 0.1, 0.05);
     ratio->Draw("E0 X0");
-
+*/
 
 }
 
