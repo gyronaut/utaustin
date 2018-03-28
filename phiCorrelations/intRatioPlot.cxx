@@ -1,9 +1,11 @@
 intRatioPlot(){
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(0);
+    gStyle->SetErrorX(0);
 
     TFile *hhFile = new TFile("~/phiStudies/LHC16q_FAST_hh_0_20/trig_4_8_assoc_2_4_hh_phiCorrelations_mult_0_20.root");
     TH2D* hh2D_0_20 = (TH2D*)hh2D->Clone("hhdphi");
+    hh2D_0_20->Sumw2();
     TH1D* hhdphi_0_20 = (TH1D*)hh2D_0_20->ProjectionY("hhdphi_50_100", hh2D_0_20->GetXaxis()->FindBin(-1.2), hh2D_0_20->GetXaxis()->FindBin(1.2));
     hhdphi_0_20->Rebin();
     hhdphi_0_20->SetLineWidth(4);
@@ -20,6 +22,7 @@ intRatioPlot(){
 
     TFile* phiFile = new TFile("~/phiStudies/LHC16q_FAST_0_20_widecuts/LS_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_0_20.root");    
     TH2D* hPhi2D_0_20 = (TH2D*)RLSsubhPhi2Dpeak->Clone("hPhidphi");
+    hPhi2D_0_20->Sumw2();
     TH1D* hPhidphi_0_20 = (TH1D*)hPhi2D_0_20->ProjectionY("hPhidphi_50_100", hPhi2D_0_20->GetXaxis()->FindBin(-1.2), hPhi2D_0_20->GetXaxis()->FindBin(1.2));
     //hPhidphi_0_20->Rebin();
     hPhidphi_0_20->SetLineWidth(4);
@@ -90,38 +93,38 @@ intRatioPlot(){
     hphiBG->SetParameter(0, 1.0*corrFit2->GetParameter(6));
     hphiBG->SetLineStyle(2);
 
-    float near0_20hPhiError = 0;
-    float near0_20hhError = 0;
-    float away0_20hPhiError = 0;
-    float away0_20hhError = 0;
-    float total0_20hPhiError = 0;
-    float total0_20hhError = 0;
-    float mid0_20hPhiError =(1.0/3.0)*TMath::Sqrt(TMath::Power(hPhidphi_0_20->GetBinError(8),2) + TMath::Power(hPhidphi_0_20->GetBinError(16),2) + TMath::Power(hPhidphi_0_20->GetBinError(1),2));
-    float mid0_20hhError = (1.0/3.0)*TMath::Sqrt(TMath::Power(hhdphi_0_20->GetBinError(8),2) + TMath::Power(hhdphi_0_20->GetBinError(16),2) + TMath::Power(hhdphi_0_20->GetBinError(1),2));
-    
-    float near0_20hPhiYield = hPhidphi_0_20->IntegralAndError(2,7,near0_20hPhiError) - hphiBG->GetParameter(0)*6.0;
-    float near0_20hPhiError = TMath::Sqrt(TMath::Power(near0_20hPhiError, 2) + TMath::Power(6.0*mid0_20hPhiError, 2));
-    float near0_20hhYield = hhdphi_0_20->IntegralAndError(2,7,near0_20hhError) - hhBG->GetParameter(0)*6.0;
-    float near0_20hhError = TMath::Sqrt(TMath::Power(near0_20hhError, 2) + TMath::Power(6.0*mid0_20hhError, 2));
-    float away0_20hPhiYield = hPhidphi_0_20->IntegralAndError(9,16,away0_20hPhiError) - hphiBG->GetParameter(0)*8.0;
-    float away0_20hPhiError = TMath::Sqrt(TMath::Power(away0_20hPhiError, 2) + TMath::Power(8.0*mid0_20hPhiError, 2));
-    float away0_20hhYield = hhdphi_0_20->IntegralAndError(9,16,away0_20hPhiError)- hhBG->GetParameter(0)*8.0;
-    float away0_20hhError = TMath::Sqrt(TMath::Power(away0_20hhError, 2) + TMath::Power(8.0*mid0_20hhError, 2));
-    float mid0_20hPhiYield = hphiBG->GetParameter(0)*16.0;
-    float mid0_20hPhiError = mid0_20hPhiError*16.0;
-    float mid0_20hhYield = hhBG->GetParameter(0)*16.0;
-    float mid0_20hhError = mid0_20hhError*16.0;
-    float total0_20hPhiYield = hPhidphi_0_20->IntegralAndError(1,16,total0_20hPhiError);
-    float total0_20hhYield = hhdphi_0_20->IntegralAndError(1,16,total0_20hhError);
+    Double_t near0_20hPhiError = 0;
+    Double_t near0_20hhError = 0;
+    Double_t away0_20hPhiError = 0;
+    Double_t away0_20hhError = 0;
+    Double_t mid0_20hPhiError =(1.0/3.0)*TMath::Sqrt(TMath::Power(hPhidphi_0_20->GetBinError(8),2) + TMath::Power(hPhidphi_0_20->GetBinError(16),2) + TMath::Power(hPhidphi_0_20->GetBinError(1),2));
+    Double_t mid0_20hhError = (1.0/3.0)*TMath::Sqrt(TMath::Power(hhdphi_0_20->GetBinError(8),2) + TMath::Power(hhdphi_0_20->GetBinError(16),2) + TMath::Power(hhdphi_0_20->GetBinError(1),2));
+    Double_t total0_20hPhiError;
+    Double_t total0_20hhError = 0;   
 
-    float near020 = near0_20hPhiYield/near0_20hhYield;
-    float near020Er = near020*TMath::Sqrt(TMath::Power(near0_20hPhiError/near0_20hPhiYield, 2) + TMath::Power(near0_20hhError/near0_20hhYield, 2));
-    float away020 = away0_20hPhiYield/away0_20hhYield;
-    float away020Er = away020*TMath::Sqrt(TMath::Power(away0_20hPhiError/away0_20hPhiYield, 2) + TMath::Power(away0_20hhError/away0_20hhYield, 2));
-    float mid020 = mid0_20hPhiYield/mid0_20hhYield;
-    float mid020Er = mid020*TMath::Sqrt(TMath::Power(mid0_20hPhiError/mid0_20hPhiYield, 2) + TMath::Power(mid0_20hhError/mid0_20hhYield, 2));
-    float total020 = total0_20hPhiYield/total0_20hhYield;
-    float total020Er = total020*TMath::Sqrt(TMath::Power(total0_20hPhiError/total0_20hPhiYield, 2) + TMath::Power(total0_20hhError/total0_20hhYield, 2));
+    Double_t near0_20hPhiYield = hPhidphi_0_20->IntegralAndError(2,7,near0_20hPhiError) - hphiBG->GetParameter(0)*6.0;
+    Double_t near0_20hPhiError = TMath::Sqrt(TMath::Power(near0_20hPhiError, 2) + TMath::Power(6.0*mid0_20hPhiError, 2));
+    Double_t near0_20hhYield = hhdphi_0_20->IntegralAndError(2,7,near0_20hhError) - hhBG->GetParameter(0)*6.0;
+    Double_t near0_20hhError = TMath::Sqrt(TMath::Power(near0_20hhError, 2) + TMath::Power(6.0*mid0_20hhError, 2));
+    Double_t away0_20hPhiYield = hPhidphi_0_20->IntegralAndError(9,16,away0_20hPhiError) - hphiBG->GetParameter(0)*8.0;
+    Double_t away0_20hPhiError = TMath::Sqrt(TMath::Power(away0_20hPhiError, 2) + TMath::Power(8.0*mid0_20hPhiError, 2));
+    Double_t away0_20hhYield = hhdphi_0_20->IntegralAndError(9,16,away0_20hhError)- hhBG->GetParameter(0)*8.0;
+    Double_t away0_20hhError = TMath::Sqrt(TMath::Power(away0_20hhError, 2) + TMath::Power(8.0*mid0_20hhError, 2));
+    Double_t total0_20hPhiYield = hPhidphi_0_20->IntegralAndError(1,16,total0_20hPhiError);
+    Double_t total0_20hhYield = hhdphi_0_20->IntegralAndError(1,16,total0_20hhError);
+    Double_t mid0_20hPhiYield = hphiBG->GetParameter(0)*16.0;
+    Double_t mid0_20hPhiError = mid0_20hPhiError*16.0;
+    Double_t mid0_20hhYield = hhBG->GetParameter(0)*16.0;
+    Double_t mid0_20hhError = mid0_20hhError*16.0; 
+       
+    Double_t near020 = near0_20hPhiYield/near0_20hhYield;
+    Double_t near020Er = near020*TMath::Sqrt(TMath::Power(near0_20hPhiError/near0_20hPhiYield, 2) + TMath::Power(near0_20hhError/near0_20hhYield, 2));
+    Double_t away020 = away0_20hPhiYield/away0_20hhYield;
+    Double_t away020Er = away020*TMath::Sqrt(TMath::Power(away0_20hPhiError/away0_20hPhiYield, 2) + TMath::Power(away0_20hhError/away0_20hhYield, 2));
+    Double_t mid020 = mid0_20hPhiYield/mid0_20hhYield;
+    Double_t mid020Er = mid020*TMath::Sqrt(TMath::Power(mid0_20hPhiError/mid0_20hPhiYield, 2) + TMath::Power(mid0_20hhError/mid0_20hhYield, 2));
+    Double_t total020 = total0_20hPhiYield/total0_20hhYield;
+    Double_t total020Er = total020*TMath::Sqrt(TMath::Power(total0_20hPhiError/total0_20hPhiYield, 2) + TMath::Power(total0_20hhError/total0_20hhYield, 2));
 
     TH1D *ratios020 = new TH1D("ratios020", "(h-#phi / h-h) Ratios", 4, 0, 4);
     ratios020->GetXaxis()->SetBinLabel(1, "near-side");
@@ -231,38 +234,38 @@ intRatioPlot(){
     hphiBG_20_50->SetParameter(0, 1.0*corrFit2_2050->GetParameter(6));
     hphiBG_20_50->SetLineStyle(2);
 
-    float near20_50hPhiError = 0;
-    float near20_50hhError = 0;
-    float away20_50hPhiError = 0;
-    float away20_50hhError = 0;
-    float mid20_50hPhiError =(1.0/3.0)*TMath::Sqrt(TMath::Power(hPhidphi_20_50->GetBinError(8),2) + TMath::Power(hPhidphi_20_50->GetBinError(16),2) + TMath::Power(hPhidphi_20_50->GetBinError(1),2));
-    float mid20_50hhError = (1.0/3.0)*TMath::Sqrt(TMath::Power(hhdphi_20_50->GetBinError(8),2) + TMath::Power(hhdphi_20_50->GetBinError(16),2) + TMath::Power(hhdphi_20_50->GetBinError(1),2));
-    float total20_50hPhiError = 0;
-    float total20_50hhError = 0;
+    Double_t near20_50hPhiError = 0;
+    Double_t near20_50hhError = 0;
+    Double_t away20_50hPhiError = 0;
+    Double_t away20_50hhError = 0;
+    Double_t mid20_50hPhiError =(1.0/3.0)*TMath::Sqrt(TMath::Power(hPhidphi_20_50->GetBinError(8),2) + TMath::Power(hPhidphi_20_50->GetBinError(16),2) + TMath::Power(hPhidphi_20_50->GetBinError(1),2));
+    Double_t mid20_50hhError = (1.0/3.0)*TMath::Sqrt(TMath::Power(hhdphi_20_50->GetBinError(8),2) + TMath::Power(hhdphi_20_50->GetBinError(16),2) + TMath::Power(hhdphi_20_50->GetBinError(1),2));
+    Double_t total20_50hPhiError = 0;
+    Double_t total20_50hhError = 0;
 
-    float near20_50hPhiYield = hPhidphi_20_50->IntegralAndError(2,7,near20_50hPhiError) - hphiBG_20_50->GetParameter(0)*6.0;
-    float near20_50hPhiError = TMath::Sqrt(TMath::Power(near20_50hPhiError, 2) + TMath::Power(6.0*mid20_50hPhiError, 2));
-    float near20_50hhYield = hhdphi_20_50->IntegralAndError(2,7,near20_50hhError) - hhBG_20_50->GetParameter(0)*6.0;
-    float near20_50hhError = TMath::Sqrt(TMath::Power(near20_50hhError, 2) + TMath::Power(6.0*mid20_50hhError, 2));
-    float away20_50hPhiYield = hPhidphi_20_50->IntegralAndError(9,16,away20_50hPhiError) - hphiBG_20_50->GetParameter(0)*8.0;
-    float away20_50hPhiError = TMath::Sqrt(TMath::Power(away20_50hPhiError, 2) + TMath::Power(8.0*mid20_50hPhiError, 2));
-    float away20_50hhYield = hhdphi_20_50->IntegralAndError(9,16,away20_50hPhiError)- hhBG_20_50->GetParameter(0)*8.0;
-    float away20_50hhError = TMath::Sqrt(TMath::Power(away20_50hhError, 2) + TMath::Power(8.0*mid20_50hhError, 2));
-    float mid20_50hPhiYield = hphiBG_20_50->GetParameter(0)*16.0;
-    float mid20_50hPhiError = mid20_50hPhiError*16.0;
-    float mid20_50hhYield = hhBG_20_50->GetParameter(0)*16.0;
-    float mid20_50hhError = mid20_50hhError*16.0;
-    float total20_50hPhiYield = hPhidphi_20_50->IntegralAndError(1, 16,total20_50hPhiError);
-    float total20_50hhYield = hhdphi_20_50->IntegralAndError(1, 16,total20_50hhError);
+    Double_t near20_50hPhiYield = hPhidphi_20_50->IntegralAndError(2,7,near20_50hPhiError) - hphiBG_20_50->GetParameter(0)*6.0;
+    Double_t near20_50hPhiError = TMath::Sqrt(TMath::Power(near20_50hPhiError, 2) + TMath::Power(6.0*mid20_50hPhiError, 2));
+    Double_t near20_50hhYield = hhdphi_20_50->IntegralAndError(2,7,near20_50hhError) - hhBG_20_50->GetParameter(0)*6.0;
+    Double_t near20_50hhError = TMath::Sqrt(TMath::Power(near20_50hhError, 2) + TMath::Power(6.0*mid20_50hhError, 2));
+    Double_t away20_50hPhiYield = hPhidphi_20_50->IntegralAndError(9,16,away20_50hPhiError) - hphiBG_20_50->GetParameter(0)*8.0;
+    Double_t away20_50hPhiError = TMath::Sqrt(TMath::Power(away20_50hPhiError, 2) + TMath::Power(8.0*mid20_50hPhiError, 2));
+    Double_t away20_50hhYield = hhdphi_20_50->IntegralAndError(9,16,away20_50hhError)- hhBG_20_50->GetParameter(0)*8.0;
+    Double_t away20_50hhError = TMath::Sqrt(TMath::Power(away20_50hhError, 2) + TMath::Power(8.0*mid20_50hhError, 2));
+    Double_t mid20_50hPhiYield = hphiBG_20_50->GetParameter(0)*16.0;
+    Double_t mid20_50hPhiError = mid20_50hPhiError*16.0;
+    Double_t mid20_50hhYield = hhBG_20_50->GetParameter(0)*16.0;
+    Double_t mid20_50hhError = mid20_50hhError*16.0;
+    Double_t total20_50hPhiYield = hPhidphi_20_50->IntegralAndError(1, 16,total20_50hPhiError);
+    Double_t total20_50hhYield = hhdphi_20_50->IntegralAndError(1, 16,total20_50hhError);
 
-    float near2050 = near20_50hPhiYield/near20_50hhYield;
-    float near2050Er = near2050*TMath::Sqrt(TMath::Power(near20_50hPhiError/near20_50hPhiYield, 2) + TMath::Power(near20_50hhError/near20_50hhYield, 2));
-    float away2050 = away20_50hPhiYield/away20_50hhYield;
-    float away2050Er = away2050*TMath::Sqrt(TMath::Power(away20_50hPhiError/away20_50hPhiYield, 2) + TMath::Power(away20_50hhError/away20_50hhYield, 2));
-    float mid2050 = mid20_50hPhiYield/mid20_50hhYield;
-    float mid2050Er = mid2050*TMath::Sqrt(TMath::Power(mid20_50hPhiError/mid20_50hPhiYield, 2) + TMath::Power(mid20_50hhError/mid20_50hhYield, 2));
-    float total2050 = total20_50hPhiYield/total20_50hhYield;
-    float total2050Er = total2050*TMath::Sqrt(TMath::Power(total20_50hPhiError/total20_50hPhiYield, 2) + TMath::Power(total20_50hhError/total20_50hhYield, 2));
+    Double_t near2050 = near20_50hPhiYield/near20_50hhYield;
+    Double_t near2050Er = near2050*TMath::Sqrt(TMath::Power(near20_50hPhiError/near20_50hPhiYield, 2) + TMath::Power(near20_50hhError/near20_50hhYield, 2));
+    Double_t away2050 = away20_50hPhiYield/away20_50hhYield;
+    Double_t away2050Er = away2050*TMath::Sqrt(TMath::Power(away20_50hPhiError/away20_50hPhiYield, 2) + TMath::Power(away20_50hhError/away20_50hhYield, 2));
+    Double_t mid2050 = mid20_50hPhiYield/mid20_50hhYield;
+    Double_t mid2050Er = mid2050*TMath::Sqrt(TMath::Power(mid20_50hPhiError/mid20_50hPhiYield, 2) + TMath::Power(mid20_50hhError/mid20_50hhYield, 2));
+    Double_t total2050 = total20_50hPhiYield/total20_50hhYield;
+    Double_t total2050Er = total2050*TMath::Sqrt(TMath::Power(total20_50hPhiError/total20_50hPhiYield, 2) + TMath::Power(total20_50hhError/total20_50hhYield, 2));
 
     TH1D *ratios2050 = new TH1D("ratios2050", "(h-#phi / h-h) Ratios", 4, 0, 4);
     ratios2050->GetXaxis()->SetBinLabel(1, "near-side");
@@ -373,38 +376,38 @@ intRatioPlot(){
     hphiBG_50_100->SetParameter(0, 1.0*corrFit2_50100->GetParameter(6));
     hphiBG_50_100->SetLineStyle(2);
 
-    float near50_100hPhiError = 0;
-    float near50_100hhError = 0;
-    float away50_100hPhiError = 0;
-    float away50_100hhError = 0;
-    float mid50_100hPhiError =(1.0/3.0)*TMath::Sqrt(TMath::Power(hPhidphi_50_100->GetBinError(8),2) + TMath::Power(hPhidphi_50_100->GetBinError(16),2) + TMath::Power(hPhidphi_50_100->GetBinError(1),2));
-    float mid50_100hhError = (1.0/3.0)*TMath::Sqrt(TMath::Power(hhdphi_50_100->GetBinError(8),2) + TMath::Power(hhdphi_50_100->GetBinError(16),2) + TMath::Power(hhdphi_50_100->GetBinError(1),2));
-    float total50_100hPhiError = 0;
-    float total50_100hhError = 0;
+    Double_t near50_100hPhiError = 0;
+    Double_t near50_100hhError = 0;
+    Double_t away50_100hPhiError = 0;
+    Double_t away50_100hhError = 0;
+    Double_t mid50_100hPhiError =(1.0/3.0)*TMath::Sqrt(TMath::Power(hPhidphi_50_100->GetBinError(8),2) + TMath::Power(hPhidphi_50_100->GetBinError(16),2) + TMath::Power(hPhidphi_50_100->GetBinError(1),2));
+    Double_t mid50_100hhError = (1.0/3.0)*TMath::Sqrt(TMath::Power(hhdphi_50_100->GetBinError(8),2) + TMath::Power(hhdphi_50_100->GetBinError(16),2) + TMath::Power(hhdphi_50_100->GetBinError(1),2));
+    Double_t total50_100hPhiError = 0;
+    Double_t total50_100hhError = 0;
 
-    float near50_100hPhiYield = hPhidphi_50_100->IntegralAndError(2,7,near50_100hPhiError) - hphiBG_50_100->GetParameter(0)*6.0;
-    float near50_100hPhiError = TMath::Sqrt(TMath::Power(near50_100hPhiError, 2) + TMath::Power(6.0*mid50_100hPhiError, 2));
-    float near50_100hhYield = hhdphi_50_100->IntegralAndError(2,7,near50_100hhError) - hhBG_50_100->GetParameter(0)*6.0;
-    float near50_100hhError = TMath::Sqrt(TMath::Power(near50_100hhError, 2) + TMath::Power(6.0*mid50_100hhError, 2));
-    float away50_100hPhiYield = hPhidphi_50_100->IntegralAndError(9,16,away50_100hPhiError) - hphiBG_50_100->GetParameter(0)*8.0;
-    float away50_100hPhiError = TMath::Sqrt(TMath::Power(away50_100hPhiError, 2) + TMath::Power(8.0*mid50_100hPhiError, 2));
-    float away50_100hhYield = hhdphi_50_100->IntegralAndError(9,16,away50_100hPhiError)- hhBG_50_100->GetParameter(0)*8.0;
-    float away50_100hhError = TMath::Sqrt(TMath::Power(away50_100hhError, 2) + TMath::Power(8.0*mid50_100hhError, 2));
-    float mid50_100hPhiYield = hphiBG_50_100->GetParameter(0)*16.0;
-    float mid50_100hPhiError = mid50_100hPhiError*16.0;
-    float mid50_100hhYield = hhBG_50_100->GetParameter(0)*16.0;
-    float mid50_100hhError = mid50_100hhError*16.0;
-    float total50_100hPhiYield = hPhidphi_50_100->IntegralAndError(1, 16,total50_100hPhiError);
-    float total50_100hhYield = hhdphi_50_100->IntegralAndError(1, 16,total50_100hhError);
+    Double_t near50_100hPhiYield = hPhidphi_50_100->IntegralAndError(2,7,near50_100hPhiError) - hphiBG_50_100->GetParameter(0)*6.0;
+    Double_t near50_100hPhiError = TMath::Sqrt(TMath::Power(near50_100hPhiError, 2) + TMath::Power(6.0*mid50_100hPhiError, 2));
+    Double_t near50_100hhYield = hhdphi_50_100->IntegralAndError(2,7,near50_100hhError) - hhBG_50_100->GetParameter(0)*6.0;
+    Double_t near50_100hhError = TMath::Sqrt(TMath::Power(near50_100hhError, 2) + TMath::Power(6.0*mid50_100hhError, 2));
+    Double_t away50_100hPhiYield = hPhidphi_50_100->IntegralAndError(9,16,away50_100hPhiError) - hphiBG_50_100->GetParameter(0)*8.0;
+    Double_t away50_100hPhiError = TMath::Sqrt(TMath::Power(away50_100hPhiError, 2) + TMath::Power(8.0*mid50_100hPhiError, 2));
+    Double_t away50_100hhYield = hhdphi_50_100->IntegralAndError(9,16,away50_100hhError)- hhBG_50_100->GetParameter(0)*8.0;
+    Double_t away50_100hhError = TMath::Sqrt(TMath::Power(away50_100hhError, 2) + TMath::Power(8.0*mid50_100hhError, 2));
+    Double_t mid50_100hPhiYield = hphiBG_50_100->GetParameter(0)*16.0;
+    Double_t mid50_100hPhiError = mid50_100hPhiError*16.0;
+    Double_t mid50_100hhYield = hhBG_50_100->GetParameter(0)*16.0;
+    Double_t mid50_100hhError = mid50_100hhError*16.0;
+    Double_t total50_100hPhiYield = hPhidphi_50_100->IntegralAndError(1, 16,total50_100hPhiError);
+    Double_t total50_100hhYield = hhdphi_50_100->IntegralAndError(1, 16,total50_100hhError);
 
-    float near50100 = near50_100hPhiYield/near50_100hhYield;
-    float near50100Er = near50100*TMath::Sqrt(TMath::Power(near50_100hPhiError/near50_100hPhiYield, 2) + TMath::Power(near50_100hhError/near50_100hhYield, 2));
-    float away50100 = away50_100hPhiYield/away50_100hhYield;
-    float away50100Er = away50100*TMath::Sqrt(TMath::Power(away50_100hPhiError/away50_100hPhiYield, 2) + TMath::Power(away50_100hhError/away50_100hhYield, 2));
-    float mid50100 = mid50_100hPhiYield/mid50_100hhYield;
-    float mid50100Er = mid50100*TMath::Sqrt(TMath::Power(mid50_100hPhiError/mid50_100hPhiYield, 2) + TMath::Power(mid50_100hhError/mid50_100hhYield, 2));
-    float total50100 = total50_100hPhiYield/total50_100hhYield;
-    float total50100Er = total50100*TMath::Sqrt(TMath::Power(total50_100hPhiError/total50_100hPhiYield, 2) + TMath::Power(total50_100hhError/total50_100hhYield, 2));
+    Double_t near50100 = near50_100hPhiYield/near50_100hhYield;
+    Double_t near50100Er = near50100*TMath::Sqrt(TMath::Power(near50_100hPhiError/near50_100hPhiYield, 2) + TMath::Power(near50_100hhError/near50_100hhYield, 2));
+    Double_t away50100 = away50_100hPhiYield/away50_100hhYield;
+    Double_t away50100Er = away50100*TMath::Sqrt(TMath::Power(away50_100hPhiError/away50_100hPhiYield, 2) + TMath::Power(away50_100hhError/away50_100hhYield, 2));
+    Double_t mid50100 = mid50_100hPhiYield/mid50_100hhYield;
+    Double_t mid50100Er = mid50100*TMath::Sqrt(TMath::Power(mid50_100hPhiError/mid50_100hPhiYield, 2) + TMath::Power(mid50_100hhError/mid50_100hhYield, 2));
+    Double_t total50100 = total50_100hPhiYield/total50_100hhYield;
+    Double_t total50100Er = total50100*TMath::Sqrt(TMath::Power(total50_100hPhiError/total50_100hPhiYield, 2) + TMath::Power(total50_100hhError/total50_100hhYield, 2));
 
     TH1D *ratios50100 = new TH1D("ratios50100", "(h-#phi / h-h) Ratios", 4, 0, 4);
     ratios50100->GetXaxis()->SetBinLabel(1, "near-side");
@@ -425,16 +428,36 @@ intRatioPlot(){
     ratios50100->SetMarkerSize(2);
     ratios50100->SetLineWidth(2);
 
-    float near0100 = (near0_20hPhiYield + near20_50hPhiYield + near50_100hPhiYield)/(near0_20hhYield + near20_50hhYield + near50_100hhYield);
-    float near0100Er = near0100*TMath::Sqrt((TMath::Power(near0_20hPhiError,2) + TMath::Power(near20_50hPhiError,2) + TMath::Power(near50_100hPhiError,2))/TMath::Power((near0_20hPhiYield + near20_50hPhiYield + near50_100hPhiYield), 2) + (TMath::Power(near0_20hhError,2) + TMath::Power(near20_50hhError,2) + TMath::Power(near50_100hhError,2))/TMath::Power((near0_20hhYield + near20_50hhYield + near50_100hhYield), 2));
-    float away0100 = (away0_20hPhiYield + away20_50hPhiYield + away50_100hPhiYield)/(away0_20hhYield + away20_50hhYield + away50_100hhYield);
-    float away0100Er = away0100*TMath::Sqrt((TMath::Power(away0_20hPhiError,2) + TMath::Power(away20_50hPhiError,2) + TMath::Power(away50_100hPhiError,2))/TMath::Power((away0_20hPhiYield + away20_50hPhiYield + away50_100hPhiYield), 2) + (TMath::Power(away0_20hhError,2) + TMath::Power(away20_50hhError,2) + TMath::Power(away50_100hhError,2))/TMath::Power((away0_20hhYield + away20_50hhYield + away50_100hhYield), 2));
-    float mid0100 = (mid0_20hPhiYield + mid20_50hPhiYield + mid50_100hPhiYield)/(mid0_20hhYield + mid20_50hhYield + mid50_100hhYield);
-    float mid0100Er = mid0100*TMath::Sqrt((TMath::Power(mid0_20hPhiError,2) + TMath::Power(mid20_50hPhiError,2) + TMath::Power(mid50_100hPhiError,2))/TMath::Power((mid0_20hPhiYield + mid20_50hPhiYield + mid50_100hPhiYield), 2) + (TMath::Power(mid0_20hhError,2) + TMath::Power(mid20_50hhError,2) + TMath::Power(mid50_100hhError,2))/TMath::Power((mid0_20hhYield + mid20_50hhYield + mid50_100hhYield), 2));
-    float total0100 = (total0_20hPhiYield + total20_50hPhiYield + total50_100hPhiYield)/(total0_20hhYield + total20_50hhYield + total50_100hhYield);
-    float total0100Er = total0100*TMath::Sqrt((TMath::Power(total0_20hPhiError,2) + TMath::Power(total20_50hPhiError,2) + TMath::Power(total50_100hPhiError,2))/TMath::Power((total0_20hPhiYield + total20_50hPhiYield + total50_100hPhiYield), 2) + (TMath::Power(total0_20hhError,2) + TMath::Power(total20_50hhError,2) + TMath::Power(total50_100hhError,2))/TMath::Power((total0_20hhYield + total20_50hhYield + total50_100hhYield), 2));
+    Double_t near0_100hPhiYield = near0_20hPhiYield + near20_50hPhiYield + near50_100hPhiYield;
+    Double_t near0_100hPhiError = TMath::Sqrt((TMath::Power(near0_20hPhiError,2) + TMath::Power(near20_50hPhiError,2) + TMath::Power(near50_100hPhiError,2)));
+    Double_t near0_100hhYield = near0_20hhYield + near20_50hhYield + near50_100hhYield;
+    Double_t near0_100hhError = TMath::Sqrt((TMath::Power(near0_20hhError,2) + TMath::Power(near20_50hhError,2) + TMath::Power(near50_100hhError,2)));
+    Double_t mid0_100hPhiYield = mid0_20hPhiYield + mid20_50hPhiYield + mid50_100hPhiYield;
+    Double_t mid0_100hPhiError = TMath::Sqrt((TMath::Power(mid0_20hPhiError,2) + TMath::Power(mid20_50hPhiError,2) + TMath::Power(mid50_100hPhiError,2)));
+    Double_t mid0_100hhYield = mid0_20hhYield + mid20_50hhYield + mid50_100hhYield;
+    Double_t mid0_100hhError = TMath::Sqrt((TMath::Power(mid0_20hhError,2) + TMath::Power(mid20_50hhError,2) + TMath::Power(mid50_100hhError,2)));
+    Double_t away0_100hPhiYield = away0_20hPhiYield + away20_50hPhiYield + away50_100hPhiYield;
+    Double_t away0_100hPhiError = TMath::Sqrt((TMath::Power(away0_20hPhiError,2) + TMath::Power(away20_50hPhiError,2) + TMath::Power(away50_100hPhiError,2)));
+    Double_t away0_100hhYield = away0_20hhYield + away20_50hhYield + away50_100hhYield;
+    Double_t away0_100hhError = TMath::Sqrt((TMath::Power(away0_20hhError,2) + TMath::Power(away20_50hhError,2) + TMath::Power(away50_100hhError,2)));
+    Double_t total0_100hPhiYield = total0_20hPhiYield + total20_50hPhiYield + total50_100hPhiYield;
+    Double_t total0_100hPhiError = TMath::Sqrt((TMath::Power(total0_20hPhiError,2) + TMath::Power(total20_50hPhiError,2) + TMath::Power(total50_100hPhiError,2)));
+    Double_t total0_100hhYield = total0_20hhYield + total20_50hhYield + total50_100hhYield;
+    Double_t total0_100hhError = TMath::Sqrt((TMath::Power(total0_20hhError,2) + TMath::Power(total20_50hhError,2) + TMath::Power(total50_100hhError,2)));
+   
+
+
+    Double_t near0100 = (near0_20hPhiYield + near20_50hPhiYield + near50_100hPhiYield)/(near0_20hhYield + near20_50hhYield + near50_100hhYield);
+    Double_t near0100Er = near0100*TMath::Sqrt((TMath::Power(near0_20hPhiError,2) + TMath::Power(near20_50hPhiError,2) + TMath::Power(near50_100hPhiError,2))/TMath::Power((near0_20hPhiYield + near20_50hPhiYield + near50_100hPhiYield), 2) + (TMath::Power(near0_20hhError,2) + TMath::Power(near20_50hhError,2) + TMath::Power(near50_100hhError,2))/TMath::Power((near0_20hhYield + near20_50hhYield + near50_100hhYield), 2));
+    Double_t away0100 = (away0_20hPhiYield + away20_50hPhiYield + away50_100hPhiYield)/(away0_20hhYield + away20_50hhYield + away50_100hhYield);
+    Double_t away0100Er = away0100*TMath::Sqrt((TMath::Power(away0_20hPhiError,2) + TMath::Power(away20_50hPhiError,2) + TMath::Power(away50_100hPhiError,2))/TMath::Power((away0_20hPhiYield + away20_50hPhiYield + away50_100hPhiYield), 2) + (TMath::Power(away0_20hhError,2) + TMath::Power(away20_50hhError,2) + TMath::Power(away50_100hhError,2))/TMath::Power((away0_20hhYield + away20_50hhYield + away50_100hhYield), 2));
+    Double_t mid0100 = (mid0_20hPhiYield + mid20_50hPhiYield + mid50_100hPhiYield)/(mid0_20hhYield + mid20_50hhYield + mid50_100hhYield);
+    Double_t mid0100Er = mid0100*TMath::Sqrt((TMath::Power(mid0_20hPhiError,2) + TMath::Power(mid20_50hPhiError,2) + TMath::Power(mid50_100hPhiError,2))/TMath::Power((mid0_20hPhiYield + mid20_50hPhiYield + mid50_100hPhiYield), 2) + (TMath::Power(mid0_20hhError,2) + TMath::Power(mid20_50hhError,2) + TMath::Power(mid50_100hhError,2))/TMath::Power((mid0_20hhYield + mid20_50hhYield + mid50_100hhYield), 2));
+    Double_t total0100 = (total0_20hPhiYield + total20_50hPhiYield + total50_100hPhiYield)/(total0_20hhYield + total20_50hhYield + total50_100hhYield);
+    Double_t total0100Er = total0100*TMath::Sqrt((TMath::Power(total0_20hPhiError,2) + TMath::Power(total20_50hPhiError,2) + TMath::Power(total50_100hPhiError,2))/TMath::Power((total0_20hPhiYield + total20_50hPhiYield + total50_100hPhiYield), 2) + (TMath::Power(total0_20hhError,2) + TMath::Power(total20_50hhError,2) + TMath::Power(total50_100hhError,2))/TMath::Power((total0_20hhYield + total20_50hhYield + total50_100hhYield), 2));
     
-    printf("near0100Er: %E\n", near0100Er);
+    printf("near020Er: %E\n", near020Er);
+    printf("mid020Er: %E\n", mid020Er);
     printf("total0100Er: %E\n", total0100Er);
     printf("total020Er: %E\n", total020Er);
     printf("total0_20hPhiError: %E\n", total0_20hPhiError);
@@ -473,32 +496,35 @@ intRatioPlot(){
     ratios2050->GetYaxis()->SetRangeUser(0.0000, 0.0040);
     ratios2050->GetXaxis()->SetLabelSize(0.07);
     ratios2050->Draw("P SAME");
+    ratios50100->GetXaxis()->SetLimits(0.05, 4.05);
     ratios50100->Draw("P SAME");
+    ratios020->GetXaxis()->SetLimits(-0.05, 3.95);
     ratios020->Draw("P SAME");
+    ratios0100->GetXaxis()->SetLimits(-0.1, 3.9);
     ratios0100->Draw("P SAME");
     line->Draw("SAME");
     ratioslegend->Draw("SAME");
 
     //Double Ratio plots:
-    float doublenear020 = near020/mid020;
-    float doublenear020Er = doublenear020*TMath::Sqrt(TMath::Power((near020Er)/(near020), 2) + TMath::Power((mid020Er)/(mid020), 2));
-    float doubleaway020 = away020/mid020;
-    float doubleaway020Er = doubleaway020*TMath::Sqrt(TMath::Power((away020Er)/(away020), 2) + TMath::Power((mid020Er)/(mid020), 2));
+    Double_t doublenear020 = near020/mid020;
+    Double_t doublenear020Er = doublenear020*TMath::Sqrt(TMath::Power((near020Er)/(near020), 2) + TMath::Power((mid020Er)/(mid020), 2));
+    Double_t doubleaway020 = away020/mid020;
+    Double_t doubleaway020Er = doubleaway020*TMath::Sqrt(TMath::Power((away020Er)/(away020), 2) + TMath::Power((mid020Er)/(mid020), 2));
 
-    float doublenear2050 = near2050/mid2050;
-    float doublenear2050Er = doublenear2050*TMath::Sqrt(TMath::Power((near2050Er)/(near2050), 2) + TMath::Power((mid2050Er)/(mid2050), 2));
-    float doubleaway2050 = away2050/mid2050;
-    float doubleaway2050Er = doubleaway2050*TMath::Sqrt(TMath::Power((away2050Er)/(away2050), 2) + TMath::Power((mid2050Er)/(mid2050), 2));
+    Double_t doublenear2050 = near2050/mid2050;
+    Double_t doublenear2050Er = doublenear2050*TMath::Sqrt(TMath::Power((near2050Er)/(near2050), 2) + TMath::Power((mid2050Er)/(mid2050), 2));
+    Double_t doubleaway2050 = away2050/mid2050;
+    Double_t doubleaway2050Er = doubleaway2050*TMath::Sqrt(TMath::Power((away2050Er)/(away2050), 2) + TMath::Power((mid2050Er)/(mid2050), 2));
 
-    float doublenear50100 = near50100/mid50100;
-    float doublenear50100Er = doublenear50100*TMath::Sqrt(TMath::Power((near50100Er)/(near50100), 2) + TMath::Power((mid50100Er)/(mid50100), 2));
-    float doubleaway50100 = away50100/mid50100;
-    float doubleaway50100Er = doubleaway50100*TMath::Sqrt(TMath::Power((away50100Er)/(away50100), 2) + TMath::Power((mid50100Er)/(mid50100), 2));
+    Double_t doublenear50100 = near50100/mid50100;
+    Double_t doublenear50100Er = doublenear50100*TMath::Sqrt(TMath::Power((near50100Er)/(near50100), 2) + TMath::Power((mid50100Er)/(mid50100), 2));
+    Double_t doubleaway50100 = away50100/mid50100;
+    Double_t doubleaway50100Er = doubleaway50100*TMath::Sqrt(TMath::Power((away50100Er)/(away50100), 2) + TMath::Power((mid50100Er)/(mid50100), 2));
 
-    float doublenear0100 = near0100/mid0100;
-    float doublenear0100Er = doublenear0100*TMath::Sqrt(TMath::Power((near0100Er)/(near0100), 2) + TMath::Power((mid0100Er)/(mid0100), 2));
-    float doubleaway0100 = away0100/mid0100;
-    float doubleaway0100Er = doubleaway0100*TMath::Sqrt(TMath::Power((away0100Er)/(away0100), 2) + TMath::Power((mid0100Er)/(mid0100), 2));
+    Double_t doublenear0100 = near0100/mid0100;
+    Double_t doublenear0100Er = doublenear0100*TMath::Sqrt(TMath::Power((near0100Er)/(near0100), 2) + TMath::Power((mid0100Er)/(mid0100), 2));
+    Double_t doubleaway0100 = away0100/mid0100;
+    Double_t doubleaway0100Er = doubleaway0100*TMath::Sqrt(TMath::Power((away0100Er)/(away0100), 2) + TMath::Power((mid0100Er)/(mid0100), 2));
 
     TH1D *doubleratios020 = new TH1D("doubleratios020", "(h-#phi / h-h) Double Ratios", 2, 0, 2);
     doubleratios020->GetXaxis()->SetBinLabel(1, "#frac{near-side}{mid}");
@@ -558,17 +584,248 @@ intRatioPlot(){
     //doubleratios2050->GetYaxis()->SetRangeUser(0.0000, 0.0040);
     doubleratios2050->GetXaxis()->SetLabelSize(0.07);
     doubleratios2050->Draw("P SAME");
-    doubleratios50100->GetXaxis()->SetLimits(-0.1, 1.9);
+    doubleratios50100->GetXaxis()->SetLimits(-0.05, 1.95);
     doubleratios50100->Draw("P SAME");
-    doubleratios020->GetXaxis()->SetLimits(0.1, 2.1);
+    doubleratios020->GetXaxis()->SetLimits(0.05, 2.05);
     doubleratios020->Draw("P SAME");
-    doubleratios0100->GetXaxis()->SetLimits(0.2,2.2);
+    doubleratios0100->GetXaxis()->SetLimits(-0.1,1.9);
     doubleratios0100->Draw("P SAME");
     //line->Draw("SAME");
     ratioslegend->Draw("SAME");
 
+    printf("\n\n");
+    printf(" h-Phi YIELDS  ||     0 - 20     ||    20 - 50     ||    50 - 100    ||     0 - 100    ||\n");
+    printf("=========================================================================================\n");
+    printf("      NEAR     ||  %E  ||  %E  ||  %E  ||  %E  ||\n", near0_20hPhiYield, near20_50hPhiYield, near50_100hPhiYield, near0_100hPhiYield);
+    printf("      MID      ||  %E  ||  %E  ||  %E  ||  %E  ||\n", mid0_20hPhiYield, mid20_50hPhiYield, mid50_100hPhiYield, mid0_100hPhiYield);
+    printf("      AWAY     ||  %E  ||  %E  ||  %E  ||  %E  ||\n", away0_20hPhiYield, away20_50hPhiYield, away50_100hPhiYield, away0_100hPhiYield);
+    printf("      TOTAL    ||  %E  ||  %E  ||  %E  ||  %E  ||\n", total0_20hPhiYield, total20_50hPhiYield, total50_100hPhiYield, total0_100hPhiYield);
 
-/*
+    printf("\n\n");
+    printf(" h-Phi ERRORS  ||     0 - 20     ||    20 - 50     ||    50 - 100    ||     0 - 100    ||\n");
+    printf("=========================================================================================\n");
+    printf("      NEAR     ||  %E  ||  %E  ||  %E  ||  %E  ||\n", near0_20hPhiError, near20_50hPhiError, near50_100hPhiError, near0_100hPhiError);
+    printf("      MID      ||  %E  ||  %E  ||  %E  ||  %E  ||\n", mid0_20hPhiError, mid20_50hPhiError, mid50_100hPhiError, mid0_100hPhiError);
+    printf("      AWAY     ||  %E  ||  %E  ||  %E  ||  %E  ||\n", away0_20hPhiError, away20_50hPhiError, away50_100hPhiError, away0_100hPhiError);
+    printf("      TOTAL    ||  %E  ||  %E  ||  %E  ||  %E  ||\n", total0_20hPhiError, total20_50hPhiError, total50_100hPhiError, total0_100hPhiError);
+
+    printf("\n\n");
+    printf(" h-Phi %%ERRORS ||     0 - 20     ||    20 - 50     ||    50 - 100    ||     0 - 100    ||\n");
+    printf("=========================================================================================\n");
+    printf("      NEAR     ||     %2.2f%%     ||     %2.2f%%     ||     %2.2f%%     ||     %2.2f%%     ||\n", 100*near0_20hPhiError/near0_20hPhiYield, 100*near20_50hPhiError/near20_50hPhiYield, 100*near50_100hPhiError/near50_100hPhiYield, 100*near0_100hPhiError/near0_100hPhiYield);
+    printf("      MID      ||      %2.2f%%     ||      %2.2f%%     ||      %2.2f%%     ||      %2.2f%%     ||\n", 100*mid0_20hPhiError/mid0_20hPhiYield, 100*mid20_50hPhiError/mid20_50hPhiYield, 100*mid50_100hPhiError/mid50_100hPhiYield, 100*mid0_100hPhiError/mid0_100hPhiYield);
+    printf("      AWAY     ||     %2.2f%%     ||     %2.2f%%     ||     %2.2f%%     ||     %2.2f%%     ||\n", 100*away0_20hPhiError/away0_20hPhiYield, 100*away20_50hPhiError/away20_50hPhiYield, 100*away50_100hPhiError/away50_100hPhiYield, 100*away0_100hPhiError/away0_100hPhiYield);
+    printf("      TOTAL    ||      %2.2f%%     ||      %2.2f%%     ||      %2.2f%%     ||      %2.2f%%     ||\n", 100*total0_20hPhiError/total0_20hPhiYield, 100*total20_50hPhiError/total20_50hPhiYield, 100*total50_100hPhiError/total50_100hPhiYield, 100*total0_100hPhiError/total0_100hPhiYield);
+   
+
+
+    printf("\n\n");
+    printf(" h-h   YIELDS  ||     0 - 20     ||    20 - 50     ||    50 - 100    ||     0 - 100    ||\n");
+    printf("=========================================================================================\n");
+    printf("      NEAR     ||  %E  ||  %E  ||  %E  ||  %E  ||\n", near0_20hhYield, near20_50hhYield, near50_100hhYield, near0_100hhYield);
+    printf("      MID      ||  %E  ||  %E  ||  %E  ||  %E  ||\n", mid0_20hhYield, mid20_50hhYield, mid50_100hhYield, mid0_100hhYield);
+    printf("      AWAY     ||  %E  ||  %E  ||  %E  ||  %E  ||\n", away0_20hhYield, away20_50hhYield, away50_100hhYield, away0_100hhYield);
+    printf("      TOTAL    ||  %E  ||  %E  ||  %E  ||  %E  ||\n", total0_20hhYield, total20_50hhYield, total50_100hhYield, total0_100hhYield);
+
+    printf("\n\n");
+    printf(" h-h ERRORS  ||     0 - 20     ||    20 - 50     ||    50 - 100    ||     0 - 100    ||\n");
+    printf("=========================================================================================\n");
+    printf("      NEAR     ||  %E  ||  %E  ||  %E  ||  %E  ||\n", near0_20hhError, near20_50hhError, near50_100hhError, near0_100hhError);
+    printf("      MID      ||  %E  ||  %E  ||  %E  ||  %E  ||\n", mid0_20hhError, mid20_50hhError, mid50_100hhError, mid0_100hhError);
+    printf("      AWAY     ||  %E  ||  %E  ||  %E  ||  %E  ||\n", away0_20hhError, away20_50hhError, away50_100hhError, away0_100hhError);
+    printf("      TOTAL    ||  %E  ||  %E  ||  %E  ||  %E  ||\n", total0_20hhError, total20_50hhError, total50_100hhError, total0_100hhError);
+    printf("\n\n");
+
+
+    TH1D *yields020hPhi = new TH1D("yields020hPhi", "h-#phi Per Trigger Yields", 4, 0, 4);
+    yields020hPhi->GetXaxis()->SetBinLabel(1, "near-side");
+    yields020hPhi->SetBinContent(1, near0_20hPhiYield);
+    yields020hPhi->SetBinError(1, near0_20hPhiError);
+    yields020hPhi->GetXaxis()->SetBinLabel(2, "mid");
+    yields020hPhi->SetBinContent(2, mid0_20hPhiYield);
+    yields020hPhi->SetBinError(2, mid0_20hPhiError);
+    yields020hPhi->GetXaxis()->SetBinLabel(3, "away-side");
+    yields020hPhi->SetBinContent(3, away0_20hPhiYield);
+    yields020hPhi->SetBinError(3, away0_20hPhiError);
+    yields020hPhi->GetXaxis()->SetBinLabel(4, "total");
+    yields020hPhi->SetBinContent(4, total0_20hPhiYield);
+    yields020hPhi->SetBinError(4, total0_20hPhiError);
+    yields020hPhi->SetMarkerStyle(22);
+    yields020hPhi->SetMarkerColor(kRed+2);
+    yields020hPhi->SetLineColor(kRed+2);
+    yields020hPhi->SetMarkerSize(2);
+    yields020hPhi->SetLineWidth(2);
+
+    TH1D *yields2050hPhi = new TH1D("yields2050hPhi", "h-#phi Per Trigger Yields", 4, 0, 4);
+    yields2050hPhi->GetXaxis()->SetBinLabel(1, "near-side");
+    yields2050hPhi->SetBinContent(1, near20_50hPhiYield);
+    yields2050hPhi->SetBinError(1, near20_50hPhiError);
+    yields2050hPhi->GetXaxis()->SetBinLabel(2, "mid");
+    yields2050hPhi->SetBinContent(2, mid20_50hPhiYield);
+    yields2050hPhi->SetBinError(2, mid20_50hPhiError);
+    yields2050hPhi->GetXaxis()->SetBinLabel(3, "away-side");
+    yields2050hPhi->SetBinContent(3, away20_50hPhiYield);
+    yields2050hPhi->SetBinError(3, away20_50hPhiError);
+    yields2050hPhi->GetXaxis()->SetBinLabel(4, "total");
+    yields2050hPhi->SetBinContent(4, total20_50hPhiYield);
+    yields2050hPhi->SetBinError(4, total20_50hPhiError);
+    yields2050hPhi->SetMarkerStyle(21);
+    yields2050hPhi->SetMarkerColor(kBlue+2);
+    yields2050hPhi->SetLineColor(kBlue+2);
+    yields2050hPhi->SetMarkerSize(2);
+    yields2050hPhi->SetLineWidth(2);
+
+    TH1D *yields50100hPhi = new TH1D("yields50100hPhi", "h-#phi Per Trigger Yields", 4, 0, 4);
+    yields50100hPhi->GetXaxis()->SetBinLabel(1, "near-side");
+    yields50100hPhi->SetBinContent(1, near50_100hPhiYield);
+    yields50100hPhi->SetBinError(1, near50_100hPhiError);
+    yields50100hPhi->GetXaxis()->SetBinLabel(2, "mid");
+    yields50100hPhi->SetBinContent(2, mid50_100hPhiYield);
+    yields50100hPhi->SetBinError(2, mid50_100hPhiError);
+    yields50100hPhi->GetXaxis()->SetBinLabel(3, "away-side");
+    yields50100hPhi->SetBinContent(3, away50_100hPhiYield);
+    yields50100hPhi->SetBinError(3, away50_100hPhiError);
+    yields50100hPhi->GetXaxis()->SetBinLabel(4, "total");
+    yields50100hPhi->SetBinContent(4, total50_100hPhiYield);
+    yields50100hPhi->SetBinError(4, total50_100hPhiError);
+    yields50100hPhi->SetMarkerStyle(20);
+    yields50100hPhi->SetMarkerColor(kGreen+2);
+    yields50100hPhi->SetLineColor(kGreen+2);
+    yields50100hPhi->SetMarkerSize(2);
+    yields50100hPhi->SetLineWidth(2);
+
+    TH1D *yields0100hPhi = new TH1D("yields0100hPhi", "h-#phi Per Trigger Yields", 4, 0, 4);
+    yields0100hPhi->GetXaxis()->SetBinLabel(1, "near-side");
+    yields0100hPhi->SetBinContent(1, near0_100hPhiYield);
+    yields0100hPhi->SetBinError(1, near0_100hPhiError);
+    yields0100hPhi->GetXaxis()->SetBinLabel(2, "mid");
+    yields0100hPhi->SetBinContent(2, mid0_100hPhiYield);
+    yields0100hPhi->SetBinError(2, mid0_100hPhiError);
+    yields0100hPhi->GetXaxis()->SetBinLabel(3, "away-side");
+    yields0100hPhi->SetBinContent(3, away0_100hPhiYield);
+    yields0100hPhi->SetBinError(3, away0_100hPhiError);
+    yields0100hPhi->GetXaxis()->SetBinLabel(4, "total");
+    yields0100hPhi->SetBinContent(4, total0_100hPhiYield);
+    yields0100hPhi->SetBinError(4, total0_100hPhiError);
+    yields0100hPhi->SetMarkerStyle(29);
+    yields0100hPhi->SetMarkerColor(kViolet-1);
+    yields0100hPhi->SetLineColor(kViolet-1);
+    yields0100hPhi->SetMarkerSize(2);
+    yields0100hPhi->SetLineWidth(2);
+
+
+    TCanvas *yieldhPhic = new TCanvas("yieldhPhi", "yieldhPhi",50, 50, 600, 600);
+    yieldhPhic->cd();
+    yields2050hPhi->GetYaxis()->SetRangeUser(0.0000, 0.0040);
+    yields2050hPhi->GetXaxis()->SetLabelSize(0.07);
+    yields2050hPhi->Draw("P SAME");
+    yields50100hPhi->GetXaxis()->SetLimits(0.05, 4.05);
+    yields50100hPhi->Draw("P SAME");
+    yields020hPhi->GetXaxis()->SetLimits(-0.05, 3.95);
+    yields020hPhi->Draw("P SAME");
+    yields0100hPhi->GetXaxis()->SetLimits(-0.1, 3.9);
+    yields0100hPhi->Draw("P SAME");
+    line->Draw("SAME");
+    ratioslegend->Draw("SAME");
+
+
+    TH1D *yields020hh = new TH1D("yields020hh", "h-#phi Per Trigger Yields", 4, 0, 4);
+    yields020hh->GetXaxis()->SetBinLabel(1, "near-side");
+    yields020hh->SetBinContent(1, near0_20hhYield);
+    yields020hh->SetBinError(1, near0_20hhError);
+    yields020hh->GetXaxis()->SetBinLabel(2, "mid");
+    yields020hh->SetBinContent(2, mid0_20hhYield);
+    yields020hh->SetBinError(2, mid0_20hhError);
+    yields020hh->GetXaxis()->SetBinLabel(3, "away-side");
+    yields020hh->SetBinContent(3, away0_20hhYield);
+    yields020hh->SetBinError(3, away0_20hhError);
+    yields020hh->GetXaxis()->SetBinLabel(4, "total");
+    yields020hh->SetBinContent(4, total0_20hhYield);
+    yields020hh->SetBinError(4, total0_20hhError);
+    yields020hh->SetMarkerStyle(22);
+    yields020hh->SetMarkerColor(kRed+2);
+    yields020hh->SetLineColor(kRed+2);
+    yields020hh->SetMarkerSize(2);
+    yields020hh->SetLineWidth(2);
+
+    TH1D *yields2050hh = new TH1D("yields2050hh", "h-h Per Trigger Yields", 4, 0, 4);
+    yields2050hh->GetXaxis()->SetBinLabel(1, "near-side");
+    yields2050hh->SetBinContent(1, near20_50hhYield);
+    yields2050hh->SetBinError(1, near20_50hhError);
+    yields2050hh->GetXaxis()->SetBinLabel(2, "mid");
+    yields2050hh->SetBinContent(2, mid20_50hhYield);
+    yields2050hh->SetBinError(2, mid20_50hhError);
+    yields2050hh->GetXaxis()->SetBinLabel(3, "away-side");
+    yields2050hh->SetBinContent(3, away20_50hhYield);
+    yields2050hh->SetBinError(3, away20_50hhError);
+    yields2050hh->GetXaxis()->SetBinLabel(4, "total");
+    yields2050hh->SetBinContent(4, total20_50hhYield);
+    yields2050hh->SetBinError(4, total20_50hhError);
+    yields2050hh->SetMarkerStyle(21);
+    yields2050hh->SetMarkerColor(kBlue+2);
+    yields2050hh->SetLineColor(kBlue+2);
+    yields2050hh->SetMarkerSize(2);
+    yields2050hh->SetLineWidth(2);
+
+    TH1D *yields50100hh = new TH1D("yields50100hh", "h-#phi Per Trigger Yields", 4, 0, 4);
+    yields50100hh->GetXaxis()->SetBinLabel(1, "near-side");
+    yields50100hh->SetBinContent(1, near50_100hhYield);
+    yields50100hh->SetBinError(1, near50_100hhError);
+    yields50100hh->GetXaxis()->SetBinLabel(2, "mid");
+    yields50100hh->SetBinContent(2, mid50_100hhYield);
+    yields50100hh->SetBinError(2, mid50_100hhError);
+    yields50100hh->GetXaxis()->SetBinLabel(3, "away-side");
+    yields50100hh->SetBinContent(3, away50_100hhYield);
+    yields50100hh->SetBinError(3, away50_100hhError);
+    yields50100hh->GetXaxis()->SetBinLabel(4, "total");
+    yields50100hh->SetBinContent(4, total50_100hhYield);
+    yields50100hh->SetBinError(4, total50_100hhError);
+    yields50100hh->SetMarkerStyle(20);
+    yields50100hh->SetMarkerColor(kGreen+2);
+    yields50100hh->SetLineColor(kGreen+2);
+    yields50100hh->SetMarkerSize(2);
+    yields50100hh->SetLineWidth(2);
+
+    TH1D *yields0100hh = new TH1D("yields0100hh", "h-#phi Per Trigger Yields", 4, 0, 4);
+    yields0100hh->GetXaxis()->SetBinLabel(1, "near-side");
+    yields0100hh->SetBinContent(1, near0_100hhYield);
+    yields0100hh->SetBinError(1, near0_100hhError);
+    yields0100hh->GetXaxis()->SetBinLabel(2, "mid");
+    yields0100hh->SetBinContent(2, mid0_100hhYield);
+    yields0100hh->SetBinError(2, mid0_100hhError);
+    yields0100hh->GetXaxis()->SetBinLabel(3, "away-side");
+    yields0100hh->SetBinContent(3, away0_100hhYield);
+    yields0100hh->SetBinError(3, away0_100hhError);
+    yields0100hh->GetXaxis()->SetBinLabel(4, "total");
+    yields0100hh->SetBinContent(4, total0_100hhYield);
+    yields0100hh->SetBinError(4, total0_100hhError);
+    yields0100hh->SetMarkerStyle(29);
+    yields0100hh->SetMarkerColor(kViolet-1);
+    yields0100hh->SetLineColor(kViolet-1);
+    yields0100hh->SetMarkerSize(2);
+    yields0100hh->SetLineWidth(2);
+
+    TLine *linehh = new TLine(3.0, 0.0, 3.0, 10.000);
+    linehh->SetLineStyle(7);
+    linehh->SetLineWidth(2);
+
+    TCanvas *yieldhhc = new TCanvas("yieldhh", "yieldhh",50, 50, 600, 600);
+    yieldhhc->cd();
+    yields2050hh->GetYaxis()->SetRangeUser(0.0000, 10.000);
+    yields2050hh->GetXaxis()->SetLabelSize(0.07);
+    yields2050hh->Draw("P SAME");
+    yields50100hh->GetXaxis()->SetLimits(0.05, 4.05);
+    yields50100hh->Draw("P SAME");
+    yields020hh->GetXaxis()->SetLimits(-0.05, 3.95);
+    yields020hh->Draw("P SAME");
+    yields0100hh->GetXaxis()->SetLimits(-0.1, 3.9);
+    yields0100hh->Draw("P SAME");
+    linehh->Draw("SAME");
+    ratioslegend->Draw("SAME");
+
+
+
+    /*
     TH1D *ratio = hPhidphi_0_20->Clone("ratio");
     ratio->Divide(hhdphi_0_20);
     
