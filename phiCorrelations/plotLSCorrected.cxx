@@ -1,4 +1,7 @@
 void plotLSCorrected(string inputname){
+    gStyle->SetOptStat(0);
+    gStyle->SetOptFit(1);
+
     TFile* eta20File = new TFile(inputname.c_str());
 
     TH2D* eta20peak = RLSsubhPhi2Dpeak->Clone("eta20peak");
@@ -12,7 +15,7 @@ void plotLSCorrected(string inputname){
     eta20peak->GetYaxis()->SetTitleSize(0.05);
     eta20peak->GetYaxis()->SetTitleOffset(1.3);
     eta20peak->SetTitle("");
-    eta20peak->SetStats(kFALSE);
+    //eta20peak->SetStats(kFALSE);
     eta20peak->Scale(1.0/(eta20peak->Integral(eta20peak->GetXaxis()->FindBin(-1.2), eta20peak->GetXaxis()->FindBin(1.2), 1, eta20peak->GetYaxis()->GetNbins())));
 
     eta20RSB->GetXaxis()->SetTitle("#Delta#eta");
@@ -132,5 +135,20 @@ void plotLSCorrected(string inputname){
     eta20LSBPhiNarrow->Draw("H SAME");
     eta20LSBPhiNarrowest->Draw("H SAME");
     legend->Draw();
+
+    TF2 *fit2D = new TF2("fit2D", "[7] + [0]*cos(2.0*y) + [1]*cos(y) + ([2]/([5]*[6]))*exp(-(((x - [3])^2)/(2*[5]^2) + ((y - [4])^2)/(2*[6]^2)))", -1.2, 1.2, -0.5*TMath::Pi(), 1.5*TMath::Pi());
+    fit2D->SetParameters(0.1, 0.1, 0.1, 0.0, 0.0, 1.0, 1.0, 0.005);
+    fit2D->SetParLimits(3, -0.2, 0.2);
+    fit2D->SetParLimits(4, -0.2, 0.2);
+    fit2D->SetParLimits(5, 0.01, 2.0);
+    fit2D->SetParLimits(6, 0.01, 1.0);
+    fit2D->SetParNames("Quadrupole", "Dipole", "jet peak Amp.", "jet peak mean #Delta#eta", "jet peak mean #Delta#varphi", "peak sigma deta", "peak sigma dphi", "flat BG");
+    eta20peak->Fit(fit2D);
+
+    TCanvas *fitCanvas = new TCanvas("fitcanvas", "fitcanvas", 80, 80, 800, 800);
+    fitCanvas->cd();
+
+    fit2D->SetTitle("Mult. 0-20\% 2D Correletion Fit");
+    fit2D->Draw("SURF1");
 
 }
