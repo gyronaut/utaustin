@@ -2,11 +2,11 @@ plotHHDphi(){
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(0);
 
-    TFile* filehh = new TFile("~/phiStudies/LHC16q_FAST_50_100_widecuts/trig_4_8_assoc_2_4_hh_phiCorrelations_mult_50_100.root");    
+    TFile* filehh = new TFile("~/phiStudies/results_3mult_noEff/trig_4_8_assoc_2_4_hh_hhCorrelations_mult_0_20.root");    
     //string output = inputfile.substr(0,22);
     //output+= "dphi.pdf";
     TH2D* hh2D_0_20 = (TH2D*)hh2D->Clone("hhdphi");
-    TH1D* hhdphi_0_20 = (TH1D*)hh2D_0_20->ProjectionY("hhdphi_50_100", hh2D_0_20->GetXaxis()->FindBin(-1.2), hh2D_0_20->GetXaxis()->FindBin(1.2));
+    TH1D* hhdphi_0_20 = (TH1D*)hh2D_0_20->ProjectionY("hhdphi_0_20", hh2D_0_20->GetXaxis()->FindBin(-1.2), hh2D_0_20->GetXaxis()->FindBin(1.2));
     hhdphi_0_20->Rebin();
     hhdphi_0_20->SetLineWidth(4);
     hhdphi_0_20->SetLineColor(kBlue+2);
@@ -16,7 +16,7 @@ plotHHDphi(){
     hhdphi_0_20->GetXaxis()->SetTitle("#Delta#varphi");
     hhdphi_0_20->SetTitle("");
     //hhdphi_0_20->Scale(1.0/(hhdphi_0_20->Integral()));
-    hhdphi_0_20->GetYaxis()->SetTitle("Arb. Units");
+    hhdphi_0_20->GetYaxis()->SetTitle("Per Trigger Yield");
     hhdphi_0_20->GetYaxis()->SetTitleOffset(1.60);
     hhdphi_0_20->GetXaxis()->SetTitleSize(0.05);
     hhdphi_0_20->GetXaxis()->SetTitleOffset(0.90);
@@ -140,13 +140,13 @@ plotHHDphi(){
     TPaveText *text = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
     text->AddText("ALICE Work in Progress");
     text->AddText("p-Pb #sqrt{#it{s}_{NN}} = 5 TeV");
-    text->AddText("50%-100% Multiplicity");
+    text->AddText("0%-20% Multiplicity");
     text->SetTextSizePixels(20);
     text->SetFillColor(kWhite);
 
     TPaveText *text2 = new TPaveText(0.6, 0.9, 0.85, 0.85, "NDC");
-    text2->AddText("trigger: 2.0 < #it{p}_{T}^{h} < 4.0 GeV/c");
-    text2->AddText("assoc: 1.0 < #it{p}_{T}^{a} < 2.0 GeV/c");
+    text2->AddText("trigger: 4.0 < #it{p}_{T}^{h} < 8.0 GeV/c");
+    text2->AddText("assoc: 2.0 < #it{p}_{T}^{a} < 4.0 GeV/c");
     text2->SetTextSizePixels(18);
     text2->SetFillColor(kWhite);
 

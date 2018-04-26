@@ -3,7 +3,7 @@ intRatioPlot(){
     gStyle->SetOptFit(0);
     gStyle->SetErrorX(0);
 
-    TFile *hhFile = new TFile("~/phiStudies/LHC16q_FAST_hh_0_20/trig_4_8_assoc_2_4_hh_phiCorrelations_mult_0_20.root");
+    TFile *hhFile = new TFile("~/phiStudies/results_3mult_noeff/trig_4_8_assoc_2_4_hh_hhCorrelations_mult_0_20.root");
     TH2D* hh2D_0_20 = (TH2D*)hh2D->Clone("hhdphi");
     hh2D_0_20->Sumw2();
     TH1D* hhdphi_0_20 = (TH1D*)hh2D_0_20->ProjectionY("hhdphi_50_100", hh2D_0_20->GetXaxis()->FindBin(-1.2), hh2D_0_20->GetXaxis()->FindBin(1.2));
@@ -20,7 +20,7 @@ intRatioPlot(){
     hhdphi_0_20->GetXaxis()->SetTitleOffset(0.90);
 
 
-    TFile* phiFile = new TFile("~/phiStudies/LHC16q_FAST_0_20_widecuts/LS_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_0_20.root");    
+    TFile* phiFile = new TFile("~/phiStudies/results_3mult_noeff/LS_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_0_20.root");    
     TH2D* hPhi2D_0_20 = (TH2D*)RLSsubhPhi2Dpeak->Clone("hPhidphi");
     hPhi2D_0_20->Sumw2();
     TH1D* hPhidphi_0_20 = (TH1D*)hPhi2D_0_20->ProjectionY("hPhidphi_50_100", hPhi2D_0_20->GetXaxis()->FindBin(-1.2), hPhi2D_0_20->GetXaxis()->FindBin(1.2));
@@ -146,7 +146,7 @@ intRatioPlot(){
     ratios020->SetLineWidth(2);
 
    //20-50 section 
-    TFile *hhFile = new TFile("~/phiStudies/LHC16q_FAST_hh_20_50/trig_4_8_assoc_2_4_hh_phiCorrelations_mult_20_50.root");
+    TFile *hhFile = new TFile("~/phiStudies/results_3mult_noeff/trig_4_8_assoc_2_4_hh_hhCorrelations_mult_20_50.root");
     TH2D* hh2D_20_50 = (TH2D*)hh2D->Clone("hhdphi");
     TH1D* hhdphi_20_50 = (TH1D*)hh2D_20_50->ProjectionY("hhdphi_50_100", hh2D_20_50->GetXaxis()->FindBin(-1.2), hh2D_20_50->GetXaxis()->FindBin(1.2));
     hhdphi_20_50->Rebin();
@@ -162,7 +162,7 @@ intRatioPlot(){
     hhdphi_20_50->GetXaxis()->SetTitleOffset(0.90);
 
 
-    TFile* phiFile = new TFile("~/phiStudies/LHC16q_FAST_20_50_widecuts/LS_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_20_50.root");    
+    TFile* phiFile = new TFile("~/phiStudies/results_3mult_noeff/LS_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_20_50.root");    
     TH2D* hPhi2D_20_50 = (TH2D*)RLSsubhPhi2Dpeak->Clone("hPhidphi");
     TH1D* hPhidphi_20_50 = (TH1D*)hPhi2D_20_50->ProjectionY("hPhidphi_50_100", hPhi2D_20_50->GetXaxis()->FindBin(-1.2), hPhi2D_20_50->GetXaxis()->FindBin(1.2));
     //hPhidphi_20_50->Rebin();
@@ -288,7 +288,7 @@ intRatioPlot(){
 
 
     //50-100 section
-    TFile *hhFile = new TFile("~/phiStudies/LHC16q_FAST_50_100_widecuts/trig_4_8_assoc_2_4_hh_phiCorrelations_mult_50_100.root");
+    TFile *hhFile = new TFile("~/phiStudies/results_3mult_noeff/trig_4_8_assoc_2_4_hh_hhCorrelations_mult_50_100.root");
     TH2D* hh2D_50_100 = (TH2D*)hh2D->Clone("hhdphi");
     TH1D* hhdphi_50_100 = (TH1D*)hh2D_50_100->ProjectionY("hhdphi_50_100", hh2D_50_100->GetXaxis()->FindBin(-1.2), hh2D_50_100->GetXaxis()->FindBin(1.2));
     hhdphi_50_100->Rebin();
@@ -304,7 +304,7 @@ intRatioPlot(){
     hhdphi_50_100->GetXaxis()->SetTitleOffset(0.90);
 
 
-    TFile* phiFile = new TFile("~/phiStudies/LHC16q_FAST_50_100_widecuts/LS_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_50_100.root");    
+    TFile* phiFile = new TFile("~/phiStudies/results_3mult_noeff/LS_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_50_100.root");    
     TH2D* hPhi2D_50_100 = (TH2D*)RLSsubhPhi2Dpeak->Clone("hPhidphi");
     TH1D* hPhidphi_50_100 = (TH1D*)hPhi2D_50_100->ProjectionY("hPhidphi_50_100", hPhi2D_50_100->GetXaxis()->FindBin(-1.2), hPhi2D_50_100->GetXaxis()->FindBin(1.2));
     //hPhidphi_50_100->Rebin();
@@ -504,6 +504,127 @@ intRatioPlot(){
     ratios0100->Draw("P SAME");
     line->Draw("SAME");
     ratioslegend->Draw("SAME");
+
+    //Plot ratio as a function of multiplicity for the different angular regions
+    Double_t nearArray[3] = {ratios50100->GetBinContent(1), ratios2050->GetBinContent(1), ratios020->GetBinContent(1)};
+    Double_t nearArrayErr[3] = {ratios50100->GetBinError(1), ratios2050->GetBinError(1), ratios020->GetBinError(1)};
+    Double_t awayArray[3] = {ratios50100->GetBinContent(3), ratios2050->GetBinContent(3), ratios020->GetBinContent(3)};
+    Double_t awayArrayErr[3] = {ratios50100->GetBinError(3), ratios2050->GetBinError(3), ratios020->GetBinError(3)};
+    Double_t bulkArray[3] = {ratios50100->GetBinContent(2), ratios2050->GetBinContent(2), ratios020->GetBinContent(2)};
+    Double_t bulkArrayErr[3] = {ratios50100->GetBinError(2), ratios2050->GetBinError(2), ratios020->GetBinError(2)};
+    Double_t totalArray[3] = {ratios50100->GetBinContent(4), ratios2050->GetBinContent(4), ratios020->GetBinContent(4)};
+    Double_t totalArrayErr[3] = {ratios50100->GetBinError(4), ratios2050->GetBinError(4), ratios020->GetBinError(4)};
+    Double_t multArray[3] = {25.0, 65.0, 90.0};
+    Double_t multArrayErr[3] = {25.0, 15.0, 10.0};
+
+    Double_t mult2Array[3] = {26.0, 66.0, 91.0};
+    Double_t mult2ArrayErr[3] = {25.0, 15.0, 10.0};
+
+    //trying instead with variable sized histograms:
+    Double_t binwidths[4] = {0.0, 50.0, 80.0, 100.0};
+    TH1D* ratioNearHist = new TH1D("ratioNearHist", "", 3, binwidths);
+    for(int i =0; i<3; i++){
+        ratioNearHist->SetBinContent(i+1, nearArray[i]);
+        ratioNearHist->SetBinError(i+1, nearArrayErr[i]);
+    }
+    ratioNearHist->SetMarkerStyle(20);
+    ratioNearHist->SetMarkerSize(3);
+    ratioNearHist->SetMarkerColor(kRed+1);
+    ratioNearHist->SetLineColor(kRed+2);
+    ratioNearHist->SetLineWidth(2);
+    ratioNearHist->GetXaxis()->SetTitle("Multiplicity Pctl.");
+    ratioNearHist->GetXaxis()->SetTitleSize(0.05);
+    ratioNearHist->GetXaxis()->SetLabelSize(0.04);
+    ratioNearHist->GetXaxis()->SetTitleOffset(1.2);
+    ratioNearHist->GetXaxis()->SetRangeUser(0.0, 100.0);
+    ratioNearHist->GetYaxis()->SetTitle("Un-corrected #frac{h-#phi}{h-h} Ratio");
+    ratioNearHist->GetYaxis()->SetTitleSize(0.04);
+    ratioNearHist->GetYaxis()->SetTitleOffset(1.5); 
+    ratioNearHist->GetYaxis()->SetRangeUser(0.0002, 0.0035);
+
+
+
+    TGraphErrors* ratiosNear = new TGraphErrors(3, multArray, nearArray, multArrayErr, nearArrayErr);
+    ratiosNear->SetMarkerStyle(20);
+    ratiosNear->SetMarkerSize(3);
+    ratiosNear->SetMarkerColor(kRed+1);
+    ratiosNear->SetLineColor(kRed+2);
+    ratiosNear->SetLineWidth(2);
+    ratiosNear->GetXaxis()->SetTitle("Multiplicity Pctl.");
+    ratiosNear->GetXaxis()->SetTitleSize(0.05);
+    ratiosNear->GetXaxis()->SetLabelSize(0.04);
+    ratiosNear->GetXaxis()->SetTitleOffset(0.9);
+    ratiosNear->GetXaxis()->SetRangeUser(0.0, 100.0);
+    ratiosNear->GetYaxis()->SetTitle("Un-corrected #frac{h-#phi}{h-h} Ratio");
+    ratiosNear->GetYaxis()->SetTitleSize(0.04);
+    ratiosNear->GetYaxis()->SetTitleOffset(1.5); 
+    ratiosNear->GetYaxis()->SetRangeUser(0.0002, 0.0035);
+
+
+    TGraphErrors* ratiosAway = new TGraphErrors(3, mult2Array, awayArray, mult2ArrayErr, awayArrayErr);
+    ratiosAway->SetMarkerStyle(21);
+    ratiosAway->SetMarkerSize(3);
+    ratiosAway->SetMarkerColor(kBlue+1);
+    ratiosAway->SetLineColor(kBlue+2);
+    ratiosAway->SetLineWidth(2);
+
+    TGraphErrors* ratiosBulk = new TGraphErrors(3, multArray, bulkArray, multArrayErr, bulkArrayErr);
+    ratiosBulk->SetMarkerStyle(22);
+    ratiosBulk->SetMarkerSize(3);
+    ratiosBulk->SetMarkerColor(kGreen+2);
+    ratiosBulk->SetLineColor(kGreen+3);
+    ratiosBulk->SetLineWidth(2);
+   
+    TGraphErrors* ratiosTot = new TGraphErrors(3, multArray, totalArray, multArrayErr, totalArrayErr);
+    ratiosTot->SetMarkerStyle(29);
+    ratiosTot->SetMarkerSize(3);
+    ratiosTot->SetMarkerColor(kMagenta+2);
+    ratiosTot->SetLineColor(kMagenta+3);
+    ratiosTot->SetLineWidth(2);
+    ratiosTot->SetFillColor(kMagenta+1);
+    ratiosTot->SetFillStyle(3144);
+
+    TLegend  *ratiosMultlegend = new TLegend(0.183, 0.686, 0.461, 0.928);
+    ratiosMultlegend->SetMargin(0.35);
+    ratiosMultlegend->AddEntry(ratiosNear, "In Near-side Jet", "pl");
+    ratiosMultlegend->AddEntry(ratiosAway, "In Away-side Jet", "pl");
+    //ratiosMultlegend->AddEntry(ratiosBulk, "In U.E.", "pl");
+    ratiosMultlegend->AddEntry(ratiosTot, "Total", "f");
+
+    
+    TCanvas* vsMultCanvas = new TCanvas("vsMultCanvas", "vsMultCanvas", 55, 55, 900, 600);
+    TPad* pad = vsMultCanvas->cd();
+    vsMultCanvas->SetMargin(0.126, 0.05, 0.125, 0.05);
+    //TH1F* hist = ratiosNear->GetHistogram();
+    gStyle->SetErrorX(0.5);
+    ratioNearHist->Draw("PE");
+
+    ratioNearHist->GetXaxis()->SetLabelOffset(999);
+    //ratioNearHist->GetXaxis()->SetTitleOffset(999);
+    ratioNearHist->GetXaxis()->SetTickSize(0.0);
+
+    //ratiosNear->Draw("P");
+    gPad->Update();
+    TGaxis *newaxis = new TGaxis(gPad->GetUxmax(),
+            gPad->GetUymin(),
+            gPad->GetUxmin(),
+            gPad->GetUymin(),
+            ratioNearHist->GetXaxis()->GetXmin(),
+            ratioNearHist->GetXaxis()->GetXmax(),
+            510,"-");
+    newaxis->SetLabelOffset(-0.03);
+    //newaxis->SetTitle("Multipliciy % (VOA)");
+    //newaxis->SetTitleOffset(1.3);
+    newaxis->Draw();   
+
+    ratiosAway->Draw("P");
+    //ratiosBulk->Draw("P");
+    ratiosTot->Draw("2");
+    //ratiosTot->Draw("3");
+    ratiosMultlegend->Draw();
+    //ratiosNear->Draw("PL");
+    //newaxis->Draw();
+    //gPad->Update();
 
     //Double Ratio plots:
     Double_t doublenear020 = near020/mid020;
