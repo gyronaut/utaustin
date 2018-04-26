@@ -7,7 +7,20 @@ void makeLSCorrections(string inputFile){
     TH2D* hKK2DLside = input->Get("hKK2DLside");
     TH2D* hKK2DRside = input->Get("hKK2DRside");
 
+    TH2D* trigDistSameUS = input->Get("fTrigSameUSDist");
+    TH2D* trigDistSameLS = input->Get("fTrigSameLSDist");
+
     hPhi2Dpeak->SetName("uncorrectedhPhi2Dpeak");
+
+    Float_t totalTrigUS = trigDistSameUS->Integral(trigDistSameUS->GetXaxis()->FindBin(4.0), trigDistSameUS->GetXaxis()->FindBin(8.0));
+    Float_t totalTrigLS = trigDistSameLS->Integral(trigDistSameLS->GetXaxis()->FindBin(4.0), trigDistSameLS->GetXaxis()->FindBin(8.0));
+    hPhi2Dpeak->Scale(1.0/totalTrigUS);
+    hPhi2DLside->Scale(1.0/totalTrigUS);
+    hPhi2DRside->Scale(1.0/totalTrigUS);
+    hKK2Dpeak->Scale(1.0/totalTrigLS);
+    hKK2DLside->Scale(1.0/totalTrigLS);
+    hKK2DRside->Scale(1.0/totalTrigLS);
+
 
 
     //Float_t leftscale = hPhi2DLside->Integral(1, hPhi2DLside->GetXaxis()->GetNbins(), 1, hPhi2DLside->GetYaxis()->GetNbins())/hKK2DLside->Integral(1, hPhi2DLside->GetXaxis()->GetNbins(), 1, hPhi2DLside->GetYaxis()->GetNbins());

@@ -53,7 +53,7 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
 
     same->GetAxis(3)->SetRange(0,0);
     mixed->GetAxis(3)->SetRange(0,0);
-    same2DTotal->Scale(1.0/totalTrigSame);
+    //same2DTotal->Scale(1.0/totalTrigSame);
     return same2DTotal;
 }
 
@@ -376,6 +376,9 @@ makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float as
         sameLSLsideEta[i]->Write();
         mixedLSLsideEta[i]->Write();
     }
+
+    trigSameUSDist->Write();
+    trigSameLSDist->Write();
 
 /*    
     hPhi->Write();
