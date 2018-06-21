@@ -101,7 +101,7 @@ TH2D* makehhCorrections(TH3D* same3D, TH3D* mix3D){
 }
 
 //--------------------------------------------------------------------------------------------
-makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
+void makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
     TFile *histoFile = new TFile(inputName.c_str());
     string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
     TList* list = (TList*) histoFile->Get(Form("phiCorr_mult%s", mult.c_str()));
@@ -169,13 +169,13 @@ makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float as
 
     Int_t axes[] = {2,3,4,5};
 
-    THnSparseF* hPhi = dphiHPhi->Projection(4, axes);
-    THnSparseF* hKK = dphiHKK->Projection(4, axes);
-    TH3D* hh = dphiHH->Projection(2,3,4);
+    THnSparseF* hPhi = (THnSparseF*)dphiHPhi->Projection(4, axes);
+    THnSparseF* hKK = (THnSparseF*)dphiHKK->Projection(4, axes);
+    TH3D* hh = (TH3D*)dphiHH->Projection(2,3,4);
     hh->Sumw2();
-    THnSparseF* hPhiMixed = dphiHPhiMixed->Projection(4, axes);
-    THnSparseF* hKKMixed = dphiHKKMixed->Projection(4, axes);
-    TH3D* hhMixed = dphiHHMixed->Projection(2,3,4);
+    THnSparseF* hPhiMixed = (THnSparseF*)dphiHPhiMixed->Projection(4, axes);
+    THnSparseF* hKKMixed = (THnSparseF*)dphiHKKMixed->Projection(4, axes);
+    TH3D* hhMixed = (TH3D*)dphiHHMixed->Projection(2,3,4);
     hhMixed->Sumw2();
 
     TH1D* sameUSPeakEta[10];
@@ -289,19 +289,19 @@ makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float as
 
     //Make some ratio plots of mixed event US over LS for sidbeand and peak regions
     //also make projections onto delta eta and delta phi (on restricted delta eta range)
-    TH2D* mixedratioRSB = uncorrhPhiMixed2DRside->Clone("mixedratioRSB");
+    TH2D* mixedratioRSB = (TH2D*)uncorrhPhiMixed2DRside->Clone("mixedratioRSB");
     mixedratioRSB->Divide(uncorrhKKMixed2DRside);
     TH1D* mixedratioRSBdeta = mixedratioRSB->ProjectionX("mixedratioRSBdeta", 1, mixedratioRSB->GetYaxis()->GetNbins());
     TH1D* mixedratioRSBdphi = mixedratioRSB->ProjectionY("mixedratioRSBdphi", mixedratioRSB->GetXaxis()->FindBin(-1.2), mixedratioRSB->GetXaxis()->FindBin(1.2));
     mixedratioRSB->GetXaxis()->SetRange(0,0);
 
-    TH2D* mixedratioLSB = uncorrhPhiMixed2DLside->Clone("mixedratioLSB");
+    TH2D* mixedratioLSB = (TH2D*)uncorrhPhiMixed2DLside->Clone("mixedratioLSB");
     mixedratioLSB->Divide(uncorrhKKMixed2DLside);
     TH1D* mixedratioLSBdeta = mixedratioLSB->ProjectionX("mixedratioLSBdeta", 1, mixedratioLSB->GetYaxis()->GetNbins());
     TH1D* mixedratioLSBdphi = mixedratioLSB->ProjectionY("mixedratioLSBdphi", mixedratioLSB->GetXaxis()->FindBin(-1.2), mixedratioLSB->GetXaxis()->FindBin(1.2));
     mixedratioLSB->GetXaxis()->SetRange(0,0);
 
-    TH2D* mixedratioPeak = uncorrhPhiMixed2Dpeak->Clone("mixedratioPeak");
+    TH2D* mixedratioPeak = (TH2D*)uncorrhPhiMixed2Dpeak->Clone("mixedratioPeak");
     mixedratioPeak->Divide(uncorrhKKMixed2Dpeak);
     TH1D* mixedratioPeakdeta = mixedratioPeak->ProjectionX("mixedratioPeakdeta", 1, mixedratioPeak->GetYaxis()->GetNbins());
     TH1D* mixedratioPeakdphi = mixedratioPeak->ProjectionY("mixedratioPeakdphi", mixedratioPeak->GetXaxis()->FindBin(-1.2), mixedratioPeak->GetXaxis()->FindBin(1.2));

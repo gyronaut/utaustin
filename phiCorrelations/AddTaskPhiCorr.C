@@ -1,4 +1,4 @@
-AliAnalysisTask *AddTaskQA(Float_t multLow = 0.0, Float_t multHigh = 100.0){
+AliAnalysisTask *AddTaskPhiCorr(bool isHH = false, Float_t multLow = 0.0, Float_t multHigh = 100.0){
     //get the current analysis manager
     AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
     if (!mgr) {
@@ -30,15 +30,25 @@ AliAnalysisTask *AddTaskQA(Float_t multLow = 0.0, Float_t multHigh = 100.0){
 
     TString taskName = taskStream.str();
 
-    AliAnalysisTaskhPhiCorr *hPhiCorr = new AliAnalysisTaskhPhiCorr(taskName.Data(), multLow, multHigh); 
+    AliAnalysisTaskhPhiCorr *hPhiCorr = new AliAnalysisTaskhPhiCorr(taskName.Data(), isHH, multLow, multHigh); 
     hPhiCorr->SelectCollisionCandidates(AliVEvent::kINT7);
-    
+   /* 
     stringstream fileStream;
-    fileStream << "phiCorrelations_mult_" << multLow << "_" << multHigh << ".root";
+    if(isHH){
+        fileStream << "hhCorrelations_mult_" << multLow << "_" << multHigh << ".root";
+    }else{
+        fileStream << "phiCorrelations_mult_" << multLow << "_" << multHigh << ".root";
+    }
     TString filename = fileStream.str();
+*/
+    TString filename = "AnalysisResults.root";
 
     stringstream containerStream;
-    containerStream << "phiCorr_mult_" << multLow << "_" << multHigh;
+    if(isHH){
+        containerStream << "hhCorr_mult_" << multLow << "_" << multHigh;
+    }else{
+        containerStream << "phiCorr_mult_" << multLow << "_" << multHigh;
+    }
     TString containerName = containerStream.str();
 
     printf("\n!!!!!!!!!!!!!\n Setting up input/output containers\n");

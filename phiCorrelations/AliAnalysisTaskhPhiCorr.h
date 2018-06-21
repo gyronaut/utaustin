@@ -14,7 +14,7 @@ class AliAODEvent;
 class AliAnalysisTaskhPhiCorr : public AliAnalysisTaskSE {
 public:
     AliAnalysisTaskhPhiCorr();
-    AliAnalysisTaskhPhiCorr(const char *name, Float_t multLow, Float_t multHigh);
+    AliAnalysisTaskhPhiCorr(const char *name, bool isHH, Float_t multLow, Float_t multHigh);
     virtual ~AliAnalysisTaskhPhiCorr();
     
     virtual void   UserCreateOutputObjects();
@@ -27,6 +27,7 @@ public:
     
 private:
 
+    bool IS_HH;
     Float_t MULT_LOW;
     Float_t MULT_HIGH;
 

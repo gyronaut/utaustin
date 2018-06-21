@@ -1,10 +1,10 @@
-void plotLSCorrected(string inputname){
+void plotUSCorrected(string inputname){
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(1);
 
     TFile* eta20File = new TFile(inputname.c_str());
 
-    TH2D* eta20peak = (TH2D*)eta20File->Get("RLSsubhPhi2Dpeak");
+    TH2D* eta20peak = (TH2D*)eta20File->Get("AvgUSsubhPhi2Dpeak");
     TH2D* eta20RSB = (TH2D*)eta20File->Get("RLSsubhPhi2DRside");
     TH2D* eta20LSB = (TH2D*)eta20File->Get("LLSsubhPhi2DLside");
 
@@ -178,7 +178,7 @@ void plotLSCorrected(string inputname){
     
     TCanvas *fitCanvas = new TCanvas("fitcanvas", "fitcanvas", 80, 80, 800, 800);
     fitCanvas->cd();
-    peak->Fit(fit2D, "R0");
+    //peak->Fit(fit2D, "R0");
     peak->Fit(fitother2D, "R0");
     fit2D->SetTitle("Mult. 0-20\% 2D Correletion Fit");
     //fit2D->Draw("SURF1");
@@ -294,18 +294,18 @@ void plotLSCorrected(string inputname){
     hfitnojet->SetLineColor(kRed);
     hfitnonear->GetXaxis()->SetRangeUser(-1.0, 1.0);
     hfitnonear->SetLineColor(kMagenta);
-    peak->GetZaxis()->SetRangeUser(0.000015, 0.00005);
-    hfullfit->GetZaxis()->SetRangeUser(0.000015, 0.00005);
-    hfitnojet->GetZaxis()->SetRangeUser(0.000015, 0.00005);
-    hpaperfit->GetZaxis()->SetRangeUser(0.000015, 0.00005);
-    hfitnonear->GetZaxis()->SetRangeUser(0.000015, 0.00005);
+    peak->GetZaxis()->SetRangeUser(0.000040, 0.000090);
+    hfullfit->GetZaxis()->SetRangeUser(0.000040, 0.000090);
+    hfitnojet->GetZaxis()->SetRangeUser(0.000040, 0.000090);
+    hpaperfit->GetZaxis()->SetRangeUser(0.000040, 0.000090);
+    hfitnonear->GetZaxis()->SetRangeUser(0.000040, 0.000090);
     peak->SetTitle("");
     peak->GetXaxis()->SetTitle("#Delta#eta");
     peak->GetXaxis()->SetTitleOffset(1.4);
     peak->GetYaxis()->SetTitle("#Delta#varphi");
     peak->GetYaxis()->SetTitleOffset(1.3);
     peak->Draw("SAME SURF1");
-    hfullfit->Draw("SAME SURF");
+    //hfullfit->Draw("SAME SURF");
     //hpaperfit->Draw("SAME SURF");
     //hfitnojet->Draw("SAME SURF");
     //hfitnonear->Draw("SAME SURF");

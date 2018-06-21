@@ -1,4 +1,4 @@
-void intRatioPlot(){
+void intUSRatioPlot(){
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(0);
     gStyle->SetErrorX(0);
@@ -22,7 +22,7 @@ void intRatioPlot(){
 
 
     TFile* phiFile = new TFile("~/phiStudies/results_3mult_noeff/US_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_0_20.root");    
-    TH2D* hPhi2D_0_20 = (TH2D*)phiFile->Get("RLSsubhPhi2Dpeak");
+    TH2D* hPhi2D_0_20 = (TH2D*)phiFile->Get("AvgUSsubhPhi2Dpeak");
     hPhi2D_0_20->Sumw2();
     TH1D* hPhidphi_0_20 = (TH1D*)hPhi2D_0_20->ProjectionY("hPhidphi_50_100", hPhi2D_0_20->GetXaxis()->FindBin(-1.2), hPhi2D_0_20->GetXaxis()->FindBin(1.2));
     //hPhidphi_0_20->Rebin();
@@ -166,7 +166,7 @@ void intRatioPlot(){
 
 
     TFile* phiFile_20_50 = new TFile("~/phiStudies/results_3mult_noeff/US_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_20_50.root");    
-    TH2D* hPhi2D_20_50 = (TH2D*)phiFile_20_50->Get("RLSsubhPhi2Dpeak");
+    TH2D* hPhi2D_20_50 = (TH2D*)phiFile_20_50->Get("AvgUSsubhPhi2Dpeak");
     hPhi2D_20_50->SetName("hPhi2D_20_50");
     TH1D* hPhidphi_20_50 = (TH1D*)hPhi2D_20_50->ProjectionY("hPhidphi_50_100", hPhi2D_20_50->GetXaxis()->FindBin(-1.2), hPhi2D_20_50->GetXaxis()->FindBin(1.2));
     //hPhidphi_20_50->Rebin();
@@ -181,7 +181,7 @@ void intRatioPlot(){
     hPhidphi_20_50->GetXaxis()->SetTitleSize(0.05);
     hPhidphi_20_50->GetXaxis()->SetTitleOffset(0.90);
 
-    TF1 *corrFit2050 = new TF1("corrFit2050", "gaus(0) + gaus(3) + pol0(6)", -1.4, 4.6);
+    TF1 *corrFit2050 = new TF1("corrFit2050", "gaus(0) + gaus(3) + ([3]/([5]))*exp(-(((x - [4] + 2.0*TMath::Pi())^2)/(2*[5]^2))) + pol0(6)", -1.4, 4.6);
     corrFit2050->FixParameter(6, 0.3333*(hhdphi_20_50->GetBinContent(8)+hhdphi_20_50->GetBinContent(16)+hhdphi_20_50->GetBinContent(1)));
     //corrFit2050->SetParLimits(6, hhdphi_20_50->GetBinContent(8)*0.9, hhdphi_20_50->GetBinContent(8)*1.1);
     corrFit2050->SetParameter(0, hhdphi_20_50->GetBinContent(hhdphi_20_50->GetXaxis()->FindBin(0.0)) - corrFit2050->GetParameter(6));
@@ -311,7 +311,7 @@ void intRatioPlot(){
 
 
     TFile* phiFile_50_100 = new TFile("~/phiStudies/results_3mult_noeff/US_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_50_100.root");    
-    TH2D* hPhi2D_50_100 = (TH2D*)phiFile_50_100->Get("RLSsubhPhi2Dpeak");
+    TH2D* hPhi2D_50_100 = (TH2D*)phiFile_50_100->Get("AvgUSsubhPhi2Dpeak");
     hPhi2D_50_100->SetName("hPhi2D_50_100");
     TH1D* hPhidphi_50_100 = (TH1D*)hPhi2D_50_100->ProjectionY("hPhidphi_50_100", hPhi2D_50_100->GetXaxis()->FindBin(-1.2), hPhi2D_50_100->GetXaxis()->FindBin(1.2));
     //hPhidphi_50_100->Rebin();
@@ -340,7 +340,7 @@ void intRatioPlot(){
     corrFit50100->SetParameter(4, 3.14);
     corrFit50100->SetParLimits(4, 3.0, 3.25);
     corrFit50100->SetParameter(5, 0.5);
-    corrFit50100->SetParLimits(5, 0.2, 0.9);
+    corrFit50100->SetParLimits(5, 0.1, 1.0);
 
     corrFit50100->SetParNames("peak1", "mean1", "sigma1", "peak2", "mean2", "sigma2", "BG");
 
@@ -954,15 +954,48 @@ void intRatioPlot(){
 
 
 
-    /*
-    TH1D *ratio = hPhidphi_0_20->Clone("ratio");
+    
+    TH1D *ratio = (TH1D*)hPhidphi_0_20->Clone("ratio");
     ratio->Divide(hhdphi_0_20);
-    */
+    
 
     TLegend  *legend = new TLegend(0.3791, 0.1518, 0.8772, 0.2688);
     legend->SetMargin(0.15);
     legend->AddEntry(corrFit2, "Hadron-#phi(1020) Correlation", "l");
     legend->AddEntry(corrFit, "Hadron-hadron Correlations", "l");
+
+    TPaveText *text = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
+    text->AddText("ALICE Work in Progress");
+    text->AddText("p-Pb #sqrt{s_{NN}} = 5 TeV");
+    text->AddText("0%-20% Multiplicity");
+    text->SetTextSizePixels(20);
+    text->SetBorderSize(0);
+    text->SetFillColor(kWhite);
+
+    TPaveText *text2050 = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
+    text2050->AddText("ALICE Work in Progress");
+    text2050->AddText("p-Pb #sqrt{s_{NN}} = 5 TeV");
+    text2050->AddText("20%-50% Multiplicity");
+    text2050->SetTextSizePixels(20);
+    text2050->SetBorderSize(0);
+    text2050->SetFillColor(kWhite);
+
+    TPaveText *text50100 = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
+    text50100->AddText("ALICE Work in Progress");
+    text50100->AddText("p-Pb #sqrt{s_{NN}} = 5 TeV");
+    text50100->AddText("50%-100% Multiplicity");
+    text50100->SetBorderSize(0);
+    text50100->SetTextSizePixels(20);
+    text50100->SetFillColor(kWhite);
+
+    
+    TPaveText *text2 = new TPaveText(0.6, 0.9, 0.85, 0.85, "NDC");
+    text2->AddText("trigger: 4.0 < p_{T}^{h} < 8.0 GeV/c");
+    text2->AddText("assoc: 2.0 < p_{T}^{#phi} < 4.0 GeV/c");
+    text2->SetTextSizePixels(18);
+    text2->SetFillColor(kWhite);
+    text2->SetBorderSize(0);
+
     
     TCanvas *c0_20 = new TCanvas("c0_20", "c0_20", 50, 50, 550, 600);
     c0_20->cd();
@@ -970,34 +1003,39 @@ void intRatioPlot(){
     hhdphi_0_20->GetYaxis()->SetRangeUser(0.001, 0.25);
     //hhdphi_0_20->Draw("E0 X0");
     hPhidphi_0_20->Draw("E0 X0 SAME");
-    corrFit->Draw("SAME");
+    //corrFit->Draw("SAME");
     corrFit2->Draw("SAME");
-    hhBG->Draw("SAME");
+    //hhBG->Draw("SAME");
     hphiBG->Draw("SAME");
+    text->Draw();
+    text2->Draw();
     legend->Draw();
 
     TCanvas *c20_50 = new TCanvas("c20_50", "c20_50", 50, 50, 550, 600);
     c20_50->cd();
     c20_50->SetMargin(0.12, 0.05, 0.1, 0.05);
-    //hhdphi_0_20->GetYaxis()->SetRangeUser(0.03, 0.11);
+    hhdphi_0_20->GetYaxis()->SetRangeUser(0.03, 0.11);
     //hhdphi_20_50->Draw("E0 X0");
     hPhidphi_20_50->Draw("E0 X0 SAME");
-    corrFit2050->Draw("SAME");
+    //corrFit2050->Draw("SAME");
     corrFit2_2050->Draw("SAME");
-    hhBG_20_50->Draw("SAME");
+    //hhBG_20_50->Draw("SAME");
     hphiBG_20_50->Draw("SAME");
+    text2050->Draw();
+    text2->Draw();
     legend->Draw();
 
     TCanvas *c50_100 = new TCanvas("c50_100", "c50_100", 50, 50, 550, 600);
     c50_100->cd();
     c50_100->SetMargin(0.12, 0.05, 0.1, 0.05);
-//    hhdphi_50_100->Draw("E0 X0");
+    //hhdphi_50_100->Draw("E0 X0");
     hPhidphi_50_100->Draw("E0 X0 SAME");
-    corrFit50100->Draw("SAME");
+    //corrFit50100->Draw("SAME");
     corrFit2_50100->Draw("SAME");
-    hPhidphi_50_100->Draw("E0 X0 SAME");
-    hhBG_50_100->Draw("SAME");
+    //hhBG_50_100->Draw("SAME");
     hphiBG_50_100->Draw("SAME");
+    text50100->Draw();
+    text2->Draw();
     legend->Draw();
 /*
     TCanvas *cratio = new TCanvas("cratio", "cratio", 50, 50, 550, 600);

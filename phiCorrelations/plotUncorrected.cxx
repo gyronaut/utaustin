@@ -1,9 +1,9 @@
 void plotUncorrected(TString inputfile){
     TFile* eta20File = new TFile(inputfile.Data());
 
-    TH2D* eta20peak = uncorrhPhi2Dpeak->Clone("eta20peak");
-    TH2D* eta20RSB = uncorrhPhi2DRside->Clone("eta20RSB");
-    TH2D* eta20LSB = uncorrhPhi2DLside->Clone("eta20LSB");
+    TH2D* eta20peak = (TH2D*)eta20File->Get("uncorrhPhi2Dpeak");
+    TH2D* eta20RSB = (TH2D*)eta20File->Get("uncorrhPhi2DRside");
+    TH2D* eta20LSB = (TH2D*)eta20File->Get("uncorrhPhi2DLside");
 
     eta20peak->GetXaxis()->SetTitle("#Delta#eta");
     eta20peak->GetXaxis()->SetTitleSize(0.05);
@@ -73,9 +73,9 @@ void plotUncorrected(TString inputfile){
     eta20LSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
 
 
-    TH2D* LSeta20peak = uncorrhKK2Dpeak->Clone("LSeta20peak");
-    TH2D* Lseta20RSB = uncorrhKK2DRside->Clone("LSeta20RSB");
-    TH2D* LSeta20LSB = uncorrhKK2DLside->Clone("LSeta20LSB");
+    TH2D* LSeta20peak = (TH2D*)eta20File->Get("uncorrhKK2Dpeak");
+    TH2D* LSeta20RSB = (TH2D*)eta20File->Get("uncorrhKK2DRside");
+    TH2D* LSeta20LSB = (TH2D*)eta20File->Get("uncorrhKK2DLside");
 
     LSeta20peak->GetXaxis()->SetTitle("#Delta#eta");
     LSeta20peak->GetXaxis()->SetTitleSize(0.05);
@@ -184,7 +184,7 @@ void plotUncorrected(TString inputfile){
 
 
     //Plot some mixed event ratios, and also an overlaying 1D dEta plot of both same/mixed dEta distributions
-    TH2D* mixedUSpeak = uncorrhPhiMixed2Dpeak->Clone("MixedUSpeak");
+    TH2D* mixedUSpeak = (TH2D*)eta20File->Get("uncorrhPhiMixed2Dpeak");
     mixedUSpeak->SetStats(kFALSE);
     TH1D* mixedUSpeakEta = mixedUSpeak->ProjectionX("mixedUSpeakEta", 1, mixedUSpeak->GetYaxis()->GetNbins());
     mixedUSpeak->SetTitle("");
@@ -195,7 +195,7 @@ void plotUncorrected(TString inputfile){
     cMixedUSpeak->cd()->SetPhi(50);
     mixedUSpeak->Draw("SURF1");
 
-    TH2D* mixedLSpeak = uncorrhKKMixed2Dpeak->Clone("MixedLSpeak");
+    TH2D* mixedLSpeak = (TH2D*)eta20File->Get("uncorrhKKMixed2Dpeak");
     mixedLSpeak->SetStats(kFALSE);
     TH1D* mixedLSpeakEta = mixedLSpeak->ProjectionX("mixedLSpeakEta", 1, mixedLSpeak->GetYaxis()->GetNbins());
     mixedLSpeak->SetTitle("");
@@ -203,7 +203,7 @@ void plotUncorrected(TString inputfile){
     cMixedLSpeak->cd()->SetTheta(50);
     cMixedLSpeak->cd()->SetPhi(50);
     mixedLSpeak->Draw("SURF1");
-
+/*
     TCanvas* cmixedratioRSB = new TCanvas("cmixedratioRSB", "cmixedratioRSB", 70, 70, 800, 800);
     cmixedratioRSB->Divide(2,2);
     cmixedratioRSB->cd(1)->SetTheta(50);
@@ -224,12 +224,12 @@ void plotUncorrected(TString inputfile){
     cmixedratioPeak->cd(3);
     mixedratioPeakdphi->Draw("H");
 
-    
-    TH2D* sameratioRSB = uncorrhPhi2DRside->Clone("sameratioRSB");
+
+    TH2D* sameratioRSB = (TH2D*)eta20File->Get("uncorrhPhi2DRside");
     sameratioRSB->SetTitle("");
     sameratioRSB->SetStats(kFALSE);
-    Float_t scale = uncorrhKK2DRside->Integral()/sameratioRSB->Integral();
-    sameratioRSB->Divide(uncorrhKK2DRside);
+    scale = LSeta20RSB->Integral()/sameratioRSB->Integral();
+    sameratioRSB->Divide(LSeta20RSB);
     sameratioRSB->Scale(scale);
     TH1D* sameratioRSBdeta = sameratioRSB->ProjectionX("sameratioRSBdeta");
     sameratioRSBdeta->SetStats(kFALSE);
@@ -248,10 +248,10 @@ void plotUncorrected(TString inputfile){
     csameratioRSB->cd(3);
     sameratioRSBdphi->Draw("H");
 
-    TH2D* sameratiopeak = uncorrhPhi2Dpeak->Clone("sameratiopeak");
+    TH2D* sameratiopeak = (TH2D*)eta20File->Get("uncorrhPhi2Dpeak");
     sameratiopeak->SetTitle("");
     sameratiopeak->SetStats(kFALSE);
-    Float_t scale = uncorrhKK2Dpeak->Integral()/sameratiopeak->Integral();
+    scale = uncorrhKK2Dpeak->Integral()/sameratiopeak->Integral();
     sameratiopeak->Divide(uncorrhKK2Dpeak);
     sameratiopeak->Scale(scale);
     TH1D* sameratiopeakdeta = sameratiopeak->ProjectionX("sameratiopeakdeta");
@@ -270,7 +270,7 @@ void plotUncorrected(TString inputfile){
     sameratiopeakdeta->Draw("H");
     csameratiopeak->cd(3);
     sameratiopeakdphi->Draw("H");
-
+*/
     //plotting delta-eta for same and mixed (scaling mixed to the larger dEta regions)
     TCanvas* cUSdeta = new TCanvas("cUSdeta", "cUSdeta", 80, 80, 600, 600);
     cUSdeta->cd();

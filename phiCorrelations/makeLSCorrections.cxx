@@ -1,19 +1,19 @@
 void makeLSCorrections(string inputFile){
     TFile* input = new TFile(inputFile.c_str());
-    TH2D* hPhi2Dpeak = input->Get("hPhi2Dpeak");
-    TH2D* hPhi2DLside = input->Get("hPhi2DLside");
-    TH2D* hPhi2DRside = input->Get("hPhi2DRside");
-    TH2D* hKK2Dpeak = input->Get("hKK2Dpeak");
-    TH2D* hKK2DLside = input->Get("hKK2DLside");
-    TH2D* hKK2DRside = input->Get("hKK2DRside");
+    TH2D* hPhi2Dpeak = (TH2D*)input->Get("hPhi2Dpeak");
+    TH2D* hPhi2DLside = (TH2D*)input->Get("hPhi2DLside");
+    TH2D* hPhi2DRside = (TH2D*)input->Get("hPhi2DRside");
+    TH2D* hKK2Dpeak = (TH2D*)input->Get("hKK2Dpeak");
+    TH2D* hKK2DLside = (TH2D*)input->Get("hKK2DLside");
+    TH2D* hKK2DRside = (TH2D*)input->Get("hKK2DRside");
 
-    TH2D* trigDistSameUS = input->Get("fTrigSameUSDist");
-    TH2D* trigDistSameLS = input->Get("fTrigSameLSDist");
+    TH2D* trigDistSameUS = (TH2D*)input->Get("fTrigSameUSDist");
+    TH2D* trigDistSameLS = (TH2D*)input->Get("fTrigSameLSDist");
 
     hPhi2Dpeak->SetName("uncorrectedhPhi2Dpeak");
 
-    Float_t totalTrigUS = trigDistSameUS->Integral(trigDistSameUS->GetXaxis()->FindBin(4.0), trigDistSameUS->GetXaxis()->FindBin(8.0));
-    Float_t totalTrigLS = trigDistSameLS->Integral(trigDistSameLS->GetXaxis()->FindBin(4.0), trigDistSameLS->GetXaxis()->FindBin(8.0));
+    Float_t totalTrigUS = trigDistSameUS->Integral(trigDistSameUS->GetXaxis()->FindBin(4.0), trigDistSameUS->GetXaxis()->FindBin(10.0));
+    Float_t totalTrigLS = trigDistSameLS->Integral(trigDistSameLS->GetXaxis()->FindBin(4.0), trigDistSameLS->GetXaxis()->FindBin(10.0));
     hPhi2Dpeak->Scale(1.0/totalTrigUS);
     hPhi2DLside->Scale(1.0/totalTrigUS);
     hPhi2DRside->Scale(1.0/totalTrigUS);
@@ -25,8 +25,8 @@ void makeLSCorrections(string inputFile){
 
     //Float_t leftscale = hPhi2DLside->Integral(1, hPhi2DLside->GetXaxis()->GetNbins(), 1, hPhi2DLside->GetYaxis()->GetNbins())/hKK2DLside->Integral(1, hPhi2DLside->GetXaxis()->GetNbins(), 1, hPhi2DLside->GetYaxis()->GetNbins());
     Float_t leftscale = hPhi2DLside->Integral(hPhi2DLside->GetXaxis()->FindBin(-1.2), hPhi2DLside->GetXaxis()->FindBin(1.2), 1, hPhi2DLside->GetYaxis()->GetNbins())/hKK2DLside->Integral(hPhi2DLside->GetXaxis()->FindBin(-1.2), hPhi2DLside->GetXaxis()->FindBin(1.2), 1, hPhi2DLside->GetYaxis()->GetNbins());
-    TH2D* LLSsubhPhi2DLside = hPhi2DLside->Clone("LLSsubhPhi2DLside");
-    TH2D* LLSsubhPhi2Dpeak = hPhi2Dpeak->Clone("LLSsubhPhi2Dpeak");
+    TH2D* LLSsubhPhi2DLside = (TH2D*)hPhi2DLside->Clone("LLSsubhPhi2DLside");
+    TH2D* LLSsubhPhi2Dpeak = (TH2D*)hPhi2Dpeak->Clone("LLSsubhPhi2Dpeak");
     LLSsubhPhi2DLside->Add(hKK2DLside, -1.0*leftscale);
     //LLSsubhPhi2DLside->Divide(hKK2DLside);
     //LLSsubhPhi2DLside->Scale(1.0/leftscale);
@@ -37,8 +37,8 @@ void makeLSCorrections(string inputFile){
 
     //Float_t rightscale = hPhi2DRside->Integral(1, hPhi2DRside->GetXaxis()->GetNbins(), 1, hPhi2DRside->GetYaxis()->GetNbins())/hKK2DRside->Integral(1, hPhi2DRside->GetXaxis()->GetNbins(), 1, hPhi2DRside->GetYaxis()->GetNbins());
     Float_t rightscale = hPhi2DRside->Integral(hPhi2DRside->GetXaxis()->FindBin(-1.2), hPhi2DRside->GetXaxis()->FindBin(1.2), 1, hPhi2DRside->GetYaxis()->GetNbins())/hKK2DRside->Integral(hPhi2DRside->GetXaxis()->FindBin(-1.2), hPhi2DRside->GetXaxis()->FindBin(1.2), 1, hPhi2DRside->GetYaxis()->GetNbins());
-    TH2D* RLSsubhPhi2DRside = hPhi2DRside->Clone("RLSsubhPhi2DRside");
-    TH2D* RLSsubhPhi2Dpeak = hPhi2Dpeak->Clone("RLSsubhPhi2Dpeak");
+    TH2D* RLSsubhPhi2DRside = (TH2D*)hPhi2DRside->Clone("RLSsubhPhi2DRside");
+    TH2D* RLSsubhPhi2Dpeak = (TH2D*)hPhi2Dpeak->Clone("RLSsubhPhi2Dpeak");
     RLSsubhPhi2DRside->Add(hKK2DRside, -1.0*rightscale);
     //RLSsubhPhi2DRside->Divide(hKK2DRside);
     //RLSsubhPhi2DRside->Scale(1.0/rightscale);
@@ -55,7 +55,7 @@ void makeLSCorrections(string inputFile){
     scales->SetBinContent(1, leftscale);
     scales->SetBinContent(2, rightscale);
 
-    TH2D* rebinRLSsubhPhi2Dpeak = RLSsubhPhi2Dpeak->Clone("rebinRLSsubhPhi2Dpeak");
+    TH2D* rebinRLSsubhPhi2Dpeak = (TH2D*)RLSsubhPhi2Dpeak->Clone("rebinRLSsubhPhi2Dpeak");
     rebinRLSsubhPhi2Dpeak->Rebin2D(2, 2);
 
     TFile* output = new TFile(Form("LS_%s", inputFile.c_str()), "RECREATE");
