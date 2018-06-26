@@ -13,7 +13,7 @@ double calcMass(double px, double py, double pz, double E){
 
 int nextline(ifstream* input); 
 
-void phsdReader(string parFileName, string dataFileName){
+void deltaReader(string parFileName, string dataFileName){
 
     TH1D* massPhi = new TH1D("massPhi", "massPhi", 200, 0.9, 1.1);
     TH1D* massRealPhi = new TH1D("massRealPhi", "massRealPhi", 200, 0.9, 1.1);
@@ -21,13 +21,11 @@ void phsdReader(string parFileName, string dataFileName){
     TH1D* massRealKst = new TH1D("massRealKst", "massRealKst", 100, 0.0, 2.0);
     TH1D* pTpicharged = new TH1D("ptpicharged", "ptpicharged", 100, 0.0, 10.0);
 
-    std::vector<particle> posPions;
-    std::vector<particle> negPions;
-    std::vector<particle> posKaons;
-    std::vector<particle> negKaons;
-    std::vector<particle> neutralPions;
-    std::vector<particle> neutralKaons;
-    
+    std::vector<particle> posDelta;
+    std::vector<particle> negDelta;
+    std::vector<particle> neutralDelta;
+    std::vector<particle> antineutralDelta;
+
     //first read in the input parameter file
     ifstream input;
     input.open(parFileName.c_str());
@@ -58,23 +56,15 @@ void phsdReader(string parFileName, string dataFileName){
         printf("Invalid data file! Check name: %s\n", dataFileName.c_str());
     }
     //for each event (total events = numPar*numRuns), loop over all particle in the event (nPart)
-    int nPart=0, pdg=0, charge=0, process=0, parent=0, nkst = 0; // process = ID5 = ID(j,5); parent = ID3 = ID(j,3)
-    double px=0., py=0., pz=0., E=0., kpx=0., kpy=0., kpz=0., kE=0.;
+    int pid=0, charge=0, process=0, isub=0, irun=0; // process = ID5 = ID(j,5); parent = ID3 = ID(j,3)
+    double px=0., py=0., pz=0., E=0., m=0., prodTime=0., decayTime=0., impact=0.;
     for(int ievt=1; ievt<numPar*numRuns+1; ievt++){
-        input >> nPart;
-        nextline(&input);
-        nextline(&input);
-        printf("Event %d, nPart = %d\n", ievt, nPart);
-        posPions.clear();
-        negPions.clear();
-        posKaons.clear();
-        negKaons.clear();
-        neutralPions.clear();
-        neutralKaons.clear();
+        posDelta.clear();
+        negDelta.clear();
+        neutralDelta.clear();
         int npi = 0;
         for(int ipart = 0; ipart < nPart; ipart++){
-            input >> pdg >> charge >> px >> py >> pz >> E >> process >> parent;
-            nextline(&input);
+            input >> pid >> charge >> isub >> irun >> px >> py >> pz >> E >> m >> prodTime >> decayTime >> impact >> process;
             particle part;
             part.process = process;
             part.parent = parent;
