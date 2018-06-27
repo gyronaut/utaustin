@@ -9,7 +9,17 @@ struct particle{
 
 double calcMass(double px, double py, double pz, double E){
     return (double)TMath::Sqrt(E*E - (px*px + py*py + pz*pz));
-}
+};
+double pT(double px, double py){
+    return (double)TMath::Sqrt(px*px+py*py);
+};
+double eta(double px, double py, double pz){
+    double p = TMath::Sqrt(px*px + py*py + pz*pz);
+    return (double)0.5*TMath::Log((p + pz)/(p - pz));
+};
+double phi(double px, double py){
+    return TMath::ATan2(py, px);
+};
 
 int nextline(ifstream* input); 
 
@@ -20,6 +30,12 @@ void phsdReader(string parFileName, string dataFileName){
     TH1D* massKst = new TH1D("massKst", "massKst", 100 ,0.0, 2.0);
     TH1D* massRealKst = new TH1D("massRealKst", "massRealKst", 100, 0.0, 2.0);
     TH1D* pTpicharged = new TH1D("ptpicharged", "ptpicharged", 100, 0.0, 10.0);
+    TH1D* pTkcharged = new TH1D("ptkcharged", "ptkcharged", 100, 0.0, 10.0);
+    TH1D* pTproton = new TH1D("ptproton", "ptproton", 100, 0.0, 10.0);
+    TH1D* pTcharged = new TH1D("ptcharged", "ptcharged", 100, 0.0, 10.0);
+    TH1D* pTphi = new TH1D("ptphi", "ptphi", 100, 0.0, 10.0);
+    TH1D* etaphi = new TH1D("etaphi", "etaphi", 100, -3.0, 3.0);
+    TH1D* phiphi = new TH1D("phiphi", "phiphi", 100, -3.1416, 3.1416);
 
     std::vector<particle> posPions;
     std::vector<particle> negPions;
@@ -27,6 +43,7 @@ void phsdReader(string parFileName, string dataFileName){
     std::vector<particle> negKaons;
     std::vector<particle> neutralPions;
     std::vector<particle> neutralKaons;
+    std::vector<particle> realPhi;
     
     //first read in the input parameter file
     ifstream input;
@@ -85,16 +102,27 @@ void phsdReader(string parFileName, string dataFileName){
             part.pvec.SetE(E);
             if(pdg == 211){
                 posPions.push_back(part);
+                pTpicharged->Fill(pT(px, py));
+                pTcharged->Fill(pT(px, py));
             }else if(pdg == -211){
+                pTpicharged->Fill(pT(px, py));
+                pTcharged->Fill(pT(px, py));
                 negPions.push_back(part);
             }else if(pdg == 111){
                 neutralPions.push_back(part);
             }else if(pdg == 321){
                 posKaons.push_back(part);
+                pTkcharged->Fill(pT(px, py));
+                pTcharged->Fill(pT(px, py));
             }else if(pdg == -321){
                 negKaons.push_back(part);
+                pTpicharged->Fill(pT(px, py));
+                pTcharged->Fill(pT(px, py));
             }else if(TMath::Abs(pdg) == 311){
                 neutralKaons.push_back(part);
+            }else if(TMath::Abs(pdg) == 2212){
+                pTproton->Fill(pT(px, py));
+                pTcharged->Fill(pT(px, py));
             }
         }
         printf("Num Kaons: %d,     Num Pions: %d\n", (int)(posKaons.size() + negKaons.size() + neutralKaons.size()), (int)(posPions.size() + negPions.size() + neutralPions.size()));
@@ -132,6 +160,9 @@ void phsdReader(string parFileName, string dataFileName){
                     massPhi->Fill(mass, 1.0/(0.02*numPar*numRuns));
                     if(posKaons[ikch].parent == negKaons[ikneg].parent && (posKaons[ikch].process == 5 && negKaons[ikch].process == 5)){
                         massRealPhi->Fill(mass, 1.0/(0.02*numPar*numRuns));
+                        pTphi->Fill(pT(kpx, kpy));
+                        etaphi->Fill(eta(kpx, kpy, kpz));
+                        phiphi->Fill(phi(kpx, kpy));
                     }
                 }
 
@@ -185,6 +216,12 @@ void phsdReader(string parFileName, string dataFileName){
     massPhi->Write();
     massRealPhi->Write();
     pTpicharged->Write();
+    pTkcharged->Write();
+    pTproton->Write();
+    pTcharged->Write();
+    pTphi->Write();
+    etaphi->Write();
+    phiphi->Write();
 }
 
 int nextline(ifstream* input){
