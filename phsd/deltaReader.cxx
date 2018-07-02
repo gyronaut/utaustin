@@ -21,10 +21,15 @@ void deltaReader(string parFileName, string dataFileName){
     TH1D* massRealKst = new TH1D("massRealKst", "massRealKst", 100, 0.0, 2.0);
     TH1D* pTpicharged = new TH1D("ptpicharged", "ptpicharged", 100, 0.0, 10.0);
 
-    std::vector<particle> posDelta;
-    std::vector<particle> negDelta;
-    std::vector<particle> neutralDelta;
-    std::vector<particle> antineutralDelta;
+    std::vector<particle> uuuDelta;
+    std::vector<particle> uudDelta;
+    std::vector<particle> uddDelta;
+    std::vector<particle> dddDelta;
+    std::vector<particle> antiuuuDelta;
+    std::vector<particle> antiuudDelta;
+    std::vector<particle> antiuddDelta;
+    std::vector<particle> antidddDelta;
+
 
     //first read in the input parameter file
     ifstream input;
