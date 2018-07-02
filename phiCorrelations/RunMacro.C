@@ -14,15 +14,15 @@ void RunMacro()
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
    const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiCorrelations_LHC16q_20_50_hh";
-   char* output_dir = "output_2017_11_15_FAST";
+   char* work_dir = "PhiCorrelations_LHC16q_0_10_20";
+   char* output_dir = "output_2018_05_29_FAST";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   Int_t runcycle[]={0,32};
-//   Int_t runcycle[]={0,18,32};
+   //Int_t runcycle[]={0,32};
+   Int_t runcycle[]={0,18,32};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -30,7 +30,7 @@ void RunMacro()
       
     alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros -I$ALICE_PHYSICS/PWGCF/Correlations -I$ALICE_PHYSICS/PWGCF -I$ALICE_PHYSICS/PWGCF/Correlations/Base -I$ALICE_PHYSICS/include -g");
     
-    alienHandler->SetAdditionalLibs("AliAnalysisTaskhPhiCorr.cxx AliAnalysisTaskhPhiCorr.h AddTaskQA.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libPWGTools.so libPWGCFCorrelationsBase.so");
+    alienHandler->SetAdditionalLibs("AliAnalysisTaskhPhiCorr.cxx AliAnalysisTaskhPhiCorr.h AddTaskPhiCorr.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libPWGTools.so libPWGCFCorrelationsBase.so");
 
   // load libraries
    LoadLibraries();
@@ -90,7 +90,7 @@ void RunMacro()
    alienHandler->SetPrice(1);
    alienHandler->SetSplitMode("se");
    alienHandler->SetMasterResubmitThreshold(10);
-   alienHandler->SetMergeExcludes("AnalysisResults.root,EventStat_temp.root");
+   alienHandler->SetMergeExcludes("EventStat_temp.root");
    alienHandler->SetOutputToRunNo(kTRUE);
    alienHandler->SetKeepLogs(kTRUE);
    alienHandler->SetMaxMergeFiles(15);
@@ -126,7 +126,7 @@ void RunMacro()
 //    mgr->SetMCtruthEventHandler(mcH);   
 //    mcH->SetReadTR(kFALSE);
 
-   gROOT->LoadMacro("AddTaskQA.C");
+   gROOT->LoadMacro("AddTaskPhiCorr.C");
    gROOT->LoadMacro("AliAnalysisTaskhPhiCorr.cxx++g");
    gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
    gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
@@ -141,9 +141,10 @@ void RunMacro()
     AddTaskPIDResponse(isMC);
 
     //create a task
-    //AliAnalysisTaskhPhiCorr *task1 = AddTaskQA(0.0, 20.0);
-    AliAnalysisTaskhPhiCorr *task2 = AddTaskQA(20.0, 50.0);
-    //AliAnalysisTaskhPhiCorr *task3 = AddTaskQA(50.0, 100.0);
+    AliAnalysisTaskhPhiCorr *task1 = AddTaskPhiCorr(false, 0.0, 10.0);
+    AliAnalysisTaskhPhiCorr *task2 = AddTaskPhiCorr(false, 10.0, 20.0);
+    //AliAnalysisTaskhPhiCorr *task3 = AddTaskPhiCorr(false, 20.0, 40.0);
+    //AliAnalysisTaskhPhiCorr *task4 = AddTaskPhiCorr(false, 40.0, 90.0);
 
    if (!mgr->InitAnalysis())
      return;

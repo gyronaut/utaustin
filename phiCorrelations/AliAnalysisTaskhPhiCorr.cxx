@@ -368,9 +368,9 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fUSpairsPerEvent); 
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
-    Int_t dphi_bins[7]=    {10,   18,    64,  64,      10,    32};
-    Double_t dphi_min[7] = {2.0,   1.0, -1.57, -2.0, -10.0, 0.99};
-    Double_t dphi_max[7] = {12.0, 10.0,  4.71,  2.0, 10.0, 1.07};
+    Int_t dphi_bins[6]=    {10,   18,    64,  64,      10,    32};
+    Double_t dphi_min[6] = {2.0,   1.0, -1.57, -2.0, -10.0, 0.99};
+    Double_t dphi_max[6] = {12.0, 10.0,  4.71,  2.0, 10.0, 1.07};
 
     fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 6, dphi_bins, dphi_min, dphi_max);
     fOutputList->Add(fDphiHPhi);
