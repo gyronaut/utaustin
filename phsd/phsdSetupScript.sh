@@ -1,10 +1,10 @@
 #!/bin/bash
 
-for i in {36..40}
+for i in {849..1040}
 do
     mkdir $i
     cd $i
-    echo '207,      MASSTA: target mass' >> inputPHSD
+    echo '208,      MASSTA: target mass' >> inputPHSD
     echo '82,       MSTAPR: protons in target' >> inputPHSD
     echo '1,        MASSPR: projectile mass' >> inputPHSD
     echo '1,        MSPRPR: protons in projectile' >> inputPHSD
