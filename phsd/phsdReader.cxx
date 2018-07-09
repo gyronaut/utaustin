@@ -60,6 +60,7 @@ void phsdReader(string parFileName, string dataFileName){
     THnSparseF* hphiSparse = new THnSparseF("hphiSparse", "hphiSparse", 4, dphi_bins, dphi_min, dphi_max);
     THnSparseF* hhSparse = new THnSparseF("hhSparse", "hhSparse", 4, dphi_bins, dphi_min, dphi_max);
 
+    //different particles are stored in separate vectors to be looped over after initial read-in
     std::vector<particle> posPions;
     std::vector<particle> negPions;
     std::vector<particle> posKaons;
@@ -83,7 +84,7 @@ void phsdReader(string parFileName, string dataFileName){
             return;
         }
     }
-
+    //get numPar, numRuns from the inputPHSD File to know how many events to loop over
     int numPar=0, numRuns=0, numCharged=0;
     input >> numPar;
     nextline(&input);
@@ -93,7 +94,7 @@ void phsdReader(string parFileName, string dataFileName){
 
     printf("NUM: %d, ISUBS: %d\n", numPar, numRuns);
 
-    //next read in the output file
+    //next read in the output file phsd.dat
     input.open(dataFileName.c_str());
     if(!input.good()){
         printf("Invalid data file! Check name: %s\n", dataFileName.c_str());
@@ -101,11 +102,11 @@ void phsdReader(string parFileName, string dataFileName){
     //for each event (total events = numPar*numRuns), loop over all particle in the event (nPart)
     int nPart=0, pdg=0, charge=0, process=0, parent=0, nkst = 0; // process = ID5 = ID(j,5); parent = ID3 = ID(j,3)
     double px=0., py=0., pz=0., E=0., kpx=0., kpy=0., kpz=0., kE=0.;
-    for(int ievt=1; ievt<numPar*numRuns+1; ievt++){
+    for(int ievt=1; ievt<numPar*numRuns+1; ievt++){ //loop over each event, where the number of events is numPar*numRuns
         input >> nPart;
         nextline(&input);
         nextline(&input);
-        printf("Event %d, nPart = %d\n", ievt, nPart);
+        //printf("Event %d, nPart = %d\n", ievt, nPart);
         posPions.clear();
         negPions.clear();
         posKaons.clear();
@@ -116,7 +117,8 @@ void phsdReader(string parFileName, string dataFileName){
         realPhi.clear();
         numCharged=0;
         int npi = 0;
-        for(int ipart = 0; ipart < nPart; ipart++){
+
+        for(int ipart = 0; ipart < nPart; ipart++){ //for each event, loop over each particle in the event and fill relevant histos
             input >> pdg >> charge >> px >> py >> pz >> E >> process >> parent;
             nextline(&input);
             particle part;
@@ -128,6 +130,7 @@ void phsdReader(string parFileName, string dataFileName){
             part.pvec.SetPy(py);
             part.pvec.SetPz(pz);
             part.pvec.SetE(E);
+            //fill the different particle vectors with the different species
             if(pdg == 211){
                 if(pT(px, py) > 0.15 && TMath::Abs(eta(px, py, pz)) < 2.0){
                     posPions.push_back(part);
@@ -176,10 +179,11 @@ void phsdReader(string parFileName, string dataFileName){
             }
         }
         eventMult->Fill(charged.size());
-        printf("Num Kaons: %d,     Num Pions: %d\n", (int)(posKaons.size() + negKaons.size() + neutralKaons.size()), (int)(posPions.size() + negPions.size() + neutralPions.size()));
+        //printf("Num Kaons: %d,     Num Pions: %d\n", (int)(posKaons.size() + negKaons.size() + neutralKaons.size()), (int)(posPions.size() + negPions.size() + neutralPions.size()));
 
         nkst = 0;
-        //loop over the kaons and pions to look for pairs that came from the same K*
+        // after vectors are filled and all particles read in, loop over the kaons and pions to look
+        // for pairs that came from the same K*, and loop of unlike sign kaons to reconstruct all phi mesons
         for(int ikch = 0; ikch < posKaons.size(); ikch++){
             for(int ipi0 = 0; ipi0 < neutralPions.size(); ipi0++){
 
@@ -207,17 +211,14 @@ void phsdReader(string parFileName, string dataFileName){
                 kE = posKaons[ikch].pvec.E() + negKaons[ikneg].pvec.E();
                 double mass = calcMass(kpx, kpy, kpz, kE);
                 float y = 0.5*TMath::Log((kE - kpz)/(kE + kpz));
-                if(TMath::Abs(y) <=0.5){
-                    //massPhi->Fill(mass, 1.0/(0.02*numPar*numRuns));
+                if(TMath::Abs(y) <=0.5){                   
                     massPhi->Fill(mass);
-                    if(posKaons[ikch].parent == negKaons[ikneg].parent){
-                        //massRealPhi->Fill(mass, 1.0/(0.02*numPar*numRuns));
+                    if(posKaons[ikch].parent == negKaons[ikneg].parent){ 
                         massRealPhi->Fill(mass);
                         pTphi->Fill(pT(kpx, kpy));
                         etaphi->Fill(eta(kpx, kpy, kpz));
                         phiphi->Fill(calcphi(kpx, kpy));
                         if(posKaons[ikch].process == 5 && negKaons[ikneg].process == 5){
-                            //massDecayPhi->Fill(mass, 1.0/(0.02*numPar*numRuns));
                             massDecayPhi->Fill(mass);
                             pTdecayphi->Fill(pT(kpx, kpy));
                             resonance phi;
@@ -227,7 +228,7 @@ void phsdReader(string parFileName, string dataFileName){
                             phi.pvec.SetE(kE);
                             phi.daughter1 = posKaons[ikch].tracknum;
                             phi.daughter2 = negKaons[ikneg].tracknum;
-                            realPhi.push_back(phi);
+                            realPhi.push_back(phi); //add phi to phi vector
                             phiDist->Fill(pT(kpx, kpy), eta(kpx, kpy, kpz), calcphi(kpx, kpy));
                         }
                     }
@@ -259,7 +260,7 @@ void phsdReader(string parFileName, string dataFileName){
                 }
             }
         }
-        printf("Kstars: %d\n", nkst);
+        //printf("Kstars: %d\n", nkst);
 //charged pion pT
         double piPx=0.0, piPy=0.0, piPt = 0.0;
         for(int ipich = 0; ipich < posPions.size(); ipich++){
@@ -275,13 +276,12 @@ void phsdReader(string parFileName, string dataFileName){
             pTpicharged->Fill(piPt, 1.0/double(0.1*numPar*numRuns));
         }
 
-        //do simple correlations
+        //do simple correlations for h-phi and hh using charged hadron trigger
         for(int itrig = 0; itrig < charged.size(); itrig++){
             double trigpt = pT(charged[itrig].pvec.Px(), charged[itrig].pvec.Py());
             double trigeta = eta(charged[itrig].pvec.Px(), charged[itrig].pvec.Py(), charged[itrig].pvec.Pz());
             double trigphi = calcphi(charged[itrig].pvec.Px(), charged[itrig].pvec.Py());
             chargedDist->Fill(trigpt, trigeta, trigphi);
-//            if(pT(charged[itrig].pvec.Px(), charged[itrig].pvec.Py()) < 4.0) continue;
             //do h-phi correlations
             if(realPhi.size() !=0){
                 for(int iphi = 0; iphi < realPhi.size(); iphi++){
@@ -328,6 +328,7 @@ void phsdReader(string parFileName, string dataFileName){
         
     input.close();
 
+    //open an output file to write out histograms
     TFile* output = new TFile("testoutput.root", "RECREATE");
     massKst->Write();
     massRealKst->Write();
