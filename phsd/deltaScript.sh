@@ -1,7 +1,7 @@
 #!/bin/bash
 
-for i in {1425..1616}
+for i in {1..16}
 do
-    cd /Users/jtblair/4Justin_2018/carina_pPboutput10/$i
-    eval aliroot -b -q -x \''~/utaustin/phsd/deltaReader.cxx("/Users/jtblair/4Justin_2018/carina_pPboutput10/'$i'/fort.433")'\'
+    cd /Users/jtblair/4Justin_2018/200testoutput/$i
+    eval aliroot -b -q -x \''~/utaustin/phsd/deltaReader.cxx("/Users/jtblair/4Justin_2018/200testoutput/'$i'/fort.433")'\'
 done
