@@ -347,6 +347,8 @@ void phsdReader(string parFileName, string dataFileName){
     eventMult->Write();
     hphi->Write();
     hh->Write();
+    chargedDist->Write();
+    phiDist->Write();
     hphiSparse->Write();
     hhSparse->Write();
 
