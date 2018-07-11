@@ -649,7 +649,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
             label = kaonTrack->GetLabel();
 
             fTPCnSigma = fpidResponse->NumberOfSigmasTPC(kaonTrack, AliPID::kKaon);
-            fTOFnSigma = fpidResponse->GetNumberOfSigmasTOF(kaonTrack, AliPID::kKaon);
+            fTOFnSigma = fpidResponse->NumberOfSigmasTOF(kaonTrack, AliPID::kKaon);
             //Cut on kaon candidates
             if((TMath::Abs(fTPCnSigma) < 3.0) && (TMath::Abs(fTOFnSigma) < 3.0)){
                 AliKaonContainer kaon;

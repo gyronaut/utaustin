@@ -25,16 +25,6 @@ public:
     void SetESDAnalysis() { SetBit(kAODanalysis, kFALSE); };
     Bool_t IsAODanalysis() const { return TestBit(kAODanalysis); };
     
-private:
-
-    bool IS_HH;
-    Float_t MULT_LOW;
-    Float_t MULT_HIGH;
-
-    enum{
-        kAODanalysis = BIT(20),
-    };
- 
     struct AliKaonContainer{
         Int_t trackNum;
         TLorentzVector particle;
@@ -45,7 +35,18 @@ private:
         Int_t daughter2TrackNum;
         TLorentzVector particle;
     };
-   
+
+private:
+
+    bool IS_HH;
+    Float_t MULT_LOW;
+    Float_t MULT_HIGH;
+
+    enum{
+        kAODanalysis = BIT(20),
+    };
+ 
+       
     TObjArray* AddToTracks();
     Bool_t MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
     void MakeMixCorrelations(AliPhiContainer* phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS);
