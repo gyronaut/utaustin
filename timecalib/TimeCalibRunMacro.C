@@ -6,6 +6,7 @@
 #include "TRoot.h"
 #include "TRint.h"
 #include "TSystem.h"
+void LoadLibraries();
 
 void TimeCalibRunMacro()
 {
@@ -14,15 +15,15 @@ void TimeCalibRunMacro()
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
    const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "TimeCalibWork";
-   char* output_dir = "LHC16k_check_looseCuts_physSel_pileup";
+   char* output_dir = "PARtest_newBC";
    Int_t ttl = 50000;
-   Int_t noffiles = 80;
+   Int_t noffiles = 40;
    //Int_t runcycle[]={0,20,35,50,65,80,95,110,125,140,158};
-   Int_t runcycle[] ={0,50};
+   Int_t runcycle[] ={0,2};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -33,7 +34,7 @@ void TimeCalibRunMacro()
    
     alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros  -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_PHYSICS/PWG/EMCAL -g");
     
-    alienHandler->SetAdditionalLibs("AliAnalysisTaskEMCALTimeCalibJB.cxx AliAnalysisTaskEMCALTimeCalibJB.h AddTaskEMCALTimeCalibrationJB.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libTENDER.so libTENDERSupplies.so libPWGTools.so libPWGEMCAL.so");
+    alienHandler->SetAdditionalLibs("AliAnalysisTaskEMCALTimeCalibPAR.cxx AliAnalysisTaskEMCALTimeCalibPAR.h AddTaskEMCALTimeCalibrationPAR.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libTENDER.so libTENDERSupplies.so libPWGTools.so libPWGEMCAL.so");
     
   if(UseParfiles){
     alienHandler->SetupPar("PWGHFhfe");
@@ -43,19 +44,19 @@ void TimeCalibRunMacro()
 // Trying to add new PHYSICS package
 //  alienHandler->AddExternalPackage("AliPhysics::vAN-20160606-1");
 
-  alienHandler->SetAnalysisSource("AliAnalysisTaskEMCALTimeCalibJB.cxx");
+  alienHandler->SetAnalysisSource("AliAnalysisTaskEMCALTimeCalibPAR.cxx");
   //alienHandler->SetOverwriteMode();
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(5);
   alienHandler->SetAPIVersion("V1.1x");
   //alienHandler->SetROOTVersion("v5-34-30-alice5-2");
   //alienHandler->SetAliROOTVersion("v5-08-16-1");
-  alienHandler->SetAliPhysicsVersion("vAN-20171125-1");
+  alienHandler->SetAliPhysicsVersion("vAN-20180809-1");
   //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  alienHandler->SetGridDataDir("//alice/data/2016/LHC16k/");
+  alienHandler->SetGridDataDir("//alice/data/2018/LHC18c/");
   alienHandler->SetDataPattern("*/muon_calo_pass1/*/*ESDs.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
@@ -81,10 +82,13 @@ void TimeCalibRunMacro()
   //Int_t runArray[] = {258048, 258049, 257026, 257539, 257540, 257541, 257537, 258059, 256514, 258062, 258063, 257560, 257561, 257562, 257563, 257564, 257566, 256506, 256552, 256554, 256556, 256560, 256561, 256562, 256564, 257077, 257590, 256567, 257080, 256692, 257594, 258107, 258108, 258109, 258113, 258114, 257092, 257605, 257606, 257100, 256589, 256591, 256592, 256697, 257635, 257642, 256619, 256620, 257136, 257137, 257138, 257139, 257140, 257141, 257142, 257144, 257145, 258178, 257474, 257682, 258197, 258198, 257689, 258202, 258203, 258204, 257694, 257697, 256676, 256677, 256681, 256684, 256694, 256691, 257204, 257206, 256695, 257209, 257724, 257733, 257734, 257735, 257224, 257737, 258256, 258257, 258258, 257754, 258270, 258271, 258273, 258274, 257765, 258278, 258280, 257260, 257773, 258299, 258301, 258302, 258303, 258306, 258307, 257797, 257798, 257799, 257800, 257803, 257318, 257320, 257322, 257587, 258359, 257850, 257855, 256941, 258387, 258388, 256512, 258393, 257082, 257083, 257892, 257893, 257084, 256658, 257912, 258426, 256565, 257936, 257937, 257939, 258454, 258456, 257433, 258117, 257691, 257958, 257960, 257692, 257963, 258477, 256942, 256944, 257457, 258498, 258499, 257487, 257490, 257491, 257492, 258012, 257530, 258014, 258017, 258019, 258537, 257021, 257011, 257012, 256504, 257364, 258042, 257531, 258045, 256510};
 
   //LHC16k check (only BC mask runs)
-  Int_t runArray[] = {256504, 256506, 256510, 256512, 256514, 256552, 256554, 256556, 256560, 256561, 256562, 256564, 256565, 256567, 256589, 256591, 256592, 256619, 256620, 256658, 256676, 256677, 256681, 256684, 256691, 256692, 256694, 256695, 256697, 256941, 256942, 256944, 257011, 257012, 257021, 257026, 257077, 257078, 257079, 257080, 257082, 257083, 257084, 257092, 257100, 257136, 257137, 257138, 257139, 257140, 257141, 257142, 257144, 257145, 257204, 257206, 257209, 257224, 257260, 257320, 257457, 257474, 257487, 257490, 257491, 257492, 257530, 257531, 257537, 257539, 257540, 257541, 257560, 257561, 257562, 257563, 257564, 257565, 257566, 257587, 257590, 257594, 257605, 257606, 257642, 257682, 257687, 257689, 257691, 257692, 257694, 257697, 257724, 257733, 257734, 257735, 257737, 257754, 257765, 257773, 257797, 257798, 257799, 257800, 257803, 257850, 257855, 257892, 257893, 257936, 257937, 257939, 257957, 257958, 257960, 257963, 258012, 258014, 258017, 258019, 258042, 258045, 258048, 258049, 258059, 258062, 258063, 258107, 258108, 258109, 258113, 258114, 258117, 258178, 258197, 258198, 258202, 258203, 258204, 258256, 258257, 258258, 258270, 258271, 258273, 258274, 258278, 258299, 258336, 258359, 258387, 258393, 258426, 258454, 258456, 258477, 258499, 258537};
+  //Int_t runArray[] = {256504, 256506, 256510, 256512, 256514, 256552, 256554, 256556, 256560, 256561, 256562, 256564, 256565, 256567, 256589, 256591, 256592, 256619, 256620, 256658, 256676, 256677, 256681, 256684, 256691, 256692, 256694, 256695, 256697, 256941, 256942, 256944, 257011, 257012, 257021, 257026, 257077, 257078, 257079, 257080, 257082, 257083, 257084, 257092, 257100, 257136, 257137, 257138, 257139, 257140, 257141, 257142, 257144, 257145, 257204, 257206, 257209, 257224, 257260, 257320, 257457, 257474, 257487, 257490, 257491, 257492, 257530, 257531, 257537, 257539, 257540, 257541, 257560, 257561, 257562, 257563, 257564, 257565, 257566, 257587, 257590, 257594, 257605, 257606, 257642, 257682, 257687, 257689, 257691, 257692, 257694, 257697, 257724, 257733, 257734, 257735, 257737, 257754, 257765, 257773, 257797, 257798, 257799, 257800, 257803, 257850, 257855, 257892, 257893, 257936, 257937, 257939, 257957, 257958, 257960, 257963, 258012, 258014, 258017, 258019, 258042, 258045, 258048, 258049, 258059, 258062, 258063, 258107, 258108, 258109, 258113, 258114, 258117, 258178, 258197, 258198, 258202, 258203, 258204, 258256, 258257, 258258, 258270, 258271, 258273, 258274, 258278, 258299, 258336, 258359, 258387, 258393, 258426, 258454, 258456, 258477, 258499, 258537};
 
   //LHC16k check (non-included BC mask runs)
   //Int_t runArray[] = {258306, 258307, 258498, 258388, 257433, 257635, 257318, 258280, 257322, 257912, 257364, 258301, 258302, 258303};
+  
+  //LHC18c PAR test
+  Int_t runArray[] = {285892, 285756};
 
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
@@ -95,7 +99,7 @@ void TimeCalibRunMacro()
    printf("\n\nSetting Up alienHandler.\n\n");
    alienHandler->SetGridWorkingDir(work_dir);
    alienHandler->SetGridOutputDir(output_dir);
-   alienHandler->SetDefaultOutputs();
+   alienHandler->SetDefaultOutputs(kTRUE);
    alienHandler->SetAnalysisMacro("MacroTimeCalib.C");
    alienHandler->SetSplitMaxInputFileNumber(noffiles);
    alienHandler->SetExecutable("ScriptTimeCalib.sh");
@@ -143,21 +147,22 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
 //    mgr->SetMCtruthEventHandler(mcH);   
 //    mcH->SetReadTR(kFALSE);
 
-   gROOT->LoadMacro("AliAnalysisTaskEMCALTimeCalibJB.cxx++g");
-   gROOT->LoadMacro("AddTaskEMCALTimeCalibrationJB.C");
-   gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
+   //gROOT->LoadMacro("AliAnalysisTaskEMCALTimeCalibJB.cxx++g");
+   //gROOT->LoadMacro("AddTaskEMCALTimeCalibrationJB.C");
+   //gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
 //   gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
 
 
     //switch on aliphysicsselection
-    AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(kFALSE, kTRUE); 
+    AliPhysicsSelectionTask* physSelTask = reinterpret_cast<AliPhysicsSelectionTask*>(gInterpreter->ProcessLine(Form(".x %s(kFALSE, kTRUE)", gSystem->ExpandPathName("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C")))); 
  
     //Only set true for MC
     Bool_t isMC = kFALSE;
 //   AddTaskPIDResponse(isMC);
     //create a task
     if(!TGrid::Connect("alien://")) return;
-   AliAnalysisTaskEMCALTimeCalibJB *task = AddTaskEMCALTimeCalibrationJB("AnalysisResults.root","",0.01,500,2,200,0.01,100.,0.01,100.,0.025,0.01,-20., 20., kFALSE, "alien:///alice/cern.ch/user/j/jblair/TimeCalibRef/Reference_LHC16k_step3.root", "alien:///alice/cern.ch/user/a/amatyja/TimeCalibRef/ReferenceSM_LHC16k_pass1_v2.root",kFALSE, kFALSE, 1, "");
+    //AliAnalysisTaskEMCALTimeCalibPAR *task = reinterpret_cast<AliAnalysisTaskEMCALTimeCalibPAR*>(gInterpreter->ProcessLine(Form(".x %s(\"AnalysisResults.root\",\"\",0.01,500,2,200,0.01,100.,0.01,100.,0.025,0.01,-20., 20., kFALSE, \"\", \"\",kFALSE, kFALSE, 1, \"\", \"alien::///alice/cern.ch/user/j/jblair/TimeCalibRef/LHC18c_PARs.txt\")", gSystem->ExpandPathName("AddTaskEMCALTimeCalibrationPAR.C"))));
+AliAnalysisTaskEMCALTimeCalibPAR *task = reinterpret_cast<AliAnalysisTaskEMCALTimeCalibPAR*>(gInterpreter->ProcessLine(Form(".x %s(\"AnalysisResults.root\",\"\",0.01,500,2,200,0.01,100.,0.01,100.,0.025,0.01,-20., 20., kFALSE, \"\", \"\",kFALSE, kTRUE, 1, \"\", \"LHC18c_PARs.txt\")", gSystem->ExpandPathName("AddTaskEMCALTimeCalibrationPAR.C"))));
 
    if (!mgr->InitAnalysis())
      return;
