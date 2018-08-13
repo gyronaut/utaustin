@@ -14,16 +14,16 @@ void TimeCalibRunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   const char*  mode = "full"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
    Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
-   Int_t cyclenumber = 1;
+   Int_t cyclenumber = 2;
    Bool_t debug = kTRUE;
    char* work_dir = "TimeCalibWork";
-   char* output_dir = "PARtest_newBC";
+   char* output_dir = "LHC18f_PARtest2";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
    //Int_t runcycle[]={0,20,35,50,65,80,95,110,125,140,158};
-   Int_t runcycle[] ={0,2};
+   Int_t runcycle[] ={0,5,13};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -56,39 +56,21 @@ void TimeCalibRunMacro()
   //alienHandler->SetGridDataDir("/alice/sim/LHC10d4/");
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetDataPattern("*/pass1/*/*AOD.root");
-  alienHandler->SetGridDataDir("//alice/data/2018/LHC18c/");
+  alienHandler->SetGridDataDir("//alice/data/2018/LHC18f/");
   alienHandler->SetDataPattern("*/muon_calo_pass1/*/*ESDs.root");
   alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
-   
-//LHC12d   
-    //Int_t runArray[] = {186320, 186319, 186318, 186229, 186208, 186205, 186200, 186167, 186165, 186164, 186163, 185912, 185909, 185784, 185778, 185776, 185775, 185768, 185765, 185764, 185757, 185756, 185738, 185735, 185734, 185701, 185699, 185698, 185697, 185695, 185687, 185680, 185589, 185588, 185583, 185582, 185581, 185580, 185578};
-  //Int_t runArray[] = {186320, 186319, 186318, 186229, 186208, 186205, 186200, 186167, 186165, 186164, 186163, 185912, 185909, 185784, 185778, 185776, 185775, 185768, 185765, 185764, 185757, 185756, 185738, 185735, 185734, 185701, 185699, 185698, 185697, 185695, 185687, 185680, 185589, 185588, 185583, 185582, 185581, 185580, 185578, 185575, 185574, 185565, 185563, 185474, 185465, 185461, 185457, 185375, 185371, 185363, 185362, 185361, 185360, 185359, 185356, 185351, 185350, 185349, 185303, 185302, 185300, 185299, 185296, 185293, 185292, 185291, 185289, 185288, 185284, 185282, 185221, 185217, 185208, 185206, 185203, 185198, 185196, 185189};
-
- //LHC15n_mcp1
- //   Int_t runArray[] = {244628, 244627, 244626, 244619, 244618, 244617, 244542, 244540, 244531, 244484, 244483, 244482, 244481, 244480, 244456, 244453, 244421, 244418, 244416, 244411, 244377, 244364, 244359, 244355, 244351, 244340};
-
-//LHC15j_mcp2
-    //Int_t runArray[] = {237050};
-
-//LHC10d4 - MC Data
-    //Int_t runArray[] = {119159, 119161, 119163, 119841, 119842, 119844, 119845, 119846, 119849, 119853, 119856, 119859, 119862, 120067, 120069, 120072, 120073, 120076, 120079, 120244, 120503, 120504, 120505, 120616, 120617, 120671, 120741, 120750, 120758, 120820, 120821, 120822, 120823, 120824, 120825, 120829};
-   // Int_t runArray[] = {120073}; //for testing why files were being opened but not closed
-
-//LHC17n Xe-Xe run
-   // Int_t runArray[] = {280234, 280235};
-
-  //LHC16k
-  //Int_t runArray[] = {258048, 258049, 257026, 257539, 257540, 257541, 257537, 258059, 256514, 258062, 258063, 257560, 257561, 257562, 257563, 257564, 257566, 256506, 256552, 256554, 256556, 256560, 256561, 256562, 256564, 257077, 257590, 256567, 257080, 256692, 257594, 258107, 258108, 258109, 258113, 258114, 257092, 257605, 257606, 257100, 256589, 256591, 256592, 256697, 257635, 257642, 256619, 256620, 257136, 257137, 257138, 257139, 257140, 257141, 257142, 257144, 257145, 258178, 257474, 257682, 258197, 258198, 257689, 258202, 258203, 258204, 257694, 257697, 256676, 256677, 256681, 256684, 256694, 256691, 257204, 257206, 256695, 257209, 257724, 257733, 257734, 257735, 257224, 257737, 258256, 258257, 258258, 257754, 258270, 258271, 258273, 258274, 257765, 258278, 258280, 257260, 257773, 258299, 258301, 258302, 258303, 258306, 258307, 257797, 257798, 257799, 257800, 257803, 257318, 257320, 257322, 257587, 258359, 257850, 257855, 256941, 258387, 258388, 256512, 258393, 257082, 257083, 257892, 257893, 257084, 256658, 257912, 258426, 256565, 257936, 257937, 257939, 258454, 258456, 257433, 258117, 257691, 257958, 257960, 257692, 257963, 258477, 256942, 256944, 257457, 258498, 258499, 257487, 257490, 257491, 257492, 258012, 257530, 258014, 258017, 258019, 258537, 257021, 257011, 257012, 256504, 257364, 258042, 257531, 258045, 256510};
-
-  //LHC16k check (only BC mask runs)
-  //Int_t runArray[] = {256504, 256506, 256510, 256512, 256514, 256552, 256554, 256556, 256560, 256561, 256562, 256564, 256565, 256567, 256589, 256591, 256592, 256619, 256620, 256658, 256676, 256677, 256681, 256684, 256691, 256692, 256694, 256695, 256697, 256941, 256942, 256944, 257011, 257012, 257021, 257026, 257077, 257078, 257079, 257080, 257082, 257083, 257084, 257092, 257100, 257136, 257137, 257138, 257139, 257140, 257141, 257142, 257144, 257145, 257204, 257206, 257209, 257224, 257260, 257320, 257457, 257474, 257487, 257490, 257491, 257492, 257530, 257531, 257537, 257539, 257540, 257541, 257560, 257561, 257562, 257563, 257564, 257565, 257566, 257587, 257590, 257594, 257605, 257606, 257642, 257682, 257687, 257689, 257691, 257692, 257694, 257697, 257724, 257733, 257734, 257735, 257737, 257754, 257765, 257773, 257797, 257798, 257799, 257800, 257803, 257850, 257855, 257892, 257893, 257936, 257937, 257939, 257957, 257958, 257960, 257963, 258012, 258014, 258017, 258019, 258042, 258045, 258048, 258049, 258059, 258062, 258063, 258107, 258108, 258109, 258113, 258114, 258117, 258178, 258197, 258198, 258202, 258203, 258204, 258256, 258257, 258258, 258270, 258271, 258273, 258274, 258278, 258299, 258336, 258359, 258387, 258393, 258426, 258454, 258456, 258477, 258499, 258537};
-
-  //LHC16k check (non-included BC mask runs)
-  //Int_t runArray[] = {258306, 258307, 258498, 258388, 257433, 257635, 257318, 258280, 257322, 257912, 257364, 258301, 258302, 258303};
-  
   //LHC18c PAR test
-  Int_t runArray[] = {285892, 285756};
+  //Int_t runArray[] = {285892, 285756};
+  
+  //LHC18d PAR test
+  //Int_t runArray[] = {286284, 286313, 286341, 286350};
+
+  //LHC18e PAR test
+  //Int_t runArray[] = {286427, 286594, 286877};
+
+  //LHC18f PAR test
+  Int_t runArray[] = {287072, 287201, 287203, 287208, 287325, 287349, 287518, 287524, 287578, 287658, 287613, 287783, 287784};
 
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
@@ -162,7 +144,7 @@ gSystem->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCA
     //create a task
     if(!TGrid::Connect("alien://")) return;
     //AliAnalysisTaskEMCALTimeCalibPAR *task = reinterpret_cast<AliAnalysisTaskEMCALTimeCalibPAR*>(gInterpreter->ProcessLine(Form(".x %s(\"AnalysisResults.root\",\"\",0.01,500,2,200,0.01,100.,0.01,100.,0.025,0.01,-20., 20., kFALSE, \"\", \"\",kFALSE, kFALSE, 1, \"\", \"alien::///alice/cern.ch/user/j/jblair/TimeCalibRef/LHC18c_PARs.txt\")", gSystem->ExpandPathName("AddTaskEMCALTimeCalibrationPAR.C"))));
-AliAnalysisTaskEMCALTimeCalibPAR *task = reinterpret_cast<AliAnalysisTaskEMCALTimeCalibPAR*>(gInterpreter->ProcessLine(Form(".x %s(\"AnalysisResults.root\",\"\",0.01,500,2,200,0.01,100.,0.01,100.,0.025,0.01,-20., 20., kFALSE, \"\", \"\",kFALSE, kTRUE, 1, \"\", \"LHC18c_PARs.txt\")", gSystem->ExpandPathName("AddTaskEMCALTimeCalibrationPAR.C"))));
+AliAnalysisTaskEMCALTimeCalibPAR *task = reinterpret_cast<AliAnalysisTaskEMCALTimeCalibPAR*>(gInterpreter->ProcessLine(Form(".x %s(\"AnalysisResults.root\",\"\",0.01,500,2,200,0.01,100.,0.01,100.,0.025,0.01,-20., 20., kFALSE, \"\", \"\",kFALSE, kTRUE, 1, \"\", \"LHC18f_PARs.txt\")", gSystem->ExpandPathName("AddTaskEMCALTimeCalibrationPAR.C"))));
 
    if (!mgr->InitAnalysis())
      return;
