@@ -45,14 +45,14 @@
 #include "AliStack.h"
 #include "AliMCEventHandler.h"
 
-#include "AliAnalysisTaskhPhiCorr.h"
+#include "AliAnalysisTaskHadronPhiCorr.h"
 
 using std::cout;
 using std::endl;
 
-ClassImp(AliAnalysisTaskhPhiCorr)
+ClassImp(AliAnalysisTaskHadronPhiCorr)
 //________________________________________________________________________
-AliAnalysisTaskhPhiCorr::AliAnalysisTaskhPhiCorr(const char *name, bool isHH, Float_t multLow, Float_t multHigh)
+AliAnalysisTaskHadronPhiCorr::AliAnalysisTaskHadronPhiCorr(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh)
 : AliAnalysisTaskSE(name),
 fVevent(0),
 fPoolMgr(0x0),
@@ -120,7 +120,7 @@ fDphiHHMixed(0)
 
 }
 //________________________________________________________________________
-AliAnalysisTaskhPhiCorr::AliAnalysisTaskhPhiCorr()
+AliAnalysisTaskHadronPhiCorr::AliAnalysisTaskHadronPhiCorr()
 : AliAnalysisTaskSE("DefaultTask_HfeEMCQA"),
 fVevent(0),
 fPoolMgr(0x0),
@@ -187,13 +187,13 @@ fDphiHHMixed(0)
     MULT_HIGH = 100.0;
 }
 //________________________________________________________________________
-AliAnalysisTaskhPhiCorr::~AliAnalysisTaskhPhiCorr()
+AliAnalysisTaskHadronPhiCorr::~AliAnalysisTaskHadronPhiCorr()
 {
     //Destructor
     delete fOutputList;
 }
 //________________________________________________________________________
-void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
+void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
 {
     //printf("\n!!!!!\n Starting UserCreateOutputObjects \n\n");
     //fflush(stdout);
@@ -395,7 +395,7 @@ void AliAnalysisTaskhPhiCorr::UserCreateOutputObjects()
 
 
 //___________________________________________________________________________
-Bool_t AliAnalysisTaskhPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
+Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
 
     Double_t dphi_point[6];
     AliPhiContainer phi;
@@ -423,7 +423,7 @@ Bool_t AliAnalysisTaskhPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticl
 }
 
 //___________________________________________________________________________
-void AliAnalysisTaskhPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS){
+void AliAnalysisTaskHadronPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS){
 
     Double_t dphi_point[6];    
     Int_t nMix = fPool->GetCurrentNEvents();
@@ -465,7 +465,7 @@ void AliAnalysisTaskhPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THnSpars
 }
 
 //___________________________________________________________________________
-void AliAnalysisTaskhPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx){
+void AliAnalysisTaskHadronPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx){
 
     Double_t dphi_point[5];
     AliEventPool* fPool;
@@ -510,7 +510,7 @@ void AliAnalysisTaskhPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPart, TH
 
 
 //________________________________________________________________________
-void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
+void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
 
 
     UInt_t evSelMask=((AliInputEventHandler*)(AliAnalysisManager::GetAnalysisManager()->GetInputEventHandler()))->IsEventSelected();
@@ -957,7 +957,7 @@ void AliAnalysisTaskhPhiCorr::UserExec(Option_t *){
     PostData(1, fOutputList);
 }    
 //________________________________________________________________________
-void AliAnalysisTaskhPhiCorr::Terminate(Option_t *) 
+void AliAnalysisTaskHadronPhiCorr::Terminate(Option_t *) 
 {
     // Draw result to the screen
     // Called once at the end of the query

@@ -101,21 +101,11 @@ TH2D* makehhCorrections(TH3D* same3D, TH3D* mix3D){
 }
 
 //--------------------------------------------------------------------------------------------
-void makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
+void makeMixCorrections(string inputName, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
     TFile *histoFile = new TFile(inputName.c_str());
-    string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
+    //string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
+    string mult = "_" + std::to_string(multLow) + "_" + std::to_string(multHigh);
     TList* list = (TList*) histoFile->Get(Form("phiCorr_mult%s", mult.c_str()));
-    //histoFile->cd("PhiReconstruction");
-/*
-    THnSparseF *fkkUSDist = (THnSparseF *)InvMass->FindObject("fkkUSDist");
-    THnSparseF *fkkLSDist = (THnSparseF *)InvMass->FindObject("fkkLSDist");
-    THnSparseF *fTrigDist = (THnSparseF *)InvMass->FindObject("fTrigDist");
-    THnSparseF *dphiHPhi = (THnSparseF *)InvMass->FindObject("fDphiHPhi");
-    THnSparseF *dphiHKK = (THnSparseF *)InvMass->FindObject("fDphiHKK");
-    THnSparseF *dphiHPhiMixed = (THnSparseF *)InvMass->FindObject("fDphiHPhiMixed");
-    THnSparseF *dphiHKKMixed = (THnSparseF *)InvMass->FindObject("fDphiHKKMixed");
-    TH1D* zVtx = InvMass->FindObject("fVtxZ");
-*/
 
     TH2D *trigSameUSDist = (TH2D*)list->FindObject("fTrigSameUSDist");
     TH2D *trigSameLSDist = (TH2D*)list->FindObject("fTrigSameLSDist");
@@ -326,7 +316,7 @@ void makeMixCorrections(string inputName, float trigPTLow, float trigPTHigh, flo
     TH1D* mixedLSzvtx = hKKMixed->Projection(2);
     mixedLSzvtx->SetName("mixedLSzvtx");
 
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_mixcorr_%s", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, inputName.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_mixcorr_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hPhi2Dpeak->Write();
     hKK2Dpeak->Write();
     hPhi2DRside->Write();

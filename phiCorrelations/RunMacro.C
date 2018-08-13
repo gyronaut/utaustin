@@ -5,16 +5,16 @@ void RunMacro(){
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiCorrelations_LHC16q_0_10_20";
-   char* output_dir = "output_2018_07_10_FAST";
+   char* work_dir = "PhiCorrelations_LHC16q_hh_40_90";
+   char* output_dir = "output_2018_08_06_FAST";
    Int_t ttl = 50000;
-   Int_t noffiles = 40;
-   //Int_t runcycle[]={0,32};
-   Int_t runcycle[]={0,18,32};
+   Int_t noffiles = 80;
+   Int_t runcycle[]={0,32};
+   //Int_t runcycle[]={0,18,32};
    Bool_t UseParfiles = kFALSE;
 
    // load libraries
@@ -25,7 +25,7 @@ void RunMacro(){
       
     alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros -I$ALICE_PHYSICS/PWGCF/Correlations -I$ALICE_PHYSICS/PWGCF -I$ALICE_PHYSICS/PWGCF/Correlations/Base -I$ALICE_PHYSICS/include -g");
     
-    alienHandler->SetAdditionalLibs("AliAnalysisTaskHadronPhiCorr.cxx AliAnalysisTaskHadronPhiCorr.h AddTaskPhiCorr.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libPWGTools.so libPWGCFCorrelationsBase.so");
+    alienHandler->SetAdditionalLibs("AliAnalysisTaskHadronPhiCorr.cxx AliAnalysisTaskHadronPhiCorr.h AddTaskHadronPhiCorr.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libPWGTools.so libPWGCFCorrelationsBase.so");
     
   alienHandler->SetAnalysisSource("AliAnalysisTaskHadronPhiCorr.cxx");
   //alienHandler->SetOverwriteMode();
@@ -119,7 +119,7 @@ void RunMacro(){
 //    mcH->SetReadTR(kFALSE);
 
    //gROOT->LoadMacro("AddTaskPhiCorr.C");
-   //gROOT->LoadMacro("./AliAnalysisTaskhPhiCorr.cxx++g");
+   //gROOT->LoadMacro("./AliAnalysisTaskHadronPhiCorr.cxx++g");
    //gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
    //gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
    //gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
@@ -133,10 +133,10 @@ void RunMacro(){
     gInterpreter->ProcessLine(Form(".x %s(kFALSE)", gSystem->ExpandPathName("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C")));
 
     //create a task
-    AliAnalysisTaskhPhiCorr *task1 = reinterpret_cast<AliAnalysisTaskhPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(false, 0.0, 10.0)", gSystem->ExpandPathName("AddTaskPhiCorr.C"))));
-    AliAnalysisTaskhPhiCorr *task2 = reinterpret_cast<AliAnalysisTaskhPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(false, 10.0, 20.0)", gSystem->ExpandPathName("AddTaskPhiCorr.C"))));
-    //AliAnalysisTaskhPhiCorr *task3 = reinterpret_cast<AliAnalysisTaskhPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(false, 20.0, 40.0)", gSystem->ExpandPathName("AddTaskPhiCorr.C"))));
-    //AliAnalysisTaskhPhiCorr *task4 = reinterpret_cast<AliAnalysisTaskhPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(false, 40.0, 90.0)", gSystem->ExpandPathName("AddTaskPhiCorr.C"))));
+    //AliAnalysisTaskHadronPhiCorr *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(true, 0.0, 10.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr.C"))));
+    //AliAnalysisTaskHadronPhiCorr *task2 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(true, 10.0, 20.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr.C"))));
+    //AliAnalysisTaskHadronPhiCorr *task3 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 20.0, 40.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr.C"))));
+    AliAnalysisTaskHadronPhiCorr *task4 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 40.0, 90.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr.C"))));
 
 
    if (!mgr->InitAnalysis())

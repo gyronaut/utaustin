@@ -1,5 +1,5 @@
-#ifndef AliAnalysisTaskhPhiCorr_cxx
-#define AliAnalysisTaskhPhiCorr_cxx
+#ifndef AliAnalysisTaskHadronPhiCorr_cxx
+#define AliAnalysisTaskHadronPhiCorr_cxx
 
 //QA task for EMCAL electron analysis
 
@@ -11,11 +11,11 @@ class AliAODEvent;
 
 #include "AliAnalysisTaskSE.h"
 
-class AliAnalysisTaskhPhiCorr : public AliAnalysisTaskSE {
+class AliAnalysisTaskHadronPhiCorr : public AliAnalysisTaskSE {
 public:
-    AliAnalysisTaskhPhiCorr();
-    AliAnalysisTaskhPhiCorr(const char *name, bool isHH, Float_t multLow, Float_t multHigh);
-    virtual ~AliAnalysisTaskhPhiCorr();
+    AliAnalysisTaskHadronPhiCorr();
+    AliAnalysisTaskHadronPhiCorr(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh);
+    virtual ~AliAnalysisTaskHadronPhiCorr();
     
     virtual void   UserCreateOutputObjects();
     virtual void   UserExec(Option_t *option);
@@ -38,7 +38,7 @@ public:
 
 private:
 
-    bool IS_HH;
+    Bool_t IS_HH;
     Float_t MULT_LOW;
     Float_t MULT_HIGH;
 
@@ -110,10 +110,10 @@ private:
     THnSparseF  *fDphiHH;//! hadron-hadron correlation
     THnSparseF  *fDphiHHMixed;//! hadron-hadron mixed correlation
 
-    AliAnalysisTaskhPhiCorr(const AliAnalysisTaskhPhiCorr&); // not implemented
-    AliAnalysisTaskhPhiCorr& operator=(const AliAnalysisTaskhPhiCorr&); // not implemented
+    AliAnalysisTaskHadronPhiCorr(const AliAnalysisTaskHadronPhiCorr&); // not implemented
+    AliAnalysisTaskHadronPhiCorr& operator=(const AliAnalysisTaskHadronPhiCorr&); // not implemented
    
-    ClassDef(AliAnalysisTaskhPhiCorr, 1); // example of analysis
+    ClassDef(AliAnalysisTaskHadronPhiCorr, 1); // example of analysis
 };
 
 #endif
