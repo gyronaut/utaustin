@@ -53,7 +53,7 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
 
     same->GetAxis(3)->SetRange(0,0);
     mixed->GetAxis(3)->SetRange(0,0);
-    //same2DTotal->Scale(1.0/totalTrigSame);
+    same2DTotal->Scale(1.0/totalTrigSame);
     return same2DTotal;
 }
 
@@ -118,7 +118,7 @@ void makeMixCorrections(string inputName, int multLow, int multHigh, float trigP
     }
 
     float totalTrigSameUS = (float)trigSameUSDist->Integral(trigSameUSDist->GetXaxis()->FindBin(trigPTLow), trigSameUSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameUSDist->GetYaxis()->GetNbins());
-    float totalTrigSameLS = (float)trigSameUSDist->Integral(trigSameLSDist->GetXaxis()->FindBin(trigPTLow), trigSameLSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameLSDist->GetYaxis()->GetNbins());
+    float totalTrigSameLS = (float)trigSameLSDist->Integral(trigSameLSDist->GetXaxis()->FindBin(trigPTLow), trigSameLSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameLSDist->GetYaxis()->GetNbins());
    
 
     THnSparseF *dphiHPhi = (THnSparseF *)list->FindObject("fDphiHPhi");

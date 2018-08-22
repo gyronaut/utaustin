@@ -7,7 +7,7 @@ void intUSRatioPlot(){
     TH2D* hh2D_0_20 = (TH2D*)hhFile->Get("hh2D");
     hh2D_0_20->SetName("hh2D_0_20");
     hh2D_0_20->Sumw2();
-    TH1D* hhdphi_0_20 = (TH1D*)hh2D_0_20->ProjectionY("hhdphi_50_100", hh2D_0_20->GetXaxis()->FindBin(-1.2), hh2D_0_20->GetXaxis()->FindBin(1.2));
+    TH1D* hhdphi_0_20 = (TH1D*)hh2D_0_20->ProjectionY("hhdphi_0_20", hh2D_0_20->GetXaxis()->FindBin(-1.2), hh2D_0_20->GetXaxis()->FindBin(1.2));
     hhdphi_0_20->Rebin();
     hhdphi_0_20->SetLineWidth(4);
     hhdphi_0_20->SetLineColor(kBlue+2);
@@ -24,7 +24,7 @@ void intUSRatioPlot(){
     TFile* phiFile = new TFile("~/phiStudies/results_3mult_noeff/US_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_0_20.root");    
     TH2D* hPhi2D_0_20 = (TH2D*)phiFile->Get("AvgUSsubhPhi2Dpeak");
     hPhi2D_0_20->Sumw2();
-    TH1D* hPhidphi_0_20 = (TH1D*)hPhi2D_0_20->ProjectionY("hPhidphi_50_100", hPhi2D_0_20->GetXaxis()->FindBin(-1.2), hPhi2D_0_20->GetXaxis()->FindBin(1.2));
+    TH1D* hPhidphi_0_20 = (TH1D*)hPhi2D_0_20->ProjectionY("hPhidphi_0_20", hPhi2D_0_20->GetXaxis()->FindBin(-1.2), hPhi2D_0_20->GetXaxis()->FindBin(1.2));
     //hPhidphi_0_20->Rebin();
     hPhidphi_0_20->SetLineWidth(4);
     hPhidphi_0_20->SetLineColor(kRed+2);
@@ -151,7 +151,7 @@ void intUSRatioPlot(){
     TFile *hhFile_20_50 = new TFile("~/phiStudies/results_3mult_noeff/trig_4_8_assoc_2_4_hh_hhCorrelations_mult_20_50.root");
     TH2D* hh2D_20_50 = (TH2D*)hhFile_20_50->Get("hh2D");
     hh2D_20_50->SetName("hh2D_20_50");
-    TH1D* hhdphi_20_50 = (TH1D*)hh2D_20_50->ProjectionY("hhdphi_50_100", hh2D_20_50->GetXaxis()->FindBin(-1.2), hh2D_20_50->GetXaxis()->FindBin(1.2));
+    TH1D* hhdphi_20_50 = (TH1D*)hh2D_20_50->ProjectionY("hhdphi_20_50", hh2D_20_50->GetXaxis()->FindBin(-1.2), hh2D_20_50->GetXaxis()->FindBin(1.2));
     hhdphi_20_50->Rebin();
     hhdphi_20_50->SetLineWidth(4);
     hhdphi_20_50->SetLineColor(kBlue+2);
@@ -168,7 +168,7 @@ void intUSRatioPlot(){
     TFile* phiFile_20_50 = new TFile("~/phiStudies/results_3mult_noeff/US_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_20_50.root");    
     TH2D* hPhi2D_20_50 = (TH2D*)phiFile_20_50->Get("AvgUSsubhPhi2Dpeak");
     hPhi2D_20_50->SetName("hPhi2D_20_50");
-    TH1D* hPhidphi_20_50 = (TH1D*)hPhi2D_20_50->ProjectionY("hPhidphi_50_100", hPhi2D_20_50->GetXaxis()->FindBin(-1.2), hPhi2D_20_50->GetXaxis()->FindBin(1.2));
+    TH1D* hPhidphi_20_50 = (TH1D*)hPhi2D_20_50->ProjectionY("hPhidphi_20_50", hPhi2D_20_50->GetXaxis()->FindBin(-1.2), hPhi2D_20_50->GetXaxis()->FindBin(1.2));
     //hPhidphi_20_50->Rebin();
     hPhidphi_20_50->SetLineWidth(4);
     hPhidphi_20_50->SetLineColor(kRed+2);
@@ -1044,5 +1044,57 @@ void intUSRatioPlot(){
     ratio->Draw("E0 X0");
 */
 
-}
+    //Do plots of the yields for the systematics:
+    TH1F* hhyieldSyst_0_20 = new TH1F("hhyieldSyst_0_20", "hhyieldSyst_0_20", 1000, 0.0, 5.0);
+    TH1F* hhyieldSyst_20_50 = new TH1F("hhyieldSyst_20_50", "hhyieldSyst_20_50", 1000, 0.0, 5.0);
+    TH1F* hhyieldSyst_50_100 = new TH1F("hhyieldSyst_50_100", "hhyieldSyst_50_100", 1000, 0.0, 5.0);
+    TH1F* hphiyieldSyst_0_20 = new TH1F("hphiyieldSyst_0_20", "hphiyieldSyst_0_20", 1000, 0.0, 5.0);
+    TH1F* hphiyieldSyst_20_50 = new TH1F("hphiyieldSyst_20_50", "hphiyieldSyst_20_50", 1000, 0.0, 5.0);
+    TH1F* hphiyieldSyst_50_100 = new TH1F("hphiyieldSyst_50_100", "hphiyieldSyst_50_100", 1000, 0.0, 5.0);
+    
+    TH1F* hhnearyieldSyst_0_20 = new TH1F("hhnearyieldSyst_0_20", "hhnearyieldSyst_0_20", 1000, 0.0, 5.0);
+    TH1F* hhnearyieldSyst_20_50 = new TH1F("hhnearyieldSyst_20_50", "hhnearyieldSyst_20_50", 1000, 0.0, 5.0);
+    TH1F* hhnearyieldSyst_50_100 = new TH1F("hhnearyieldSyst_50_100", "hhnearyieldSyst_50_100", 1000, 0.0, 5.0);
+    TH1F* hphinearyieldSyst_0_20 = new TH1F("hphinearyieldSyst_0_20", "hphinearyieldSyst_0_20", 1000, 0.0, 5.0);
+    TH1F* hphinearyieldSyst_20_50 = new TH1F("hphinearyieldSyst_20_50", "hphinearyieldSyst_20_50", 1000, 0.0, 5.0);
+    TH1F* hphinearyieldSyst_50_100 = new TH1F("hphinearyieldSyst_50_100", "hphinearyieldSyst_50_100", 1000, 0.0, 5.0);
+    
+    hhyieldSyst_0_20->Fill(total0_20hhYield);
+    hhyieldSyst_20_50->Fill(total20_50hhYield);
+    hhyieldSyst_50_100->Fill(total50_100hhYield);
+    hphiyieldSyst_0_20->Fill(total0_20hPhiYield);
+    hphiyieldSyst_20_50->Fill(total20_50hPhiYield);
+    hphiyieldSyst_50_100->Fill(total50_100hPhiYield);
+    hhnearyieldSyst_0_20->Fill(near0_20hhYield);
+    hhnearyieldSyst_20_50->Fill(near20_50hhYield);
+    hhnearyieldSyst_50_100->Fill(near50_100hhYield);
+    hphinearyieldSyst_0_20->Fill(near0_20hPhiYield);
+    hphinearyieldSyst_20_50->Fill(near20_50hPhiYield);
+    hphinearyieldSyst_50_100->Fill(near50_100hPhiYield);
 
+
+    TCanvas *csyst = new TCanvas("csyst", "csyst", 50, 50, 1000, 500);
+    csyst->Divide(1,3);
+    csyst->cd(1);
+    hhyieldSyst_0_20->Draw();
+    csyst->cd(2);
+    hhyieldSyst_20_50->Draw();
+    csyst->cd(3);
+    hhyieldSyst_50_100->Draw();
+
+    TFile* output = new TFile("syst_currentprocedure.root", "RECREATE");
+    hhyieldSyst_0_20->Write();
+    hhyieldSyst_20_50->Write();
+    hhyieldSyst_50_100->Write();
+    hphiyieldSyst_0_20->Write();
+    hphiyieldSyst_20_50->Write();
+    hphiyieldSyst_50_100->Write();
+    hhnearyieldSyst_0_20->Write();
+    hhnearyieldSyst_20_50->Write();
+    hhnearyieldSyst_50_100->Write();
+    hphinearyieldSyst_0_20->Write();
+    hphinearyieldSyst_20_50->Write();
+    hphinearyieldSyst_50_100->Write();
+
+  
+}

@@ -2,14 +2,18 @@
 #define AliAnalysisTaskHadronPhiCorr_cxx
 
 //QA task for EMCAL electron analysis
+#include "AliAnalysisTaskSE.h"
+#include "TObject.h"
+#include "THnSparse.h"
 
+class TObject;
 class TH1F;
-class AliEventPoolManager;
-class THnSparse;
 class AliESDEvent;
 class AliAODEvent;
-
-#include "AliAnalysisTaskSE.h"
+class AliEventPool;
+class AliEventPoolManager;
+class AliCFParticle;
+class AliMultSelection;
 
 class AliAnalysisTaskHadronPhiCorr : public AliAnalysisTaskSE {
 public:

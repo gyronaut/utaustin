@@ -109,6 +109,11 @@ void makeUSCorrections(string inputFile){
     //Using US estimate for BG to subtract off the from the peak region:
 
     Float_t scaleUS = (rightscale)*hKK2Dpeak->Integral(hKK2Dpeak->GetXaxis()->FindBin(-1.2), hKK2Dpeak->GetXaxis()->FindBin(1.2), 1, hKK2Dpeak->GetYaxis()->GetNbins());
+    Float_t scaletest = (rightscale)*hPhi2Dpeak->Integral(hPhi2Dpeak->GetXaxis()->FindBin(-1.2), hPhi2Dpeak->GetXaxis()->FindBin(1.2), 1, hPhi2Dpeak->GetYaxis()->GetNbins());
+
+
+    printf("\n\nscaleUS = %e\n\ntestscale = %e \n\n", scaleUS, scaletest);
+
     TH2D* AvgUSsubhPhi2Dpeak = (TH2D*)hPhi2Dpeak->Clone("AvgUSsubhPhi2Dpeak");
     AvgUSsubhPhi2Dpeak->Add(hPhiBGPeakRegion, -1.0*scaleUS);
     AvgUSsubhPhi2Dpeak->GetXaxis()->SetRangeUser(-1.2, 1.2);

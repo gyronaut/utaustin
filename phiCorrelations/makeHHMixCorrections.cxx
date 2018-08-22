@@ -53,7 +53,7 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
 
     same->GetAxis(3)->SetRange(0,0);
     mixed->GetAxis(3)->SetRange(0,0);
-    //same2DTotal->Scale(1.0/totalTrigSame);
+    same2DTotal->Scale(1.0/totalTrigSame);
     return same2DTotal;
 }
 
@@ -101,10 +101,11 @@ TH2D* makehhCorrections(TH3D* same3D, TH3D* mix3D){
 }
 
 //--------------------------------------------------------------------------------------------
-makeHHMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
+void makeHHMixCorrections(string inputName, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
     TFile *histoFile = new TFile(inputName.c_str());
-    string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
-    TList* list = (TList*) histoFile->Get(Form("phiCorr_mult%s", mult.c_str()));
+    //string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
+    string mult = "_" + std::to_string(multLow) + "_" + std::to_string(multHigh);
+    TList* list = (TList*) histoFile->Get(Form("hhCorr_mult%s", mult.c_str()));
     //histoFile->cd("PhiReconstruction");
 /*
     THnSparseF *fkkUSDist = (THnSparseF *)InvMass->FindObject("fkkUSDist");
@@ -169,11 +170,11 @@ makeHHMixCorrections(string inputName, float trigPTLow, float trigPTHigh, float 
     hhdphi->Scale(1.0/(hhdphi->Integral()));
 
     hh->GetZaxis()->SetRangeUser(-10.0, 10.0);
-    TH2D* uncorrhh2D = hh->Project3D("xye");
+    TH2D* uncorrhh2D = (TH2D*)hh->Project3D("xye");
     uncorrhh2D->SetName("uncorrhh2D");
     uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2), uncorrhh2D->GetXaxis()->FindBin(1.2), 1, uncorrhh2D->GetYaxis()->GetNbins())));
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_hh_%s", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, inputName.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_hh%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hh2D->Write();
     hhdphi->Write();
     uncorrhh2D->Write(); 
