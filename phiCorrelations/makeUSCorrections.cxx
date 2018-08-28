@@ -114,11 +114,63 @@ void makeUSCorrections(string inputFile){
 
     printf("\n\nscaleUS = %e\n\ntestscale = %e \n\n", scaleUS, scaletest);
 
+    //avg of right and left US sideband tests
     TH2D* AvgUSsubhPhi2Dpeak = (TH2D*)hPhi2Dpeak->Clone("AvgUSsubhPhi2Dpeak");
     AvgUSsubhPhi2Dpeak->Add(hPhiBGPeakRegion, -1.0*scaleUS);
     AvgUSsubhPhi2Dpeak->GetXaxis()->SetRangeUser(-1.2, 1.2);
     TH1D* AvgUSsubhPhi2Dpeak_deta = (TH1D*)AvgUSsubhPhi2Dpeak->ProjectionX("AvgUSsubhPhi2Dpeak_deta", 1, AvgUSsubhPhi2Dpeak->GetYaxis()->GetNbins());
     TH1D* AvgUSsubhPhi2Dpeak_dphi = (TH1D*)AvgUSsubhPhi2Dpeak->ProjectionY("AvgUSsubhPhi2Dpeak_dphi", AvgUSsubhPhi2Dpeak->GetXaxis()->FindBin(-1.2), AvgUSsubhPhi2Dpeak->GetXaxis()->FindBin(1.2));
+
+    TH2D* AvgUSsubhPhi2Dpeakleftscale = (TH2D*)hPhi2Dpeak->Clone("AvgUSsubhPhi2Dpeakleftscale");
+    AvgUSsubhPhi2Dpeakleftscale->Add(hPhiBGPeakRegion, -1.0*scaleUS*leftscale/rightscale);
+    AvgUSsubhPhi2Dpeakleftscale->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    TH1D* AvgUSsubhPhi2Dpeakleftscale_deta = (TH1D*)AvgUSsubhPhi2Dpeakleftscale->ProjectionX("AvgUSsubhPhi2Dpeakleftscale_deta", 1, AvgUSsubhPhi2Dpeakleftscale->GetYaxis()->GetNbins());
+    TH1D* AvgUSsubhPhi2Dpeakleftscale_dphi = (TH1D*)AvgUSsubhPhi2Dpeakleftscale->ProjectionY("AvgUSsubhPhi2Dpeakleftscale_dphi", AvgUSsubhPhi2Dpeakleftscale->GetXaxis()->FindBin(-1.2), AvgUSsubhPhi2Dpeakleftscale->GetXaxis()->FindBin(1.2));
+
+    TH2D* AvgUSsubhPhi2Dpeakavgscale = (TH2D*)hPhi2Dpeak->Clone("AvgUSsubhPhi2Dpeakavgscale");
+    AvgUSsubhPhi2Dpeakavgscale->Add(hPhiBGPeakRegion, -1.0*scaleUS*(leftscale + rightscale)/(2.0*rightscale));
+    AvgUSsubhPhi2Dpeakavgscale->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    TH1D* AvgUSsubhPhi2Dpeakavgscale_deta = (TH1D*)AvgUSsubhPhi2Dpeakavgscale->ProjectionX("AvgUSsubhPhi2Dpeakavgscale_deta", 1, AvgUSsubhPhi2Dpeakavgscale->GetYaxis()->GetNbins());
+    TH1D* AvgUSsubhPhi2Dpeakavgscale_dphi = (TH1D*)AvgUSsubhPhi2Dpeakavgscale->ProjectionY("AvgUSsubhPhi2Dpeakavgscale_dphi", AvgUSsubhPhi2Dpeakavgscale->GetXaxis()->FindBin(-1.2), AvgUSsubhPhi2Dpeakavgscale->GetXaxis()->FindBin(1.2));
+
+    //right side US sideband tests
+    TH2D* RSUSsubhPhi2Dpeak = (TH2D*)hPhi2Dpeak->Clone("RSUSsubhPhi2Dpeak");
+    RSUSsubhPhi2Dpeak->Add(hPhiBGPeakRegionR, -1.0*scaleUS);
+    RSUSsubhPhi2Dpeak->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    TH1D* RSUSsubhPhi2Dpeak_deta = (TH1D*)RSUSsubhPhi2Dpeak->ProjectionX("RSUSsubhPhi2Dpeak_deta", 1, RSUSsubhPhi2Dpeak->GetYaxis()->GetNbins());
+    TH1D* RSUSsubhPhi2Dpeak_dphi = (TH1D*)RSUSsubhPhi2Dpeak->ProjectionY("RSUSsubhPhi2Dpeak_dphi", RSUSsubhPhi2Dpeak->GetXaxis()->FindBin(-1.2), RSUSsubhPhi2Dpeak->GetXaxis()->FindBin(1.2));
+
+    TH2D* RSUSsubhPhi2Dpeakleftscale = (TH2D*)hPhi2Dpeak->Clone("RSUSsubhPhi2Dpeakleftscale");
+    RSUSsubhPhi2Dpeakleftscale->Add(hPhiBGPeakRegionR, -1.0*scaleUS*leftscale/rightscale);
+    RSUSsubhPhi2Dpeakleftscale->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    TH1D* RSUSsubhPhi2Dpeakleftscale_deta = (TH1D*)RSUSsubhPhi2Dpeakleftscale->ProjectionX("RSUSsubhPhi2Dpeakleftscale_deta", 1, RSUSsubhPhi2Dpeakleftscale->GetYaxis()->GetNbins());
+    TH1D* RSUSsubhPhi2Dpeakleftscale_dphi = (TH1D*)RSUSsubhPhi2Dpeakleftscale->ProjectionY("RSUSsubhPhi2Dpeakleftscale_dphi", RSUSsubhPhi2Dpeakleftscale->GetXaxis()->FindBin(-1.2), RSUSsubhPhi2Dpeakleftscale->GetXaxis()->FindBin(1.2));
+    
+    TH2D* RSUSsubhPhi2Dpeakavgscale = (TH2D*)hPhi2Dpeak->Clone("RSUSsubhPhi2Dpeakavgscale");
+    RSUSsubhPhi2Dpeakavgscale->Add(hPhiBGPeakRegionR, -1.0*scaleUS*(leftscale+rightscale)/(2.0*rightscale));
+    RSUSsubhPhi2Dpeakavgscale->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    TH1D* RSUSsubhPhi2Dpeakavgscale_deta = (TH1D*)RSUSsubhPhi2Dpeakavgscale->ProjectionX("RSUSsubhPhi2Dpeakavgscale_deta", 1, RSUSsubhPhi2Dpeakavgscale->GetYaxis()->GetNbins());
+    TH1D* RSUSsubhPhi2Dpeakavgscale_dphi = (TH1D*)RSUSsubhPhi2Dpeakavgscale->ProjectionY("RSUSsubhPhi2Dpeakavgscale_dphi", RSUSsubhPhi2Dpeakavgscale->GetXaxis()->FindBin(-1.2), RSUSsubhPhi2Dpeakavgscale->GetXaxis()->FindBin(1.2));
+
+    //left side US sideband tests
+    TH2D* LSUSsubhPhi2Dpeak = (TH2D*)hPhi2Dpeak->Clone("LSUSsubhPhi2Dpeak");
+    LSUSsubhPhi2Dpeak->Add(hPhiBGPeakRegionL, -1.0*scaleUS);
+    LSUSsubhPhi2Dpeak->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    TH1D* LSUSsubhPhi2Dpeak_deta = (TH1D*)LSUSsubhPhi2Dpeak->ProjectionX("LSUSsubhPhi2Dpeak_deta", 1, LSUSsubhPhi2Dpeak->GetYaxis()->GetNbins());
+    TH1D* LSUSsubhPhi2Dpeak_dphi = (TH1D*)LSUSsubhPhi2Dpeak->ProjectionY("LSUSsubhPhi2Dpeak_dphi", LSUSsubhPhi2Dpeak->GetXaxis()->FindBin(-1.2), LSUSsubhPhi2Dpeak->GetXaxis()->FindBin(1.2));
+
+    TH2D* LSUSsubhPhi2Dpeakleftscale = (TH2D*)hPhi2Dpeak->Clone("LSUSsubhPhi2Dpeakleftscale");
+    LSUSsubhPhi2Dpeakleftscale->Add(hPhiBGPeakRegionL, -1.0*scaleUS*leftscale/rightscale);
+    LSUSsubhPhi2Dpeakleftscale->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    TH1D* LSUSsubhPhi2Dpeakleftscale_deta = (TH1D*)LSUSsubhPhi2Dpeakleftscale->ProjectionX("LSUSsubhPhi2Dpeakleftscale_deta", 1, LSUSsubhPhi2Dpeakleftscale->GetYaxis()->GetNbins());
+    TH1D* LSUSsubhPhi2Dpeakleftscale_dphi = (TH1D*)LSUSsubhPhi2Dpeakleftscale->ProjectionY("LSUSsubhPhi2Dpeakleftscale_dphi", LSUSsubhPhi2Dpeakleftscale->GetXaxis()->FindBin(-1.2), LSUSsubhPhi2Dpeakleftscale->GetXaxis()->FindBin(1.2));
+    
+    TH2D* LSUSsubhPhi2Dpeakavgscale = (TH2D*)hPhi2Dpeak->Clone("LSUSsubhPhi2Dpeakavgscale");
+    LSUSsubhPhi2Dpeakavgscale->Add(hPhiBGPeakRegionL, -1.0*scaleUS*(leftscale+rightscale)/(2.0*rightscale));
+    LSUSsubhPhi2Dpeakavgscale->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    TH1D* LSUSsubhPhi2Dpeakavgscale_deta = (TH1D*)LSUSsubhPhi2Dpeakavgscale->ProjectionX("LSUSsubhPhi2Dpeakavgscale_deta", 1, LSUSsubhPhi2Dpeakavgscale->GetYaxis()->GetNbins());
+    TH1D* LSUSsubhPhi2Dpeakavgscale_dphi = (TH1D*)LSUSsubhPhi2Dpeakavgscale->ProjectionY("LSUSsubhPhi2Dpeakavgscale_dphi", LSUSsubhPhi2Dpeakavgscale->GetXaxis()->FindBin(-1.2), LSUSsubhPhi2Dpeakavgscale->GetXaxis()->FindBin(1.2));
+
 
     TH2D* resUSvsLS = (TH2D*)AvgUSsubhPhi2Dpeak->Clone("resUSvsLS");
     resUSvsLS->Add(RLSsubhPhi2Dpeak, -1.0);
@@ -134,7 +186,7 @@ void makeUSCorrections(string inputFile){
 
 
 
-    TFile* output = new TFile(Form("US_%s", inputFile.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("US_syst_%s", inputFile.c_str()), "RECREATE");
     LLSsubhPhi2DLside->Write();
     LLSsubhPhi2DLside_deta->Write();
     LLSsubhPhi2DLside_dphi->Write();
@@ -166,6 +218,30 @@ void makeUSCorrections(string inputFile){
     AvgUSsubhPhi2Dpeak->Write();
     AvgUSsubhPhi2Dpeak_deta->Write();
     AvgUSsubhPhi2Dpeak_dphi->Write();
+    AvgUSsubhPhi2Dpeakleftscale->Write();
+    AvgUSsubhPhi2Dpeakleftscale_deta->Write();
+    AvgUSsubhPhi2Dpeakleftscale_dphi->Write();
+    AvgUSsubhPhi2Dpeakavgscale->Write();
+    AvgUSsubhPhi2Dpeakavgscale_deta->Write();
+    AvgUSsubhPhi2Dpeakavgscale_dphi->Write();
+    RSUSsubhPhi2Dpeak->Write();
+    RSUSsubhPhi2Dpeak_deta->Write();
+    RSUSsubhPhi2Dpeak_dphi->Write();
+    RSUSsubhPhi2Dpeakleftscale->Write();
+    RSUSsubhPhi2Dpeakleftscale_deta->Write();
+    RSUSsubhPhi2Dpeakleftscale_dphi->Write();
+    RSUSsubhPhi2Dpeakavgscale->Write();
+    RSUSsubhPhi2Dpeakavgscale_deta->Write();
+    RSUSsubhPhi2Dpeakavgscale_dphi->Write();
+    LSUSsubhPhi2Dpeak->Write();
+    LSUSsubhPhi2Dpeak_deta->Write();
+    LSUSsubhPhi2Dpeak_dphi->Write();
+    LSUSsubhPhi2Dpeakleftscale->Write();
+    LSUSsubhPhi2Dpeakleftscale_deta->Write();
+    LSUSsubhPhi2Dpeakleftscale_dphi->Write();
+    LSUSsubhPhi2Dpeakavgscale->Write();
+    LSUSsubhPhi2Dpeakavgscale_deta->Write();
+    LSUSsubhPhi2Dpeakavgscale_dphi->Write();
     resUSvsLS->Write();
     resUSvsLS_deta->Write();
     resUSvsLS_dphi->Write();
