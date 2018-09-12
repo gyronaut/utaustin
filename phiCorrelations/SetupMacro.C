@@ -1,3 +1,3 @@
 void SetupMacro(){
-    gROOT->LoadMacro("./AliAnalysisTaskHadronPhiCorr.cxx++g");
+    gROOT->LoadMacro("./AliAnalysisTaskHadronPhiCorr_current.cxx++g");
 }

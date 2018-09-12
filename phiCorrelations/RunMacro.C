@@ -6,15 +6,15 @@ void RunMacro(){
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
    const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
-   Bool_t pre_final_stage = kFALSE; //TRUE = merging done on grid, FALSE = merge happens locally   
+   Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiCorrelations_LHC16q_hh_40_90";
-   char* output_dir = "output_2018_08_06_FAST";
+   char* work_dir = "PhiCorrelations_LHC16q_0_20_test";
+   char* output_dir = "output_2018_09_10_FAST";
    Int_t ttl = 50000;
-   Int_t noffiles = 80;
-   Int_t runcycle[]={0,32};
-   //Int_t runcycle[]={0,18,32};
+   Int_t noffiles = 20;
+   //Int_t runcycle[]={0,31};
+   Int_t runcycle[]={0,16,31};
    Bool_t UseParfiles = kFALSE;
 
    // load libraries
@@ -25,9 +25,9 @@ void RunMacro(){
       
     alienHandler->AddIncludePath("-I. -I$ROOTSYS/include -I$ALICE_ROOT -I$ALICE_ROOT/EMCAL -I$ALICE_ROOT/PYTHIA6 -I$ALICE_ROOT/ANALYSIS -I$ALICE_PHYSICS/PWGGA -I$ALICE_PHYSICS/PWGHF -I$ALICE_PHYSICS/PWGHF/hfe -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER/STEER -I$ALICE_ROOT/STEER/STEERBase -I$ALICE_ROOT/STEER/ESD -I$ALICE_ROOT/STEER/AOD -I$ALICE_PHYSICS/OADB -I$ALICE_PHYSICS/PWGHF/base  -I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/TPC -I$ALICE_ROOT/CONTAINERS -I$ALICE_ROOT/STEER -I$ALICE_ROOT/TRD -I$ALICE_ROOT/macros -I$ALICE_ROOT/ANALYSIS  -I$ALICE_PHYSICS/OADB/macros -I$ALICE_PHYSICS/PWGCF/Correlations -I$ALICE_PHYSICS/PWGCF -I$ALICE_PHYSICS/PWGCF/Correlations/Base -I$ALICE_PHYSICS/include -g");
     
-    alienHandler->SetAdditionalLibs("AliAnalysisTaskHadronPhiCorr.cxx AliAnalysisTaskHadronPhiCorr.h AddTaskHadronPhiCorr.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libPWGTools.so libPWGCFCorrelationsBase.so");
+    alienHandler->SetAdditionalLibs("AliAnalysisTaskHadronPhiCorr_current.cxx AliAnalysisTaskHadronPhiCorr_current.h AddTaskHadronPhiCorr_current.C libpythia6.so libEGPythia6.so libAliPythia6.so libPWGHFhfe.so libCDB.so libSTEER.so libCORRFW.so libPWGflowBase.so libPWGflowTasks.so libGui.so libProof.so libMinuit.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libCDB.so libSTEERBase.so libSTEER.so libTPCbase.so libTOFbase.so libTOFrec.so libTRDbase.so libVZERObase.so libVZEROrec.so libT0base.so libT0rec.so libPWGTools.so libPWGCFCorrelationsBase.so");
     
-  alienHandler->SetAnalysisSource("AliAnalysisTaskHadronPhiCorr.cxx");
+  alienHandler->SetAnalysisSource("AliAnalysisTaskHadronPhiCorr_current.cxx");
   //alienHandler->SetOverwriteMode();
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(2);
@@ -61,7 +61,7 @@ void RunMacro(){
    //Int_t runArray[] = {266318, 266317, 266316, 266208, 266197, 266196, 266187, 265754, 265744, 265607, 265596, 265594};
 
 //LHC16q - 5 TeV pPb data
-   Int_t runArray[] = {265525, 265521, 265501, 265500, 265499, 265435, 265427, 265426, 265425, 265424, 265422, 265421, 265420, 265419, 265388, 265387, 265385, 265384, 265383, 265381, 265378, 265377, 265344, 265343, 265342, 265339, 265338, 265336, 265335, 265334, 265332, 265309};  
+   Int_t runArray[] = {265525, 265521, 265501, 265500, 265499, 265435, 265427, 265426, 265425, 265424, 265422, 265421, 265420, 265419, 265388, 265387, 265385, 265384, 265383, 265381, 265378, 265377, 265344, 265343, 265342, 265339, 265338, 265336, 265334, 265332, 265309};  
    for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
     if (i == sizeof(runArray) / sizeof(runArray[1])) break;
@@ -133,10 +133,19 @@ void RunMacro(){
     gInterpreter->ProcessLine(Form(".x %s(kFALSE)", gSystem->ExpandPathName("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C")));
 
     //create a task
-    //AliAnalysisTaskHadronPhiCorr *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(true, 0.0, 10.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr.C"))));
-    //AliAnalysisTaskHadronPhiCorr *task2 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(true, 10.0, 20.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr.C"))));
-    //AliAnalysisTaskHadronPhiCorr *task3 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 20.0, 40.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr.C"))));
-    AliAnalysisTaskHadronPhiCorr *task4 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 40.0, 90.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr.C"))));
+    AliAnalysisTaskHadronPhiCorr_current *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kFALSE, 0.0, 20.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
+    //AliAnalysisTaskHadronPhiCorr_current *task2 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(true, 10.0, 20.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
+    //AliAnalysisTaskHadronPhiCorr_current *task3 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kFALSE, 20.0, 40.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
+    //AliAnalysisTaskHadronPhiCorr_current *task4 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 40.0, 90.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
+
+    task1->SetKaonEtaCut(0.8);
+    task1->SetKaonTPCCut(3.0);
+    task1->SetKaonTOFCut(3.0);
+    task1->SetTOFVeto(kTRUE);
+    task1->SetZVertexMin(-10.0);
+    task1->SetZVertexMax(10.0);
+    task1->SetZVertexNbins(8);
+    task1->SetCentEstimator("V0A");
 
 
    if (!mgr->InitAnalysis())
