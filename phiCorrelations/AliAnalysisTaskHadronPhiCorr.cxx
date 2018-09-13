@@ -67,6 +67,7 @@ fNumTracks(0),
 fVtxZ(0),
 fVtxX(0),
 fVtxY(0),
+fVtxZmixbins(0),
 fTrigMulti(0),
 fTrkPt(0),
 fTrketa(0),
@@ -129,6 +130,12 @@ fDphiHHMixed(0)
 
     CENT_ESTIMATOR = "V0A";
 
+    fDphiHPhi = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHKK = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHPhiMixed = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHKKMixed = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHH = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHHMixed = new THnSparseF*[Z_VTX_NBINS];
 }
 //________________________________________________________________________
 AliAnalysisTaskHadronPhiCorr::AliAnalysisTaskHadronPhiCorr()
@@ -146,6 +153,7 @@ fNumTracks(0),
 fVtxZ(0),
 fVtxX(0),
 fVtxY(0),
+fVtxZmixbins(0),
 fTrigMulti(0),
 fTrkPt(0),
 fTrketa(0),
@@ -193,6 +201,7 @@ fDphiHHMixed(0)
     // DefineOutput(1, TH1I::Class());
     DefineOutput(1, TList::Class());
     //DefineOutput(3, TTree::Class());
+
     IS_HH = kFALSE;
     MULT_LOW = 0.0;
     MULT_HIGH = 100.0;
@@ -208,12 +217,28 @@ fDphiHHMixed(0)
 
     CENT_ESTIMATOR = "V0A";
 
+    fDphiHPhi = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHKK = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHPhiMixed = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHKKMixed = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHH = new THnSparseF*[Z_VTX_NBINS];
+    fDphiHHMixed = new THnSparseF*[Z_VTX_NBINS];
+
 }
 //________________________________________________________________________
 AliAnalysisTaskHadronPhiCorr::~AliAnalysisTaskHadronPhiCorr()
 {
     //Destructor
     delete fOutputList;
+    delete fDphiHPhi;
+    delete fDphiHPhiMixed;
+    delete fDphiHKKMixed;
+    delete fDphiHH;
+    delete fDphiHHMixed;
+
+    delete fPoolMgr;
+    delete fLSPoolMgr;
+    delete fHHPoolMgr;
 }
 //________________________________________________________________________
 void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
@@ -291,6 +316,9 @@ void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
     fVtxX = new TH1F("fVtxX","X vertex position;Vtx_{x};counts",1000,-50,50);
     fOutputList->Add(fVtxX);
     
+    fVtxZmixbins = new TH1F("fVtxZ", "Z vertex position (Mixing Bins);Vtx_{z};counts", Z_VTX_NBINS, Z_VTX_MIN, Z_VTX_MAX);
+    fOutputList->Add(fVtxZmixbins);
+
     fTrigMulti = new TH2F("fTrigMulti","Multiplicity distribution for different triggers; Trigger type; multiplicity",11,-1,10,2000,0,2000);
     fOutputList->Add(fTrigMulti);
     
@@ -401,27 +429,29 @@ void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fUSpairsPerEvent); 
   
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
-    Int_t dphi_bins[6]=    {10,   18,    32,  32,      Z_VTX_NBINS,    80};
-    Double_t dphi_min[6] = {2.0,   1.0, -1.57, -2.0, Z_VTX_MIN, 0.99};
-    Double_t dphi_max[6] = {12.0, 10.0,  4.71,  2.0, Z_VTX_MAX, 1.07};
+    Int_t dphi_bins[5]=    {10,   18,   32,    32,  80};
+    Double_t dphi_min[5] = { 2.0,  1.0, -1.57, -2.0, 0.99};
+    Double_t dphi_max[5] = {12.0, 10.0,  4.71,  2.0, 1.07};
 
-    fDphiHPhi = new THnSparseF("fDphiHPhi", "Hadron-#Phi #Delta#phi correlations", 6, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHPhi);
+    for(int izvtx = 0; izvtx < Z_VTX_NBINS; izvtx++){
+        fDphiHPhi[izvtx] = new THnSparseF(Form("fDphiHPhiz%i", izvtx), "Hadron-#Phi #Delta#phi correlations", 6, dphi_bins, dphi_min, dphi_max);
+        fOutputList->Add(fDphiHPhi[izvtx]);
 
-    fDphiHKK = new THnSparseF("fDphiHKK", "Hadron-#KK likesign #Delta#phi correlations", 6, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHKK);
+        fDphiHKK[izvtx] = new THnSparseF(Form("fDphiHKKz%i", izvtx), "Hadron-#KK likesign #Delta#phi correlations", 6, dphi_bins, dphi_min, dphi_max);
+        fOutputList->Add(fDphiHKK[izvtx]);
 
-    fDphiHPhiMixed = new THnSparseF("fDphiHPhiMixed", "Hadron-#Phi #Delta#phi mixed event Correlations", 6, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHPhiMixed);
+        fDphiHPhiMixed[izvtx] = new THnSparseF(Form("fDphiHPhiMixedz%i", izvtx), "Hadron-#Phi #Delta#phi mixed event Correlations", 6, dphi_bins, dphi_min, dphi_max);
+        fOutputList->Add(fDphiHPhiMixed[izvtx]);
 
-    fDphiHKKMixed = new THnSparseF("fDphiHKKMixed", "Hadron-#KK likesign #Delta#phi mixed event Correlations", 6, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHKKMixed);
+        fDphiHKKMixed[izvtx] = new THnSparseF(Form("fDphiHKKMixedz%i", izvtx), "Hadron-#KK likesign #Delta#phi mixed event Correlations", 6, dphi_bins, dphi_min, dphi_max);
+        fOutputList->Add(fDphiHKKMixed[izvtx]);
 
-    fDphiHH = new THnSparseF("fDphiHH", "Hadron-Hadron correlations", 5, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHH);
+        fDphiHH[izvtx] = new THnSparseF(Form("fDphiHHz%i", izvtx), "Hadron-Hadron correlations", 5, dphi_bins, dphi_min, dphi_max);
+        fOutputList->Add(fDphiHH[izvtx]);
 
-    fDphiHHMixed = new THnSparseF("fDPhiHHMixed", "Hadron-Hadron mixed event correlations", 5, dphi_bins, dphi_min, dphi_max);
-    fOutputList->Add(fDphiHHMixed);
+        fDphiHHMixed[izvtx] = new THnSparseF(Form("fDPhiHHMixedz%i", izvtx), "Hadron-Hadron mixed event correlations", 5, dphi_bins, dphi_min, dphi_max);
+        fOutputList->Add(fDphiHHMixed[izvtx]);
+    }
 
     PostData(1,fOutputList);
 }
@@ -430,7 +460,7 @@ void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
 //___________________________________________________________________________
 Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
 
-    Double_t dphi_point[6];
+    Double_t dphi_point[5];
     AliPhiContainer phi;
     for(int iphi = 0; iphi < phiVec.size(); iphi++){
         phi = phiVec[iphi];
@@ -448,8 +478,8 @@ Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVPa
             dphi_point[2] -= 2.0*TMath::Pi();
         }
         dphi_point[3] = trigger->Eta() - phi.particle.Eta();
-        dphi_point[4] = zVtx;
-        dphi_point[5] = phi.particle.M();
+        //dphi_point[4] = zVtx;
+        dphi_point[4] = phi.particle.M();
         fDphi->Fill(dphi_point);
     }
     return kFALSE;
@@ -458,7 +488,7 @@ Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVPa
 //___________________________________________________________________________
 void AliAnalysisTaskHadronPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS){
 
-    Double_t dphi_point[6];    
+    Double_t dphi_point[5];    
     Int_t nMix = fPool->GetCurrentNEvents();
     Int_t nTracks = 0;
     for(int iMix=0; iMix < nMix; iMix++){            
@@ -481,8 +511,8 @@ void AliAnalysisTaskHadronPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THn
                 dphi_point[2] -= 2.0*TMath::Pi();
             }
             dphi_point[3] = hadron->Eta() - phi->particle.Eta();
-            dphi_point[4] = zVtx;
-            dphi_point[5] = phi->particle.M();
+            //dphi_point[4] = zVtx;
+            dphi_point[4] = phi->particle.M();
             fDphiMixed->Fill(dphi_point);
         }
     }
@@ -500,7 +530,7 @@ void AliAnalysisTaskHadronPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THn
 //___________________________________________________________________________
 void AliAnalysisTaskHadronPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx){
 
-    Double_t dphi_point[5];
+    Double_t dphi_point[4];
     AliEventPool* fPool;
     fPool = fHHPoolMgr->GetEventPool(mult, zVtx); // Get the buffer associated with the current multiplicity and z-vtx
     if (!fPool)
@@ -531,7 +561,7 @@ void AliAnalysisTaskHadronPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPar
                     dphi_point[2] -= 2.0*TMath::Pi();
                 }
                 dphi_point[3] = hadron->Eta() - assocPart->Eta();
-                dphi_point[4] = zVtx;
+                //dphi_point[4] = zVtx;
                 fDphiMixed->Fill(dphi_point);
             }
         }
@@ -634,7 +664,12 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
     ////////////////////
     //event selection//
     ///////////////////
-    if(fabs(Zvertex)>10.0)return;
+    if(Zvertex > Z_VTX_MAX || Zvertex < Z_VTX_MIN)return;
+
+    fVtxZmixbins->Fill(Zvertex);
+
+    Int_t indexZVtx = (Int_t)TMath::Floor((Zvertex - Z_VTX_MIN)*double(Z_VTX_NBINS)/(Z_VTX_MAX - Z_VTX_MIN));
+
     fNevents->Fill(2); //events after z vtx cut
 
     //Initialize the vectors/points that will be used to fill the histograms
@@ -646,7 +681,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
     Double_t distPoint[4] = {0, 0, 0, 0};
     Double_t trigPoint[3] = {0, 0, 0};
     Double_t dphi_point[5] = {0, 0, 0, 0, 0};
-    Double_t hhdphi_point[6] = {0, 0, 0, 0, 0};
+    Double_t hhdphi_point[4] = {0, 0, 0, 0};
 
     AliVTrack *kaonTrack = 0x0;
     AliESDtrack *eKaonTrack = 0x0;
@@ -883,8 +918,8 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
             
             //hadron-phi correlations
             if(!IS_HH){
-                Bool_t isTriggerDaughter = MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi, Zvertex);
-                Bool_t isTriggerLSDaughter = MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK, Zvertex);
+                Bool_t isTriggerDaughter = MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi[indexZVtx], Zvertex);
+                Bool_t isTriggerLSDaughter = MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK[indexZVtx], Zvertex);
 
                 if(!isTriggerDaughter){
                     cfPart = new AliCFParticle(triggerTrack->Pt(), triggerTrack->Eta(), triggerTrack->Phi(), triggerTrack->Charge(), 0);
@@ -919,15 +954,15 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                                 hhdphi_point[2] -= 2.0*TMath::Pi();
                             }
                             hhdphi_point[3] = trigPoint[2] - aassocTrack->Eta();
-                            hhdphi_point[4] = Zvertex;
-                            hhdphi_point[5] = multPercentile;
-                            fDphiHH->Fill(hhdphi_point);
+                            //hhdphi_point[4] = Zvertex;
+                            //hhdphi_point[4] = multPercentile;
+                            fDphiHH[indexZVtx]->Fill(hhdphi_point);
                             hhAssoc->SetPt(aassocTrack->Pt());
                             hhAssoc->SetEta(aassocTrack->Eta());
                             hhAssoc->SetPhi(aassocTrack->Phi());
                             hhAssoc->SetCharge(aassocTrack->Charge());
                             if(fHHPoolMgr->GetEventPool(multPercentile, Zvertex)->IsReady()){
-                                MakeHHMixCorrelations(hhAssoc, fDphiHHMixed, multPercentile, Zvertex);
+                                MakeHHMixCorrelations(hhAssoc, fDphiHHMixed[indexZVtx], multPercentile, Zvertex);
                             }
                         }
                     }   
@@ -944,7 +979,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
 
     ntracks = fVevent->GetNumberOfTracks();
 
-    if(multPercentile <= 100. && TMath::Abs(Zvertex) < 10.0){
+    if(multPercentile <= 100.){
         if(!IS_HH){
             if(phiCandidates.size() > 0){
                 AliEventPool *fPool = 0x0;
@@ -955,7 +990,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                 }else{
                     if(fPool->IsReady()){
                         for(int i =0; i< phiCandidates.size(); i++){
-                            MakeMixCorrelations(&phiCandidates[i], fDphiHPhiMixed, multPercentile, Zvertex, fPool, kFALSE);
+                            MakeMixCorrelations(&phiCandidates[i], fDphiHPhiMixed[indexZVtx], multPercentile, Zvertex, fPool, kFALSE);
                         }
                     }
                     if(fArrayTracksMix->GetEntries() > 0){
@@ -972,7 +1007,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                 }else{
                     if(fLSPool->IsReady()){
                         for(int i =0; i< phiLikeSignCandidates.size(); i++){
-                            MakeMixCorrelations(&phiLikeSignCandidates[i], fDphiHKKMixed, multPercentile, Zvertex, fLSPool, kTRUE);
+                            MakeMixCorrelations(&phiLikeSignCandidates[i], fDphiHKKMixed[indexZVtx], multPercentile, Zvertex, fLSPool, kTRUE);
                         }
                     }
                     if(fArrayLSTracksMix->GetEntries() > 0){
