@@ -5,16 +5,16 @@ void RunMacro(){
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
    Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiCorrelations_LHC16q_0_20_test";
-   char* output_dir = "output_2018_09_10_FAST";
+   char* work_dir = "PhiCorrelations_LHC16q_0_20_noveto";
+   char* output_dir = "output_2018_10_22_FAST";
    Int_t ttl = 50000;
-   Int_t noffiles = 20;
-   //Int_t runcycle[]={0,31};
-   Int_t runcycle[]={0,16,31};
+   Int_t noffiles = 40;
+   Int_t runcycle[]={0,1,31};
+   //Int_t runcycle[]={0,16,31};
    Bool_t UseParfiles = kFALSE;
 
    // load libraries
@@ -62,7 +62,9 @@ void RunMacro(){
 
 //LHC16q - 5 TeV pPb data
    Int_t runArray[] = {265525, 265521, 265501, 265500, 265499, 265435, 265427, 265426, 265425, 265424, 265422, 265421, 265420, 265419, 265388, 265387, 265385, 265384, 265383, 265381, 265378, 265377, 265344, 265343, 265342, 265339, 265338, 265336, 265334, 265332, 265309};  
-   for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
+    
+  
+  for (Int_t i =  runcycle[cyclenumber - 1]; i < runcycle[cyclenumber] ; i++)
    {
     if (i == sizeof(runArray) / sizeof(runArray[1])) break;
     alienHandler->AddRunNumber(runArray[i]);
@@ -119,7 +121,7 @@ void RunMacro(){
 //    mcH->SetReadTR(kFALSE);
 
    //gROOT->LoadMacro("AddTaskPhiCorr.C");
-   //gROOT->LoadMacro("./AliAnalysisTaskHadronPhiCorr.cxx++g");
+   gROOT->LoadMacro("./AliAnalysisTaskHadronPhiCorr.cxx++g");
    //gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
    //gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
    //gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
@@ -141,10 +143,13 @@ void RunMacro(){
     task1->SetKaonEtaCut(0.8);
     task1->SetKaonTPCCut(3.0);
     task1->SetKaonTOFCut(3.0);
-    task1->SetTOFVeto(kTRUE);
+    task1->SetTOFVeto(kFALSE);
+    task1->SetKaonTrkBit(1024);
+    task1->SetAssocTrkBit(1024);
+    task1->SetTrigTrkBit(AliAODTrack::kIsHybridGCG);
     task1->SetZVertexMin(-10.0);
     task1->SetZVertexMax(10.0);
-    task1->SetZVertexNbins(8);
+    task1->SetZVertexNbins(10);
     task1->SetCentEstimator("V0A");
 
 

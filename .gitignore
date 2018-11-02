@@ -13,5 +13,8 @@
 *.eps
 *.pages
 *.txt
+*.pcm
+outputs_valid
 ScriptTimeCalib*
 PhiInvMass*
+PhiEff*

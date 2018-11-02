@@ -12,7 +12,7 @@ void makeUSCorrections(string inputFile){
 
     hPhi2Dpeak->SetName("uncorrectedhPhi2Dpeak");
 
-    Float_t totalTrigUS = trigDistSameUS->Integral(trigDistSameUS->GetXaxis()->FindBin(4.0), trigDistSameUS->GetXaxis()->FindBin(10.0));
+/*    Float_t totalTrigUS = trigDistSameUS->Integral(trigDistSameUS->GetXaxis()->FindBin(4.0), trigDistSameUS->GetXaxis()->FindBin(10.0));
     Float_t totalTrigLS = trigDistSameLS->Integral(trigDistSameLS->GetXaxis()->FindBin(4.0), trigDistSameLS->GetXaxis()->FindBin(10.0));
     hPhi2Dpeak->Scale(1.0/totalTrigUS);
     hPhi2DLside->Scale(1.0/totalTrigUS);
@@ -20,7 +20,7 @@ void makeUSCorrections(string inputFile){
     hKK2Dpeak->Scale(1.0/totalTrigLS);
     hKK2DLside->Scale(1.0/totalTrigLS);
     hKK2DRside->Scale(1.0/totalTrigLS);
-
+*/
     //Using US sideband regions to estimate the BG under the peak region
     //Now using the (unweighted) average of the Left and Right side sideband (correct? needs additional checks?)
     TH2D* hPhiBGPeakRegionL = (TH2D*)hPhi2DLside->Clone("hPhiBGPeakRegionL");

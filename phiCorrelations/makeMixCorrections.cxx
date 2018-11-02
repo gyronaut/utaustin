@@ -53,7 +53,9 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
 
     same->GetAxis(3)->SetRange(0,0);
     mixed->GetAxis(3)->SetRange(0,0);
-    same2DTotal->Scale(1.0/totalTrigSame);
+    float totalSame = same2DTotal->Integral();
+    //same2DTotal->Scale(1.0/totalTrigSame);
+    printf("Total Trig: %f, Total pairs: %f\n, ratio: %f", totalTrigSame, totalSame, totalSame/totalTrigSame);
     return same2DTotal;
 }
 
