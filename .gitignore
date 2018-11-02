@@ -17,4 +17,5 @@
 outputs_valid
 ScriptTimeCalib*
 PhiInvMass*
+PhiPID*
 PhiEff*
