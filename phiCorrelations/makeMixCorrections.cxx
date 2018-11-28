@@ -183,13 +183,13 @@ void makeMixCorrections(string inputName, int multLow, int multHigh, float trigP
     TH1D* sameLSLsideEta[10];
     TH1D* mixedLSLsideEta[10];
 
-    TH2D* hPhi2Dpeak = makeCorrections(hPhi, hPhiMixed, 1.010, 1.030, sameUSPeakEta, mixedUSPeakEta, trigMixScalesUS, totalTrigSameUS);
+    TH2D* hPhi2Dpeak = makeCorrections(hPhi, hPhiMixed, 1.015, 1.025, sameUSPeakEta, mixedUSPeakEta, trigMixScalesUS, totalTrigSameUS);
     hPhi2Dpeak->SetName("hPhi2Dpeak");
     for(int i = 0; i<10; i++){
         sameUSPeakEta[i]->SetName(Form("sameUSPeakEta_zvtx_%i", i));
         mixedUSPeakEta[i]->SetName(Form("mixedUSPeakEta_zvtx_%i", i));
     }
-    TH2D* hKK2Dpeak = makeCorrections(hKK, hKKMixed, 1.010, 1.030, sameLSPeakEta, mixedLSPeakEta, trigMixScalesLS, totalTrigSameLS);
+    TH2D* hKK2Dpeak = makeCorrections(hKK, hKKMixed, 1.015, 1.025, sameLSPeakEta, mixedLSPeakEta, trigMixScalesLS, totalTrigSameLS);
     hKK2Dpeak->SetName("hKK2Dpeak");
     for(int i = 0; i<10; i++){
         sameLSPeakEta[i]->SetName(Form("sameLSPeakEta_zvtx_%i", i));
@@ -318,7 +318,7 @@ void makeMixCorrections(string inputName, int multLow, int multHigh, float trigP
     TH1D* mixedLSzvtx = hKKMixed->Projection(2);
     mixedLSzvtx->SetName("mixedLSzvtx");
 
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_mixcorr_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_mixcorr_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)(assocPTLow*10.), (int)(assocPTHigh*10.), mult.c_str()), "RECREATE");
     hPhi2Dpeak->Write();
     hKK2Dpeak->Write();
     hPhi2DRside->Write();
