@@ -24,7 +24,7 @@ TH2D* projectWithEfficiencyCorrections(THnSparseF* sparse, TH1D* eff, float asso
     TH2D* corr;
     TH2D* buff;
     for(Int_t i = lowbin; i <= highbin; i++){
-        sparse->GetAxis(1)->SetRangeUser(sparse->GetAxis(1)->FindBin(eff->GetBinCenter(i)), sparse->GetAxis(1)->FindBin(eff->GetBinCenter(i)));
+        sparse->GetAxis(1)->SetRange(sparse->GetAxis(1)->FindBin(eff->GetBinCenter(i)), sparse->GetAxis(1)->FindBin(eff->GetBinCenter(i)));
         buff = (TH2D*)sparse->Projection(2,3);
         buff->Sumw2();
         buff->Scale(1.0/eff->GetBinContent(i));

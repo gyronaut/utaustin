@@ -39,11 +39,14 @@ TH3D* projectWithEfficiencyCorrections(THnSparseF* sparse, TH1D* eff, float asso
     Int_t axes[] = {2,3,4};
     TH3D* corr;
     TH3D* buff;
+    //printf("lowbin: %i, highbin:%i \n\n", lowbin, highbin);
+    //printf("low range: %i, high range: %i\n\n", sparse->GetAxis(1)->FindBin(eff->GetBinCenter(lowbin)), sparse->GetAxis(1)->FindBin(eff->GetBinCenter(highbin)));
     for(Int_t i = lowbin; i <= highbin; i++){
-        sparse->GetAxis(1)->SetRangeUser(sparse->GetAxis(1)->FindBin(eff->GetBinCenter(i)), sparse->GetAxis(1)->FindBin(eff->GetBinCenter(i)));
+        sparse->GetAxis(1)->SetRange(sparse->GetAxis(1)->FindBin(eff->GetBinCenter(i)), sparse->GetAxis(1)->FindBin(eff->GetBinCenter(i)));
         buff = (TH3D*)sparse->Projection(2,3,4);
         buff->Sumw2();
         buff->Scale(1.0/eff->GetBinContent(i));
+        //buff->Scale(1.0);
         if(i==lowbin){
             corr = (TH3D*)buff->Clone(Form("effcorr%s", sparse->GetName()));
         }else{
