@@ -57,17 +57,17 @@ TF1* setupFit(TString fitname, TH1D* hist, Int_t color, Int_t linestyle){
     return basefit;
 }
 
-void intUSRatioPlot(){
+void intUSRatioPlotEff(){
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(0);
     gStyle->SetErrorX(0);
 
     
-    TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_newmult/trig_4_8_assoc_2_4_hh_0_20.root", "hh", "hh2D", "0_20", -1.2, 1.2, kBlue+2, 21);
+    TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_newmult/trig_4_8_assoc_2_4_effcorr_hh_0_20.root", "hh", "hh2D", "0_20", -1.2, 1.2, kBlue+2, 21);
     //TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_3mult_noeff/trig_4_8_assoc_2_4_hh_hhCorrelations_mult_0_20.root", "hh", "hh2D", "0_20", -1.2, 1.2, kBlue+2, 21);
 
     //TH1D* hPhidphi_0_20 = getHisto("~/phiStudies/results_3mult_noeff/US_syst_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_0_20.root", "hPhi", "AvgUSsubhPhi2Dpeak", "0_20", -1.2, 1.2, kRed+2, 22);
-    TH1D* hPhidphi_0_20 = getHisto("~/phiStudies/results_newmult/US_syst_trig_4_8_assoc_2_4_smallmass12_hPhi_0_20.root", "hPhi", "AvgUSsubhPhi2Dpeak", "0_20", -1.2, 1.2, kRed+2, 22);
+    TH1D* hPhidphi_0_20 = getHisto("~/phiStudies/results_newmult/US_syst_trig_4_8_assoc_2_4_effcorr_smallmass12_hPhi_0_20.root", "hPhi", "AvgUSsubhPhi2Dpeak", "0_20", -1.2, 1.2, kRed+2, 22);
 
     TF1 *corrFit = setupFit("corrFit", hhdphi_0_20, kBlue, 7);
     TF1 *corrFit2 = setupFit("corrFit2", hPhidphi_0_20, kRed, 7);
@@ -140,11 +140,11 @@ void intUSRatioPlot(){
     ratios020->SetLineWidth(2);
 
    //20-50 section 
-    TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_newmult/trig_4_8_assoc_2_4_hh_20_50.root", "hh", "hh2D", "20_50", -1.2, 1.2, kBlue+2, 21);
+    TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_newmult/trig_4_8_assoc_2_4_effcorr_hh_20_50.root", "hh", "hh2D", "20_50", -1.2, 1.2, kBlue+2, 21);
     //TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_3mult_noeff/trig_4_8_assoc_2_4_hh_hhCorrelations_mult_20_50.root", "hh", "hh2D", "20_50", -1.2, 1.2, kBlue+2, 21);
 
     //TH1D* hPhidphi_20_50 = getHisto("~/phiStudies/results_3mult_noeff/US_syst_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_20_50.root", "hPhi", "AvgUSsubhPhi2Dpeak", "20_50", -1.2, 1.2, kRed+2, 22);
-    TH1D* hPhidphi_20_50 = getHisto("~/phiStudies/results_newmult/US_syst_trig_4_8_assoc_2_4_smallmass12_hPhi_20_50.root", "hPhi", "AvgUSsubhPhi2Dpeak", "20_50", -1.2, 1.2, kRed+2, 22);
+    TH1D* hPhidphi_20_50 = getHisto("~/phiStudies/results_newmult/US_syst_trig_4_8_assoc_2_4_effcorr_smallmass12_hPhi_20_50.root", "hPhi", "AvgUSsubhPhi2Dpeak", "20_50", -1.2, 1.2, kRed+2, 22);
 
     TF1 *corrFit2050 = setupFit("corrFit2050", hhdphi_20_50, kBlue, 7); 
 
@@ -219,11 +219,11 @@ void intUSRatioPlot(){
 
 
     //50-100 section
-    TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_newmult/trig_4_8_assoc_2_4_hh_50_80.root", "hh", "hh2D", "50_80", -1.2, 1.2, kBlue+2, 21);
+    TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_newmult/trig_4_8_assoc_2_4_effcorr_hh_50_80.root", "hh", "hh2D", "50_80", -1.2, 1.2, kBlue+2, 21);
     //TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_3mult_noeff/trig_4_8_assoc_2_4_hh_hhCorrelations_mult_50_100.root", "hh", "hh2D", "50_100", -1.2, 1.2, kBlue+2, 21);
 
     //TH1D* hPhidphi_50_100 = getHisto("~/phiStudies/results_3mult_noeff/US_syst_trig_4_8_assoc_2_4_mixcorr_phiCorrelations_mult_50_100.root", "hPhi", "AvgUSsubhPhi2Dpeak", "50_100", -1.2, 1.2, kRed+2, 22);
-    TH1D* hPhidphi_50_100 = getHisto("~/phiStudies/results_newmult/US_syst_trig_4_8_assoc_2_4_smallmass12_hPhi_50_80.root", "hPhi", "AvgUSsubhPhi2Dpeak", "50_80", -1.2, 1.2, kRed+2, 22);
+    TH1D* hPhidphi_50_100 = getHisto("~/phiStudies/results_newmult/US_syst_trig_4_8_assoc_2_4_effcorr_smallmass12_hPhi_50_80.root", "hPhi", "AvgUSsubhPhi2Dpeak", "50_80", -1.2, 1.2, kRed+2, 22);
 
     TF1 *corrFit50100 = setupFit("corrFit50100", hhdphi_50_100, kBlue, 7);
 
@@ -959,7 +959,6 @@ void intUSRatioPlot(){
     text2->Draw();
     legend->Draw();
 
-
     TCanvas *c0_20pp = new TCanvas("c0_20pp", "c0_20pp", 50, 50, 550, 600);
     c0_20pp->cd();
     c0_20pp->SetMargin(0.12, 0.05, 0.1, 0.05);
@@ -1028,7 +1027,6 @@ void intUSRatioPlot(){
     text50100->Draw();
     text2->Draw();
     legend->Draw();
-
 /*
     TCanvas *cratio = new TCanvas("cratio", "cratio", 50, 50, 550, 600);
     cratio->cd();

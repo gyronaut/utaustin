@@ -25,7 +25,7 @@ TH1D* getHisto(TString filename, TString histotype, TString histoname, TString m
 TF1* setupFit(TString fitname, TH1D* hist, Int_t color, Int_t linestyle){
     TF1 *basefit = new TF1(fitname, "gaus(0) + gaus(3) + ([3]/([5]))*exp(-(((x - [4] + 2.0*TMath::Pi())^2)/(2*[5]^2)))+ pol0(6)", -1.4, 4.6);
     //basefit->FixParameter(6, 0.3333*(hist->GetBinContent(8)+hist->GetBinContent(16)+hist->GetBinContent(1)));
-    basefit->SetParameter(6, 0.3333*(hist->GetBinContent(8)+hist->GetBinContent(16)+hist->GetBinContent(1)));
+    basefit->SetParameter(6, 0.3333*(hist->GetBinContent(8)+hist->GetBinContent(1)+hist->GetBinContent(16)));
     basefit->SetParLimits(6, basefit->GetParameter(6)*0.75, basefit->GetParameter(6)*1.25);
     /*if(fitname == "corrFit"){
         basefit->FixParameter(0, 1.68920E-01 - 3.31591E-04); 
@@ -38,14 +38,14 @@ TF1* setupFit(TString fitname, TH1D* hist, Int_t color, Int_t linestyle){
     basefit->SetParLimits(0, basefit->GetParameter(0)*0.1, basefit->GetParameter(0)*3.0);
     basefit->FixParameter(1, 0.0);
     //basefit->SetParameter(1, 0.0);
-    basefit->SetParLimits(1, -0.5, 0.5);
+    //basefit->SetParLimits(1, -0.5, 0.5);
     basefit->SetParameter(2, 0.5);
     basefit->SetParLimits(2, 0.1, 1.0);
     basefit->SetParameter(3, hist->GetBinContent(hist->GetXaxis()->FindBin(3.14)) - basefit->GetParameter(6));
     basefit->SetParLimits(3, basefit->GetParameter(3)*0.1, basefit->GetParameter(3)*3.0);
     basefit->FixParameter(4, 3.14159);
     //basefit->SetParameter(4, 3.14);
-    basefit->SetParLimits(4, 3.0, 3.25);
+    //basefit->SetParLimits(4, 3.0, 3.25);
     basefit->SetParameter(5, 0.5);
     basefit->SetParLimits(5, 0.1, 1.0);
 
@@ -57,7 +57,7 @@ TF1* setupFit(TString fitname, TH1D* hist, Int_t color, Int_t linestyle){
     return basefit;
 }
 
-void intUSRatioPlot(){
+void intUSRatioPlotFit(){
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(0);
     gStyle->SetErrorX(0);
@@ -72,18 +72,46 @@ void intUSRatioPlot(){
     TF1 *corrFit = setupFit("corrFit", hhdphi_0_20, kBlue, 7);
     TF1 *corrFit2 = setupFit("corrFit2", hPhidphi_0_20, kRed, 7);
 
-    hhdphi_0_20->Fit("corrFit", "R0");
-    hPhidphi_0_20->Fit("corrFit2", "R0");
+    TFitResultPtr corrFitPtr = hhdphi_0_20->Fit("corrFit", "R0S");
+    TFitResultPtr corrFit2Ptr = hPhidphi_0_20->Fit("corrFit2", "R0S");
 
     TF1 *hhBG = new TF1("hhBG", "pol0(0)", -1.4, 4.6);
     hhBG->SetParLimits(0, 0.00001, 10000000.0);
     hhBG->SetParameter(0, 1.0*corrFit->GetParameter(6));
+    hhBG->SetParError(0, corrFit->GetParError(6));
     hhBG->SetLineStyle(2);
 
     TF1 *hphiBG = new TF1("hphiBG", "pol0(0)", -1.4, 4.6);
     hphiBG->SetParLimits(0, 0.00001, 10000000.0);
     hphiBG->SetParameter(0, 1.0*corrFit2->GetParameter(6));
+    hphiBG->SetParError(0, corrFit2->GetParError(6));
     hphiBG->SetLineStyle(2);
+
+    TF1 *nearhhgaus_0_20 = new TF1("nearhhgaus_0_20", "gaus(0)", -1.4, 4.6);
+    nearhhgaus_0_20->SetParameters(corrFit->GetParameter(0), corrFit->GetParameter(1), corrFit->GetParameter(2));
+    nearhhgaus_0_20->SetParError(0, corrFit->GetParError(0));
+    nearhhgaus_0_20->SetParError(1, corrFit->GetParError(1));
+    nearhhgaus_0_20->SetParError(2, corrFit->GetParError(2));
+
+    TF1 *awayhhgaus_0_20 = new TF1("awayhhgaus_0_20", "gaus(0)", -1.4, 4.6);
+    awayhhgaus_0_20->SetParameters(corrFit->GetParameter(3), corrFit->GetParameter(4), corrFit->GetParameter(5));
+    awayhhgaus_0_20->SetParError(0, corrFit->GetParError(3));
+    awayhhgaus_0_20->SetParError(1, corrFit->GetParError(4));
+    awayhhgaus_0_20->SetParError(2, corrFit->GetParError(5));
+
+    TF1 *nearhphigaus_0_20 = new TF1("nearhphigaus_0_20", "gaus(0)", -1.4, 4.6);
+    nearhphigaus_0_20->SetParameters(corrFit2->GetParameter(0), corrFit2->GetParameter(1), corrFit2->GetParameter(2));
+    nearhphigaus_0_20->SetParError(0, corrFit2->GetParError(0));
+    nearhphigaus_0_20->SetParError(1, corrFit2->GetParError(1));
+    nearhphigaus_0_20->SetParError(2, corrFit2->GetParError(2));
+
+    TF1 *awayhphigaus_0_20 = new TF1("awayhphigaus_0_20", "gaus(0)", -1.4, 4.6);
+    awayhphigaus_0_20->SetParameters(corrFit2->GetParameter(3), corrFit2->GetParameter(4), corrFit2->GetParameter(5));
+    awayhphigaus_0_20->SetParError(0, corrFit2->GetParError(3));
+    awayhphigaus_0_20->SetParError(1, corrFit2->GetParError(4));
+    awayhphigaus_0_20->SetParError(2, corrFit2->GetParError(5));
+
+
 
     Double_t near0_20hPhiError = 0;
     Double_t near0_20hhError = 0;
@@ -96,14 +124,18 @@ void intUSRatioPlot(){
     Double_t total0_20hPhiError;
     Double_t total0_20hhError = 0;   
 
-    Double_t near0_20hPhiYield = hPhidphi_0_20->IntegralAndError(2,7,near0_20hPhiError) - hphiBG->GetParameter(0)*6.0;
-    //near0_20hPhiError = TMath::Sqrt(TMath::Power(near0_20hPhiError, 2) + TMath::Power(6.0*mid0_20hPhiError, 2));
-    Double_t near0_20hhYield = hhdphi_0_20->IntegralAndError(2,7,near0_20hhError) - hhBG->GetParameter(0)*6.0;
-    //near0_20hhError = TMath::Sqrt(TMath::Power(near0_20hhError, 2) + TMath::Power(6.0*mid0_20hhError, 2));
-    Double_t away0_20hPhiYield = hPhidphi_0_20->IntegralAndError(9,16,away0_20hPhiError) - hphiBG->GetParameter(0)*8.0;
-    //away0_20hPhiError = TMath::Sqrt(TMath::Power(away0_20hPhiError, 2) + TMath::Power(8.0*mid0_20hPhiError, 2));
-    Double_t away0_20hhYield = hhdphi_0_20->IntegralAndError(9,16,away0_20hhError)- hhBG->GetParameter(0)*8.0;
-    //away0_20hhError = TMath::Sqrt(TMath::Power(away0_20hhError, 2) + TMath::Power(8.0*mid0_20hhError, 2));
+    Double_t near0_20hPhiYield = corrFit2->Integral(hPhidphi_0_20->GetXaxis()->GetBinLowEdge(2), hPhidphi_0_20->GetXaxis()->GetBinUpEdge(7)) - hphiBG->GetParameter(0)*(hPhidphi_0_20->GetXaxis()->GetBinUpEdge(7) - hPhidphi_0_20->GetXaxis()->GetBinLowEdge(2));
+    near0_20hPhiError = corrFit2->IntegralError(hPhidphi_0_20->GetXaxis()->GetBinLowEdge(2), hPhidphi_0_20->GetXaxis()->GetBinUpEdge(7), corrFit2Ptr->GetParams(), corrFit2Ptr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t near0_20hhYield = corrFit->Integral(hhdphi_0_20->GetXaxis()->GetBinLowEdge(2), hhdphi_0_20->GetXaxis()->GetBinUpEdge(7)) - hhBG->GetParameter(0)*(hhdphi_0_20->GetXaxis()->GetBinUpEdge(7) - hhdphi_0_20->GetXaxis()->GetBinLowEdge(2));
+    near0_20hhError = corrFit->IntegralError(hhdphi_0_20->GetXaxis()->GetBinLowEdge(2), hhdphi_0_20->GetXaxis()->GetBinUpEdge(7), corrFitPtr->GetParams(), corrFitPtr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t away0_20hPhiYield = corrFit2->Integral(hPhidphi_0_20->GetXaxis()->GetBinLowEdge(9), hPhidphi_0_20->GetXaxis()->GetBinUpEdge(16)) - hphiBG->GetParameter(0)*(hPhidphi_0_20->GetXaxis()->GetBinUpEdge(16) - hPhidphi_0_20->GetXaxis()->GetBinLowEdge(9));
+    away0_20hPhiError = corrFit2->IntegralError(hPhidphi_0_20->GetXaxis()->GetBinLowEdge(9), hPhidphi_0_20->GetXaxis()->GetBinUpEdge(16), corrFit2Ptr->GetParams(), corrFit2Ptr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t away0_20hhYield = corrFit->Integral(hhdphi_0_20->GetXaxis()->GetBinLowEdge(9), hhdphi_0_20->GetXaxis()->GetBinUpEdge(16)) - hhBG->GetParameter(0)*(hhdphi_0_20->GetXaxis()->GetBinUpEdge(16) - hhdphi_0_20->GetXaxis()->GetBinLowEdge(9));
+    away0_20hhError = corrFit->IntegralError(hhdphi_0_20->GetXaxis()->GetBinLowEdge(9), hhdphi_0_20->GetXaxis()->GetBinUpEdge(16), corrFitPtr->GetParams(), corrFitPtr->GetCovarianceMatrix().GetMatrixArray());
+
     Double_t total0_20hPhiYield = hPhidphi_0_20->IntegralAndError(1,16,total0_20hPhiError);
     Double_t total0_20hhYield = hhdphi_0_20->IntegralAndError(1,16,total0_20hhError);
     Double_t mid0_20hPhiYield = hphiBG->GetParameter(0)*16.0;
@@ -150,8 +182,8 @@ void intUSRatioPlot(){
 
     TF1 *corrFit2_2050 = setupFit("corrFit2_2050", hPhidphi_20_50, kRed, 7);
 
-    hhdphi_20_50->Fit("corrFit2050", "R0");
-    hPhidphi_20_50->Fit("corrFit2_2050", "R0");
+    TFitResultPtr corrFit2050Ptr = hhdphi_20_50->Fit("corrFit2050", "R0S");
+    TFitResultPtr corrFit2_2050Ptr = hPhidphi_20_50->Fit("corrFit2_2050", "R0S");
 
     TF1 *hhBG_20_50 = new TF1("hhBG_20_50", "pol0(0)", -1.4, 4.6);
     hhBG_20_50->SetParLimits(0, 0.00001, 10000000.0);
@@ -174,14 +206,19 @@ void intUSRatioPlot(){
     Double_t total20_50hPhiError = 0;
     Double_t total20_50hhError = 0;
 
-    Double_t near20_50hPhiYield = hPhidphi_20_50->IntegralAndError(2,7,near20_50hPhiError) - hphiBG_20_50->GetParameter(0)*6.0;
-    //near20_50hPhiError = TMath::Sqrt(TMath::Power(near20_50hPhiError, 2) + TMath::Power(6.0*mid20_50hPhiError, 2));
-    Double_t near20_50hhYield = hhdphi_20_50->IntegralAndError(2,7,near20_50hhError) - hhBG_20_50->GetParameter(0)*6.0;
-    //near20_50hhError = TMath::Sqrt(TMath::Power(near20_50hhError, 2) + TMath::Power(6.0*mid20_50hhError, 2));
-    Double_t away20_50hPhiYield = hPhidphi_20_50->IntegralAndError(9,16,away20_50hPhiError) - hphiBG_20_50->GetParameter(0)*8.0;
-    //away20_50hPhiError = TMath::Sqrt(TMath::Power(away20_50hPhiError, 2) + TMath::Power(8.0*mid20_50hPhiError, 2));
-    Double_t away20_50hhYield = hhdphi_20_50->IntegralAndError(9,16,away20_50hhError)- hhBG_20_50->GetParameter(0)*8.0;
-    //away20_50hhError = TMath::Sqrt(TMath::Power(away20_50hhError, 2) + TMath::Power(8.0*mid20_50hhError, 2));
+    Double_t near20_50hPhiYield = corrFit2_2050->Integral(hPhidphi_20_50->GetXaxis()->GetBinLowEdge(2), hPhidphi_20_50->GetXaxis()->GetBinUpEdge(7)) - hphiBG_20_50->GetParameter(0)*(hPhidphi_20_50->GetXaxis()->GetBinUpEdge(7) - hPhidphi_20_50->GetXaxis()->GetBinLowEdge(2));
+    near20_50hPhiError = corrFit2_2050->IntegralError(hPhidphi_20_50->GetXaxis()->GetBinLowEdge(2), hPhidphi_20_50->GetXaxis()->GetBinUpEdge(7), corrFit2_2050Ptr->GetParams(), corrFit2_2050Ptr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t near20_50hhYield = corrFit2050->Integral(hhdphi_20_50->GetXaxis()->GetBinLowEdge(2), hhdphi_20_50->GetXaxis()->GetBinUpEdge(7)) - hhBG_20_50->GetParameter(0)*(hhdphi_20_50->GetXaxis()->GetBinUpEdge(7) - hhdphi_20_50->GetXaxis()->GetBinLowEdge(2));
+    near20_50hhError = corrFit2050->IntegralError(hhdphi_20_50->GetXaxis()->GetBinLowEdge(2), hhdphi_20_50->GetXaxis()->GetBinUpEdge(7), corrFit2050Ptr->GetParams(), corrFit2050Ptr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t away20_50hPhiYield = corrFit2_2050->Integral(hPhidphi_20_50->GetXaxis()->GetBinLowEdge(9), hPhidphi_20_50->GetXaxis()->GetBinUpEdge(16)) - hphiBG_20_50->GetParameter(0)*(hPhidphi_20_50->GetXaxis()->GetBinUpEdge(16) - hPhidphi_20_50->GetXaxis()->GetBinLowEdge(9));
+    away20_50hPhiError = corrFit2_2050->IntegralError(hPhidphi_20_50->GetXaxis()->GetBinLowEdge(9), hPhidphi_20_50->GetXaxis()->GetBinUpEdge(16), corrFit2_2050Ptr->GetParams(), corrFit2_2050Ptr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t away20_50hhYield = corrFit2050->Integral(hhdphi_20_50->GetXaxis()->GetBinLowEdge(9), hhdphi_20_50->GetXaxis()->GetBinUpEdge(16)) - hhBG_20_50->GetParameter(0)*(hhdphi_20_50->GetXaxis()->GetBinUpEdge(16) - hhdphi_20_50->GetXaxis()->GetBinLowEdge(9));
+    away20_50hhError = corrFit2050->IntegralError(hhdphi_20_50->GetXaxis()->GetBinLowEdge(9), hhdphi_20_50->GetXaxis()->GetBinUpEdge(16), corrFit2050Ptr->GetParams(), corrFit2050Ptr->GetCovarianceMatrix().GetMatrixArray());
+
+
     Double_t mid20_50hPhiYield = hphiBG_20_50->GetParameter(0)*16.0;
     mid20_50hPhiError = mid20_50hPhiError*16.0;
     Double_t mid20_50hhYield = hhBG_20_50->GetParameter(0)*16.0;
@@ -229,8 +266,8 @@ void intUSRatioPlot(){
 
     TF1 *corrFit2_50100 = setupFit("corrFit2_50100", hPhidphi_50_100, kRed, 7);
 
-    hhdphi_50_100->Fit("corrFit50100", "R0");
-    hPhidphi_50_100->Fit("corrFit2_50100", "R0");
+    TFitResultPtr corrFit50100Ptr = hhdphi_50_100->Fit("corrFit50100", "R0S");
+    TFitResultPtr corrFit2_50100Ptr = hPhidphi_50_100->Fit("corrFit2_50100", "R0S");
 
     TF1 *hhBG_50_100 = new TF1("hhBG_50_100", "pol0(0)", -1.4, 4.6);
     hhBG_50_100->SetParLimits(0, 0.00001, 10000000.0);
@@ -253,14 +290,18 @@ void intUSRatioPlot(){
     Double_t total50_100hPhiError = 0;
     Double_t total50_100hhError = 0;
 
-    Double_t near50_100hPhiYield = hPhidphi_50_100->IntegralAndError(2,7,near50_100hPhiError) - hphiBG_50_100->GetParameter(0)*6.0;
-    //near50_100hPhiError = TMath::Sqrt(TMath::Power(near50_100hPhiError, 2) + TMath::Power(6.0*mid50_100hPhiError, 2));
-    Double_t near50_100hhYield = hhdphi_50_100->IntegralAndError(2,7,near50_100hhError) - hhBG_50_100->GetParameter(0)*6.0;
-    //near50_100hhError = TMath::Sqrt(TMath::Power(near50_100hhError, 2) + TMath::Power(6.0*mid50_100hhError, 2));
-    Double_t away50_100hPhiYield = hPhidphi_50_100->IntegralAndError(9,16,away50_100hPhiError) - hphiBG_50_100->GetParameter(0)*8.0;
-    //away50_100hPhiError = TMath::Sqrt(TMath::Power(away50_100hPhiError, 2) + TMath::Power(8.0*mid50_100hPhiError, 2));
-    Double_t away50_100hhYield = hhdphi_50_100->IntegralAndError(9,16,away50_100hhError)- hhBG_50_100->GetParameter(0)*8.0;
-    //away50_100hhError = TMath::Sqrt(TMath::Power(away50_100hhError, 2) + TMath::Power(8.0*mid50_100hhError, 2));
+    Double_t near50_100hPhiYield = corrFit2_50100->Integral(hPhidphi_50_100->GetXaxis()->GetBinLowEdge(2), hPhidphi_50_100->GetXaxis()->GetBinUpEdge(7)) - hphiBG_50_100->GetParameter(0)*(hPhidphi_50_100->GetXaxis()->GetBinUpEdge(7) - hPhidphi_50_100->GetXaxis()->GetBinLowEdge(2));
+    near50_100hPhiError = corrFit2_50100->IntegralError(hPhidphi_50_100->GetXaxis()->GetBinLowEdge(2), hPhidphi_50_100->GetXaxis()->GetBinUpEdge(7), corrFit2_50100Ptr->GetParams(), corrFit2_50100Ptr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t near50_100hhYield = corrFit50100->Integral(hhdphi_50_100->GetXaxis()->GetBinLowEdge(2), hhdphi_50_100->GetXaxis()->GetBinUpEdge(7)) - hhBG_50_100->GetParameter(0)*(hhdphi_50_100->GetXaxis()->GetBinUpEdge(7) - hhdphi_50_100->GetXaxis()->GetBinLowEdge(2));
+    near50_100hhError = corrFit50100->IntegralError(hhdphi_50_100->GetXaxis()->GetBinLowEdge(2), hhdphi_50_100->GetXaxis()->GetBinUpEdge(7), corrFit50100Ptr->GetParams(), corrFit50100Ptr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t away50_100hPhiYield = corrFit2_50100->Integral(hPhidphi_50_100->GetXaxis()->GetBinLowEdge(9), hPhidphi_50_100->GetXaxis()->GetBinUpEdge(16)) - hphiBG_50_100->GetParameter(0)*(hPhidphi_50_100->GetXaxis()->GetBinUpEdge(16) - hPhidphi_50_100->GetXaxis()->GetBinLowEdge(9));
+    away50_100hPhiError = corrFit2_50100->IntegralError(hPhidphi_50_100->GetXaxis()->GetBinLowEdge(9), hPhidphi_50_100->GetXaxis()->GetBinUpEdge(16), corrFit2_50100Ptr->GetParams(), corrFit2_50100Ptr->GetCovarianceMatrix().GetMatrixArray());
+    
+    Double_t away50_100hhYield = corrFit50100->Integral(hhdphi_50_100->GetXaxis()->GetBinLowEdge(9), hhdphi_50_100->GetXaxis()->GetBinUpEdge(16)) - hhBG_50_100->GetParameter(0)*(hhdphi_50_100->GetXaxis()->GetBinUpEdge(16) - hhdphi_50_100->GetXaxis()->GetBinLowEdge(9));
+    away50_100hhError = corrFit50100->IntegralError(hhdphi_50_100->GetXaxis()->GetBinLowEdge(9), hhdphi_50_100->GetXaxis()->GetBinUpEdge(16), corrFit50100Ptr->GetParams(), corrFit50100Ptr->GetCovarianceMatrix().GetMatrixArray());
+
     Double_t mid50_100hPhiYield = hphiBG_50_100->GetParameter(0)*16.0;
     mid50_100hPhiError = mid50_100hPhiError*16.0;
     Double_t mid50_100hhYield = hhBG_50_100->GetParameter(0)*16.0;
