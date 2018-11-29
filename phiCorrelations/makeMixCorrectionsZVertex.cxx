@@ -1,9 +1,9 @@
-TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_t highmass, TH1D* sameEta, TH1D* mixedEta, Int_t zbin){
-    same->GetAxis(2)->SetRangeUser(lowmass, highmass);
-    mixed->GetAxis(2)->SetRangeUser(lowmass, highmass);
-    TH2D* same2D = same->Projection(0, 1);
+TH2D* makeCorrections(TH3D* same, TH3D* mixed, Float_t lowmass, Float_t highmass, TH1D* sameEta, TH1D* mixedEta, Int_t zbin){
+    same->GetZaxis()->SetRangeUser(lowmass, highmass);
+    mixed->GetZaxis()->SetRangeUser(lowmass, highmass);
+    TH2D* same2D = (TH2D*)same->Project3D("xye");
     same2D->Sumw2();
-    TH2D* mix2D = mixed->Projection(0, 1);
+    TH2D* mix2D = (TH2D*)mixed->Project3D("xye");
     mix2D->Sumw2();
 
     //same2D->RebinX(4);
@@ -28,8 +28,8 @@ TH2D* makeCorrections(THnSparse* same, THnSparse* mixed, Float_t lowmass, Float_
     same2D->Divide(mix2D);
     same2D->Scale(scale);
 
-    same->GetAxis(2)->SetRange(0,0);
-    mixed->GetAxis(2)->SetRange(0,0);
+    same->GetZaxis()->SetRange(0,0);
+    mixed->GetZaxis()->SetRange(0,0);
     return same2D;
 }
 
@@ -67,10 +67,10 @@ void makeMixCorrectionsZVertex(string inputName, int multLow, int multHigh, floa
     THnSparseF *dphiHPhiMixed[numbinsZvtx];
     THnSparseF *dphiHKKMixed[numbinsZvtx];
 
-    THnSparseF *hPhi[numbinsZvtx];
-    THnSparseF *hKK[numbinsZvtx];
-    THnSparseF *hPhiMixed[numbinsZvtx];
-    THnSparseF *hKKMixed[numbinsZvtx];
+    TH3D *hPhi[numbinsZvtx];
+    TH3D *hKK[numbinsZvtx];
+    TH3D *hPhiMixed[numbinsZvtx];
+    TH3D *hKKMixed[numbinsZvtx];
 
     TH2D* hPhi2Dpeak[numbinsZvtx];
     TH2D* hKK2Dpeak[numbinsZvtx];
@@ -86,13 +86,13 @@ void makeMixCorrectionsZVertex(string inputName, int multLow, int multHigh, floa
     TH2D* hPhi2DLsideTotal;
     TH2D* hKK2DLsideTotal;
 
-    THnSparseF* hPhiTotal;
-    THnSparseF* hPhiMixedTotal;
-    THnSparseF* hKKTotal;
-    THnSparseF* hKKMixedTotal;
+    TH3D* hPhiTotal;
+    TH3D* hPhiMixedTotal;
+    TH3D* hKKTotal;
+    TH3D* hKKMixedTotal;
 
-    Float_t peakLow = 1.016 + 0.0001;
-    Float_t peakHigh = 1.024 - 0.0001;
+    Float_t peakLow = 1.014 + 0.0001;
+    Float_t peakHigh = 1.026 - 0.0001;
 
     for(int izvtx = 0; izvtx < numbinsZvtx; izvtx++){
         dphiHPhi[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHPhiz%i", izvtx));
@@ -119,10 +119,14 @@ void makeMixCorrectionsZVertex(string inputName, int multLow, int multHigh, floa
 
         Int_t axes[] = {2,3,4};
 
-        hPhi[izvtx] = (THnSparseF*)dphiHPhi[izvtx]->Projection(3, axes);
-        hKK[izvtx] = (THnSparseF*)dphiHKK[izvtx]->Projection(3, axes);
-        hPhiMixed[izvtx] = (THnSparseF*)dphiHPhiMixed[izvtx]->Projection(3, axes);
-        hKKMixed[izvtx] = (THnSparseF*)dphiHKKMixed[izvtx]->Projection(3, axes);
+        hPhi[izvtx] = (TH3D*)dphiHPhi[izvtx]->Projection(2,3,4);
+        hPhi[izvtx]->Sumw2();
+        hKK[izvtx] = (TH3D*)dphiHKK[izvtx]->Projection(2,3,4);
+        hKK[izvtx]->Sumw2();
+        hPhiMixed[izvtx] = (TH3D*)dphiHPhiMixed[izvtx]->Projection(2,3,4);
+        hPhiMixed[izvtx]->Sumw2();
+        hKKMixed[izvtx] = (TH3D*)dphiHKKMixed[izvtx]->Projection(2,3,4);
+        hKKMixed[izvtx]->Sumw2();
 
         
         hPhi2Dpeak[izvtx] = makeCorrections(hPhi[izvtx], hPhiMixed[izvtx], peakLow, peakHigh, sameUSPeakEta[izvtx], mixedUSPeakEta[izvtx], izvtx);
@@ -163,10 +167,10 @@ void makeMixCorrectionsZVertex(string inputName, int multLow, int multHigh, floa
             hKK2DLsideTotal = (TH2D*)hKK2DLside[izvtx]->Clone("hKK2DLside");
             hKK2DRsideTotal = (TH2D*)hKK2DRside[izvtx]->Clone("hKK2DRside");
 
-            hPhiTotal = (THnSparseF*)hPhi[izvtx]->Clone("hPhiTotal");
-            hPhiMixedTotal = (THnSparseF*)hPhiMixed[izvtx]->Clone("hPhiMixedTotal");
-            hKKTotal = (THnSparseF*)hKK[izvtx]->Clone("hKKTotal");
-            hKKMixedTotal = (THnSparseF*)hKKMixed[izvtx]->Clone("hKKMixedTotal");
+            hPhiTotal = (TH3D*)hPhi[izvtx]->Clone("hPhiTotal");
+            hPhiMixedTotal = (TH3D*)hPhiMixed[izvtx]->Clone("hPhiMixedTotal");
+            hKKTotal = (TH3D*)hKK[izvtx]->Clone("hKKTotal");
+            hKKMixedTotal = (TH3D*)hKKMixed[izvtx]->Clone("hKKMixedTotal");
        }else{
             hPhi2DpeakTotal->Add(hPhi2Dpeak[izvtx]);
             hPhi2DRsideTotal->Add(hPhi2DRside[izvtx]);
@@ -190,54 +194,54 @@ void makeMixCorrectionsZVertex(string inputName, int multLow, int multHigh, floa
     hKK2DLsideTotal->Scale(1.0/totalTrigSameLS);
 
     //Create some uncorrected same/mixed event 2D histos
-    hPhiTotal->GetAxis(2)->SetRangeUser(peakLow, peakHigh);
-    hPhiMixedTotal->GetAxis(2)->SetRangeUser(peakLow, peakHigh);
-    hKKTotal->GetAxis(2)->SetRangeUser(peakLow, peakHigh);
-    hKKMixedTotal->GetAxis(2)->SetRangeUser(peakLow, peakHigh);
-    TH2D* uncorrhPhi2Dpeak = hPhiTotal->Projection(0,1);
+    hPhiTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
+    hPhiMixedTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
+    hKKTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
+    hKKMixedTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
+    TH2D* uncorrhPhi2Dpeak = (TH2D*)hPhiTotal->Project3D("xye");
     uncorrhPhi2Dpeak->Sumw2();
     uncorrhPhi2Dpeak->SetName("uncorrhPhi2Dpeak");
-    TH2D* uncorrhKK2Dpeak = hKKTotal->Projection(0,1);
+    TH2D* uncorrhKK2Dpeak = (TH2D*)hKKTotal->Project3D("xye");
     uncorrhKK2Dpeak->Sumw2();
     uncorrhKK2Dpeak->SetName("uncorrhKK2Dpeak");
-    TH2D* uncorrhPhiMixed2Dpeak = hPhiMixedTotal->Projection(0,1);
+    TH2D* uncorrhPhiMixed2Dpeak = (TH2D*)hPhiMixedTotal->Project3D("xye");
     uncorrhPhiMixed2Dpeak->Sumw2();
     uncorrhPhiMixed2Dpeak->SetName("uncorrhPhiMixed2Dpeak");
-    TH2D* uncorrhKKMixed2Dpeak = hKKMixedTotal->Projection(0,1);
+    TH2D* uncorrhKKMixed2Dpeak = (TH2D*)hKKMixedTotal->Project3D("xye");
     uncorrhKKMixed2Dpeak->Sumw2();
     uncorrhKKMixed2Dpeak->SetName("uncorrhKKMixed2Dpeak");
 
-    hPhiTotal->GetAxis(2)->SetRangeUser(1.0401, 1.0599);
-    hPhiMixedTotal->GetAxis(2)->SetRangeUser(1.0401, 1.0599);
-    hKKTotal->GetAxis(2)->SetRangeUser(1.0401, 1.0599);
-    hKKMixedTotal->GetAxis(2)->SetRangeUser(1.0401, 1.0599);
-    TH2D* uncorrhPhi2DRside = hPhiTotal->Projection(0,1);
+    hPhiTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
+    hPhiMixedTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
+    hKKTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
+    hKKMixedTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
+    TH2D* uncorrhPhi2DRside = (TH2D*)hPhiTotal->Project3D("xye");
     uncorrhPhi2DRside->Sumw2();
     uncorrhPhi2DRside->SetName("uncorrhPhi2DRside");
-    TH2D* uncorrhKK2DRside = hKKTotal->Projection(0,1);
+    TH2D* uncorrhKK2DRside = (TH2D*)hKKTotal->Project3D("xye");
     uncorrhKK2DRside->Sumw2();
     uncorrhKK2DRside->SetName("uncorrhKK2DRside");
-    TH2D* uncorrhPhiMixed2DRside = hPhiMixedTotal->Projection(0,1);
+    TH2D* uncorrhPhiMixed2DRside = (TH2D*)hPhiMixedTotal->Project3D("xye");
     uncorrhPhiMixed2DRside->Sumw2();
     uncorrhPhiMixed2DRside->SetName("uncorrhPhiMixed2DRside");
-    TH2D* uncorrhKKMixed2DRside = hKKMixedTotal->Projection(0,1);
+    TH2D* uncorrhKKMixed2DRside = (TH2D*)hKKMixedTotal->Project3D("xye");
     uncorrhKKMixed2DRside->Sumw2();
     uncorrhKKMixed2DRside->SetName("uncorrhKKMixed2DRside");
 
-    hPhiTotal->GetAxis(2)->SetRangeUser(0.9951, 1.0049);
-    hPhiMixedTotal->GetAxis(2)->SetRangeUser(0.9951, 1.0049);
-    hKKTotal->GetAxis(2)->SetRangeUser(0.9951, 1.0049);
-    hKKMixedTotal->GetAxis(2)->SetRangeUser(0.9951, 1.0049);
-    TH2D* uncorrhPhi2DLside = hPhiTotal->Projection(0,1);
+    hPhiTotal->GetZaxis()->SetRangeUser(0.9951, 1.0049);
+    hPhiMixedTotal->GetZaxis()->SetRangeUser(0.9951, 1.0049);
+    hKKTotal->GetZaxis()->SetRangeUser(0.9951, 1.0049);
+    hKKMixedTotal->GetZaxis()->SetRangeUser(0.9951, 1.0049);
+    TH2D* uncorrhPhi2DLside = (TH2D*)hPhiTotal->Project3D("xye");
     uncorrhPhi2DLside->Sumw2();
     uncorrhPhi2DLside->SetName("uncorrhPhi2DLside");
-    TH2D* uncorrhKK2DLside = hKKTotal->Projection(0,1);
+    TH2D* uncorrhKK2DLside = (TH2D*)hKKTotal->Project3D("xye");
     uncorrhKK2DLside->Sumw2();
     uncorrhKK2DLside->SetName("uncorrhKK2DLside");
-    TH2D* uncorrhPhiMixed2DLside = hPhiMixedTotal->Projection(0,1);
+    TH2D* uncorrhPhiMixed2DLside = (TH2D*)hPhiMixedTotal->Project3D("xye");
     uncorrhPhiMixed2DLside->Sumw2();
     uncorrhPhiMixed2DLside->SetName("uncorrhPhiMixed2DLside");
-    TH2D* uncorrhKKMixed2DLside = hKKMixedTotal->Projection(0,1);
+    TH2D* uncorrhKKMixed2DLside = (TH2D*)hKKMixedTotal->Project3D("xye");
     uncorrhKKMixed2DLside->Sumw2();
     uncorrhKKMixed2DLside->SetName("uncorrhKKMixed2DLside");
 
@@ -262,16 +266,16 @@ void makeMixCorrectionsZVertex(string inputName, int multLow, int multHigh, floa
     mixedratioPeak->GetXaxis()->SetRange(0,0);
 
     //make ratio plot of just 1 zvtx bin as a check:
-    hPhiMixed[6]->GetAxis(2)->SetRangeUser(peakLow, peakHigh);
-    TH2D* mixedratioPeakZ2 = hPhiMixed[6]->Projection(0,1);
-    hKKMixed[6]->GetAxis(2)->SetRangeUser(peakLow, peakHigh);
-    TH2D* hist = hKKMixed[6]->Projection(0,1);
+    hPhiMixed[6]->GetZaxis()->SetRangeUser(peakLow, peakHigh);
+    TH2D* mixedratioPeakZ2 = (TH2D*)hPhiMixed[6]->Project3D("xye");
+    hKKMixed[6]->GetZaxis()->SetRangeUser(peakLow, peakHigh);
+    TH2D* hist = (TH2D*)hKKMixed[6]->Project3D("xye");
     mixedratioPeakZ2->Divide(hist);
     TH1D* mixedratioPeakZ2deta = mixedratioPeakZ2->ProjectionX("mixedratioPeakZ2deta");
 
 
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_smallmass8_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_smallmass12_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hPhi2DpeakTotal->Write();
     hKK2DpeakTotal->Write();
     hPhi2DRsideTotal->Write();
