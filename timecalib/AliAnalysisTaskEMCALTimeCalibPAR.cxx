@@ -389,8 +389,8 @@ void AliAnalysisTaskEMCALTimeCalibPAR::PrepareTOFT0maker()
   // tofCalib->SetCalibrateTOFsignal(kTRUE);
   // tofCalib->Init();
   
-  fTOFmaker = new AliTOFT0maker(extPID);
-  fTOFmaker->SetTimeResolution(115.0); // if you want set the TOF res
+//  fTOFmaker = new AliTOFT0maker(extPID);
+//  fTOFmaker->SetTimeResolution(115.0); // if you want set the TOF res
   // fTOFmaker = new AliTOFT0maker(extPID,tofCalib);
   // fTOFmaker->SetTimeResolution(130.0);
 
