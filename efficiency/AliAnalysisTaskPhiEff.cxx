@@ -67,6 +67,11 @@ fNumTracks(0),
 fVtxZ(0),
 fVtxX(0),
 fVtxY(0),
+fRealKDist(0),
+fRealPiDist(0),
+fRealpDist(0),
+fRealeDist(0),
+fRealMuonDist(0),
 fRealPhiDist(0),
 fRecoPhiDist(0)
 {
@@ -83,6 +88,8 @@ fRecoPhiDist(0)
     MULT_HIGH = multHigh;
     CENT_ESTIMATOR = "V0A";
     KAON_TRK_BIT = 1024;
+    ASSOC_TRK_BIT = 1024;
+    TRIG_TRK_BIT = 768;
     KAON_ETA_CUT = 0.8;
 
 }
@@ -118,6 +125,8 @@ fRecoPhiDist(0)
     MULT_HIGH = 100.0;
     CENT_ESTIMATOR = "V0A";
     KAON_TRK_BIT = 1024;
+    ASSOC_TRK_BIT = 1024;
+    TRIG_TRK_BIT = 768;
     KAON_ETA_CUT = 0.8;
 }
 //________________________________________________________________________
@@ -183,7 +192,69 @@ void AliAnalysisTaskPhiEff::UserCreateOutputObjects()
     fVtxX = new TH1F("fVtxX","X vertex position;Vtx_{x};counts",1000,-50,50);
     fOutputList->Add(fVtxX);
     
-    //Real MC Phi track histos
+    // Single Particle and inclusive charged hadron histos
+    Int_t numbinsSingle[6] = {95, 64, 64, 64, 10, 10};
+    Double_t minvalSingle[6] = {0.5, -3.14159, -2.0, -2.0, -10.0, 0.0};
+    Double_t maxvalSingle[6] = {10.0, 3.14159, 2.0, 2.0, 10.0, 100.0};
+
+    fRealChargedDist = new THnSparseF("fRealChargedDist", "Real Charged Hadron distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRealChargedDist);
+
+    fRealKDist = new THnSparseF("fRealKDist", "Real Kaon distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRealKDist);
+
+    fRealPiDist = new THnSparseF("fRealPiDist", "Real Pion distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRealPiDist);
+
+    fRealpDist = new THnSparseF("fRealpDist", "Real proton distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRealpDist);
+
+    fRealeDist = new THnSparseF("fRealeDist", "Real electron distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRealeDist);
+
+    fRealMuonDist = new THnSparseF("fRealMuonDist", "Real Muon distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRealMuonDist);
+
+    fRecoChargedDist = new THnSparseF("fRecoChargedDist", "Reco Charged Hadron distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoChargedDist);
+
+    fRecoKDist = new THnSparseF("fRecoKDist", "Reco Kaon distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoKDist);
+    
+    fTOFKDist = new THnSparseF("fTOFKDist", "TOF Kaon distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fTOFKDist);
+    
+    fRecoPiDist = new THnSparseF("fRecoPiDist", "Reco Pion distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoPiDist);
+
+    fRecopDist = new THnSparseF("fRecopDist", "Reco proton distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecopDist);
+
+    fRecoeDist = new THnSparseF("fRecoeDist", "Reco electron distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoeDist);
+
+    fRecoMuonDist = new THnSparseF("fRecoMuonDist", "Reco Muon distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoMuonDist);
+
+    fRecoChargedTriggerDist = new THnSparseF("fRecoChargedTriggerDist", "Reco Charged Hadron Trigger distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoChargedTriggerDist);
+
+    fRecoKTriggerDist = new THnSparseF("fRecoKTriggerDist", "Reco Kaon Trigger distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoKTriggerDist);
+    
+    fRecoPiTriggerDist = new THnSparseF("fRecoPiTriggerDist", "Reco Pion Trigger distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoPiTriggerDist);
+
+    fRecopTriggerDist = new THnSparseF("fRecopTriggerDist", "Reco proton Trigger distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecopTriggerDist);
+
+    fRecoeTriggerDist = new THnSparseF("fRecoeTriggerDist", "Reco electron Trigger distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoeTriggerDist);
+
+    fRecoMuonTriggerDist = new THnSparseF("fRecoMuonTriggerDist", "Reco Muon Trigger distribution;p_{T};#varphi;#eta;y;Z_{vtx};Multiplicity Percentile", 6, numbinsSingle, minvalSingle, maxvalSingle);
+    fOutputList->Add(fRecoMuonTriggerDist);
+
+    //Real & MC Phi track histos
     
     Int_t numbins[7] = {95, 64, 64, 64, 10, 80, 10};
     Double_t minval[7] = {0.5, -3.14159, -2., -2., -10, 0.99, 0.0};
@@ -211,6 +282,9 @@ void AliAnalysisTaskPhiEff::UserCreateOutputObjects()
     fOutputList->Add(fPIDRecoPhiDist);
 
     PostData(1,fOutputList);
+
+    fReactionPlane = new TH1D("fReactionPlane", "Reaction Plane Angle; Angle", 64, -3.14159, 3.14159);
+    fOutputList->Add(fReactionPlane);
 }
 
 //_______________________________________________________________________
@@ -218,7 +292,7 @@ UInt_t AliAnalysisTaskPhiEff::PassKaonCuts(AliAODTrack *track){
     //returns the level of cuts that the track passed
     //cutLevel: 1 = track cuts, 2 = TOF Hit, 4 = TPC PID cut, 8 = TOF PID cut
     UInt_t passLevel = 0;
-    Bool_t pass;
+    Bool_t pass = kTRUE;
     pass = pass && (TMath::Abs(track->Eta()) <= 0.8);
     pass = pass && (track->Pt() >= 0.15);
     pass = pass && (track->TestFilterMask(KAON_TRK_BIT));
@@ -234,6 +308,21 @@ UInt_t AliAnalysisTaskPhiEff::PassKaonCuts(AliAODTrack *track){
     }
 
     return passLevel;
+}
+
+//_______________________________________________________________________
+Bool_t AliAnalysisTaskPhiEff::PassHadronCuts(AliAODTrack *track, Bool_t isTrigger){
+    //returns the level of cuts that the track passed
+    //cutLevel: 1 = track cuts, 2 = TOF Hit, 4 = TPC PID cut, 8 = TOF PID cut
+    Bool_t pass = kTRUE;
+    pass = pass && (TMath::Abs(track->Eta()) <= 0.8);
+    pass = pass && (track->Pt() >= 0.15);
+    if(isTrigger){
+        pass = pass && (track->TestBit(TRIG_TRK_BIT));
+    }else{
+        pass = pass && (track->TestFilterMask(ASSOC_TRK_BIT));
+    }
+    return pass;
 }
 
 //________________________________________________________________________
@@ -322,7 +411,7 @@ void AliAnalysisTaskPhiEff::UserExec(Option_t *){
     fNevents->Fill(2); //events after z vtx cut
 
     Double_t distPoint[7] = {0., 0., 0., 0., 0., 0., 0.};
-
+    Double_t singledistPoint[6] = {0., 0., 0., 0., 0., 0.};
     //Loop over all particles in stack to get real phi, looking for phi->KK
     //AliMCEvent *fMCEvent = dynamic_cast<AliMCEvent*>(InputEvent());
     fMCArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
@@ -336,6 +425,17 @@ void AliAnalysisTaskPhiEff::UserExec(Option_t *){
         AliError("Could not find MC Header in AOD");
         return;
     }
+
+    Double_t RA = fMCHeader->GetReactionPlaneAngle();
+    if(RA > TMath::Pi()){
+        RA -= 2.0*TMath::Pi();
+    }else if(RA < -1.0*TMath::Pi()){
+        RA += 2.0*TMath::Pi();
+    }
+    fReactionPlane->Fill(RA);
+
+    //TRandom3* randomGen = new TRandom3();
+    //Double_t randangle = randomGen->Uniform(0.0, 2.0*TMath::Pi());
 
     UInt_t negPassCuts = 0;
     UInt_t posPassCuts = 0;
@@ -355,18 +455,82 @@ void AliAnalysisTaskPhiEff::UserExec(Option_t *){
 
     Int_t motherIndex = 0;
     Int_t motherPDG = 0;
-   
+    Int_t pdgcode = 0;
+    
     //loop over tracks to get kaons, find phi daughters and fill Reco Dist
     for(int itrack = 0; itrack < ntracks; itrack++){
         AliVParticle *vnegpart = dynamic_cast<AliVParticle*>(fVevent->GetTrack(itrack));
         AliVTrack *negtrack = dynamic_cast<AliVTrack*>(vnegpart);
         AliAODTrack *aodnegtrack = dynamic_cast<AliAODTrack*>(vnegpart);
 
-        negPassCuts = PassKaonCuts(aodnegtrack);
-        if(negPassCuts == 0) continue;
-
         Int_t tracklabel = aodnegtrack->GetLabel();
         if(tracklabel < 0) continue;
+
+        //Get all single particle distributions
+        AliAODMCParticle* mcpart = (AliAODMCParticle*)fMCArray->At(tracklabel);
+        if(mcpart->IsPhysicalPrimary()){
+            pdgcode = mcpart->GetPdgCode();
+            Bool_t pass = PassHadronCuts(aodnegtrack, kFALSE);
+            Bool_t trigpass = PassHadronCuts(aodnegtrack, kTRUE);
+            singledistPoint[0] = aodnegtrack->Pt();
+            singledistPoint[1] = aodnegtrack->Phi();
+            if(singledistPoint[1] > TMath::Pi()){
+                singledistPoint[1] -= 2.0*TMath::Pi();
+            }else if(singledistPoint[1] < -1.0*TMath::Pi()){
+                singledistPoint[1] += 2.0*TMath::Pi();
+            }
+            singledistPoint[2] = aodnegtrack->Eta();
+            singledistPoint[3] = aodnegtrack->Y();
+            singledistPoint[4] = Zvertex;
+            singledistPoint[5] = multPercentile;
+            if(pass){ 
+                if(TMath::Abs(pdgcode) == 321){
+                    Int_t kaonPass = PassKaonCuts(aodnegtrack);
+                    fRecoKDist->Fill(singledistPoint);
+                    fRecoChargedDist->Fill(singledistPoint);
+                    if((kaonPass & maskTrackTOF) == maskTrackTOF){
+                        fTOFKDist->Fill(singledistPoint);
+                    }
+                }else if(TMath::Abs(pdgcode) == 211){
+                    fRecoPiDist->Fill(singledistPoint);
+                    fRecoChargedDist->Fill(singledistPoint);
+                }else if(TMath::Abs(pdgcode) == 2212){
+                    fRecopDist->Fill(singledistPoint);
+                    fRecoChargedDist->Fill(singledistPoint);
+                }else if(TMath::Abs(pdgcode) == 11){
+                    fRecoeDist->Fill(singledistPoint);
+                    fRecoChargedDist->Fill(singledistPoint);
+                }else if(TMath::Abs(pdgcode) == 13){
+                    fRecoMuonDist->Fill(singledistPoint);
+                    fRecoChargedDist->Fill(singledistPoint);
+                }
+            }
+            if(trigpass){
+                if(TMath::Abs(pdgcode) == 321){
+                    Int_t kaonPass = PassKaonCuts(aodnegtrack);
+                    fRecoKTriggerDist->Fill(singledistPoint);
+                    fRecoChargedTriggerDist->Fill(singledistPoint);
+                }else if(TMath::Abs(pdgcode) == 211){
+                    fRecoPiTriggerDist->Fill(singledistPoint);
+                    fRecoChargedTriggerDist->Fill(singledistPoint);
+                }else if(TMath::Abs(pdgcode) == 2212){
+                    fRecopTriggerDist->Fill(singledistPoint);
+                    fRecoChargedTriggerDist->Fill(singledistPoint);
+                }else if(TMath::Abs(pdgcode) == 11){
+                    fRecoeTriggerDist->Fill(singledistPoint);
+                    fRecoChargedTriggerDist->Fill(singledistPoint);
+                }else if(TMath::Abs(pdgcode) == 13){
+                    fRecoMuonTriggerDist->Fill(singledistPoint);
+                    fRecoChargedTriggerDist->Fill(singledistPoint);
+                }
+
+            }
+
+        }
+
+        //GetKaons that came from phi for phi reco
+        negPassCuts = PassKaonCuts(aodnegtrack);
+        if(negPassCuts == 0) continue;
 
         AliAODMCParticle* mcnegpart = (AliAODMCParticle*)fMCArray->At(tracklabel);
         negparPDG = mcnegpart->GetPdgCode();
@@ -447,12 +611,44 @@ void AliAnalysisTaskPhiEff::UserExec(Option_t *){
         }
     }
 
-    //loop over MC particles to get original phi and fill Real dist
+    //loop over MC particles to get original phi and fill Real dist (and real single particle dist
     
     for(Int_t imcpart=0; imcpart< fMCArray->GetEntries(); imcpart++){
         AliAODMCParticle *AODMCtrack = (AliAODMCParticle*)fMCArray->At(imcpart);
-        Int_t PDGcode = TMath::Abs(AODMCtrack->GetPdgCode());
-        if(PDGcode != 333) continue;
+        pdgcode = TMath::Abs(AODMCtrack->GetPdgCode());
+        if(AODMCtrack->IsPhysicalPrimary()){
+            singledistPoint[0] = AODMCtrack->Pt();
+            singledistPoint[1] = AODMCtrack->Phi();
+            if(singledistPoint[1] > TMath::Pi()){
+                singledistPoint[1] -= 2.0*TMath::Pi();
+            }else if(singledistPoint[1] < -1.0*TMath::Pi()){
+                singledistPoint[1] += 2.0*TMath::Pi();
+            }
+            singledistPoint[2] = AODMCtrack->Eta();
+            singledistPoint[3] = AODMCtrack->Y();
+            singledistPoint[4] = Zvertex;
+            singledistPoint[5] = multPercentile;
+            if(TMath::Abs(pdgcode) == 321){
+                fRealKDist->Fill(singledistPoint);
+                fRealChargedDist->Fill(singledistPoint);
+            }else if(TMath::Abs(pdgcode) == 211){
+                fRealPiDist->Fill(singledistPoint);
+                fRealChargedDist->Fill(singledistPoint);
+            }else if(TMath::Abs(pdgcode) == 2212){
+                fRealpDist->Fill(singledistPoint);
+                fRealChargedDist->Fill(singledistPoint);
+            }else if(TMath::Abs(pdgcode) == 11){
+                fRealeDist->Fill(singledistPoint);
+                fRealChargedDist->Fill(singledistPoint);
+            }else if(TMath::Abs(pdgcode) == 13){
+                fRealMuonDist->Fill(singledistPoint);
+                fRealChargedDist->Fill(singledistPoint);
+            }
+
+        }
+
+        //select phis
+        if(pdgcode != 333) continue;
         Int_t indexFirstDaughter = 0, indexSecondDaughter = 0;
         indexFirstDaughter = AODMCtrack->GetFirstDaughter();
         indexSecondDaughter = AODMCtrack->GetLastDaughter();

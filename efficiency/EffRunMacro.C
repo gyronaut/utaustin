@@ -17,11 +17,11 @@ void EffRunMacro()
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiEfficiency";
-   char* output_dir = "output_2018_11_02_FAST";
+   char* output_dir = "output_CENT_woSDD_PID_2019_01_10";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   Int_t runcycle[]={0,31};
-//   Int_t runcycle[]={0,18,32};
+   //Int_t runcycle[]={0,31};
+   Int_t runcycle[]={0,18,31};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -39,7 +39,7 @@ void EffRunMacro()
   //alienHandler->SetAPIVersion("V1.1x");
   alienHandler->SetAliPhysicsVersion("vAN-20170731-1");
   //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
-  alienHandler->SetGridDataDir("//alice/sim/2017/LHC17f2b_fast/");
+  alienHandler->SetGridDataDir("//alice/sim/2017/LHC17f2b_cent_woSDD/");
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetGridDataDir("//alice/data/2016/LHC16q/");
   //alienHandler->SetDataPattern("*/pass1_FAST/AOD/*/*AOD.root");

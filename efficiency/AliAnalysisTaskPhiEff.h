@@ -7,6 +7,7 @@
 #include "AliAODMCHeader.h"
 #include "THnSparse.h"
 #include "TObject.h"
+#include "TRandom3.h"
 #include "AliAODTrack.h"
 
 class TH1F;
@@ -24,6 +25,7 @@ public:
     
     virtual void   UserCreateOutputObjects();
     UInt_t PassKaonCuts(AliAODTrack* track);
+    Bool_t PassHadronCuts(AliAODTrack* track, Bool_t isTrigger);
     virtual void   UserExec(Option_t *option);
     virtual void   Terminate(Option_t *);
 
@@ -41,6 +43,8 @@ private:
     Float_t MULT_HIGH;
     Float_t KAON_ETA_CUT;
     Float_t KAON_TRK_BIT;
+    Float_t ASSOC_TRK_BIT;
+    Float_t TRIG_TRK_BIT;
     TString CENT_ESTIMATOR;
 
     UInt_t TRACK_BIT = 1UL << 0;
@@ -51,8 +55,6 @@ private:
     enum{
         kAODanalysis = BIT(20),
     };
-    
-    TObjArray* AddToTracks();
       
     AliVEvent   *fVevent;  //!event object
     AliEventPoolManager *fPoolMgr; //! Event pool manager for mixed event
@@ -76,11 +78,36 @@ private:
     THnSparseF  *fRecoPhiDist;//! Dist of Recon phi
     THnSparseF  *fTrackRecoPhiDist;//! Dist of Recon phi passing track cuts
     THnSparseF  *fTOFRecoPhiDist;//! Dist of Recon phi passing track cuts + TOF hit
-    THnSparseF  *fTPCPIDTrackRecoPhiDist;//Dist of Recon phi passing track cuts + TPC PID
-    THnSparseF  *fTPCPIDRecoPhiDist;//Dist of Recon phi passing track cuts + TOF hit + TPC PID
+    THnSparseF  *fTPCPIDTrackRecoPhiDist;//! Dist of Recon phi passing track cuts + TPC PID
+    THnSparseF  *fTPCPIDRecoPhiDist;//! Dist of Recon phi passing track cuts + TOF hit + TPC PID
     THnSparseF  *fPIDRecoPhiDist;//! Dist of Recon phi passing track cuts + TOF&TPC PID 3 sigma cut
+
+    THnSparseF  *fRealChargedDist;//!
+    THnSparseF  *fRealKDist;//!
+    THnSparseF  *fRealPiDist;//!
+    THnSparseF  *fRealeDist;//!
+    THnSparseF  *fRealpDist;//!
+    THnSparseF  *fRealMuonDist;//!
    
-    ClassDef(AliAnalysisTaskPhiEff, 1); // example of analysis
+    THnSparseF  *fRecoChargedDist;//!
+    THnSparseF  *fRecoKDist;//!
+    THnSparseF  *fTOFKDist;//!
+    THnSparseF  *fRecoPiDist;//!
+    THnSparseF  *fRecoeDist;//!
+    THnSparseF  *fRecopDist;//!
+    THnSparseF  *fRecoMuonDist;//!
+
+    THnSparseF  *fRecoChargedTriggerDist;//!
+    THnSparseF  *fRecoKTriggerDist;//!
+    THnSparseF  *fRecoPiTriggerDist;//!
+    THnSparseF  *fRecoeTriggerDist;//!
+    THnSparseF  *fRecopTriggerDist;//!
+    THnSparseF  *fRecoMuonTriggerDist;//!
+
+    TH1D        *fReactionPlane;//!
+
+
+    ClassDef(AliAnalysisTaskPhiEff, 1); 
 };
 
 #endif
