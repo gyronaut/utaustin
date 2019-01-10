@@ -182,6 +182,8 @@ void plotUSCorrected(string inputname){
     peak->Fit(fitother2D, "R0");
     fit2D->SetTitle("Mult. 0-20\% 2D Correletion Fit");
     //fit2D->Draw("SURF1");
+    fitother2D->SetMinimum(0.15E-3);
+    fitother2D->SetMaximum(0.41E-3);
     fitother2D->Draw("SURF1");
 
     residual->Add(fitother2D, -1.0);

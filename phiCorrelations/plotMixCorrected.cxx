@@ -1,9 +1,13 @@
 void plotMixCorrected(string inputfile){
     TFile* eta20File = new TFile(inputfile.c_str());
 
-    TH2D* eta20peak = hPhi2Dpeak->Clone("eta20peak");
-    TH2D* eta20RSB = hPhi2DRside->Clone("eta20RSB");
-    TH2D* eta20LSB = hPhi2DLside->Clone("eta20LSB");
+    TH2D* hPhi2Dpeak = (TH2D*)eta20File->Get("hPhi2Dpeak");
+    TH2D* hPhi2DRside = (TH2D*)eta20File->Get("hPhi2DRside");
+    TH2D* hPhi2DLside = (TH2D*)eta20File->Get("hPhi2DLside");
+
+    TH2D* eta20peak = (TH2D*)hPhi2Dpeak->Clone("eta20peak");
+    TH2D* eta20RSB = (TH2D*)hPhi2DRside->Clone("eta20RSB");
+    TH2D* eta20LSB = (TH2D*)hPhi2DLside->Clone("eta20LSB");
 
     eta20peak->GetXaxis()->SetTitle("#Delta#eta");
     eta20peak->GetXaxis()->SetTitleSize(0.05);
@@ -73,9 +77,13 @@ void plotMixCorrected(string inputfile){
     eta20LSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
 
 
-    TH2D* LSeta20peak = hKK2Dpeak->Clone("LSeta20peak");
-    TH2D* Lseta20RSB = hKK2DRside->Clone("LSeta20RSB");
-    TH2D* LSeta20LSB = hKK2DLside->Clone("LSeta20LSB");
+    TH2D* hKK2Dpeak = (TH2D*)eta20File->Get("hKK2Dpeak");
+    TH2D* hKK2DRside = (TH2D*)eta20File->Get("hKK2DRside");
+    TH2D* hKK2DLside = (TH2D*)eta20File->Get("hKK2DLside");
+
+    TH2D* LSeta20peak = (TH2D*)hKK2Dpeak->Clone("LSeta20peak");
+    TH2D* LSeta20RSB = (TH2D*)hKK2DRside->Clone("LSeta20RSB");
+    TH2D* LSeta20LSB = (TH2D*)hKK2DLside->Clone("LSeta20LSB");
 
     LSeta20peak->GetXaxis()->SetTitle("#Delta#eta");
     LSeta20peak->GetXaxis()->SetTitleSize(0.05);

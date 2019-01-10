@@ -1,13 +1,10 @@
 #include <stdio.h>
 
-KKInvMass(){
+void KKInvMass(){
     gStyle->SetOptStat(0);
     
-    TFile* file = new TFile("phiCorrelations_mult_20_50.root");
-    //file->cd("PhiReconstruction");
-    //THnSparseF* kkUSDist = (THnSparseF*)InvMass->FindObject("fkkUSDist");
-    //THnSparseF* kkLSDist = (THnSparseF*)InvMass->FindObject("fkkLSDist");
-    TList* list = (TList*) file->Get("phiCorr_mult_20_50");
+    TFile* file = new TFile("~/phiStudies/results_newmult/hphi020_hh2050_hphi5080.root");
+    TList* list = (TList*) file->Get("phiCorr_mult_0_20");
     THnSparseF* kkUSDist= (THnSparseF*)list->FindObject("fkkUSDist");
     THnSparseF* kkLSDist= (THnSparseF*)list->FindObject("fkkLSDist");
 
@@ -35,7 +32,9 @@ KKInvMass(){
     TH1D* corrected = (TH1D*)USInvMass->Clone("corrected");
     corrected->Add(LSInvMass, -1.0);
     corrected->SetLineWidth(2);
-    TF1* fit = new TF1("fit",  "[0]*TMath::Voigt(x - [1], [2], [3], 4) + pol2(4)",0.99, 1.1);
+    corrected->SetMarkerSize(2);
+    corrected->SetMarkerStyle(34);
+    TF1* fit = new TF1("fit",  "[0]*TMath::Voigt(x - [1], [2], [3], 4) + pol2(4)",0.99, 1.07);
     fit->SetParameter(1, 1.020);
     fit->SetParameter(2, 0.0002);
     fit->SetParameter(0, 600);
@@ -46,13 +45,77 @@ KKInvMass(){
     fit->SetLineWidth(6);
     corrected->Fit(fit, "R");
 
+    TF1* voigtFit = new TF1("voigtFit", "[0]*TMath::Voigt(x - [1], [2], [3], 4)", 0.99, 1.07);
+    voigtFit->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3));
+
+    TF1* bgFit = new TF1("bgFit", "pol2(0)", 0.99, 1.07);
+    bgFit->SetParameters(fit->GetParameter(4), fit->GetParameter(5), fit->GetParameter(6));
+
+    Float_t fullInt = voigtFit->Integral(0.99, 1.07);
+    Float_t onlyHistInt = corrected->Integral(corrected->GetXaxis()->FindBin(0.9901), corrected->GetXaxis()->FindBin(1.06999), "width");
+    Float_t onlyBGInt = bgFit->Integral(0.99, 1.07);
+    Float_t fullHistInt = corrected->Integral(corrected->GetXaxis()->FindBin(0.9901), corrected->GetXaxis()->FindBin(1.06999), "width") - bgFit->Integral(0.99, 1.07);
+    Float_t widePct = voigtFit->Integral(1.01, 1.03);
+    widePct = widePct/fullInt;
+    
+    printf("=================\n\nfit integral: %e,    hist integral: %e,   only hist: %e,    only BG: %e\n=====================\n", fullInt, fullHistInt, onlyHistInt, onlyBGInt);
+
+    Float_t diffPct[11];
+    Float_t diffInt[11];
+    Float_t sigBG[11];
+    Float_t purity[11];
+    TH1D* effHist = new TH1D("effHist", "Efficiency & Purity of Different Mass Ranges;Invariant Mass Range (MeV/c^{2});Percent", 11, 0., 11.);
+    TH1D* purityHist = new TH1D("purityHist", "Purity;Invariant Mass Range;#frac{Signal}{Signal + BG}", 11, 0., 11.);
+
+    for(int i = 0; i < 11; i++){
+        diffPct[i] = Float_t(voigtFit->Integral(1.008 + 0.001*i, 1.032 - 0.001*i))/fullInt;
+        diffInt[i] = Float_t(corrected->Integral(corrected->GetXaxis()->FindBin(1.0081 + 0.001*i), corrected->GetXaxis()->FindBin(1.032 - 0.0001 - 0.001*i), "width") - bgFit->Integral(1.008 + 0.001*i, 1.032 - 0.001*i))/fullHistInt;
+        sigBG[i] = Float_t(corrected->Integral(corrected->GetXaxis()->FindBin(1.0081 + 0.001*i), corrected->GetXaxis()->FindBin(1.032 - 0.0001 - 0.001*i), "width") - bgFit->Integral(1.008 + 0.001*i, 1.032 - 0.001*i))/Float_t(LSInvMass->Integral(LSInvMass->GetXaxis()->FindBin(1.0081+0.001*i), LSInvMass->GetXaxis()->FindBin(1.0319 - 0.001*i),"width") + bgFit->Integral(1.008 + 0.001*i, 1.032 - 0.001*i));
+        purity[i] = Float_t(corrected->Integral(corrected->GetXaxis()->FindBin(1.0081 + 0.001*i), corrected->GetXaxis()->FindBin(1.032 - 0.0001 - 0.001*i), "width") - bgFit->Integral(1.008 + 0.001*i, 1.032 - 0.001*i))/Float_t(USInvMass->Integral(USInvMass->GetXaxis()->FindBin(1.0081+0.001*i), USInvMass->GetXaxis()->FindBin(1.0319 - 0.001*i),"width") + bgFit->Integral(1.008 + 0.001*i, 1.032 - 0.001*i));
+        effHist->SetBinContent(i+1, diffInt[i]*100.0);
+        effHist->GetXaxis()->SetBinLabel(i+1, Form("%i", (int)(((1.032 - 0.001*i) - (1.008 + 0.001*i))*1000)));
+        purityHist->SetBinContent(i+1, sigBG[i]);
+    }
+
+
+    TCanvas *ceff = new TCanvas("ceff", "ceff", 50, 50, 900, 600);
+    ceff->cd();
+    effHist->GetYaxis()->SetRangeUser(0.0, 100.0);
+    effHist->SetLineWidth(2);
+    effHist->Draw();
+    ceff->Update();
+
+    Float_t rightmax = 1.1*purityHist->GetMaximum();
+    Float_t axisscale = gPad->GetUymax()/rightmax;
+    purityHist->SetLineColor(kRed);
+    purityHist->SetLineWidth(2);
+    purityHist->Scale(axisscale);
+    purityHist->Draw("HIST SAME");
+
+    TGaxis *axis = new TGaxis(gPad->GetUxmax(), gPad->GetUymin(), gPad->GetUxmax(), gPad->GetUymax(),0,rightmax,510,"+L");
+    axis->SetLineColor(kRed);
+    axis->SetTextColor(kRed);
+    axis->SetLabelColor(kRed);
+    axis->SetLabelSize(0.035);
+    axis->SetLabelFont(42);
+    axis->SetTitle("#frac{Signal}{BG}");
+    axis->Draw();
+    ceff->Update();
+
+    for(int j = 0; j < 11; j++){
+        printf(" fit range %4.3f to %4.3f: %4.2f%%\n", 1.008+0.001*j, 1.032 -0.001*j, diffPct[j]*100.0);
+        printf("hist range %4.3f to %4.3f: %4.2f%%, Signal/(Signal+ BG): %4.2f Signal/BG: %4.2f\n\n", 1.008+0.001*j, 1.032 -0.001*j, diffInt[j]*100.0, purity[j], sigBG[j]);
+    }
+
+
+
     TLine* sbLine1 = new TLine(1.04, 0, 1.04, 44000);
     TLine* sbLine2 = new TLine(1.06, 0, 1.06, 44000);
 
     sbLine1->SetLineStyle(4);
     sbLine2->SetLineStyle(4);
     sbLine1->SetLineColor(kBlack);
-    sbLine2->SetLineColor(kBlack);
+
     sbLine1->SetLineWidth(2);
     sbLine2->SetLineWidth(2);
 
@@ -76,7 +139,7 @@ KKInvMass(){
 
     TPaveText *text = new TPaveText(0.5537, 0.7102, 0.8741, 0.8726, "NDC");
     text->AddText("ALICE");
-    text->AddText("Work In Progress");
+    //text->AddText("Work In Progress");
     text->AddText("p-Pb #sqrt{s_{NN}} = 5 TeV");
     text->SetFillColor(kWhite);
     text->SetBorderSize(0);
@@ -99,10 +162,70 @@ KKInvMass(){
     text->Draw();
     pTText->Draw();
 
+
+    TLegend *corrleg = new TLegend(0.46, 0.39, 0.88, 0.57);
+    corrleg->AddEntry(corrected, "Corrected US Inv. Mass", "p");
+    corrleg->AddEntry(fit, "Inv. Mass Fit", "l");
+    corrleg->AddEntry(bgFit, "Residual BG Fit", "l");
+
     TCanvas *c2 = new TCanvas("c2", "c2", 50, 50, 600, 600);
     c2->cd();
     corrected->Draw();
+    bgFit->Draw("SAME");
     text->Draw();
     pTText->Draw();
+    corrleg->Draw();
+
+    TH1D* wideInvMass = (TH1D*)USInvMass->Clone("wideInvMass");
+    wideInvMass->SetFillColor(36);
+    TH1D* narrowInvMass=(TH1D*)USInvMass->Clone("narrowInvMass");
+    narrowInvMass->SetFillColor(30);
+    TH1D* LSBinvmass = (TH1D*)USInvMass->Clone("LSBinvmass");
+    LSBinvmass->SetFillColor(kGray+2);
+    TH1D* RSBinvmass = (TH1D*)USInvMass->Clone("RSBinvmass");
+    RSBinvmass->SetFillColor(kGray+2);
+
+    for(int i = 1; i<= wideInvMass->GetXaxis()->GetNbins(); i++){
+        if(TMath::Abs(wideInvMass->GetXaxis()->GetBinCenter(i) - 1.020) > 0.010){
+            wideInvMass->SetBinContent(i, 0.);
+        }
+        if(TMath::Abs(narrowInvMass->GetXaxis()->GetBinCenter(i) - 1.020) > 0.006){
+            narrowInvMass->SetBinContent(i, 0.);
+        }
+        if(narrowInvMass->GetBinCenter(i) < 0.995 || narrowInvMass->GetBinCenter(i) > 1.005){
+            LSBinvmass->SetBinContent(i, 0.);
+        }
+        if(narrowInvMass->GetBinCenter(i) < 1.040 || narrowInvMass->GetBinCenter(i) > 1.060){
+            RSBinvmass->SetBinContent(i, 0.);
+        }
+    }
+
+    TCanvas* c3 = new TCanvas("c3", "c3", 50, 50, 600, 600);
+    c3->cd();
+    USInvMass->Draw();
+    wideInvMass->Draw("SAME");
+    USInvMass->Draw("SAME");
+    LSInvMass->Draw("SAME");
+    leg->Draw();
+    
+    TCanvas* c4 = new TCanvas("c4", "c4", 50, 50, 600, 600);
+    c4->cd();
+    USInvMass->Draw();
+    narrowInvMass->Draw("SAME");
+    USInvMass->Draw("SAME");
+    LSInvMass->Draw("SAME");
+    leg->Draw();
+
+    TLegend *leg2 = new TLegend(0.4581, 0.3927, 0.8809, 0.5637);
+    leg2->AddEntry(USInvMass, "US Kaon Pairs", "l");
+    
+    TCanvas* c5 = new TCanvas("c5", "c5", 50, 50, 600, 600);
+    c5->cd();
+    USInvMass->Draw();
+    narrowInvMass->Draw("SAME");
+    LSBinvmass->Draw("SAME");
+    RSBinvmass->Draw("SAME");
+    USInvMass->Draw("SAME");
+    leg2->Draw();
 
 }

@@ -95,7 +95,7 @@ void intUSRatioPlot(){
     Double_t mid0_20hhError = corrFit->GetParError(6);
     Double_t total0_20hPhiError;
     Double_t total0_20hhError = 0;   
-
+    
     Double_t near0_20hPhiYield = hPhidphi_0_20->IntegralAndError(2,7,near0_20hPhiError) - hphiBG->GetParameter(0)*6.0;
     //near0_20hPhiError = TMath::Sqrt(TMath::Power(near0_20hPhiError, 2) + TMath::Power(6.0*mid0_20hPhiError, 2));
     Double_t near0_20hhYield = hhdphi_0_20->IntegralAndError(2,7,near0_20hhError) - hhBG->GetParameter(0)*6.0;
@@ -110,7 +110,14 @@ void intUSRatioPlot(){
     mid0_20hPhiError = mid0_20hPhiError*16.0;
     Double_t mid0_20hhYield = hhBG->GetParameter(0)*16.0;
     mid0_20hhError = mid0_20hhError*16.0; 
-       
+ 
+    Double_t jet0_20hPhiYield = total0_20hPhiYield - hphiBG->GetParameter(0)*16.0;
+    Double_t jet0_20hPhiError = total0_20hPhiError;
+    Double_t jet0_20hhYield = total0_20hhYield - hhBG->GetParameter(0)*16.0;
+    Double_t jet0_20hhError = total0_20hhError;
+    Double_t jet020 = jet0_20hPhiYield/jet0_20hhYield;
+    Double_t jet020Er = jet020*TMath::Sqrt(TMath::Power(jet0_20hPhiError/jet0_20hPhiYield, 2) + TMath::Power(jet0_20hhError/jet0_20hhYield, 2));   
+
     Double_t near020 = near0_20hPhiYield/near0_20hhYield;
     Double_t near020Er = near020*TMath::Sqrt(TMath::Power(near0_20hPhiError/near0_20hPhiYield, 2) + TMath::Power(near0_20hhError/near0_20hhYield, 2));
     Double_t away020 = away0_20hPhiYield/away0_20hhYield;
@@ -188,6 +195,14 @@ void intUSRatioPlot(){
     mid20_50hhError = mid20_50hhError*16.0;
     Double_t total20_50hPhiYield = hPhidphi_20_50->IntegralAndError(1, 16,total20_50hPhiError);
     Double_t total20_50hhYield = hhdphi_20_50->IntegralAndError(1, 16,total20_50hhError);
+
+    Double_t jet20_50hPhiYield = total20_50hPhiYield - hphiBG_20_50->GetParameter(0)*16.0;
+    Double_t jet20_50hPhiError = total20_50hPhiError;
+    Double_t jet20_50hhYield = total20_50hhYield - hhBG_20_50->GetParameter(0)*16.0;
+    Double_t jet20_50hhError = total20_50hhError;
+    Double_t jet2050 = jet20_50hPhiYield/jet20_50hhYield;
+    Double_t jet2050Er = jet2050*TMath::Sqrt(TMath::Power(jet20_50hPhiError/jet20_50hPhiYield, 2) + TMath::Power(jet20_50hhError/jet20_50hhYield, 2));   
+
 
     Double_t near2050 = near20_50hPhiYield/near20_50hhYield;
     Double_t near2050Er = near2050*TMath::Sqrt(TMath::Power(near20_50hPhiError/near20_50hPhiYield, 2) + TMath::Power(near20_50hhError/near20_50hhYield, 2));
@@ -267,6 +282,13 @@ void intUSRatioPlot(){
     mid50_100hhError = mid50_100hhError*16.0;
     Double_t total50_100hPhiYield = hPhidphi_50_100->IntegralAndError(1, 16,total50_100hPhiError);
     Double_t total50_100hhYield = hhdphi_50_100->IntegralAndError(1, 16,total50_100hhError);
+
+    Double_t jet50_100hPhiYield = total50_100hPhiYield - hphiBG_50_100->GetParameter(0)*16.0;
+    Double_t jet50_100hPhiError = total50_100hPhiError;
+    Double_t jet50_100hhYield = total50_100hhYield - hhBG_50_100->GetParameter(0)*16.0;
+    Double_t jet50_100hhError = total50_100hhError;
+    Double_t jet50100 = jet50_100hPhiYield/jet50_100hhYield;
+    Double_t jet50100Er = jet50100*TMath::Sqrt(TMath::Power(jet50_100hPhiError/jet50_100hPhiYield, 2) + TMath::Power(jet50_100hhError/jet50_100hhYield, 2));   
 
     Double_t near50100 = near50_100hPhiYield/near50_100hhYield;
     Double_t near50100Er = near50100*TMath::Sqrt(TMath::Power(near50_100hPhiError/near50_100hPhiYield, 2) + TMath::Power(near50_100hhError/near50_100hhYield, 2));
@@ -383,26 +405,29 @@ void intUSRatioPlot(){
     Double_t totalArray[3] = {ratios50100->GetBinContent(4), ratios2050->GetBinContent(4), ratios020->GetBinContent(4)};
     Double_t totalArrayErr[3] = {ratios50100->GetBinError(4), ratios2050->GetBinError(4), ratios020->GetBinError(4)};
     
+    Double_t jetArray[3] = {jet50100, jet2050, jet020};
+    Double_t jetArrayErr[3] = {jet50100Er, jet2050Er, jet020Er};
+
     //systematic errors from the changing the fitting parameters
     Double_t nearArraySystErr[3] = {ratios50100->GetBinContent(1)*0.07, ratios2050->GetBinContent(1)*0.17, ratios020->GetBinContent(1)*0.07};
     Double_t awayArraySystErr[3] = {ratios50100->GetBinContent(3)*0.08, ratios2050->GetBinContent(3)*0.24, ratios020->GetBinContent(3)*0.07};
 
     
-    Double_t multArray[3] = {25.0, 65.0, 90.0};
-    Double_t multArrayErr[3] = {25.0, 15.0, 10.0};
+    Double_t multArray[3] = {35.0, 65.0, 90.0};
+    Double_t multArrayErr[3] = {15.0, 15.0, 10.0};
 
-    Double_t mult2Array[3] = {26.0, 66.0, 91.0};
-    Double_t mult2ArrayErr[3] = {25.0, 15.0, 10.0};
+    Double_t mult2Array[3] = {36.0, 66.0, 91.0};
+    Double_t mult2ArrayErr[3] = {15.0, 15.0, 10.0};
 
     //trying instead with variable sized histograms:
-    Double_t binwidths[4] = {0.0, 50.0, 80.0, 100.0};
-    TH1D* ratioNearHist = new TH1D("ratioNearHist", "", 3, binwidths);
-    TH1D* ratioBulkHist = new TH1D("ratioBulkHist", "", 3, binwidths);
+    Double_t binwidths[5] = {0.0, 20.0, 50.0, 80.0, 100.0};
+    TH1D* ratioNearHist = new TH1D("ratioNearHist", "", 4, binwidths);
+    TH1D* ratioBulkHist = new TH1D("ratioBulkHist", "", 4, binwidths);
     for(int i =0; i<3; i++){
-        ratioNearHist->SetBinContent(i+1, nearArray[i]);
-        ratioNearHist->SetBinError(i+1, nearArrayErr[i]);
-        ratioBulkHist->SetBinContent(i+1, bulkArray[i]);
-        ratioBulkHist->SetBinError(i+1, bulkArrayErr[i]);
+        ratioNearHist->SetBinContent(i+2, nearArray[i]);
+        ratioNearHist->SetBinError(i+2, nearArrayErr[i]);
+        ratioBulkHist->SetBinContent(i+2, bulkArray[i]);
+        ratioBulkHist->SetBinError(i+2, bulkArrayErr[i]);
     }
     ratioNearHist->SetMarkerStyle(20);
     ratioNearHist->SetMarkerSize(2);
@@ -502,11 +527,46 @@ void intUSRatioPlot(){
     ratiosTot->SetFillColor(kMagenta+1);
     ratiosTot->SetFillStyle(3144);
 
+    TGraphErrors* ratiosJet = new TGraphErrors(3, multArray, jetArray, multArrayErr, jetArrayErr);
+    ratiosJet->SetMarkerStyle(23);
+    ratiosJet->SetMarkerSize(3);
+    ratiosJet->SetMarkerColor(kTeal-6);
+    ratiosJet->SetLineColor(kTeal-6);
+    ratiosJet->SetLineWidth(2);
+
+    //setting up scaled TGraph's for comparing Efficiency and Non-efficiency corrected
+    TH1D* ratioNearHistScaled = (TH1D*)ratioNearHist->Clone("ratioNearHistScaled");
+    TGraphErrors* ratiosNearScaled = (TGraphErrors*)ratiosNear->Clone("ratiosNearScaled");
+    TGraphErrors* ratiosAwayScaled = (TGraphErrors*)ratiosAway->Clone("ratiosAwayScaled");
+    TGraphErrors* ratiosTotScaled = (TGraphErrors*)ratiosTot->Clone("ratiosTotScaled");
+    TGraphErrors* ratiosBulkScaled = (TGraphErrors*)ratiosBulk->Clone("ratiosBulkScaled");
+
+    ratioNearHistScaled->Scale(1.0/totalArray[2]);
+    Double_t x,y;
+    for(int i = 0; i<3; i++){
+       ratiosNearScaled->GetPoint(i, x, y);
+       ratiosNearScaled->SetPoint(i, x, y/totalArray[2]);
+       ratiosNearScaled->SetPointError(i, ratiosNearScaled->GetErrorX(i), ratiosNearScaled->GetErrorY(i)/totalArray[2]);
+       
+       ratiosAwayScaled->GetPoint(i, x, y);
+       ratiosAwayScaled->SetPoint(i, x, y/totalArray[2]);
+       ratiosAwayScaled->SetPointError(i, ratiosAwayScaled->GetErrorX(i), ratiosAwayScaled->GetErrorY(i)/totalArray[2]);
+       
+       ratiosBulkScaled->GetPoint(i, x, y);
+       ratiosBulkScaled->SetPoint(i, x, y/totalArray[2]);
+       ratiosBulkScaled->SetPointError(i, ratiosBulkScaled->GetErrorX(i), ratiosBulkScaled->GetErrorY(i)/totalArray[2]);
+       
+       ratiosTotScaled->GetPoint(i, x, y);
+       ratiosTotScaled->SetPoint(i, x, y/totalArray[2]);
+       ratiosTotScaled->SetPointError(i, ratiosTotScaled->GetErrorX(i), ratiosTotScaled->GetErrorY(i)/totalArray[2]);
+    }
+
     TLegend  *ratiosMultlegend = new TLegend(0.183, 0.686, 0.461, 0.928);
     ratiosMultlegend->SetMargin(0.35);
-    ratiosMultlegend->AddEntry(ratiosNear, "Near-side (Jet)", "pl");
+    ratiosMultlegend->AddEntry(ratiosBulk, "Underlying Event", "pl");
     ratiosMultlegend->AddEntry(ratiosAway, "Away-side (Jet)", "pl");
-    //ratiosMultlegend->AddEntry(ratiosBulk, "In U.E.", "pl");
+    ratiosMultlegend->AddEntry(ratiosNear, "Near-side (Jet)", "pl");   
+    //ratiosMultlegend->AddEntry(ratiosJet, "All Jet", "pl");
     ratiosMultlegend->AddEntry(ratiosTot, "Total (Jet + UE)", "f");
     ratiosMultlegend->SetLineWidth(0);
 
@@ -549,11 +609,12 @@ void intUSRatioPlot(){
     //newaxis->SetTitle("Multipliciy % (VOA)");
     //newaxis->SetTitleOffset(1.3);
     newaxis->Draw();   
-    ratiosNearSyst->Draw("[]");
+    //ratiosNearSyst->Draw("[]");
     ratiosNear->Draw("P");
-    ratiosAwaySyst->Draw("[]");
+    //ratiosAwaySyst->Draw("[]");
     ratiosAway->Draw("P");
-    //ratiosBulk->Draw("P");
+    ratiosBulk->Draw("P");
+    //ratiosJet->Draw("P");
     ratiosTot->Draw("2");
     //ratiosTot->Draw("3");
     ratiosMultlegend->Draw();
@@ -562,6 +623,46 @@ void intUSRatioPlot(){
     //newaxis->Draw();
     //gPad->Update();
    
+    //scaled ratios
+    TCanvas* vsMultCanvasScaled = new TCanvas("vsMultCanvasScaled", "vsMultCanvasScaled", 55, 55, 900, 600);
+    vsMultCanvasScaled->cd();
+    vsMultCanvasScaled->SetMargin(0.126, 0.05, 0.125, 0.05);
+    //TH1F* hist = ratiosNear->GetHistogram();
+    gStyle->SetErrorX(0.5);
+    ratioNearHistScaled->Draw("PE");
+
+    ratioNearHistScaled->GetXaxis()->SetLabelOffset(999);
+    //ratioNearHist->GetXaxis()->SetTitleOffset(999);
+    ratioNearHistScaled->GetXaxis()->SetTickSize(0.0);
+
+    //ratiosNear->Draw("P");
+    gPad->Update();
+    TGaxis *newaxisScaled = new TGaxis(gPad->GetUxmax(),
+            gPad->GetUymin(),
+            gPad->GetUxmin(),
+            gPad->GetUymin(),
+            ratioNearHistScaled->GetXaxis()->GetXmin(),
+            ratioNearHistScaled->GetXaxis()->GetXmax(),
+            510,"-");
+    newaxisScaled->SetLabelOffset(-0.03);
+    //newaxis->SetTitle("Multipliciy % (VOA)");
+    //newaxis->SetTitleOffset(1.3);
+    newaxisScaled->Draw();   
+    //ratiosNearSyst->Draw("[]");
+    ratiosNearScaled->Draw("P");
+    //ratiosAwaySyst->Draw("[]");
+    ratiosAwayScaled->Draw("P");
+    ratiosBulkScaled->Draw("P");
+    //ratiosJet->Draw("P");
+    ratiosTotScaled->Draw("2");
+    //ratiosTot->Draw("3");
+    ratiosMultlegend->Draw();
+    data->Draw();
+    //ratiosNear->Draw("PL");
+    //newaxis->Draw();
+    //gPad->Update();
+
+
     //Just Underlying Event 
     TCanvas* vsUEMultCanvas = new TCanvas("vsUEMultCanvas", "vsUEMultCanvas", 55, 55, 900, 600);
     vsUEMultCanvas->cd();
@@ -931,7 +1032,7 @@ void intUSRatioPlot(){
     TPaveText *text50100 = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
     text50100->AddText("ALICE Work in Progress");
     text50100->AddText("p-Pb #sqrt{s_{NN}} = 5 TeV");
-    text50100->AddText("50%-100% Multiplicity");
+    text50100->AddText("50%-80% Multiplicity");
     text50100->SetBorderSize(0);
     text50100->SetTextSizePixels(20);
     text50100->SetFillColor(kWhite);
@@ -1098,6 +1199,14 @@ void intUSRatioPlot(){
     hhawayyieldSyst_0_20->Write();
     hhawayyieldSyst_20_50->Write();
     hhawayyieldSyst_50_100->Write();
+
+    hhdphi_0_20->Write();
+    hPhidphi_0_20->Write();
+    hhdphi_20_50->Write();
+    hPhidphi_20_50->Write();
+    hhdphi_50_100->Write();
+    hPhidphi_50_100->Write();
+
 /*
     hphiyieldSyst_0_20->Write();
     hphiyieldSyst_20_50->Write();

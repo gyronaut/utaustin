@@ -57,7 +57,7 @@ TH3D* projectWithEfficiencyCorrections(THnSparseF* sparse, TH1D* eff, float asso
 }
 //--------------------------------------------------------------------------------------------
 void makeMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
-    TFile *effFile = new TFile("~/utaustin/efficiency/17f2befficiency.root");
+    TFile *effFile = new TFile("~/repos/utaustin/efficiency/17f2befficiency.root");
     TH1D* phiEff = (TH1D*)effFile->Get("phiPTEff");
     TH1D* hadronEff = (TH1D*)effFile->Get("hadronPTEff");
     
@@ -117,8 +117,8 @@ void makeMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, f
     TH3D* hKKTotal;
     TH3D* hKKMixedTotal;
 
-    Float_t peakLow = 1.014 + 0.0001;
-    Float_t peakHigh = 1.026 - 0.0001;
+    Float_t peakLow = 1.01 + 0.0001;
+    Float_t peakHigh = 1.03 - 0.0001;
 
     for(int izvtx = 0; izvtx < numbinsZvtx; izvtx++){
         dphiHPhi[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHPhiz%i", izvtx));
@@ -302,7 +302,7 @@ void makeMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, f
 
 
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_effcorr_smallmass12_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_effcorr_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hPhi2DpeakTotal->Write();
     hKK2DpeakTotal->Write();
     hPhi2DRsideTotal->Write();

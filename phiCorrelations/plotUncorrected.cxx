@@ -65,9 +65,9 @@ void plotUncorrected(TString inputfile){
 
 
     //reset eta range to narrow view for 2D plotting and rebin
-    eta20peak->Rebin2D(4,4);
-    eta20RSB->Rebin2D(4,4);
-    eta20LSB->Rebin2D(4,4);
+    //eta20peak->Rebin2D(4,4);
+    //eta20RSB->Rebin2D(4,4);
+    //eta20LSB->Rebin2D(4,4);
     eta20peak->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20RSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20LSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
@@ -104,9 +104,9 @@ void plotUncorrected(TString inputfile){
     LSeta20LSB->SetTitle("");
     LSeta20LSB->SetStats(kFALSE);
 
-    LSeta20peak->Rebin2D(4,4);
-    LSeta20RSB->Rebin2D(4,4);
-    LSeta20LSB->Rebin2D(4,4);
+    //LSeta20peak->Rebin2D(4,4);
+    //LSeta20RSB->Rebin2D(4,4);
+    //LSeta20LSB->Rebin2D(4,4);
     LSeta20peak->GetXaxis()->SetRangeUser(-1.2, 1.2);
     LSeta20RSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
     LSeta20LSB->GetXaxis()->SetRangeUser(-1.2, 1.2);
@@ -182,6 +182,42 @@ void plotUncorrected(TString inputfile){
     cuncorrLSLside->cd()->SetPhi(50);
     LSeta20LSB->Draw("SURF1");
 
+    TPaveText* peakText = new TPaveText(0.51, 0.67, 0.88, 0.87, "NDC");
+    peakText->SetBorderSize(0);
+    peakText->SetFillColor(kWhite);
+    peakText->AddText("Mass Peak Region");
+    TCanvas* cpeakdphi = new TCanvas("cpeakdphi", "cpeakdphi", 50, 50, 600, 600);
+    cpeakdphi->cd();
+    eta20peakPhiNarrow->SetStats(kFALSE);
+    eta20peakPhiNarrow->SetMarkerSize(2);
+    eta20peakPhiNarrow->SetMarkerStyle(34);
+    eta20peakPhiNarrow->Draw("HISTE");
+    peakText->Draw();
+
+    TPaveText* LSBText = new TPaveText(0.51, 0.67, 0.88, 0.87, "NDC");
+    LSBText->SetBorderSize(0);
+    LSBText->SetFillColor(kWhite);
+    LSBText->AddText("Left Sideband");
+    TCanvas* cLSBdphi = new TCanvas("cLSBdphi", "cLSBdphi", 50, 50, 600, 600);
+    cLSBdphi->cd();
+    eta20LSBPhiNarrow->SetStats(kFALSE);
+    eta20LSBPhiNarrow->SetMarkerSize(2);
+    eta20LSBPhiNarrow->SetMarkerStyle(34);
+    eta20LSBPhiNarrow->Draw("HISTE");
+    LSBText->Draw();
+
+
+    TPaveText* RSBText = new TPaveText(0.51, 0.67, 0.88, 0.87, "NDC");
+    RSBText->SetBorderSize(0);
+    RSBText->SetFillColor(kWhite);
+    RSBText->AddText("Right Sideband");
+    TCanvas* cRSBdphi = new TCanvas("cRSBdphi", "cRSBdphi", 50, 50, 600, 600);
+    cRSBdphi->cd();
+    eta20RSBPhiNarrow->SetStats(kFALSE);
+    eta20RSBPhiNarrow->SetMarkerSize(2);
+    eta20RSBPhiNarrow->SetMarkerStyle(34);
+    eta20RSBPhiNarrow->Draw("HISTE");
+    RSBText->Draw();
 
     //Plot some mixed event ratios, and also an overlaying 1D dEta plot of both same/mixed dEta distributions
     TH2D* mixedUSpeak = (TH2D*)eta20File->Get("uncorrhPhiMixed2Dpeak");
@@ -286,7 +322,7 @@ void plotUncorrected(TString inputfile){
     eta20peakEta->Draw("H SAME");
     mixedUSpeakEta->Draw("H SAME");
 
-    TCanvas* cUSPeakEta = new TCanvas("cUSPeakEta", "cUSPeakEta", 80, 80, 600, 600);
+    /*TCanvas* cUSPeakEta = new TCanvas("cUSPeakEta", "cUSPeakEta", 80, 80, 600, 600);
     cUSPeakEta->Divide(3,4);
     TH1D* sameUSPeakEta = 0x0;
     TH1D* mixedUSPeakEta = 0x0;
@@ -302,5 +338,7 @@ void plotUncorrected(TString inputfile){
         mixedUSPeakEta->Scale(etaScale);
         mixedUSPeakEta->Draw("H SAME");
     }
+    */
+
 
 }
