@@ -56,29 +56,29 @@ TH3D* projectWithEfficiencyCorrections(THnSparseF* sparse, TH1D* eff, float asso
     return corr;
 }
 //--------------------------------------------------------------------------------------------
-void makeMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
-    TFile *effFile = new TFile("~/repos/utaustin/efficiency/17f2befficiencyAccpt.root");
-    TH1D* phiEff = (TH1D*)effFile->Get("phiPTEff");
-    TH1D* hadronEff = (TH1D*)effFile->Get("hadronPTEff");
+void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
+    //TFile *effFile = new TFile("~/repos/utaustin/efficiency/17f2befficiencyAccpt.root");
+    //TH1D* phiEff = (TH1D*)effFile->Get("phiPTEff");
+    //TH1D* hadronEff = (TH1D*)effFile->Get("hadronPTEff");
     
     TFile *histoFile = new TFile(inputName.c_str());
     //string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
     string mult = "_" + std::to_string(multLow) + "_" + std::to_string(multHigh);
-    //TList* list = (TList*) histoFile->Get(Form("phiCorr_mult%s", mult.c_str()));
     TList* list = (TList*) histoFile->Get(Form("truePhiCorr_mult%s", mult.c_str()));
 
-    /*
-    TH2D *trigSameUSDist = (TH2D*)list->FindObject("fTrigSameUSDist");
-    TH2D *trigSameLSDist = (TH2D*)list->FindObject("fTrigSameLSDist");
+    //TH2D *trigSameUSDist = (TH2D*)list->FindObject("fTrigSameUSDist");
+    //TH2D *trigSameLSDist = (TH2D*)list->FindObject("fTrigSameLSDist");
 
-    float totalTrigSameUS = (float)trigSameUSDist->Integral(trigSameUSDist->GetXaxis()->FindBin(trigPTLow), trigSameUSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameUSDist->GetYaxis()->GetNbins());
-    float totalTrigSameLS = (float)trigSameLSDist->Integral(trigSameLSDist->GetXaxis()->FindBin(trigPTLow), trigSameLSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameLSDist->GetYaxis()->GetNbins());
-   */
-
+    //float totalTrigSameUS = (float)trigSameUSDist->Integral(trigSameUSDist->GetXaxis()->FindBin(trigPTLow), trigSameUSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameUSDist->GetYaxis()->GetNbins());
+    //float totalTrigSameLS = (float)trigSameLSDist->Integral(trigSameLSDist->GetXaxis()->FindBin(trigPTLow), trigSameLSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameLSDist->GetYaxis()->GetNbins());
+  
+    if(!list){
+       printf("why can't i find the list! \n");
+    } 
     THnSparseF* trigDist = (THnSparseF*)list->FindObject("fTrigDist");
     TH1D* trigDist1D = (TH1D*)trigDist->Projection(0);
     float totalTrigSameUS = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow), trigDist1D->GetXaxis()->FindBin(trigPTHigh));
-
+    
     TH1D* vtxZmixbins = (TH1D*)list->FindObject("fVtxZmixbins");
     Int_t numbinsZvtx = vtxZmixbins->GetXaxis()->GetNbins();
  
@@ -124,128 +124,76 @@ void makeMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, f
     TH3D* hKKTotal;
     TH3D* hKKMixedTotal;
 
-    Float_t peakLow = 1.01 + 0.0001;
-    Float_t peakHigh = 1.03 - 0.0001;
+    Float_t peakLow = 0.99;
+    Float_t peakHigh = 1.07;
 
+    printf("getting to z vertex stuff (zbins: %d)\n\n", numbinsZvtx);
     for(int izvtx = 0; izvtx < numbinsZvtx; izvtx++){
-        dphiHPhi[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHPhiz%i", izvtx));
-        dphiHKK[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHKKz%i", izvtx));
-        dphiHPhiMixed[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHPhiMixedz%i", izvtx));
-        dphiHKKMixed[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHKKMixedz%i", izvtx));
+        dphiHPhi[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiTrueHPhiz%i", izvtx));
+        //dphiHKK[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHKKz%i", izvtx));
+        dphiHPhiMixed[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiTrueHPhiMixedz%i", izvtx));
+        //dphiHKKMixed[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHKKMixedz%i", izvtx));
 
 
         //make 4D THnProjections projection to do mixed event corrections    
         dphiHPhi[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
         dphiHPhi[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
-        dphiHKK[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
-        dphiHKK[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
+        //dphiHKK[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
+        //dphiHKK[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
 
         dphiHPhiMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
         dphiHPhiMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
-        dphiHKKMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
-        dphiHKKMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
+        //dphiHKKMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
+        //dphiHKKMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
 
         dphiHPhi[izvtx]->GetAxis(4)->SetRange(1,dphiHPhi[izvtx]->GetAxis(4)->GetNbins()); 
-        dphiHKK[izvtx]->GetAxis(4)->SetRange(1,dphiHKK[izvtx]->GetAxis(4)->GetNbins());
+        //dphiHKK[izvtx]->GetAxis(4)->SetRange(1,dphiHKK[izvtx]->GetAxis(4)->GetNbins());
         dphiHPhiMixed[izvtx]->GetAxis(4)->SetRange(1,dphiHPhiMixed[izvtx]->GetAxis(4)->GetNbins());
-        dphiHKKMixed[izvtx]->GetAxis(4)->SetRange(1,dphiHKKMixed[izvtx]->GetAxis(4)->GetNbins());
+        //dphiHKKMixed[izvtx]->GetAxis(4)->SetRange(1,dphiHKKMixed[izvtx]->GetAxis(4)->GetNbins());
 
         Int_t axes[] = {2,3,4};
 
-        //hPhi[izvtx] = (THnSparseF*)dphiHPhi[izvtx]->Projection(3, axes);
+        hPhi[izvtx] = (TH3D*)dphiHPhi[izvtx]->Projection(2,3,4);
         //hKK[izvtx] = (THnSparseF*)dphiHKK[izvtx]->Projection(3, axes);
-        //hPhiMixed[izvtx] = (THnSparseF*)dphiHPhiMixed[izvtx]->Projection(3, axes);
+        hPhiMixed[izvtx] = (TH3D*)dphiHPhiMixed[izvtx]->Projection(2,3,4);
         //hKKMixed[izvtx] = (THnSparseF*)dphiHKKMixed[izvtx]->Projection(3, axes);
         
-        hPhi[izvtx] = projectWithEfficiencyCorrections(dphiHPhi[izvtx], phiEff, 2.0, 4.0);
-        hKK[izvtx] = projectWithEfficiencyCorrections(dphiHKK[izvtx], phiEff, 2.0, 4.0);
-        hPhiMixed[izvtx] = projectWithEfficiencyCorrections(dphiHPhiMixed[izvtx], phiEff, 2.0, 4.0);
-        hKKMixed[izvtx] = projectWithEfficiencyCorrections(dphiHKKMixed[izvtx], phiEff, 2.0, 4.0);
+        //hPhi[izvtx] = projectWithEfficiencyCorrections(dphiHPhi[izvtx], phiEff, 2.0, 4.0);
+        //hKK[izvtx] = projectWithEfficiencyCorrections(dphiHKK[izvtx], phiEff, 2.0, 4.0);
+        //hPhiMixed[izvtx] = projectWithEfficiencyCorrections(dphiHPhiMixed[izvtx], phiEff, 2.0, 4.0);
+        //hKKMixed[izvtx] = projectWithEfficiencyCorrections(dphiHKKMixed[izvtx], phiEff, 2.0, 4.0);
 
-        
         hPhi2Dpeak[izvtx] = makeCorrections(hPhi[izvtx], hPhiMixed[izvtx], peakLow, peakHigh, sameUSPeakEta[izvtx], mixedUSPeakEta[izvtx], izvtx);
-        hPhi2Dpeak[izvtx]->SetName(Form("hPhi2Dpeakz%i", izvtx));
+        hPhi2Dpeak[izvtx]->SetName(Form("MChPhi2Dz%i", izvtx));
         //sameUSPeakEta[izvtx]->SetName(Form("sameUSPeakEta_zvtx_%i", izvtx));
         //mixedUSPeakEta[izvtx]->SetName(Form("mixedUSPeakEta_zvtx_%i", izvtx));
 
-        hKK2Dpeak[izvtx] = makeCorrections(hKK[izvtx], hKKMixed[izvtx], peakLow, peakHigh, sameLSPeakEta[izvtx], mixedLSPeakEta[izvtx], izvtx);
-        hKK2Dpeak[izvtx]->SetName(Form("hKK2Dpeakz%i", izvtx));
-        //sameLSPeakEta[izvtx]->SetName(Form("sameLSPeakEta_zvtx_%i", izvtx));
-        //mixedLSPeakEta[izvtx]->SetName(Form("mixedLSPeakEta_zvtx_%i", izvtx));
-
-        hPhi2DRside[izvtx] = makeCorrections(hPhi[izvtx], hPhiMixed[izvtx], 1.0401, 1.0599, sameUSRsideEta[izvtx], mixedUSRsideEta[izvtx], izvtx);
-        hPhi2DRside[izvtx]->SetName(Form("hPhi2DRsidez%i", izvtx));
-        //sameUSRsideEta[izvtx]->SetName(Form("sameUSRsideEta_zvtx_%i", izvtx));
-        //mixedUSRsideEta[izvtx]->SetName(Form("mixedUSRsideEta_zvtx_%i", izvtx));
-
-        hKK2DRside[izvtx] = makeCorrections(hKK[izvtx], hKKMixed[izvtx], 1.0401, 1.0599, sameLSRsideEta[izvtx], mixedLSRsideEta[izvtx], izvtx);
-        hKK2DRside[izvtx]->SetName(Form("hKK2DRsidez%i", izvtx));
-        //sameLSRsideEta[izvtx]->SetName(Form("sameLSRsideEta_zvtx_%i", izvtx));
-        //mixedLSRsideEta[izvtx]->SetName(Form("mixedLSRsideEta_zvtx_%i", izvtx));
-
-        hPhi2DLside[izvtx] = makeCorrections(hPhi[izvtx], hPhiMixed[izvtx], 0.9951, 1.0599, sameUSLsideEta[izvtx], mixedUSLsideEta[izvtx], izvtx);
-        hPhi2DLside[izvtx]->SetName(Form("hPhi2DLsidez%i", izvtx));
-        //sameUSLsideEta[izvtx]->SetName(Form("sameUSLsideEta_zvtx_%i", izvtx));
-        //mixedUSLsideEta[izvtx]->SetName(Form("mixedUSLsideEta_zvtx_%i", izvtx));
-
-        hKK2DLside[izvtx] = makeCorrections(hKK[izvtx], hKKMixed[izvtx], 0.9951, 1.0049, sameLSLsideEta[izvtx], mixedLSLsideEta[izvtx], izvtx);
-        hKK2DLside[izvtx]->SetName(Form("hKK2DLsidez%i", izvtx));
-        //sameLSLsideEta[izvtx]->SetName(Form("sameLSLsideEta_zvtx_%i", izvtx));
-        //mixedLSLsideEta[izvtx]->SetName(Form("mixedLSLsideEta_zvtx_%i", izvtx));
-
+        
         if(izvtx==0){
-            hPhi2DpeakTotal = (TH2D*)hPhi2Dpeak[izvtx]->Clone("hPhi2Dpeak");
-            hPhi2DLsideTotal = (TH2D*)hPhi2DLside[izvtx]->Clone("hPhi2DLside");
-            hPhi2DRsideTotal = (TH2D*)hPhi2DRside[izvtx]->Clone("hPhi2DRside");
-            hKK2DpeakTotal = (TH2D*)hKK2Dpeak[izvtx]->Clone("hKK2Dpeak");
-            hKK2DLsideTotal = (TH2D*)hKK2DLside[izvtx]->Clone("hKK2DLside");
-            hKK2DRsideTotal = (TH2D*)hKK2DRside[izvtx]->Clone("hKK2DRside");
-
-            hPhiTotal = (TH3D*)hPhi[izvtx]->Clone("hPhiTotal");
-            hPhiMixedTotal = (TH3D*)hPhiMixed[izvtx]->Clone("hPhiMixedTotal");
-            hKKTotal = (TH3D*)hKK[izvtx]->Clone("hKKTotal");
-            hKKMixedTotal = (TH3D*)hKKMixed[izvtx]->Clone("hKKMixedTotal");
-       }else{
+            hPhi2DpeakTotal = (TH2D*)hPhi2Dpeak[izvtx]->Clone("MChPhi2D"); 
+            hPhiTotal = (TH3D*)hPhi[izvtx]->Clone("MChPhiTotal");
+            hPhiMixedTotal = (TH3D*)hPhiMixed[izvtx]->Clone("MChPhiMixedTotal");
+        }else{
             hPhi2DpeakTotal->Add(hPhi2Dpeak[izvtx]);
-            hPhi2DRsideTotal->Add(hPhi2DRside[izvtx]);
-            hPhi2DLsideTotal->Add(hPhi2DLside[izvtx]);
-            hKK2DpeakTotal->Add(hKK2Dpeak[izvtx]);
-            hKK2DRsideTotal->Add(hKK2DRside[izvtx]);
-            hKK2DLsideTotal->Add(hKK2DLside[izvtx]);
-
             hPhiTotal->Add(hPhi[izvtx]);
             hPhiMixedTotal->Add(hPhiMixed[izvtx]);
-            hKKTotal->Add(hKK[izvtx]);
-            hKKMixedTotal->Add(hKKMixed[izvtx]);
-       }
+        }
     }
 
+    printf("done with z vertex stuff \n\n");
     hPhi2DpeakTotal->Scale(1.0/totalTrigSameUS);
-    hPhi2DRsideTotal->Scale(1.0/totalTrigSameUS);
-    hPhi2DLsideTotal->Scale(1.0/totalTrigSameUS);
-    hKK2DpeakTotal->Scale(1.0/totalTrigSameUS);
-    hKK2DRsideTotal->Scale(1.0/totalTrigSameUS);
-    hKK2DLsideTotal->Scale(1.0/totalTrigSameUS);
-
+    
     //Create some uncorrected same/mixed event 2D histos
     hPhiTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
     hPhiMixedTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
-    hKKTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
-    hKKMixedTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
     TH2D* uncorrhPhi2Dpeak = (TH2D*)hPhiTotal->Project3D("xye");
     uncorrhPhi2Dpeak->Sumw2();
-    uncorrhPhi2Dpeak->SetName("uncorrhPhi2Dpeak");
-    TH2D* uncorrhKK2Dpeak = (TH2D*)hKKTotal->Project3D("xye");
-    uncorrhKK2Dpeak->Sumw2();
-    uncorrhKK2Dpeak->SetName("uncorrhKK2Dpeak");
+    uncorrhPhi2Dpeak->SetName("uncorrMChPhi2D");
     TH2D* uncorrhPhiMixed2Dpeak = (TH2D*)hPhiMixedTotal->Project3D("xye");
     uncorrhPhiMixed2Dpeak->Sumw2();
-    uncorrhPhiMixed2Dpeak->SetName("uncorrhPhiMixed2Dpeak");
-    TH2D* uncorrhKKMixed2Dpeak = (TH2D*)hKKMixedTotal->Project3D("xye");
-    uncorrhKKMixed2Dpeak->Sumw2();
-    uncorrhKKMixed2Dpeak->SetName("uncorrhKKMixed2Dpeak");
-
-    hPhiTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
+    uncorrhPhiMixed2Dpeak->SetName("uncorrMChPhiMixed2D");
+    
+    /*hPhiTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
     hPhiMixedTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
     hKKTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
     hKKMixedTotal->GetZaxis()->SetRangeUser(1.0401, 1.0599);
@@ -278,10 +226,11 @@ void makeMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, f
     TH2D* uncorrhKKMixed2DLside = (TH2D*)hKKMixedTotal->Project3D("xye");
     uncorrhKKMixed2DLside->Sumw2();
     uncorrhKKMixed2DLside->SetName("uncorrhKKMixed2DLside");
+    */
 
     //Make some ratio plots of mixed event US over LS for sidbeand and peak regions
     //also make projections onto delta eta and delta phi (on restricted delta eta range)
-    TH2D* mixedratioRSB = (TH2D*)uncorrhPhiMixed2DRside->Clone("mixedratioRSB");
+    /*TH2D* mixedratioRSB = (TH2D*)uncorrhPhiMixed2DRside->Clone("mixedratioRSB");
     mixedratioRSB->Divide(uncorrhKKMixed2DRside);
     TH1D* mixedratioRSBdeta = mixedratioRSB->ProjectionX("mixedratioRSBdeta", 1, mixedratioRSB->GetYaxis()->GetNbins());
     TH1D* mixedratioRSBdphi = mixedratioRSB->ProjectionY("mixedratioRSBdphi", mixedratioRSB->GetXaxis()->FindBin(-1.2), mixedratioRSB->GetXaxis()->FindBin(1.2));
@@ -306,41 +255,41 @@ void makeMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, f
     TH2D* hist = (TH2D*)hKKMixed[6]->Project3D("xye");
     mixedratioPeakZ2->Divide(hist);
     TH1D* mixedratioPeakZ2deta = mixedratioPeakZ2->ProjectionX("mixedratioPeakZ2deta");
-
+    */
 
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_effcorr_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_MC_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hPhi2DpeakTotal->Write();
-    hKK2DpeakTotal->Write();
-    hPhi2DRsideTotal->Write();
-    hKK2DRsideTotal->Write();
-    hPhi2DLsideTotal->Write();
-    hKK2DLsideTotal->Write();
+    //hKK2DpeakTotal->Write();
+    //hPhi2DRsideTotal->Write();
+    //hKK2DRsideTotal->Write();
+    //hPhi2DLsideTotal->Write();
+    //hKK2DLsideTotal->Write();
     uncorrhPhi2Dpeak->Write();
-    uncorrhKK2Dpeak->Write();
+    //uncorrhKK2Dpeak->Write();
     uncorrhPhiMixed2Dpeak->Write();
-    uncorrhKKMixed2Dpeak->Write();
-    uncorrhPhi2DRside->Write();
-    uncorrhKK2DRside->Write();
-    uncorrhPhiMixed2DRside->Write();
-    uncorrhKKMixed2DRside->Write();
-    uncorrhPhi2DLside->Write();
-    uncorrhKK2DLside->Write();
-    uncorrhPhiMixed2DLside->Write();
-    uncorrhKKMixed2DLside->Write();
+    //uncorrhKKMixed2Dpeak->Write();
+    //uncorrhPhi2DRside->Write();
+    //uncorrhKK2DRside->Write();
+    //uncorrhPhiMixed2DRside->Write();
+    //uncorrhKKMixed2DRside->Write();
+    //uncorrhPhi2DLside->Write();
+    //uncorrhKK2DLside->Write();
+    //uncorrhPhiMixed2DLside->Write();
+    //uncorrhKKMixed2DLside->Write();
 
-    mixedratioRSB->Write();
-    mixedratioRSBdeta->Write();
-    mixedratioRSBdphi->Write();
-    mixedratioLSB->Write();
-    mixedratioLSBdeta->Write();
-    mixedratioLSBdphi->Write();
-    mixedratioPeak->Write();
-    mixedratioPeakdeta->Write();
-    mixedratioPeakdphi->Write();
+    //mixedratioRSB->Write();
+    //mixedratioRSBdeta->Write();
+    //mixedratioRSBdphi->Write();
+    //mixedratioLSB->Write();
+    //mixedratioLSBdeta->Write();
+    //mixedratioLSBdphi->Write();
+    //mixedratioPeak->Write();
+    //mixedratioPeakdeta->Write();
+    //mixedratioPeakdphi->Write();
 
-    mixedratioPeakZ2->Write();
-    mixedratioPeakZ2deta->Write();
+    //mixedratioPeakZ2->Write();
+    //mixedratioPeakZ2deta->Write();
 /*
     for(int i=0; i< numbinsZvtx; i++){
         sameUSPeakEta[i]->Write();
