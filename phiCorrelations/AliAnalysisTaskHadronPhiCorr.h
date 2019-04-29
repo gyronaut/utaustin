@@ -15,6 +15,7 @@ class AliAODEvent;
 class AliEventPool;
 class AliEventPoolManager;
 class AliCFParticle;
+class AliAODMCParticle;
 class AliMultSelection;
 
 class AliAnalysisTaskHadronPhiCorr : public AliAnalysisTaskSE {
