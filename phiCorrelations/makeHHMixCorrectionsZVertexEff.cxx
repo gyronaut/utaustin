@@ -38,8 +38,8 @@ TH2D* projectWithEfficiencyCorrections(THnSparseF* sparse, TH1D* eff, float asso
 }
 //--------------------------------------------------------------------------------------------
 void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
-    TFile *effFile = new TFile("~/utaustin/efficiency/17f2befficiency.root");
-    TH1D* hadronEff = (TH1D*)effFile->Get("hadronPTEff");
+    //TFile *effFile = new TFile("~/utaustin/efficiency/17f2befficiency.root");
+    //TH1D* hadronEff = (TH1D*)effFile->Get("hadronPTEff");
 
     TFile *histoFile = new TFile(inputName.c_str());
     //string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
@@ -71,25 +71,27 @@ void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh,
     TH2D* hhTotal;
     TH2D* hhMixedTotal;
     TH2D* uncorrhh2D;    
-    
+   
+    Float_t epsilon = 0.0001;
+
     for(int izvtx = 0; izvtx < numbinsZvtx; izvtx++){
 
         dphiHH[izvtx] = (THnSparseF*)list->FindObject(Form("fDphiHHz%i", izvtx));
-        dphiHH[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
-        dphiHH[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow, assocPTHigh); 
+        dphiHH[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow + epsilon, trigPTHigh - epsilon); 
+        dphiHH[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow + epsilon, assocPTHigh - epsilon); 
    
-        dphiHHMixed[izvtx] = (THnSparseF*)list->FindObject(Form("fDPhiHHMixedz%i", izvtx));
-        dphiHHMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
-        dphiHHMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
+        dphiHHMixed[izvtx] = (THnSparseF*)list->FindObject(Form("fDphiHHMixedz%i", izvtx));
+        dphiHHMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow + epsilon, trigPTHigh - epsilon); 
+        dphiHHMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow + epsilon,assocPTHigh - epsilon); 
 
         
-        //hh[izvtx] = dphiHH[izvtx]->Projection(2,3);
-        //hh[izvtx]->Sumw2();
-        //hhMixed[izvtx] = dphiHHMixed[izvtx]->Projection(2,3);
-        //hhMixed[izvtx]->Sumw2();
+        hh[izvtx] = dphiHH[izvtx]->Projection(2,3);
+        hh[izvtx]->Sumw2();
+        hhMixed[izvtx] = dphiHHMixed[izvtx]->Projection(2,3);
+        hhMixed[izvtx]->Sumw2();
     
-        hh[izvtx] = projectWithEfficiencyCorrections(dphiHH[izvtx], hadronEff, 2.0, 4.0);
-        hhMixed[izvtx] = projectWithEfficiencyCorrections(dphiHHMixed[izvtx], hadronEff, 2.0, 4.0);
+        //hh[izvtx] = projectWithEfficiencyCorrections(dphiHH[izvtx], hadronEff, 2.0, 4.0);
+        //hhMixed[izvtx] = projectWithEfficiencyCorrections(dphiHHMixed[izvtx], hadronEff, 2.0, 4.0);
 
         hh2D[izvtx] = makehhCorrections(hh[izvtx], hhMixed[izvtx]);
         hh2D[izvtx]->SetName(Form("hh2Dz%i", izvtx));
@@ -105,10 +107,10 @@ void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh,
 
     hhTotal->Scale(1.0/totalTrig);
 
-    TH1D* hhdphi = hhTotal->ProjectionY("hhdphi", hhTotal->GetXaxis()->FindBin(-1.2), hhTotal->GetXaxis()->FindBin(1.2));
+    TH1D* hhdphi = hhTotal->ProjectionY("hhdphi", hhTotal->GetXaxis()->FindBin(-1.2 + epsilon), hhTotal->GetXaxis()->FindBin(1.2 - epsilon));
     hhdphi->Scale(1.0/(hhdphi->Integral()));
 
-    uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2), uncorrhh2D->GetXaxis()->FindBin(1.2), 1, uncorrhh2D->GetYaxis()->GetNbins())));
+    uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2 + epsilon), uncorrhh2D->GetXaxis()->FindBin(1.2 - epsilon), 1, uncorrhh2D->GetYaxis()->GetNbins())));
     
     TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_effcorr_hh%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hhTotal->Write();
