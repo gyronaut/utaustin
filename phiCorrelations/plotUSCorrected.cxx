@@ -1,6 +1,6 @@
 void plotUSCorrected(string inputname){
     gStyle->SetOptStat(0);
-    gStyle->SetOptFit(1);
+    gStyle->SetOptFit(0);
 
     TFile* eta20File = new TFile(inputname.c_str());
 
@@ -18,6 +18,8 @@ void plotUSCorrected(string inputname){
 
     }
 
+    Float_t epsilon = 0.001;
+
     eta20peak->GetXaxis()->SetTitle("#Delta#eta");
     eta20peak->GetXaxis()->SetTitleSize(0.05);
     eta20peak->GetXaxis()->SetTitleOffset(1.3);
@@ -26,7 +28,7 @@ void plotUSCorrected(string inputname){
     eta20peak->GetYaxis()->SetTitleOffset(1.3);
     eta20peak->SetTitle("");
     //eta20peak->SetStats(kFALSE);
-    //eta20peak->Scale(1.0/(eta20peak->Integral(eta20peak->GetXaxis()->FindBin(-1.2), eta20peak->GetXaxis()->FindBin(1.2), 1, eta20peak->GetYaxis()->GetNbins())));
+    //eta20peak->Scale(1.0/(eta20peak->Integral(eta20peak->GetXaxis()->FindBin(-1.2 + epsilon), eta20peak->GetXaxis()->FindBin(1.2 - epsilon), 1, eta20peak->GetYaxis()->GetNbins())));
 
     eta20RSB->GetXaxis()->SetTitle("#Delta#eta");
     eta20RSB->GetXaxis()->SetTitleSize(0.05);
@@ -50,41 +52,41 @@ void plotUSCorrected(string inputname){
     eta20peakEta->GetXaxis()->SetTitleOffset(1.0);
     eta20peakEta->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20peakEta->SetStats(kFALSE);
-    TH1D* eta20peakPhi = eta20peak->ProjectionY("eta20peakPhi", eta20peak->GetXaxis()->FindBin(-1.5), eta20peak->GetXaxis()->FindBin(1.5));
+    TH1D* eta20peakPhi = eta20peak->ProjectionY("eta20peakPhi", eta20peak->GetXaxis()->FindBin(-1.5 + epsilon), eta20peak->GetXaxis()->FindBin(1.5 - epsilon));
     eta20peakPhi->GetXaxis()->SetTitleOffset(1.0);
     eta20peakPhi->SetStats(kFALSE);
     eta20peakPhi->SetLineColor(kBlue);
-    TH1D* eta20peakPhiNarrow = eta20peak->ProjectionY("eta20peakPhiNarrow", eta20peak->GetXaxis()->FindBin(-1.2), eta20peak->GetXaxis()->FindBin(1.2));
+    TH1D* eta20peakPhiNarrow = eta20peak->ProjectionY("eta20peakPhiNarrow", eta20peak->GetXaxis()->FindBin(-1.2 + epsilon), eta20peak->GetXaxis()->FindBin(1.2 - epsilon));
     eta20peakPhiNarrow->SetLineColor(kViolet);
     eta20peakPhiNarrow->SetStats(kFALSE);
     eta20peakPhiNarrow->GetXaxis()->SetTitleOffset(1.0);
-    TH1D* eta20peakPhiNarrowest = eta20peak->ProjectionY("eta20peakPhiNarrowest", eta20peak->GetXaxis()->FindBin(-1.0), eta20peak->GetXaxis()->FindBin(1.0));
+    TH1D* eta20peakPhiNarrowest = eta20peak->ProjectionY("eta20peakPhiNarrowest", eta20peak->GetXaxis()->FindBin(-1.0 + epsilon), eta20peak->GetXaxis()->FindBin(1.0 - epsilon));
     eta20peakPhiNarrowest->SetLineColor(kRed);
 
     TH1D* eta20RSBEta = eta20RSB->ProjectionX("eta20RSBEta", 1, eta20RSB->GetYaxis()->GetNbins());
     eta20RSBEta->GetXaxis()->SetTitleOffset(1.0);
     eta20RSBEta->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20RSBEta->SetStats(kFALSE);
-    TH1D* eta20RSBPhi = eta20RSB->ProjectionY("eta20RSBPhi", eta20RSB->GetXaxis()->FindBin(-1.5), eta20RSB->GetXaxis()->FindBin(1.5));
+    TH1D* eta20RSBPhi = eta20RSB->ProjectionY("eta20RSBPhi", eta20RSB->GetXaxis()->FindBin(-1.5 + epsilon), eta20RSB->GetXaxis()->FindBin(1.5 - epsilon));
     eta20RSBPhi->GetXaxis()->SetTitleOffset(1.0);
     eta20RSBPhi->SetLineColor(kBlue);
     eta20RSBPhi->SetStats(kFALSE);
-    TH1D* eta20RSBPhiNarrow = eta20RSB->ProjectionY("eta20RSBPhiNarrow", eta20RSB->GetXaxis()->FindBin(-1.2), eta20RSB->GetXaxis()->FindBin(1.2));
+    TH1D* eta20RSBPhiNarrow = eta20RSB->ProjectionY("eta20RSBPhiNarrow", eta20RSB->GetXaxis()->FindBin(-1.2 + epsilon), eta20RSB->GetXaxis()->FindBin(1.2 - epsilon));
     eta20RSBPhiNarrow->SetLineColor(kViolet);
-    TH1D* eta20RSBPhiNarrowest = eta20RSB->ProjectionY("eta20RSBPhiNarrowest", eta20RSB->GetXaxis()->FindBin(-1.0), eta20RSB->GetXaxis()->FindBin(1.0));
+    TH1D* eta20RSBPhiNarrowest = eta20RSB->ProjectionY("eta20RSBPhiNarrowest", eta20RSB->GetXaxis()->FindBin(-1.0 + epsilon), eta20RSB->GetXaxis()->FindBin(1.0 - epsilon));
     eta20RSBPhiNarrowest->SetLineColor(kRed);
 
     TH1D* eta20LSBEta = eta20LSB->ProjectionX("eta20LSBEta", 1, eta20LSB->GetYaxis()->GetNbins());
     eta20LSBEta->GetXaxis()->SetTitleOffset(1.0);
     eta20LSBEta->GetXaxis()->SetRangeUser(-1.2, 1.2);
     eta20LSBEta->SetStats(kFALSE);
-    TH1D* eta20LSBPhi = eta20LSB->ProjectionY("eta20LSBPhi", eta20LSB->GetXaxis()->FindBin(-1.5), eta20LSB->GetXaxis()->FindBin(1.5));
+    TH1D* eta20LSBPhi = eta20LSB->ProjectionY("eta20LSBPhi", eta20LSB->GetXaxis()->FindBin(-1.5 + epsilon), eta20LSB->GetXaxis()->FindBin(1.5 - epsilon));
     eta20LSBPhi->GetXaxis()->SetTitleOffset(1.0);
     eta20LSBPhi->SetLineColor(kBlue);
     eta20LSBPhi->SetStats(kFALSE);
-    TH1D* eta20LSBPhiNarrow = eta20LSB->ProjectionY("eta20LSBPhiNarrow", eta20LSB->GetXaxis()->FindBin(-1.2), eta20LSB->GetXaxis()->FindBin(1.2));
+    TH1D* eta20LSBPhiNarrow = eta20LSB->ProjectionY("eta20LSBPhiNarrow", eta20LSB->GetXaxis()->FindBin(-1.2 + epsilon), eta20LSB->GetXaxis()->FindBin(1.2 - epsilon));
     eta20LSBPhiNarrow->SetLineColor(kViolet);
-    TH1D* eta20LSBPhiNarrowest = eta20LSB->ProjectionY("eta20LSBPhiNarrowest", eta20LSB->GetXaxis()->FindBin(-1.0), eta20LSB->GetXaxis()->FindBin(1.0));
+    TH1D* eta20LSBPhiNarrowest = eta20LSB->ProjectionY("eta20LSBPhiNarrowest", eta20LSB->GetXaxis()->FindBin(-1.0 + epsilon), eta20LSB->GetXaxis()->FindBin(1.0 - epsilon));
     eta20LSBPhiNarrowest->SetLineColor(kRed);
 
 
@@ -106,8 +108,8 @@ void plotUSCorrected(string inputname){
 
     TCanvas* ceta20peak = new TCanvas("ceta20peak", "ceta20peak", 50, 50, 800, 800);
     ceta20peak->Divide(2,2);
-    ceta20peak->cd(1)->SetTheta(50);
-    ceta20peak->cd(1)->SetPhi(50);
+    ceta20peak->cd(1)->SetTheta(23);
+    ceta20peak->cd(1)->SetPhi(65);
     eta20peak->Draw("SURF1");
     ceta20peak->cd(2);
     eta20peakEta->Draw("H");
@@ -120,8 +122,8 @@ void plotUSCorrected(string inputname){
 
     TCanvas* ceta20RSB = new TCanvas("ceta20RSB", "ceta20RSB", 60, 60, 800, 800);
     ceta20RSB->Divide(2,2);
-    ceta20RSB->cd(1)->SetTheta(50);
-    ceta20RSB->cd(1)->SetPhi(50);
+    ceta20RSB->cd(1)->SetTheta(23);
+    ceta20RSB->cd(1)->SetPhi(65);
     eta20RSB->Draw("SURF1");
     ceta20RSB->cd(2);
     eta20RSBEta->Draw("H");
@@ -134,8 +136,8 @@ void plotUSCorrected(string inputname){
 
     TCanvas* ceta20LSB = new TCanvas("ceta20LSB", "ceta20LSB", 70, 70, 800, 800);
     ceta20LSB->Divide(2,2);
-    ceta20LSB->cd(1)->SetTheta(50);
-    ceta20LSB->cd(1)->SetPhi(50);
+    ceta20LSB->cd(1)->SetTheta(23);
+    ceta20LSB->cd(1)->SetPhi(65);
     eta20LSB->Draw("SURF1");
     ceta20LSB->cd(2);
     eta20LSBEta->Draw("H");
@@ -286,8 +288,8 @@ void plotUSCorrected(string inputname){
     hfullfit->Eval(fitother2D);
 
     TCanvas *peakCanvas = new TCanvas("peakCanvas", "peakCanvas", 90, 90, 800, 800);
-    peakCanvas->cd()->SetTheta(50.0);
-    peakCanvas->cd()->SetPhi(50.0);
+    peakCanvas->cd()->SetTheta(23.0);
+    peakCanvas->cd()->SetPhi(65.0);
     peak->GetXaxis()->SetRangeUser(-1.0, 1.0);
     hfullfit->GetXaxis()->SetRangeUser(-1.0, 1.0);
     hfullfit->SetLineColor(kRed);
@@ -313,22 +315,22 @@ void plotUSCorrected(string inputname){
     //hfitnonear->Draw("SAME SURF");
     
     //Project fitparts and correlation onto just dphi
-    TH1D* hnojet1D = hfitnojet->ProjectionY("hnojet1D", hfitnojet->GetXaxis()->FindBin(-1.2), hfitnojet->GetXaxis()->FindBin(1.2));
+    TH1D* hnojet1D = hfitnojet->ProjectionY("hnojet1D", hfitnojet->GetXaxis()->FindBin(-1.2 + epsilon), hfitnojet->GetXaxis()->FindBin(1.2 - epsilon));
     hnojet1D->SetLineWidth(4);
     hnojet1D->SetLineStyle(7);
     hnojet1D->SetLineColor(kBlue);
 
-    TH1D* hnonear1D = hfitnonear->ProjectionY("hnonear1D", hfitnonear->GetXaxis()->FindBin(-1.2), hfitnonear->GetXaxis()->FindBin(1.2));
+    TH1D* hnonear1D = hfitnonear->ProjectionY("hnonear1D", hfitnonear->GetXaxis()->FindBin(-1.2 + epsilon), hfitnonear->GetXaxis()->FindBin(1.2 - epsilon));
     hnonear1D->SetLineWidth(4);
     hnonear1D->SetLineStyle(6);
     hnonear1D->SetLineColor(kGreen+2);
 
-    TH1D* hfullfit1D = hfullfit->ProjectionY("hfullfit1D", hfullfit->GetXaxis()->FindBin(-1.2), hfullfit->GetXaxis()->FindBin(1.2));
+    TH1D* hfullfit1D = hfullfit->ProjectionY("hfullfit1D", hfullfit->GetXaxis()->FindBin(-1.2 + epsilon), hfullfit->GetXaxis()->FindBin(1.2 - epsilon));
     hfullfit1D->SetLineWidth(4);
     hfullfit1D->SetLineStyle(6);
     hfullfit1D->SetLineColor(kGreen+2);
 
-    TH1D* hpeak1D = peak->ProjectionY("hpeak1D", peak->GetXaxis()->FindBin(-1.2), peak->GetXaxis()->FindBin(1.2));
+    TH1D* hpeak1D = peak->ProjectionY("hpeak1D", peak->GetXaxis()->FindBin(-1.2 + epsilon), peak->GetXaxis()->FindBin(1.2 - epsilon));
     hpeak1D->SetLineWidth(3);
     TF1* line = new TF1("line", "[0]", -1.57, 4.71);
     line->SetParameter(0, 0.25*(hpeak1D->GetBinContent(8)+hpeak1D->GetBinContent(9)+hpeak1D->GetBinContent(16)+hpeak1D->GetBinContent(1)));
