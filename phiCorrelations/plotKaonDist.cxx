@@ -21,9 +21,25 @@ void plotKaonDist(TString inputname){
     TH2D* kaonTOF = (TH2D*)kaonPID->Project3D("zx");
     kaonTOF->SetTitle("n#sigma_{TOF} vs p_{T}");
 
-    kaonPID->GetXaxis()->SetRangeUser(1.0, 5.0);
+    kaonPID->GetXaxis()->SetRangeUser(2.0, 4.0);
     TH2D* kaonTPCTOF = (TH2D*)kaonPID->Project3D("yz");
-    kaonTPCTOF->SetTitle("n#sigma_{TPC} vs. n#sigma_{TOF} for 1.0 < p_{T} < 5.0 GeV/c");
+    kaonTPCTOF->SetTitle("n#sigma_{TPC} vs. n#sigma_{TOF} for 2.0 < p_{T} < 4.0 GeV/c");
+    TAxis* xaxis = kaonTPCTOF->GetXaxis();
+    TAxis* yaxis = kaonTPCTOF->GetYaxis();
+    Double_t fullInt = kaonTPCTOF->Integral(xaxis->FindBin(-2.99), xaxis->FindBin(2.99), yaxis->FindBin(-2.99), yaxis->FindBin(2.99));
+    Double_t cut1Int = kaonTPCTOF->Integral(xaxis->FindBin(-2.79), xaxis->FindBin(2.79), yaxis->FindBin(-2.79), yaxis->FindBin(2.79));
+    Double_t cut2Int = kaonTPCTOF->Integral(xaxis->FindBin(-2.59), xaxis->FindBin(2.59), yaxis->FindBin(-2.59), yaxis->FindBin(2.59));
+    Double_t cut3Int = kaonTPCTOF->Integral(xaxis->FindBin(-2.39), xaxis->FindBin(2.39), yaxis->FindBin(-2.39), yaxis->FindBin(2.39));
+    Double_t cut4Int = kaonTPCTOF->Integral(xaxis->FindBin(-2.19), xaxis->FindBin(2.19), yaxis->FindBin(-2.19), yaxis->FindBin(2.19));
+    Double_t cut5Int = kaonTPCTOF->Integral(xaxis->FindBin(-1.99), xaxis->FindBin(1.99), yaxis->FindBin(-1.99), yaxis->FindBin(1.99));
+
+    printf("Corrections for different PID cuts\n");
+    printf("----------------------------------\n");
+    printf("-2.8 to 2.8 : %4.2f\n", cut1Int/fullInt);
+    printf("-2.6 to 2.6 : %4.2f\n", cut2Int/fullInt);
+    printf("-2.4 to 2.4 : %4.2f\n", cut3Int/fullInt);
+    printf("-2.2 to 2.2 : %4.2f\n", cut4Int/fullInt);
+    printf("-2.0 to 2.0 : %4.2f\n", cut5Int/fullInt);
 
     TH1D* kaonPT = (TH1D*)kaonDist->ProjectionX("Kaon Candidate p_{T}");
     kaonPT->SetTitle("Kaon Candidate p_{T}");
@@ -61,6 +77,7 @@ void plotKaonDist(TString inputname){
     massfit->SetParLimits(0, 1.0, 100000);
     massfit->SetParameter(1, 1.0196);
     massfit->SetParameter(2, 0.0002);
+    massfit->SetParLimits(2, 0.00001, 0.005);
     massfit->FixParameter(3, 0.00426);
     //massfit->SetParLimits(5, -1000, 0.0);
     massfit->SetParameter(4, -100000);
