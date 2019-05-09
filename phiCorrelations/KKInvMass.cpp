@@ -2,8 +2,9 @@
 
 void KKInvMass(){
     gStyle->SetOptStat(0);
-    
-    TFile* file = new TFile("~/phiStudies/results_newmult/hphi020_hh2050_hphi5080.root");
+    gStyle->SetOptFit(0);
+
+    TFile* file = new TFile("~/phiStudies/results_onlineEff/Combined/TOTAL_hphi_0_20_50_80.root");
     TList* list = (TList*) file->Get("phiCorr_mult_0_20");
     THnSparseF* kkUSDist= (THnSparseF*)list->FindObject("fkkUSDist");
     THnSparseF* kkLSDist= (THnSparseF*)list->FindObject("fkkLSDist");
@@ -13,10 +14,13 @@ void KKInvMass(){
     
     TH1D* USInvMass = kkUSDist->Projection(1);
     TH1D* LSInvMass = kkLSDist->Projection(1);
+    TH1D* origLSInvMass = (TH1D*)LSInvMass->Clone("origLSInvMass");
+    origLSInvMass->SetLineColor(kRed);
+    origLSInvMass->SetLineWidth(2);
     
-    float sidebandUS = (float)USInvMass->Integral(USInvMass->GetXaxis()->FindBin(1.04), USInvMass->GetXaxis()->FindBin(1.06));
-    float sidebandLS = (float)LSInvMass->Integral(LSInvMass->GetXaxis()->FindBin(1.04), LSInvMass->GetXaxis()->FindBin(1.06));
-    float scale = sidebandUS/sidebandLS;
+    Double_t sidebandUS = (Double_t)(USInvMass->Integral(USInvMass->GetXaxis()->FindBin(1.04), USInvMass->GetXaxis()->FindBin(1.06)) + USInvMass->Integral(USInvMass->GetXaxis()->FindBin(0.995), USInvMass->GetXaxis()->FindBin(1.005)));
+    Double_t sidebandLS = (Double_t)(LSInvMass->Integral(LSInvMass->GetXaxis()->FindBin(1.04), LSInvMass->GetXaxis()->FindBin(1.06)) + LSInvMass->Integral(LSInvMass->GetXaxis()->FindBin(0.995), LSInvMass->GetXaxis()->FindBin(1.005)));
+    Double_t scale = sidebandUS/sidebandLS;
     
     LSInvMass->Scale(scale);
 
@@ -57,8 +61,11 @@ void KKInvMass(){
     Float_t fullHistInt = corrected->Integral(corrected->GetXaxis()->FindBin(0.9901), corrected->GetXaxis()->FindBin(1.06999), "width") - bgFit->Integral(0.99, 1.07);
     Float_t widePct = voigtFit->Integral(1.01, 1.03);
     widePct = widePct/fullInt;
+    Float_t peakInt = voigtFit->Integral(1.014, 1.026);
+    Float_t bgpeakInt = bgFit->Integral(1.014, 1.026);
+    Float_t bg2peak = bgpeakInt/peakInt;
     
-    printf("=================\n\nfit integral: %e,    hist integral: %e,   only hist: %e,    only BG: %e\n=====================\n", fullInt, fullHistInt, onlyHistInt, onlyBGInt);
+    printf("=================\n\nfit integral: %e,    hist integral: %e,   only hist: %e,    only BG: %e,    ratio to residual: %4.2f%% \n=====================\n", fullInt, fullHistInt, onlyHistInt, onlyBGInt, bg2peak*100);
 
     Float_t diffPct[11];
     Float_t diffInt[11];
@@ -212,6 +219,8 @@ void KKInvMass(){
     c4->cd();
     USInvMass->Draw();
     narrowInvMass->Draw("SAME");
+    LSBinvmass->Draw("SAME");
+    RSBinvmass->Draw("SAME");
     USInvMass->Draw("SAME");
     LSInvMass->Draw("SAME");
     leg->Draw();
@@ -227,5 +236,19 @@ void KKInvMass(){
     RSBinvmass->Draw("SAME");
     USInvMass->Draw("SAME");
     leg2->Draw();
+
+    TLegend *leg3 = new TLegend(0.4581, 0.3927, 0.8809, 0.5637);
+    leg3->AddEntry(USInvMass, "US Kaon Pairs", "l");
+    leg3->AddEntry(origLSInvMass, "LS Kaon Pairs", "l");
+
+    TCanvas* c6 = new TCanvas("c6", "c6", 50, 50, 600, 600);
+    c6->cd();
+    USInvMass->Draw();
+    narrowInvMass->Draw("SAME");
+    LSBinvmass->Draw("SAME");
+    RSBinvmass->Draw("SAME");
+    USInvMass->Draw("SAME");
+    origLSInvMass->Draw("SAME");
+    leg3->Draw();
 
 }
