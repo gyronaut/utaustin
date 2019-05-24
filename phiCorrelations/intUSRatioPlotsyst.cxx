@@ -383,7 +383,7 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
         
     TF1* paperhhfit50100 = new TF2("paperhhfit50100", "[0]*(1+2*0.12*0.1*cos(2.0*x))", -0.5*TMath::Pi(), 1.5*TMath::Pi());
     paperhhfit50100->SetParameter(0, hhBG_50_100->GetParameter(0));
-
+ 
 
     Double_t near0_100hPhiYield = near0_20hPhiYield + near20_50hPhiYield + near50_100hPhiYield;
     Double_t near0_100hPhiError = TMath::Sqrt((TMath::Power(near0_20hPhiError,2) + TMath::Power(near20_50hPhiError,2) + TMath::Power(near50_100hPhiError,2)));
@@ -1084,6 +1084,42 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     //yieldshhTot->SetFillColor(kMagenta+1);
     //yieldshhTot->SetFillStyle(3144);
 
+    //set-up jet/total ratio histograms for h-phi and h-h
+
+    TH1D* jet2totalhPhi = (TH1D*)ratioNearHist->Clone("jet2totalhPhi");
+    TH1D* jet2totalhh = (TH1D*)ratioNearHist->Clone("jet2totalhh");
+    for(int i = 0; i < 3; i++){
+        jet2totalhPhi->SetBinContent(i+2, (nearhPhiYieldArray[i] + awayhPhiYieldArray[i])/totalhPhiYieldArray[i]);
+        jet2totalhh->SetBinContent(i+2, (nearhhYieldArray[i] + awayhhYieldArray[i])/totalhhYieldArray[i]);
+    }
+
+    jet2totalhPhi->SetLineColor(kMagenta+2);
+    jet2totalhPhi->SetMarkerColor(kMagenta+2);
+    jet2totalhPhi->GetYaxis()->SetTitle("(Jet/Total) pair-yield Ratio");
+
+    jet2totalhh->SetLineColor(kCyan+2);
+    jet2totalhh->SetMarkerColor(kCyan+2);
+
+    TCanvas* jet2totalcanvas = new TCanvas("jet2totalcanvas", "jet2totalcanvas", 55, 55, 900, 600);
+    jet2totalcanvas->cd();
+    jet2totalcanvas->SetMargin(0.126, 0.05, 0.125, 0.05);
+    gStyle->SetErrorX(0.5);
+    jet2totalhPhi->Draw("AXIS");
+    jet2totalhPhi->GetXaxis()->SetLabelOffset(999);
+    jet2totalhPhi->GetXaxis()->SetTickSize(0.0);
+    gPad->Update();
+    newaxis = new TGaxis(gPad->GetUxmax(),
+            gPad->GetUymin(),
+            gPad->GetUxmin(),
+            gPad->GetUymin(),
+            ratioNearHist->GetXaxis()->GetXmin(),
+            ratioNearHist->GetXaxis()->GetXmax(),
+            510,"-");
+    newaxis->SetLabelOffset(-0.03);
+    newaxis->Draw();
+    jet2totalhPhi->Draw("P E SAME");
+    jet2totalhh->Draw("P E SAME");
+
     //draw near-side yields
     TLegend *nearYieldMultlegend = new TLegend(0.1737, 0.781, 0.533, 0.919);
     nearYieldMultlegend->SetMargin(0.30);
@@ -1734,7 +1770,113 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     text50100->Draw();
     text2->Draw();
     //legend->Draw();
-/*
+
+    //Set-up and Draw the hh and hphi correlations on single canvases
+    
+    TH1D* hphi020 = (TH1D*)hPhidphi_0_20->Clone("hphi020");
+    hphi020->SetMarkerColor(kRed);
+    hphi020->SetMarkerSize(1.3);
+    hphi020->SetMarkerStyle(33);
+    hphi020->SetLineColor(kRed);
+    hphi020->Add(hphiBG, -1.0);
+    hphi020->Scale(1.0/(2.4*hphi020->GetXaxis()->GetBinWidth(1))); //scale by delta-eta and bin width
+
+    TH1D* hphi2050 = (TH1D*)hPhidphi_20_50->Clone("hphi2050");
+    hphi2050->SetMarkerColor(kOrange);
+    hphi2050->SetLineColor(kOrange);
+    hphi2050->SetMarkerSize(1.3);
+    hphi2050->SetMarkerStyle(22);
+    hphi2050->Add(hphiBG_20_50, -1.0);
+    hphi2050->Scale(1.0/(2.4*hphi2050->GetXaxis()->GetBinWidth(1))); //scale by delta-eta and bin width
+
+    TH1D* hphi5080 = (TH1D*)hPhidphi_50_100->Clone("hphi5080");
+    hphi5080->SetMarkerColor(kAzure);
+    hphi5080->SetMarkerSize(1.3);
+    hphi5080->SetMarkerStyle(23);
+    hphi5080->SetLineColor(kAzure);
+    hphi5080->Add(hphiBG_50_100, -1.0);
+    hphi5080->Scale(1.0/(2.4*hphi5080->GetXaxis()->GetBinWidth(1))); //scale by delta-eta and bin width
+
+    TH1D* hh020 = (TH1D*)hhdphi_0_20->Clone("hh020");
+    hh020->SetMarkerColor(kRed);
+    hh020->SetMarkerSize(1.3);
+    hh020->SetMarkerStyle(34);
+    hh020->SetLineColor(kRed);
+    hh020->Add(hhBG, -1.0);
+    hh020->Scale(1.0/(2.4*hh020->GetXaxis()->GetBinWidth(1))); //scale by delta-eta and bin width
+
+    TH1D* hh2050 = (TH1D*)hhdphi_20_50->Clone("hh2050");
+    hh2050->SetMarkerColor(kOrange);
+    hh2050->SetMarkerSize(1.3);
+    hh2050->SetMarkerStyle(21);
+    hh2050->SetLineColor(kOrange);
+    hh2050->Add(hhBG_20_50, -1.0);
+    hh2050->Scale(1.0/(2.4*hh2050->GetXaxis()->GetBinWidth(1))); //scale by delta-eta and bin width
+
+    TH1D* hh5080 = (TH1D*)hhdphi_50_100->Clone("hh5080");
+    hh5080->SetMarkerColor(kAzure);
+    hh5080->SetMarkerSize(1.3);
+    hh5080->SetMarkerStyle(20);
+    hh5080->SetLineColor(kAzure);
+    hh5080->Add(hhBG_50_100, -1.0);
+    hh5080->Scale(1.0/(2.4*hh5080->GetXaxis()->GetBinWidth(1))); //scale by delta-eta and bin width
+
+    TF1* fline = new TF1("fline", "pol0", -0.5*TMath::Pi(), 1.5*TMath::Pi());
+    fline->SetParameter(0, 0.0);
+    fline->SetLineColor(kBlack);
+    fline->SetLineWidth(2);
+    fline->SetLineStyle(7);
+
+    TLegend* hphileg = new TLegend(0.456, 0.641, 0.613, 0.937);
+    hphileg->SetBorderSize(0);
+    hphileg->AddEntry(hphi020, "0-20%", "lep");
+    hphileg->AddEntry(hphi2050, "20-50%", "lep");
+    hphileg->AddEntry(hphi5080, "50-80%", "lep");
+
+    TLegend* hhleg = new TLegend(0.456, 0.641, 0.613, 0.937);
+    hhleg->SetBorderSize(0);
+    hhleg->AddEntry(hh020, "0-20%", "lep");
+    hhleg->AddEntry(hh2050, "20-50%", "lep");
+    hhleg->AddEntry(hh5080, "50-80%", "lep");
+    
+    TPaveText* hphitext = new TPaveText(0.181, 0.827, 0.356, 0.925, "NDC");
+    hphitext->SetBorderSize(0);
+    hphitext->SetFillColor(kWhite);
+    hphitext->AddText("h-#phi");
+
+    TPaveText* hhtext = new TPaveText(0.704, 0.604, 0.861, 0.700, "NDC");
+    hhtext->SetBorderSize(0);
+    hhtext->SetFillColor(kWhite);
+    hhtext->AddText("h-h");
+
+    TCanvas* chphi = new TCanvas("chphi", "chphi", 50, 50, 550, 600);
+    chphi->cd();
+    chphi->SetMargin(0.12, 0.05, 0.1, 0.05);
+    hphi020->GetYaxis()->SetTitle("1/N_{trig} dN/d#Delta#varphi per #Delta#eta - constant (rad^{-1})");
+    hphi020->Draw("E0 X0 P SAME");
+    hphi2050->Draw("E0 X0 P SAME");
+    hphi5080->Draw("E0 X0 P SAME");
+    fline->Draw("SAME");
+    hphitext->Draw();
+    text2->Draw();
+    hphileg->Draw();
+
+    TCanvas* chh = new TCanvas("chhh", "chhh", 50, 50, 550, 600);
+    chh->cd();
+    chh->SetMargin(0.12, 0.05, 0.1, 0.05);
+    hh020->Draw("E0 X0 P SAME");
+    hh2050->Draw("E0 X0 P SAME");
+    hh5080->Draw("E0 X0 P SAME");
+    fline->Draw("SAME");
+    hhtext->Draw();
+    text2->Draw();
+    hhleg->Draw();
+
+
+
+    
+    
+    /*
     TCanvas *cratio = new TCanvas("cratio", "cratio", 50, 50, 550, 600);
     cratio->cd();
     cratio->SetMargin(0.12, 0.05, 0.1, 0.05);
