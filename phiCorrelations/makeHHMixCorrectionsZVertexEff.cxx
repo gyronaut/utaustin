@@ -37,23 +37,25 @@ TH2D* projectWithEfficiencyCorrections(THnSparseF* sparse, TH1D* eff, float asso
     return corr;
 }
 //--------------------------------------------------------------------------------------------
-void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh){
+void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh, string suffix="_"){
     //TFile *effFile = new TFile("~/utaustin/efficiency/17f2befficiency.root");
     //TH1D* hadronEff = (TH1D*)effFile->Get("hadronPTEff");
 
     TFile *histoFile = new TFile(inputName.c_str());
     //string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
     string mult = "_" + std::to_string(multLow) + "_" + std::to_string(multHigh);
-    TList* list = (TList*) histoFile->Get(Form("hhCorr_mult%s", mult.c_str()));
+    TList* list = (TList*) histoFile->Get(Form("hhCorr_mult%s%s", mult.c_str(), suffix.c_str()));
    
     TH2D *trigHHDist = (TH2D*)list->FindObject("fTrigHHDist");
 
+    Float_t epsilon = 0.0001;
+
     float trigMixScales[10] = {};
     for(int i = 0; i < 10; i++){
-        trigMixScales[i] = (float) trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow), trigHHDist->GetXaxis()->FindBin(trigPTHigh), i+1, i+1);
+        trigMixScales[i] = (float) trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow + epsilon), trigHHDist->GetXaxis()->FindBin(trigPTHigh - epsilon), i+1, i+1);
     }
 
-    float totalTrig = (float)trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow), trigHHDist->GetXaxis()->FindBin(trigPTHigh), 1, trigHHDist->GetYaxis()->GetNbins());
+    float totalTrig = (float)trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow + epsilon), trigHHDist->GetXaxis()->FindBin(trigPTHigh - epsilon), 1, trigHHDist->GetYaxis()->GetNbins());
       
     TH1D* vtxZmixbins = (TH1D*)list->FindObject("fVtxZmixbins");
     Int_t numbinsZvtx = vtxZmixbins->GetXaxis()->GetNbins();
@@ -72,8 +74,7 @@ void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh,
     TH2D* hhMixedTotal;
     TH2D* uncorrhh2D;    
    
-    Float_t epsilon = 0.0001;
-
+    
     for(int izvtx = 0; izvtx < numbinsZvtx; izvtx++){
 
         dphiHH[izvtx] = (THnSparseF*)list->FindObject(Form("fDphiHHz%i", izvtx));

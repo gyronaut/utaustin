@@ -129,7 +129,7 @@ void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, fl
 
     printf("getting to z vertex stuff (zbins: %d)\n\n", numbinsZvtx);
     for(int izvtx = 0; izvtx < numbinsZvtx; izvtx++){
-        dphiHPhi[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiTrueHPhiz%i", izvtx));
+        dphiHPhi[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiTrueAcceptanceHPhiz%i", izvtx));
         //dphiHKK[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHKKz%i", izvtx));
         dphiHPhiMixed[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiTrueHPhiMixedz%i", izvtx));
         //dphiHKKMixed[izvtx] = (THnSparseF *)list->FindObject(Form("fDphiHKKMixedz%i", izvtx));
@@ -258,7 +258,7 @@ void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, fl
     */
 
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_MC_hPhi%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_MC_hPhi%s_CENT_02_28.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hPhi2DpeakTotal->Write();
     //hKK2DpeakTotal->Write();
     //hPhi2DRsideTotal->Write();

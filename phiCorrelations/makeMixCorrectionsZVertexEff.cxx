@@ -56,7 +56,7 @@ TH3D* projectWithEfficiencyCorrections(THnSparseF* sparse, TH1D* eff, float asso
     return corr;
 }
 //--------------------------------------------------------------------------------------------
-void makeMixCorrectionsZVertexEff(string inputName, string outputStr, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh, float pLow = 1.014, float pHigh = 1.026, float lsbLow = 0.995, float lsbHigh = 1.005, float rsbLow = 1.040, float rsbHigh = 1.060, string listSuffix = ""){
+void makeMixCorrectionsZVertexEff(string inputName, string outputStr, int multLow, int multHigh, float trigPTLow, float trigPTHigh, float assocPTLow, float assocPTHigh, float pLow = 1.014, float pHigh = 1.026, float lsbLow = 0.995, float lsbHigh = 1.005, float rsbLow = 1.040, float rsbHigh = 1.060, string listSuffix = "_"){
     //TFile *effFile = new TFile("~/repos/utaustin/efficiency/17f2bTPC80efficiency.root");
     //TH1D* phiEff = (TH1D*)effFile->Get("phiPTEff");
     //TH1D* hadronEff = (TH1D*)effFile->Get("hadronPTEff");
@@ -76,10 +76,11 @@ void makeMixCorrectionsZVertexEff(string inputName, string outputStr, int multLo
     float totalTrigSameUS = (float)trigSameUSDist->Integral(trigSameUSDist->GetXaxis()->FindBin(trigPTLow), trigSameUSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameUSDist->GetYaxis()->GetNbins());
     float totalTrigSameLS = (float)trigSameLSDist->Integral(trigSameLSDist->GetXaxis()->FindBin(trigPTLow), trigSameLSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameLSDist->GetYaxis()->GetNbins());
    */
+    Float_t epsilon = 0.0001;
 
     THnSparseF* trigDist = (THnSparseF*)list->FindObject("fTrigDist");
     TH1D* trigDist1D = (TH1D*)trigDist->Projection(0);
-    float totalTrigSameUS = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow), trigDist1D->GetXaxis()->FindBin(trigPTHigh));
+    float totalTrigSameUS = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow + epsilon), trigDist1D->GetXaxis()->FindBin(trigPTHigh - epsilon));
 
     TH1D* vtxZmixbins = (TH1D*)list->FindObject("fVtxZmixbins");
     Int_t numbinsZvtx = vtxZmixbins->GetXaxis()->GetNbins();
@@ -135,7 +136,6 @@ void makeMixCorrectionsZVertexEff(string inputName, string outputStr, int multLo
     TH1D* USinvmassTotal;
     TH1D* LSinvmassTotal;
 
-    Float_t epsilon = 0.0001;
     Float_t peakLow = pLow + epsilon;
     Float_t peakHigh = pHigh - epsilon;
     Float_t leftSBLow = lsbLow + epsilon;
