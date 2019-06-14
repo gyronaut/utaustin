@@ -28,6 +28,16 @@ void makeUSCorrections(string inputFile, float peakLow = 1.014, float peakHigh =
     }else if(filename.Contains("PIDcut20")){
             weight = 0.995/(0.95445*0.95445);
     }
+/*
+    if(filename.Contains("TOFcut275")){
+           weight = 0.995/(0.994*0.994);
+    }else if(filename.Contains("TOFcut25")){
+           weight = 0.995/(0.9756*0.9756);
+    }else if(filename.Contains("TOFcut225")){
+            weight = 0.995/(0.9566*0.9566);
+    }
+*/    
+    printf("weight: %f\n", weight);
 
 /*    Float_t totalTrigUS = trigDistSameUS->Integral(trigDistSameUS->GetXaxis()->FindBin(4.0), trigDistSameUS->GetXaxis()->FindBin(10.0));
     Float_t totalTrigLS = trigDistSameLS->Integral(trigDistSameLS->GetXaxis()->FindBin(4.0), trigDistSameLS->GetXaxis()->FindBin(10.0));
