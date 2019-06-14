@@ -3,10 +3,10 @@ void plotDPhiCombined(){
     gStyle->SetOptFit(0);
 
 
-    TFile* file0_20_Combined = new TFile("~/phiStudies/results_onlineeff/Combined/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_Combined.root");    
+    TFile* file0_20_Combined = new TFile("~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_Combined.root");    
     //string output = inputfile.substr(0,22);
     //output+= "dphi.pdf";
-    TH2D* hPhi2D_0_20_Combined = (TH2D*)(file0_20_Combined->Get("AvgUSsubhPhi2Dpeak")->Clone("hphi2D_0_20_Combined"));
+    TH2D* hPhi2D_0_20_Combined = (TH2D*)(file0_20_Combined->Get("AvgUSsubhPhi2Dpeakavgscale")->Clone("hphi2D_0_20_Combined"));
     TH1D* hPhidphi_0_20_Combined = (TH1D*)hPhi2D_0_20_Combined->ProjectionY("hPhidphi_0_20_Combined", hPhi2D_0_20_Combined->GetXaxis()->FindBin(-1.2), hPhi2D_0_20_Combined->GetXaxis()->FindBin(1.2));
     //hPhidphi_0_20_Combined->Rebin();
     hPhidphi_0_20_Combined->SetLineWidth(2);
@@ -46,10 +46,10 @@ void plotDPhiCombined(){
 
 
 
-    TFile* file0_20_CENT = new TFile("~/phiStudies/results_onlineeff/CENTwoSDD/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_CENTwoSDD.root");    
+    TFile* file0_20_CENT = new TFile("~/phiStudies/results_onlineEff/CENTwoSDD/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_CENTwoSDD.root");    
     //string output = inputfile.substr(0,22);
     //output+= "dphi.pdf";
-    TH2D* hPhi2D_0_20_CENT = (TH2D*)(file0_20_CENT->Get("AvgUSsubhPhi2Dpeak")->Clone("hphi2D_0_20_CENT"));
+    TH2D* hPhi2D_0_20_CENT = (TH2D*)(file0_20_CENT->Get("AvgUSsubhPhi2Dpeakavgscale")->Clone("hphi2D_0_20_CENT"));
     TH1D* hPhidphi_0_20_CENT = (TH1D*)hPhi2D_0_20_CENT->ProjectionY("hPhidphi_0_20_CENT", hPhi2D_0_20_CENT->GetXaxis()->FindBin(-1.2), hPhi2D_0_20_CENT->GetXaxis()->FindBin(1.2));
     //hPhidphi_0_20_CENT->Rebin();
     hPhidphi_0_20_CENT->SetLineWidth(2);
@@ -93,8 +93,8 @@ void plotDPhiCombined(){
 
 
 
-    TFile* file0_20_FAST = new TFile("~/phiStudies/results_onlineeff/FAST/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_FAST.root");    
-    TH2D* hPhi2D_0_20_FAST = (TH2D*)(file0_20_FAST->Get("AvgUSsubhPhi2Dpeak")->Clone("hphi2D_0_20_FAST"));
+    TFile* file0_20_FAST = new TFile("~/phiStudies/results_onlineEff/FAST/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_FAST.root");    
+    TH2D* hPhi2D_0_20_FAST = (TH2D*)(file0_20_FAST->Get("AvgUSsubhPhi2Dpeakavgscale")->Clone("hphi2D_0_20_FAST"));
     TH1D* hPhidphi_0_20_FAST = (TH1D*)hPhi2D_0_20_FAST->ProjectionY("hPhidphi_0_20_FAST", hPhi2D_0_20_FAST->GetXaxis()->FindBin(-1.2), hPhi2D_0_20_FAST->GetXaxis()->FindBin(1.2));
     //hPhidphi_0_20_FAST->Rebin();
     hPhidphi_0_20_FAST->SetLineWidth(2);

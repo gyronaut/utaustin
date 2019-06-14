@@ -152,11 +152,37 @@ void plotUncorrected(TString inputfile){
     eta20LSBPhiNarrow->Draw("H SAME");
     eta20LSBPhiNarrowest->Draw("H SAME");
 
-   
+    TPaveText *data = new TPaveText(0.593, 0.805, 0.992, 0.990, "NDC");
+    data->AddText("ALICE Prelimenary");
+    data->AddText("p-Pb #sqrt{s_{NN}} = 5.02 TeV");
+    data->AddText("0-20% Multiplicity Class");
+    data->SetFillStyle(0);
+    data->SetBorderSize(0);
+
+    TPaveText *othertextsame = new TPaveText(0.009, 0.805, 0.333, 0.990, "NDC");
+    othertextsame->AddText("Uncorrected Same Event Correlation");
+    othertextsame->AddText("4.0 < p_{T,trig} < 8.0 GeV/c");
+    othertextsame->AddText("2.0 < p_{T,assoc} < 4.0 GeV/c");
+    othertextsame->SetFillStyle(0);
+    othertextsame->SetBorderSize(0);
+
+    TPaveText *othertextmixed = new TPaveText(0.009, 0.805, 0.333, 0.990, "NDC");
+    othertextmixed->AddText("Mixed Event Correlation");
+    othertextmixed->AddText("4.0 < p_{T,trig} < 8.0 GeV/c");
+    othertextmixed->AddText("2.0 < p_{T,assoc} < 4.0 GeV/c");
+    othertextmixed->SetFillStyle(0);
+    othertextmixed->SetBorderSize(0);
+
+
     TCanvas* cuncorrUSpeak = new TCanvas("cuncorrUSpeak", "cuncorrUSpeak", 50, 50, 800, 800);
-    cuncorrUSpeak->cd()->SetTheta(50);
+    cuncorrUSpeak->cd()->SetTheta(20);
     cuncorrUSpeak->cd()->SetPhi(50);
+    eta20peak->GetZaxis()->SetTitle("Arb. Units");
+    eta20peak->GetXaxis()->SetTitle("#Delta#eta");
+    eta20peak->GetYaxis()->SetTitle("#Delta#varphi");
     eta20peak->Draw("SURF1");
+    data->Draw();
+    othertextsame->Draw();
 
     TCanvas* cuncorrUSRside = new TCanvas("cuncorrUSRside", "cuncorrUSRside", 50, 50, 800, 800);
     cuncorrUSRside->cd()->SetTheta(50);
@@ -229,9 +255,14 @@ void plotUncorrected(TString inputfile){
     Float_t scale = 0.5*(mixedUSpeak->GetBinContent(mixedUSpeak->GetXaxis()->FindBin(-0.01), mixedUSpeak->GetYaxis()->FindBin(0.0)) + mixedUSpeak->GetBinContent(mixedUSpeak->GetXaxis()->FindBin(0.01), mixedUSpeak->GetYaxis()->FindBin(0.0)));
     mixedUSpeak->Scale(1.0/scale);
     TCanvas* cMixedUSpeak = new TCanvas("cMixedUSpeak", "cMixedUSpeak", 50, 50, 800, 800);
-    cMixedUSpeak->cd()->SetTheta(50);
+    cMixedUSpeak->cd()->SetTheta(20);
     cMixedUSpeak->cd()->SetPhi(50);
+    mixedUSpeak->GetZaxis()->SetTitle("Correlated Pairs Normalized to (0,0)");
+    mixedUSpeak->GetXaxis()->SetTitle("#Delta#eta");
+    mixedUSpeak->GetYaxis()->SetTitle("#Delta#varphi");
     mixedUSpeak->Draw("SURF1");
+    data->Draw();
+    othertextmixed->Draw();
 
     TH2D* mixedLSpeak = (TH2D*)eta20File->Get("uncorrhKKMixed2Dpeak");
     mixedLSpeak->SetStats(kFALSE);

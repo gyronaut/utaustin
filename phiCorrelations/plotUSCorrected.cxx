@@ -4,9 +4,14 @@ void plotUSCorrected(string inputname){
 
     TFile* eta20File = new TFile(inputname.c_str());
 
-    TH2D* eta20peak = (TH2D*)eta20File->Get("AvgUSsubhPhi2Dpeak");
+    TH2D* eta20peak = (TH2D*)eta20File->Get("AvgUSsubhPhi2Dpeakavgscale");
     TH2D* eta20RSB = (TH2D*)eta20File->Get("RLSsubhPhi2DRside");
     TH2D* eta20LSB = (TH2D*)eta20File->Get("LLSsubhPhi2DLside");
+    
+    TH1D* scales = (TH1D*)eta20File->Get("scales");
+    TH2D* uncorr2D = (TH2D*)eta20File->Get("uncorrectedhPhi2Dpeak");
+    TH2D* BG2D = (TH2D*)eta20File->Get("hPhiBGPeakregion");
+    BG2D->Scale(scales->GetBinContent(6)); 
 
     TH2D* residual = (TH2D*)eta20peak->Clone("residual");
     TH2D* peak = (TH2D*)eta20peak->Clone("peak");
@@ -287,10 +292,31 @@ void plotUSCorrected(string inputname){
     //hfullfit->Eval(fit2D);
     hfullfit->Eval(fitother2D);
 
-    TCanvas *peakCanvas = new TCanvas("peakCanvas", "peakCanvas", 90, 90, 800, 800);
-    peakCanvas->cd()->SetTheta(23.0);
-    peakCanvas->cd()->SetPhi(65.0);
-    peak->GetXaxis()->SetRangeUser(-1.0, 1.0);
+    TPaveText *data = new TPaveText(0.5415, 0.8234, 0.9914, 0.9911, "NDC");
+    data->AddText("ALICE Preliminary");
+    data->AddText("p-Pb #sqrt{s_{NN}} = 5.02 TeV");
+    data->AddText("0-20% Multiplicity Class (V0A)");
+    data->SetFillStyle(0);
+    data->SetBorderSize(0);
+    data->SetTextFont(42);
+
+    TPaveText *othertext = new TPaveText(0.0057, 0.8264, 0.4054, 0.9941, "NDC");
+    //othertext->AddText("h-#phi Correlation");
+    othertext->AddText("4.0 < #it{p}^{h}_{T,trig} < 8.0 GeV/#it{c}");
+    othertext->AddText("2.0 < #it{p}^{#phi}_{T,assoc} < 4.0 GeV/#it{c}");
+    othertext->SetFillStyle(0);
+    othertext->SetBorderSize(0);
+    othertext->SetTextFont(42);
+
+
+    TCanvas *peakCanvas = new TCanvas("peakCanvas", "peakCanvas", 90, 90, 700, 700);
+    //peakCanvas->cd()->SetTheta(23.0);
+    //peakCanvas->cd()->SetPhi(65.0);
+    peakCanvas->cd()->SetTheta(16.2);
+    peakCanvas->cd()->SetPhi(-65.0);
+    peakCanvas->cd()->SetMargin(0.15, 0.05, 0.12, 0.18);
+    peak->GetXaxis()->SetRangeUser(-1.2, 1.2);
+    peak->Scale(1.0/(peak->GetXaxis()->GetBinWidth(1)*peak->GetYaxis()->GetBinWidth(1)));
     hfullfit->GetXaxis()->SetRangeUser(-1.0, 1.0);
     hfullfit->SetLineColor(kRed);
     hfullfit->SetLineWidth(2);
@@ -298,17 +324,28 @@ void plotUSCorrected(string inputname){
     hfitnojet->SetLineColor(kRed);
     hfitnonear->GetXaxis()->SetRangeUser(-1.0, 1.0);
     hfitnonear->SetLineColor(kMagenta);
-    peak->GetZaxis()->SetRangeUser(0.000040, 0.000090);
+    //peak->GetZaxis()->SetRangeUser(0.000040, 0.000090);
     hfullfit->GetZaxis()->SetRangeUser(0.000040, 0.000090);
     hfitnojet->GetZaxis()->SetRangeUser(0.000040, 0.000090);
     hpaperfit->GetZaxis()->SetRangeUser(0.000040, 0.000090);
     hfitnonear->GetZaxis()->SetRangeUser(0.000040, 0.000090);
     peak->SetTitle("");
     peak->GetXaxis()->SetTitle("#Delta#eta");
-    peak->GetXaxis()->SetTitleOffset(1.4);
+    peak->GetXaxis()->SetTitleOffset(1.5);
+    peak->GetXaxis()->SetTitleSize(0.05);
+    peak->GetXaxis()->CenterTitle();
     peak->GetYaxis()->SetTitle("#Delta#varphi");
-    peak->GetYaxis()->SetTitleOffset(1.3);
+    peak->GetYaxis()->SetTitleOffset(1.5);
+    peak->GetYaxis()->SetTitleSize(0.05);
+    peak->GetYaxis()->CenterTitle();
+    peak->GetZaxis()->SetTitle("1/N_{trig} d^{2}#it{N}_{assoc}/d#it{#Delta#varphi}d#it{#Delta#eta}");
+    peak->GetZaxis()->SetTitleOffset(1.7);
+    peak->GetZaxis()->SetNdivisions(409);
+    peak->GetZaxis()->SetMaxDigits(2);
+    //TGaxis::SetExponentOffset(0.25, 0.05, "xy");
     peak->Draw("SAME SURF1");
+    othertext->Draw();
+    data->Draw();
     //hfullfit->Draw("SAME SURF");
     //hpaperfit->Draw("SAME SURF");
     //hfitnojet->Draw("SAME SURF");
@@ -370,5 +407,31 @@ void plotUSCorrected(string inputname){
     text->SetBorderSize(3);
     text->Draw();
 
-    
+    TH1D* dphiuncorr = uncorr2D->ProjectionY("dphiuncorr", uncorr2D->GetXaxis()->FindBin(-1.2 + epsilon), uncorr2D->GetXaxis()->FindBin(1.2 - epsilon));
+    TH1D* dphiBG = BG2D->ProjectionY("dphiBG", BG2D->GetXaxis()->FindBin(-1.2 + epsilon), BG2D->GetXaxis()->FindBin(1.2 - epsilon));
+
+
+
+    TCanvas* cBGcompare = new TCanvas("cBGcompare", "cBGcompare", 50, 50, 600, 600);
+    cBGcompare->cd()->SetMargin(0.12, 0.03, 0.1, 0.04);
+    dphiuncorr->SetLineColor(kBlue+1);
+    dphiuncorr->SetLineWidth(2);
+    dphiuncorr->SetTitle("");
+    dphiuncorr->GetXaxis()->SetTitle("#Delta#varphi");
+    dphiuncorr->GetYaxis()->SetMaxDigits(3);
+    dphiuncorr->GetYaxis()->SetTitle("1/#it{N}_{trig} d#it{N}_{assoc}/d#it{#Delta#varphi}");
+    dphiuncorr->Scale(1.0/(0.49*0.82*dphiuncorr->GetXaxis()->GetBinWidth(1)));
+    dphiuncorr->Draw("HIST E");
+    dphiBG->SetLineColor(kRed+1);
+    dphiBG->SetLineWidth(2);
+    dphiBG->Scale(1.0/(0.49*0.82*dphiBG->GetXaxis()->GetBinWidth(1)));
+    dphiBG->Draw("SAME");
+    TLegend* bglegend = new TLegend(0.4, 0.6, 0.5, 0.7);
+    bglegend->AddEntry(dphiBG, "BG Estimate", "le");
+    bglegend->AddEntry(dphiuncorr, "Signal + BG", "le");
+    bglegend->SetLineWidth(0);
+    bglegend->Draw();
+    data->Draw();
+    othertext->Draw();
+
    }
