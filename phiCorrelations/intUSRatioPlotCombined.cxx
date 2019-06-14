@@ -63,7 +63,7 @@ TF1* setupFit(TString fitname, TH1D* hist, Int_t color, Int_t linestyle){
 
     TF1 *basefit = new TF1(fitname, "gaus(0) + gaus(3) + ([3]/([5]))*exp(-(((x - [4] + 2.0*TMath::Pi())^2)/(2*[5]^2)))+ pol0(6)", -1.4, 4.6);
     
-    //basefit->FixParameter(6, 1.0/4.0*(hist->GetBinContent(8)+hist->GetBinContent(9)+hist->GetBinContent(16)+hist->GetBinContent(1))); //4 bins for straight line
+    basefit->FixParameter(6, 1.0/4.0*(hist->GetBinContent(8)+hist->GetBinContent(9)+hist->GetBinContent(16)+hist->GetBinContent(1))); //4 bins for straight line
     //basefit->FixParameter(6, (1.0/6.0)*(hist->GetBinContent(8)+hist->GetBinContent(9)+hist->GetBinContent(16)+hist->GetBinContent(1)+hist->GetBinContent(2)+hist->GetBinContent(7))); //6 bins for straight line
     //basefit->FixParameter(6, (1.0/4.0)*(hist->GetBinContent(8)+hist->GetBinContent(1)+hist->GetBinContent(2)+hist->GetBinContent(7))); //only around near peak (4)
     //basefit->FixParameter(6, (1.0/3.0)*(hist->GetBinContent(8)+hist->GetBinContent(9)+hist->GetBinContent(1))); //not last bin (3)
@@ -71,8 +71,8 @@ TF1* setupFit(TString fitname, TH1D* hist, Int_t color, Int_t linestyle){
     //fix straight line parameter to the line fit from above
     //basefit->FixParameter(6, linefit->GetParameter(0));
    
-    basefit->SetParameter(6, linefit->GetParameter(0));
-    basefit->SetParLimits(6, basefit->GetParameter(6)*0.75, basefit->GetParameter(6)*1.25);
+    //basefit->SetParameter(6, linefit->GetParameter(0));
+    //basefit->SetParLimits(6, basefit->GetParameter(6)*0.75, basefit->GetParameter(6)*1.25);
     /*if(fitname == "corrFit"){
         basefit->FixParameter(0, 1.68920E-01 - 3.31591E-04); 
     }else if(fitname == "corrFit2050"){
@@ -110,11 +110,12 @@ void intUSRatioPlotCombined(TString outputstring){
 
     
     //TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_onlineeff/Combined/trig_4_8_assoc_2_4_effcorr_hh_0_20.root", "hh", "hh2D", "Eff_0_20", -1.2, 1.2, kBlue+2, 21); 
+    //TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_onlineeff/FAST/trig_4_8_assoc_2_4_effcorr_hh_0_20.root", "hh", "hh2D", "Eff_0_20", -1.2, 1.2, kBlue+2, 21);
     TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_onlineeff/Combined/checkbinedge/trig_4_8_assoc_2_4_effcorr_hh_0_20.root", "hh", "hh2D", "Eff_0_20", -1.2, 1.2, kBlue+2, 21);
-  
+ 
     //TH1D* hPhidphi_0_20 = getHisto("~/phiStudies/results_onlineeff/Combined/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_combined.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_0_20", -1.2, 1.2, kRed+2, 22);
+    //TH1D* hPhidphi_0_20 = getHisto("~/phiStudies/results_onlineeff/FAST/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_FAST.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_0_20", -1.2, 1.2, kRed+2, 22);
     TH1D* hPhidphi_0_20 = getHisto("~/phiStudies/results_onlineeff/Combined/checkbinedge/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_combined.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_0_20", -1.2, 1.2, kRed+2, 22);
-   
 
 
     
@@ -192,9 +193,11 @@ void intUSRatioPlotCombined(TString outputstring){
 
    //20-50 section 
     //TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_onlineeff/Combined/trig_4_8_assoc_2_4_effcorr_hh_20_50.root", "hh", "hh2D", "Eff_20_50", -1.2, 1.2, kBlue+2, 21); 
+    //TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_onlineeff/FAST/trig_4_8_assoc_2_4_effcorr_hh_20_50.root", "hh", "hh2D", "Eff_20_50", -1.2, 1.2, kBlue+2, 21);
     TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_onlineeff/Combined/checkbinedge/trig_4_8_assoc_2_4_effcorr_hh_20_50.root", "hh", "hh2D", "Eff_20_50", -1.2, 1.2, kBlue+2, 21);
 
     //TH1D* hPhidphi_20_50 = getHisto("~/phiStudies/results_onlineeff/Combined/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_20_50_Combined.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_20_50", -1.2, 1.2, kRed+2, 22);
+    //TH1D* hPhidphi_20_50 = getHisto("~/phiStudies/results_onlineeff/FAST/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_20_50_FAST.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_20_50", -1.2, 1.2, kRed+2, 22);
     TH1D* hPhidphi_20_50 = getHisto("~/phiStudies/results_onlineeff/Combined/checkbinedge/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_20_50_Combined.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_20_50", -1.2, 1.2, kRed+2, 22);
  
     TF1 *corrFit2050 = setupFit("corrFit2050", hhdphi_20_50, kBlue, 7); 
@@ -274,9 +277,11 @@ void intUSRatioPlotCombined(TString outputstring){
 
     //50-100 section
     //TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_onlineeff/Combined/trig_4_8_assoc_2_4_effcorr_hh_50_80.root", "hh", "hh2D", "Eff_50_80", -1.2, 1.2, kBlue+2, 21);
+    //TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_onlineeff/FAST/trig_4_8_assoc_2_4_effcorr_hh_50_80.root", "hh", "hh2D", "Eff_50_80", -1.2, 1.2, kBlue+2, 21);
     TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_onlineeff/Combined/checkbinedge/trig_4_8_assoc_2_4_effcorr_hh_50_80.root", "hh", "hh2D", "Eff_50_80", -1.2, 1.2, kBlue+2, 21);
     
     //TH1D* hPhidphi_50_100 = getHisto("~/phiStudies/results_onlineeff/Combined/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_50_80_combined.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_50_80", -1.2, 1.2, kRed+2, 22);
+    //TH1D* hPhidphi_50_100 = getHisto("~/phiStudies/results_onlineeff/FAST/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_50_80_FAST.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_50_80", -1.2, 1.2, kRed+2, 22);
     TH1D* hPhidphi_50_100 = getHisto("~/phiStudies/results_onlineeff/Combined/checkbinedge/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_50_80_combined.root", "hPhi", "AvgUSsubhPhi2Dpeakavgscale", "Eff_50_80", -1.2, 1.2, kRed+2, 22);
 
 
