@@ -8,8 +8,8 @@ void plotMultEff(THnSparse* reco, THnSparse* real, TH1D** recoVar, TH1D** realVa
 
     Int_t colors[] = {kGreen+4,kGreen-2,kSpring+5,kRed+1};
     
-    Int_t multAxis = 6;
-    if(isSingle) multAxis = 5;
+    Int_t multAxis = 5;
+    if(isSingle) multAxis = 4;
 
     printf("num mult bins: %i\n", numMultBins);
     switch(axis){
@@ -118,6 +118,8 @@ void plotEfficiencyBetter(TString input){
     TList* list = (TList*)infile->Get("phiEff_mult_0_100");
     
     //single track histos
+    THnSparseF* realTrigger = (THnSparseF*)list->FindObject("fRealChargedDist");
+    THnSparseF* recoTrigger = (THnSparseF*)list->FindObject("fRecoChargedTriggerDist");
     THnSparseF* realCharged = (THnSparseF*)list->FindObject("fRealChargedDist");
     THnSparseF* recoCharged = (THnSparseF*)list->FindObject("fRecoChargedDist");
     THnSparseF* recop = (THnSparseF*)list->FindObject("fRecopDist");
@@ -131,6 +133,8 @@ void plotEfficiencyBetter(TString input){
     THnSparseF* recoMuon = (THnSparseF*)list->FindObject("fRecoMuonDist");
     THnSparseF* realMuon = (THnSparseF*)list->FindObject("fRealMuonDist");
 
+    realTrigger->GetAxis(0)->SetRangeUser(0.5, 10.0);
+    recoTrigger->GetAxis(0)->SetRangeUser(0.5, 10.0);
     realCharged->GetAxis(0)->SetRangeUser(0.5, 10.0);
     recoCharged->GetAxis(0)->SetRangeUser(0.5, 10.0);
     recop->GetAxis(0)->SetRangeUser(0.5, 10.0);
@@ -144,6 +148,8 @@ void plotEfficiencyBetter(TString input){
     recoMuon->GetAxis(0)->SetRangeUser(0.5, 10.0);
     realMuon->GetAxis(0)->SetRangeUser(0.5, 10.0);
 
+    recoTrigger->GetAxis(2)->SetRangeUser(-0.8, 0.8);
+    realTrigger->GetAxis(2)->SetRangeUser(-0.8, 0.8);
     recoCharged->GetAxis(2)->SetRangeUser(-0.8, 0.8);
     realCharged->GetAxis(2)->SetRangeUser(-0.8, 0.8);
     recop->GetAxis(2)->SetRangeUser(-0.8, 0.8);
@@ -157,6 +163,8 @@ void plotEfficiencyBetter(TString input){
     recoMuon->GetAxis(2)->SetRangeUser(-0.8, 0.8);
     realMuon->GetAxis(2)->SetRangeUser(-0.8, 0.8);
 
+    realTrigger->GetAxis(4)->SetRangeUser(-10.0, 10.0);
+    recoTrigger->GetAxis(4)->SetRangeUser(-10.0, 10.0);
     recoCharged->GetAxis(4)->SetRangeUser(-10.0, 10.0);
     realCharged->GetAxis(4)->SetRangeUser(-10.0, 10.0);
     recop->GetAxis(4)->SetRangeUser(-10.0, 10.0);
@@ -170,6 +178,8 @@ void plotEfficiencyBetter(TString input){
     recoMuon->GetAxis(4)->SetRangeUser(-10.0, 10.0);
     realMuon->GetAxis(4)->SetRangeUser(-10.0, 10.0);
 
+    realTrigger->Sumw2();
+    recoTrigger->Sumw2();
     recoCharged->Sumw2();
     realCharged->Sumw2();
     recop->Sumw2();
@@ -183,6 +193,8 @@ void plotEfficiencyBetter(TString input){
     recoMuon->Sumw2();
     realMuon->Sumw2();
     
+    TH1D* realTrigger_PT_mult[4];
+    TH1D* recoTrigger_PT_mult[4];
     TH1D* recoCharged_PT_mult[4];
     TH1D* realCharged_PT_mult[4];
     TH1D* recop_PT_mult[4];
@@ -196,6 +208,7 @@ void plotEfficiencyBetter(TString input){
     TH1D* recoMuon_PT_mult[4];
     TH1D* realMuon_PT_mult[4];
 
+    TH1D* effTrigger_PT_mult[4];
     TH1D* effCharged_PT_mult[4];
     TH1D* effp_PT_mult[4];
     TH1D* effPi_PT_mult[4];
@@ -203,6 +216,7 @@ void plotEfficiencyBetter(TString input){
     TH1D* effe_PT_mult[4];
     TH1D* effMuon_PT_mult[4];
 
+    TH1D* ratioTrigger_PT_mult[3];
     TH1D* ratioCharged_PT_mult[3];
     TH1D* ratiop_PT_mult[3];
     TH1D* ratioPi_PT_mult[3];
@@ -210,6 +224,7 @@ void plotEfficiencyBetter(TString input){
     TH1D* ratioe_PT_mult[3];
     TH1D* ratioMuon_PT_mult[3];
 
+    TCanvas* ceffTrigger_PT = new TCanvas("ceffTrigger_PT", "effTrigger_PT", 50, 50, 600, 600);
     TCanvas* ceffCharged_PT = new TCanvas("ceffCharged_PT", "effCharged_PT", 50, 50, 600, 600);
     TCanvas* ceffp_PT = new TCanvas("ceffp_PT", "effp_PT", 50, 50, 600, 600);
     TCanvas* ceffPi_PT = new TCanvas("ceffPi_PT", "effPi_PT", 50, 50, 600, 600);
@@ -217,6 +232,7 @@ void plotEfficiencyBetter(TString input){
     TCanvas* ceffe_PT = new TCanvas("ceffe_PT", "effe_PT", 50, 50, 600, 600);
     TCanvas* ceffMuon_PT = new TCanvas("ceffMuon_PT", "effMuon_PT", 50, 50, 600, 600);
 
+    TCanvas* cratioTrigger_PT = new TCanvas("cratioTrigger_PT", "ratioTrigger_PT", 50, 50, 600, 600);
     TCanvas* cratioCharged_PT = new TCanvas("cratioCharged_PT", "ratioCharged_PT", 50, 50, 600, 600);
     TCanvas* cratiop_PT = new TCanvas("cratiop_PT", "ratiop_PT", 50, 50, 600, 600);
     TCanvas* cratioPi_PT = new TCanvas("cratioPi_PT", "ratioPi_PT", 50, 50, 600, 600);
@@ -224,18 +240,22 @@ void plotEfficiencyBetter(TString input){
     TCanvas* cratioe_PT = new TCanvas("cratioe_PT", "ratioe_PT", 50, 50, 600, 600);
     TCanvas* cratioMuon_PT = new TCanvas("cratioMuon_PT", "ratioMuon_PT", 50, 50, 600, 600);
 
+    //plotMultEff(recoTrigger, realTrigger, recoTrigger_PT_mult, realTrigger_PT_mult, effTrigger_PT_mult, ratioTrigger_PT_mult, mult, 3, 0, ceffTrigger_PT, cratioTrigger_PT, kTRUE);
     plotMultEff(recoCharged, realCharged, recoCharged_PT_mult, realCharged_PT_mult, effCharged_PT_mult, ratioCharged_PT_mult, mult, 3, 0, ceffCharged_PT, cratioCharged_PT, kTRUE);
+    printf("passed charged\n");
     plotMultEff(recop, realp, recop_PT_mult, realp_PT_mult, effp_PT_mult, ratiop_PT_mult, mult, 3, 0, ceffp_PT, cratiop_PT, kTRUE);
     plotMultEff(recoPi, realPi, recoPi_PT_mult, realPi_PT_mult, effPi_PT_mult, ratioPi_PT_mult, mult, 3, 0, ceffPi_PT, cratioPi_PT, kTRUE);
     plotMultEff(recoK, realK, recoK_PT_mult, realK_PT_mult, effK_PT_mult, ratioK_PT_mult, mult, 3, 0, ceffK_PT, cratioK_PT, kTRUE);
     plotMultEff(recoe, reale, recoe_PT_mult, reale_PT_mult, effe_PT_mult, ratioe_PT_mult, mult, 3, 0, ceffe_PT, cratioe_PT, kTRUE);
     plotMultEff(recoMuon, realMuon, recoMuon_PT_mult, realMuon_PT_mult, effMuon_PT_mult, ratioMuon_PT_mult, mult, 3, 0, ceffMuon_PT, cratioMuon_PT, kTRUE);
+    printf("passed all particle types \n");
 
     //trigger distribution efficiency histos 
 
     //phi(1020) histos
     THnSparseF* recoPhi = (THnSparseF*)list->FindObject("fRecoPhiDist");
-    THnSparseF* realPhi = (THnSparseF*)list->FindObject("fRealPhiDist");
+    //THnSparseF* realPhi = (THnSparseF*)list->FindObject("fRealPhiDist");
+    THnSparseF* realPhi = (THnSparseF*)list->FindObject("fRealNoDecayCutPhiDist");
     THnSparseF* trackPhi = (THnSparseF*)list->FindObject("fTrackRecoPhiDist");
     THnSparseF* TOFPhi = (THnSparseF*)list->FindObject("fTOFRecoPhiDist");
     THnSparseF* TPCTrackPhi = (THnSparseF*)list->FindObject("fTPCPIDTrackRecoPhiDist");
@@ -276,6 +296,15 @@ void plotEfficiencyBetter(TString input){
     TPCTrackPhi->GetAxis(2)->SetRangeUser(-0.8, 0.8);
     TPCTOFPhi->GetAxis(2)->SetRangeUser(-0.8, 0.8);
     PIDPhi->GetAxis(2)->SetRangeUser(-0.8, 0.8);
+
+    /*recoPhi->GetAxis(3)->SetRangeUser(-0.8, 0.8);
+    realPhi->GetAxis(3)->SetRangeUser(-0.8, 0.8);
+    trackPhi->GetAxis(3)->SetRangeUser(-0.8, 0.8);
+    TOFPhi->GetAxis(3)->SetRangeUser(-0.8, 0.8);
+    TPCTrackPhi->GetAxis(3)->SetRangeUser(-0.8, 0.8);
+    TPCTOFPhi->GetAxis(3)->SetRangeUser(-0.8, 0.8);
+    PIDPhi->GetAxis(3)->SetRangeUser(-0.8, 0.8);
+*/
 
     recoPhi->GetAxis(5)->SetRangeUser(1.01, 1.03);
     realPhi->GetAxis(5)->SetRangeUser(1.01, 1.03);
@@ -346,6 +375,7 @@ void plotEfficiencyBetter(TString input){
     plotMultEff(PIDPhi, TPCTOFPhi, PIDPhi_PT_mult, TPCTOFPhi_PT_mult, PID_TOFtrackeffPT_mult, PID_TOFtrackratioPT_mult, mult, 3, 0, cPID_TOFtrackeffPT, cPID_TOFtrackratioPT, kFALSE);
 
     TH1D* totalPTeff0100 = (TH1D*)trackeffPT_mult[3]->Clone("totalPTeff0100");
+    totalPTeff0100->SetMarkerColor(kBlue);
     totalPTeff0100->Multiply(TOF_TrackeffPT_mult[3]);
     totalPTeff0100->Multiply(TPC_TOFtrackeffPT_mult[3]);
     totalPTeff0100->Multiply(TPC_TOFtrackeffPT_mult[3]); //estimate real TOF PID eff with TPC PID eff since it's flat at ~99.7%
@@ -353,6 +383,14 @@ void plotEfficiencyBetter(TString input){
     TCanvas* ctotal = new TCanvas("ctotal", "ctotal", 100, 50, 600, 600);
     ctotal->cd();
     totalPTeff0100->Draw();
+    effPT_mult[3]->Draw("SAME");
+    effPT_mult[2]->Draw("SAME");
+    effPT_mult[1]->Draw("SAME");
+    effPT_mult[0]->Draw("SAME");
+
+    TCanvas* cTOFPID = new TCanvas("cTOFPID", "cTOFPID", 50, 50, 600, 600);
+    cTOFPID->cd();
+    PID_TOFtrackeffPT_mult[3]->Draw();
 
     //for 0.5 bins
     printf("    pT    |    2.0-2.5    |    2.5-3.0    |    3.0-3.5    |    3.5-4.0    |\n");
@@ -363,15 +401,20 @@ void plotEfficiencyBetter(TString input){
     //printf("total eff |    %6f    |    %6f    |\n", totalPTeff0100->GetBinContent(2), totalPTeff0100->GetBinContent(3));
     
 
-    TFile* output = new TFile("17f2befficiency.root", "RECREATE");
+    TFile* output = new TFile("17f2b_newcodenewdenom.root", "RECREATE");
     effPT_mult[3]->SetName("phiPTEff");
     effPT_mult[3]->Write();
-    trackeffPT_mult[3]->SetName("hadronPTEff");
-    trackeffPT_mult[3]->Write();
+    effCharged_PT_mult[3]->SetName("hadronPTEff");
+    effCharged_PT_mult[3]->Write();
+    PID_TOFtrackeffPT_mult[3]->SetName("TOFPIDCheck");
+    PID_TOFtrackeffPT_mult[3]->Write();
+    //effTrigger_PT_mult[3]->SetName("triggerPTEff");
+    //effTrigger_PT_mult[3]->Write();
 
 
     recoPhi->GetAxis(0)->SetRangeUser(1.0, 10.0);
     realPhi->GetAxis(0)->SetRangeUser(1.0, 10.0);
+/******
     //phi vs. Mult
     TH1D* recoPhi_Phi_mult[4];
     TH1D* trackPhi_Phi_mult[4];
@@ -673,5 +716,5 @@ void plotEfficiencyBetter(TString input){
     legend->AddEntry(effPhi_mult[1], "20-50% Efficiency", "ep");
     legend->AddEntry(effPhi_mult[2], "50-80% Efficiency", "ep");
     legend->Draw();
-
+*/
 }
