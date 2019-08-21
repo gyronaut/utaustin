@@ -15,6 +15,7 @@ class AliEventPoolManager;
 class THnSparse;
 class AliESDEvent;
 class AliAODEvent;
+class AliAODMCParticle;
 class AliMultSelection;
 
 class AliAnalysisTaskPhiEff : public AliAnalysisTaskSE {
@@ -24,7 +25,7 @@ public:
     virtual ~AliAnalysisTaskPhiEff();
     
     virtual void   UserCreateOutputObjects();
-    UInt_t PassKaonCuts(AliAODTrack* track);
+    UInt_t PassKaonCuts(AliAODTrack* track, Double_t TPCnSigma, Double_t TOFnSigma);
     Bool_t PassHadronCuts(AliAODTrack* track, Bool_t isTrigger);
     virtual void   UserExec(Option_t *option);
     virtual void   Terminate(Option_t *);
@@ -35,6 +36,9 @@ public:
     void SetKaonTrkBit(Int_t kaonbit){ KAON_TRK_BIT = kaonbit; };
     void SetKaonEtaCut(Float_t eta){ KAON_ETA_CUT = eta; };
     void SetCentEstimator(TString est){ CENT_ESTIMATOR = est; };
+    void SetTrigTrkBit(UInt_t trkbit) { TRIG_TRK_BIT = trkbit; };
+    void SetAssocTrkBit(UInt_t trkbit) { ASSOC_TRK_BIT = trkbit; };
+
     Bool_t IsAODanalysis() const { return TestBit(kAODanalysis); };
     
 private:
@@ -75,6 +79,7 @@ private:
     TH1F        *fVtxY;//!Vertex y
 
     THnSparseF  *fRealPhiDist;//! Dist of Real phi
+    THnSparseF  *fRealNoDecayCutPhiDist;//! Dist of Real phi with no check on decay daughter eta
     THnSparseF  *fRecoPhiDist;//! Dist of Recon phi
     THnSparseF  *fTrackRecoPhiDist;//! Dist of Recon phi passing track cuts
     THnSparseF  *fTOFRecoPhiDist;//! Dist of Recon phi passing track cuts + TOF hit

@@ -3,7 +3,7 @@
  *
  *
  * */
-#include "TRoot.h"
+//#include "TRoot.h"
 #include "TRint.h"
 #include "TSystem.h"
 
@@ -12,16 +12,16 @@ void EffRunMacro()
 
    // Firstly, set some variables
    const char* launch = "grid"; // grid, local (if your data is on your local machine, doesn't connect at all)
-   const char*  mode = "test"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
+   const char*  mode = "terminate"; //test, full, terminate  (test= connect to grid but run locally, full= run on grid, terminate= merge output on grid)
    Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
    char* work_dir = "PhiEfficiency";
-   char* output_dir = "output_CENT_woSDD_PID_2019_01_10";
+   char* output_dir = "output_FAST_root6_PID_2019_05_22";
    Int_t ttl = 50000;
    Int_t noffiles = 40;
-   //Int_t runcycle[]={0,31};
-   Int_t runcycle[]={0,18,31};
+   Int_t runcycle[]={0,31};
+   //Int_t runcycle[]={0,18,31};
    Bool_t UseParfiles = kFALSE;
 
 // create and customize the alien handler
@@ -37,13 +37,14 @@ void EffRunMacro()
   alienHandler->SetRunMode(mode);
   alienHandler->SetNtestFiles(2);
   //alienHandler->SetAPIVersion("V1.1x");
-  alienHandler->SetAliPhysicsVersion("vAN-20170731-1");
+  alienHandler->SetAliPhysicsVersion("vAN-20190522_ROOT6-1");
   //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
-  alienHandler->SetGridDataDir("//alice/sim/2017/LHC17f2b_cent_woSDD/");
+  //alienHandler->SetGridDataDir("//alice/sim/2017/LHC17f2b_cent_woSDD/");
+  alienHandler->SetGridDataDir("//alice/sim/2017/LHC17f2b_fast/");
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetGridDataDir("//alice/data/2016/LHC16q/");
   //alienHandler->SetDataPattern("*/pass1_FAST/AOD/*/*AOD.root");
-  alienHandler->SetDataPattern("*/AOD/*/*AOD.root");
+  alienHandler->SetDataPattern("/AOD/*/*AOD.root");
   //alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
    
@@ -124,24 +125,28 @@ void EffRunMacro()
 //    mcH->SetReadTR(kFALSE);
 
     //switch on aliphysicsselection
-    gInterpreter->ProcessLine(Form(".x %s", gSystem->ExpandPathName("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C")));
+        
     AliPhysicsSelectionTask* physSelTask = reinterpret_cast<AliPhysicsSelectionTask*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, kTRUE)", gSystem->ExpandPathName("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C")))); 
 
+    gInterpreter->ProcessLine(Form(".x %s", gSystem->ExpandPathName("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C")));
 
     //Only set true for MC
     Bool_t isMC = kTRUE;
     gInterpreter->ProcessLine(Form(".x %s(kTRUE)", gSystem->ExpandPathName("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C")));
 
     //create a task
+    
     AliAnalysisTaskPhiEff *task1 = reinterpret_cast<AliAnalysisTaskPhiEff*>(gInterpreter->ProcessLine(Form(".x %s(0.0, 100.0)", gSystem->ExpandPathName("AddTaskEff.C"))));
     task1->SetKaonEtaCut(0.8);
     task1->SetKaonTrkBit(1024);
+    task1->SetTrigTrkBit(AliAODTrack::kIsHybridGCG);
     task1->SetCentEstimator("V0A");
 
    if (!mgr->InitAnalysis())
      return;
 
    mgr->PrintStatus();
+   mgr->SetUseProgressBar(1, 25);
    //fprintf(stdout, "\n!!!!!!!!!!!!!\nAbout to launch analysis... \n");
    // Start analysis in grid.
    mgr->StartAnalysis(launch);
