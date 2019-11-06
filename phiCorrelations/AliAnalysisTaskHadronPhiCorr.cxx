@@ -45,14 +45,14 @@
 #include "AliStack.h"
 #include "AliMCEventHandler.h"
 
-#include "AliAnalysisTaskHadronPhiCorr.h"
+#include "AliAnalysisTaskHadronPhiCorr_current.h"
 
 using std::cout;
 using std::endl;
 
-ClassImp(AliAnalysisTaskHadronPhiCorr)
+ClassImp(AliAnalysisTaskHadronPhiCorr_current)
 //________________________________________________________________________
-AliAnalysisTaskHadronPhiCorr::AliAnalysisTaskHadronPhiCorr(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh)
+AliAnalysisTaskHadronPhiCorr_current::AliAnalysisTaskHadronPhiCorr_current(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh)
 : AliAnalysisTaskSE(name),
 fVevent(0),
 fPoolMgr(0x0),
@@ -84,15 +84,21 @@ fHybridGlobalTrketa(0),
 fHybridGlobalTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
+fHadronPT(0),
+fHadronTrigPT(0),
+fHadronTrigPhiPT(0),
 fKaonDist(0),
 fKaonPID(0),
 fKKUSDist(0),
 fKKLSDist(0),
+fKKUSTrigDist(0),
+fKKLSTrigDist(0),
 fkplusPerEvent(0),
 fkminusPerEvent(0),
 fLSpairsPerEvent(0),
 fUSpairsPerEvent(0),
 fTrigDist(0),
+fTrigPerEvent(0),
 fTrigSameUSDist(0),
 fTrigSameLSDist(0),
 fTrigHHDist(0),
@@ -105,6 +111,10 @@ fUSNoMixEvents(0),
 fHHMixStatZVtx(0),
 fHHMixTrackStatZVtx(0),
 fHHNoMixEvents(0),
+fTruePhiDist(0),
+fTrueHDist(0),
+fTruePrimHDist(0),
+fTrueSecHDist(0),
 fDphiHPhi(0),
 fDphiTrueHPhi(0),
 fDphiTrueHPhiMixed(0),
@@ -133,6 +143,8 @@ fDphiHHMixed(0)
     IS_MC_KTRACK = kFALSE;
     USE_ACCPT = kFALSE;
 
+    DO_SINGLE_TRIGGER = kFALSE;
+
     KAON_ETA_CUT = 0.8;
     KAON_TPC_CUT = 3.0;
     KAON_TOF_CUT = 3.0;
@@ -159,8 +171,8 @@ fDphiHHMixed(0)
     fDphiHHMixed = new THnSparseF*[Z_VTX_NBINS];
 }
 //________________________________________________________________________
-AliAnalysisTaskHadronPhiCorr::AliAnalysisTaskHadronPhiCorr()
-: AliAnalysisTaskSE("DefaultTask_hPhiCorr"),
+AliAnalysisTaskHadronPhiCorr_current::AliAnalysisTaskHadronPhiCorr_current()
+: AliAnalysisTaskSE("DefaultTask_hPhiCorr_current"),
 fVevent(0),
 fPoolMgr(0x0),
 fLSPoolMgr(0x0),
@@ -191,15 +203,21 @@ fHybridGlobalTrketa(0),
 fHybridGlobalTrkphi(0),
 fdEdx(0),
 fTPCNpts(0),
+fHadronPT(0),
+fHadronTrigPT(0),
+fHadronTrigPhiPT(0),
 fKaonPID(0),
 fKaonDist(0),
 fKKUSDist(0),
 fKKLSDist(0),
+fKKUSTrigDist(0),
+fKKLSTrigDist(0),
 fkplusPerEvent(0),
 fkminusPerEvent(0),
 fLSpairsPerEvent(0),
 fUSpairsPerEvent(0),
 fTrigDist(0),
+fTrigPerEvent(0),
 fTrigSameUSDist(0),
 fTrigSameLSDist(0),
 fTrigHHDist(0),
@@ -212,6 +230,10 @@ fUSNoMixEvents(0),
 fHHMixStatZVtx(0),
 fHHMixTrackStatZVtx(0),
 fHHNoMixEvents(0),
+fTruePhiDist(0),
+fTrueHDist(0),
+fTruePrimHDist(0),
+fTrueSecHDist(0),
 fDphiHPhi(0),
 fDphiTrueHPhi(0),
 fDphiTrueHPhiMixed(0),
@@ -236,6 +258,8 @@ fDphiHHMixed(0)
     IS_MC_KAON = kFALSE;
     IS_MC_KTRACK = kFALSE;
     USE_ACCPT = kFALSE;
+
+    DO_SINGLE_TRIGGER = kFALSE;
 
     IS_HH = kFALSE;
     MULT_LOW = 0.0;
@@ -268,7 +292,7 @@ fDphiHHMixed(0)
 
 }
 //________________________________________________________________________
-AliAnalysisTaskHadronPhiCorr::~AliAnalysisTaskHadronPhiCorr()
+AliAnalysisTaskHadronPhiCorr_current::~AliAnalysisTaskHadronPhiCorr_current()
 {
     //Destructor
     delete fOutputList;
@@ -286,7 +310,7 @@ AliAnalysisTaskHadronPhiCorr::~AliAnalysisTaskHadronPhiCorr()
     delete fHHPoolMgr;
 }
 //________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr::LoadEfficiencies(TFile* filename){
+void AliAnalysisTaskHadronPhiCorr_current::LoadEfficiencies(TFile* filename){
     //TFile* effFile = TFile::Open(filename.Data());
     TFile* effFile = filename;
     //TFile* effFile = TFile::Open("/home/alidock/alirepos/utaustin/efficiency/fits_17f2bCENTTPC80efficiency.root");
@@ -317,7 +341,7 @@ void AliAnalysisTaskHadronPhiCorr::LoadEfficiencies(TFile* filename){
 
 }
 //________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
+void AliAnalysisTaskHadronPhiCorr_current::UserCreateOutputObjects()
 {
     // Create histograms
     // Called once
@@ -443,13 +467,16 @@ void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
     fOutputList->Add(fKaonPID);
     
     // Histogram for trigger distribution
-    Int_t trigBins[3] = {100,100,50};
+    Int_t trigBins[3] = {200,64,40};
     Double_t trigMin[3] = {0.1, 0.0, -2.0};
     Double_t trigMax[3] = {20.1, 6.28, 2.0};
 
     fTrigDist = new THnSparseF("fTrigDist", "Distribution for trigger particles", 3, trigBins, trigMin, trigMax);
     fTrigDist->Sumw2();
     fOutputList->Add(fTrigDist);
+
+    fTrigPerEvent = new TH1D("fTrigPerEvent", "Number of Trigger particles in 4 < p_{T} < 8 GeV/c per Event", 10, 0, 10);
+    fOutputList->Add(fTrigPerEvent);
 
      //Trigger Distribution for doing trigger particle scaling (same and mixed, hadron triggers for US or LS pairs are separate) 
     fTrigSameUSDist = new TH2D("fTrigSameUSDist", "Trigger count for same event, US pairs;p_{T}^{trig};Vtx_{z}", 18, 2.0, 20.0, Z_VTX_NBINS, Z_VTX_MIN, Z_VTX_MAX);
@@ -491,18 +518,26 @@ void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
 
     
     // Additional Histograms for US and LS Kaon pairs:
-    Int_t bins[4] = {20, 80, 32, 40}; //pt, invmass, phi, eta
-    Double_t min[4] = {0.0, 0.99, 0, -2.0};
-    Double_t max[4] = {10.0, 1.07, 6.28, 2.0};
+    Int_t bins[5] = {100, 80, 32, 40, 40}; //pt, invmass, phi, eta, y
+    Double_t min[5] = {0.0, 0.99, 0, -2.0, -2.0};
+    Double_t max[5] = {10.0, 1.07, 6.28, 2.0, 2.0};
  
-    fKKUSDist = new THnSparseF("fkkUSDist", "Distribution for all US Kaon pairs", 4, bins, min, max);
+    fKKUSDist = new THnSparseF("fkkUSDist", "Distribution for all US Kaon pairs", 5, bins, min, max);
     fKKUSDist->Sumw2();
     fOutputList->Add(fKKUSDist);
 
-    fKKLSDist = new THnSparseF("fkkLSDist", "Distribution for all LS Kaon pairs", 4, bins, min, max);
+    fKKLSDist = new THnSparseF("fkkLSDist", "Distribution for all LS Kaon pairs", 5, bins, min, max);
     fKKLSDist->Sumw2();
     fOutputList->Add(fKKLSDist);
 
+    fKKUSTrigDist = new THnSparseF("fkkUSTrigDist", "Distribution for all US Kaon pairs in Events with Trigger", 5, bins, min, max);
+    fKKUSTrigDist->Sumw2();
+    fOutputList->Add(fKKUSTrigDist);
+
+    fKKLSTrigDist = new THnSparseF("fkkLSTrigDist", "Distribution for all LS Kaon pairs in Events with Trigger", 5, bins, min, max);
+    fKKLSTrigDist->Sumw2();
+    fOutputList->Add(fKKLSTrigDist);
+    
     fkplusPerEvent = new TH1D("fkplusPerEvent", "K^{+} per Event", 100, 0, 100);
     fOutputList->Add(fkplusPerEvent);
 
@@ -514,7 +549,45 @@ void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
 
     fUSpairsPerEvent = new TH1D("fUSpairsPerEvent", "US KK pairs per event", 100, 0, 100);
     fOutputList->Add(fUSpairsPerEvent); 
-  
+ 
+    // Hadron pT histograms for different events (min bias, trigger present, trigger and phi candidate present)
+
+    fHadronPT = new TH1D("fHadronPT", "Hadron p_{T} for min bias Events", 100, 0., 10.0);
+    fHadronPT->Sumw2();
+    fOutputList->Add(fHadronPT);
+
+    fHadronTrigPT = new TH1D("fHadronTrigPT", "Hadron p_{T} for events with high pT trigger", 100, 0., 10.0);
+    fHadronTrigPT->Sumw2();
+    fOutputList->Add(fHadronTrigPT);
+
+    fHadronTrigPhiPT = new TH1D("fHadronTrigPhiPT", "Hadron p_{T} for events with high pT trigger and phi candidate", 100, 0., 10.0);
+    fHadronTrigPhiPT->Sumw2();
+    fOutputList->Add(fHadronTrigPhiPT);
+
+    if(IS_MC_TRUE){
+        //  distribution for true phi mesons
+        fTruePhiDist = new THnSparseF("fTruePhiDist", "Distribution for true #phi mesons", 5, bins, min, max);
+        fTruePhiDist->Sumw2();
+        fOutputList->Add(fTruePhiDist);
+
+        Int_t hbins[] = {100, 32, 40};
+        Double_t hmin[] = {0.0, 0.0, -2.0};
+        Double_t hmax[] = {10.0, 2.0*TMath::Pi(), 2.0};
+        //  distribtion for true hadrons (pi, K, p)
+        fTrueHDist = new THnSparseF("fTrueHDist", "Distribution for true hadrons", 3, hbins, hmin, hmax);
+        fTrueHDist->Sumw2();
+        fOutputList->Add(fTrueHDist);
+
+        fTruePrimHDist = new THnSparseF("fTruePrimHDist", "Distribution for true physical primary hadrons", 3, hbins, hmin, hmax);
+        fTruePrimHDist->Sumw2();
+        fOutputList->Add(fTruePrimHDist);
+
+        fTrueSecHDist = new THnSparseF("fTrueSecHDist", "Distribution for true secondary weak decay hadrons", 3, hbins, hmin, hmax);
+        fTrueSecHDist->Sumw2();
+        fOutputList->Add(fTrueSecHDist);
+    }
+
+
     // Delta-phi histograms for different hadron-particle correlations (trigger pT, correlation pT, delta-phi, delta-eta, inv mass)
     Int_t dphi_bins[5]=    {10,   18,   16,    20,  80};
     Double_t dphi_min[5] = { 2.0,  1.0, -1.0*TMath::Pi()/2.0, -2.0, 0.99};
@@ -564,11 +637,13 @@ void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
     }
 
     PostData(1,fOutputList);
+
+    printf("Finished Create Output Objects\n");
 }
 
 
 //___________________________________________________________________________
-Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
+Bool_t AliAnalysisTaskHadronPhiCorr_current::MakeCorrelations(Int_t triggerIndex, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
 
     Double_t dphi_point[5];
     AliPhiContainer phi;
@@ -617,7 +692,7 @@ Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliVPa
 }
 
 //___________________________________________________________________________
-Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliAODMCParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
+Bool_t AliAnalysisTaskHadronPhiCorr_current::MakeCorrelations(Int_t triggerIndex, AliAODMCParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
 
     Double_t dphi_point[5];
     AliPhiContainer phi;
@@ -646,7 +721,7 @@ Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliAOD
 }
 
 //___________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS){
+void AliAnalysisTaskHadronPhiCorr_current::MakeMixCorrelations(AliPhiContainer* phi, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS){
 
     Double_t dphi_point[5];    
     Int_t nMix = fPool->GetCurrentNEvents();
@@ -697,7 +772,7 @@ void AliAnalysisTaskHadronPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THn
 }
 
 //___________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx){
+void AliAnalysisTaskHadronPhiCorr_current::MakeHHMixCorrelations(AliCFParticle *assocPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx){
 
     Double_t dphi_point[4];
     AliEventPool* fPool;
@@ -747,7 +822,7 @@ void AliAnalysisTaskHadronPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPar
 
 
 //________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
+void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
 
 
     UInt_t evSelMask=((AliInputEventHandler*)(AliAnalysisManager::GetAnalysisManager()->GetInputEventHandler()))->IsEventSelected();
@@ -803,7 +878,8 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
         if(fMultSelection){
             multPercentile = fMultSelection->GetMultiplicityPercentile(CENT_ESTIMATOR.Data());
         }else{
-            return;
+            //return;
+            multPercentile = 99.0;
         }
         fTrigMulti->Fill(-0.5, multiplicity);
         if(evSelMask & AliVEvent::kAny) fTrigMulti->Fill(0.5, multiplicity);
@@ -854,7 +930,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
     std::vector<AliKaonContainer> kPlusList;
     std::vector<AliKaonContainer> kMinusList;
 
-    Double_t distPoint[4] = {0, 0, 0, 0};
+    Double_t distPoint[5] = {0, 0, 0, 0, 0};
     Double_t trigPoint[3] = {0, 0, 0};
     Double_t dphi_point[5] = {0, 0, 0, 0, 0};
     Double_t hhdphi_point[4] = {0, 0, 0, 0};
@@ -864,9 +940,9 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
     AliAODTrack *aKaonTrack = 0x0;
     AliVParticle *vKaonTrack = 0x0;
 
-
+    Int_t numTriggers=0;
     //if MC events, do 
-    if(IS_MC_TRUE || IS_MC_KAON){
+    if((IS_MC_TRUE || IS_MC_KAON)){
         TClonesArray* MCArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
         if(!MCArray){
             AliError("Array of MC particles not found");
@@ -878,6 +954,16 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
             Int_t pdgcode = AODMCtrack->GetPdgCode();
             //select phi for IS_MC_TRUE
             if(IS_MC_TRUE){
+                if((TMath::Abs(pdgcode)==211 || TMath::Abs(pdgcode)==2212 || TMath::Abs(pdgcode)==11 || TMath::Abs(pdgcode)==321 || TMath::Abs(pdgcode)==13)){
+                    Double_t hdistpoint[] = {AODMCtrack->Pt(), AODMCtrack->Phi(), AODMCtrack->Eta()};
+                    fTrueHDist->Fill(hdistpoint);
+                    if(AODMCtrack->IsPhysicalPrimary()){
+                        fTruePrimHDist->Fill(hdistpoint);
+                    }
+                    if(AODMCtrack->IsSecondaryFromWeakDecay()){
+                        fTrueSecHDist->Fill(hdistpoint);
+                    }
+                }
                 if(TMath::Abs(pdgcode) != 333) continue;
                 Int_t indexFirstDaughter = 0, indexSecondDaughter = 0;
                 indexFirstDaughter = AODMCtrack->GetDaughterFirst();
@@ -897,6 +983,10 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                     phi.daughter1TrackNum = indexFirstDaughter;
                     phi.daughter2TrackNum = indexSecondDaughter;
                     truePhi.push_back(phi);
+                    Double_t shifted_phi = phi.particle.Phi();
+                    if(shifted_phi < 0) shifted_phi += 2.0*TMath::Pi();
+                    Double_t distpoint[] = {phi.particle.Pt(), phi.particle.M(), shifted_phi, phi.particle.Eta(), phi.particle.Rapidity()};
+                    fTruePhiDist->Fill(distpoint);
                     if(TMath::Abs(firstDaughter->Eta()) <= KAON_ETA_CUT && TMath::Abs(secondDaughter->Eta()) <= KAON_ETA_CUT && TMath::Abs(phi.particle.Eta()) < KAON_ETA_CUT){
                         truePhiAcceptance.push_back(phi);
                     }
@@ -927,9 +1017,9 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
             }
         }
 
-    }else{
+    }else if(!IS_HH){
 
-        /* First Loop - Filling two vector for all Kaons (plus and minus) */
+        /* First Loop - Filling two vector for all Kaons (plus and minus) and checking for num triggers per event*/
         for(Int_t itrack = 0; itrack < ntracks; itrack++){
             vKaonTrack = 0x0;
             vKaonTrack = fVevent->GetTrack(itrack);
@@ -943,7 +1033,8 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
             aKaonTrack = dynamic_cast<AliAODTrack*>(vKaonTrack);
 
             if(fAOD)
-                if(!aKaonTrack->TestFilterMask(KAON_TRK_BIT)) continue; //mimimum cuts
+                if(aKaonTrack->TestBit(TRIG_TRK_BIT) && TMath::Abs(kaonTrack->Eta()) < 0.8 && kaonTrack->Pt() > 4.0) numTriggers++;
+            if(!aKaonTrack->TestFilterMask(KAON_TRK_BIT)) continue; //mimimum cuts
 
             if(fESD)
                 if(!esdTrackCutsH->AcceptTrack(eKaonTrack)) continue;
@@ -1005,13 +1096,18 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
             }
         }
     }
-        //if there aren't enough kaons to make pairs in this event, return
-        //if((kPlusList.size() + kMinusList.size()) < 2) return;
+    
+    fTrigPerEvent->Fill(numTriggers);
+
+    if(DO_SINGLE_TRIGGER && numTriggers > 1) return;
+
+    //if there aren't enough kaons to make pairs in this event, return
+    //if((kPlusList.size() + kMinusList.size()) < 2) return;
 
 
-        // Go through the Kaon lists and create the phi candidates and like sign pairs
-        // Also fill in the US and LS K pair distribution histograms
-    if(!IS_MC_TRUE){    
+    // Go through the Kaon lists and create the phi candidates and like sign pairs
+    // Also fill in the US and LS K pair distribution histograms
+    if(!IS_MC_TRUE && !IS_HH){    
         AliPhiContainer phi;
         for(Int_t i_kplus = 0; i_kplus < (int)kPlusList.size(); i_kplus++){
             for(Int_t j_kplus = i_kplus+1; j_kplus < (int)kPlusList.size(); j_kplus++){
@@ -1029,6 +1125,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                     distPoint[2] += 2.0*TMath::Pi(); //change from range (-Pi, Pi) to (0, 2Pi)
                 }
                 distPoint[3] = phi.particle.Eta();
+                distPoint[4] = phi.particle.Rapidity();
 
                 //accept only those kaon pairs that fall within our mass range:
                 if(phi.particle.M() > 1.07 || phi.particle.M()<0.98) continue;
@@ -1068,6 +1165,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                     distPoint[2] += 2.0*TMath::Pi();
                 }
                 distPoint[3] = phi.particle.Eta();
+                distPoint[4] = phi.particle.Rapidity(); 
 
                 //cut out all reconstructed phi at wide eta
                 if(TMath::Abs(phi.particle.Eta()) >0.8) continue;
@@ -1111,10 +1209,11 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                     distPoint[2] += 2.0*TMath::Pi();
                 }
                 distPoint[3] = phi.particle.Eta();
+                distPoint[4] = phi.particle.Rapidity();
 
                 //cut out all reconstructed phi at wide eta
                 if(TMath::Abs(phi.particle.Eta()) >0.8) continue;
-                
+
                 //accept only those kaon pairs that fall within our mass range for our phi list:
                 if(phi.particle.M() < 1.07 && phi.particle.M() > 0.98){ 
                     //check for eta-phi range set for efficiency crosscheck
@@ -1147,6 +1246,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
         fUSpairsPerEvent->Fill(phiCandidates.size());
 
     }
+
     ///////////////////////////////
     // Building d-phi histograms //
     ///////////////////////////////
@@ -1169,13 +1269,13 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
     AliCFParticle *cfPart = 0x0;
     AliCFParticle *hhAssoc = new AliCFParticle(0.0, 0.0, 0.0, 0, 0);
 
-   /* if(IS_MC_TRUE){
+    /* Do Correlations for MC case using the MCArray information */
+    if(IS_MC_TRUE){
         TClonesArray* MCArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
         if(!MCArray){
             AliError("Array of MC particles not found");
             return;
         }
-
         for(Int_t imcpart=0; imcpart< MCArray->GetEntries(); imcpart++){
             AliAODMCParticle *AODMCtrig = (AliAODMCParticle*)MCArray->At(imcpart);
             Int_t triggerpdgcode = TMath::Abs(AODMCtrig->GetPdgCode());
@@ -1185,16 +1285,45 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                 trigPoint[2] = AODMCtrig->Eta();
                 fTrigDist->Fill(trigPoint);
 
-                Bool_t isTrueDaughter = MakeCorrelations(imcpart, AODMCtrig, truePhi, fDphiTrueHPhi[indexZVtx], Zvertex);
-                Bool_t isTrueAcceptanceDaughter = MakeCorrelations(imcpart, AODMCtrig, truePhiAcceptance, fDphiTrueAcceptanceHPhi[indexZVtx], Zvertex);
-                if(!isTrueAcceptanceDaughter){
-                    cfPart = new AliCFParticle(AODMCtrig->Pt(), AODMCtrig->Eta(), AODMCtrig->Phi(), AODMCtrig->Charge(), 0);
-                    fArrayTrueTracksMix->Add(cfPart);
-                  }
-
+                if(IS_HH){
+                    for(Int_t iassoc = 0; iassoc< MCArray->GetEntries(); iassoc++){
+                        if(iassoc == imcpart) continue;
+                        AliAODMCParticle* AODMCassoc = (AliAODMCParticle*)MCArray->At(iassoc);
+                        Int_t assocpdgcode = TMath::Abs(AODMCassoc->GetPdgCode());
+                        if((TMath::Abs(assocpdgcode)==211 || TMath::Abs(assocpdgcode)==2212 || TMath::Abs(assocpdgcode)==11 || TMath::Abs(assocpdgcode)==321 || TMath::Abs(assocpdgcode)==13) && TMath::Abs(AODMCassoc->Eta()) < 0.8 && AODMCassoc->Pt() > 1.0 && AODMCassoc->IsPhysicalPrimary()){
+                            hhdphi_point[0] = trigPoint[0];
+                            hhdphi_point[1] = AODMCassoc->Pt();
+                            hhdphi_point[2] = trigPoint[1] - AODMCassoc->Phi();
+                            if(hhdphi_point[2] < -TMath::Pi()/2.0){
+                                hhdphi_point[2] += 2.0*TMath::Pi();
+                            }else if(hhdphi_point[2] > 3.0*TMath::Pi()/2.0){
+                                hhdphi_point[2] -= 2.0*TMath::Pi();
+                            }
+                            hhdphi_point[3] = trigPoint[2] - AODMCassoc->Eta();
+                            fDphiHH[indexZVtx]->Fill(hhdphi_point);
+                            cfPart = new AliCFParticle(AODMCtrig->Pt(), AODMCtrig->Eta(), AODMCtrig->Phi(), AODMCtrig->Charge(), 0);
+                            fTrigHHDist->Fill(AODMCtrig->Pt(), Zvertex);
+                            hhAssoc->SetPt(AODMCassoc->Pt());
+                            hhAssoc->SetEta(AODMCassoc->Eta());
+                            hhAssoc->SetPhi(AODMCassoc->Phi());
+                            hhAssoc->SetCharge(AODMCassoc->Charge());
+                            if(fHHPoolMgr->GetEventPool(multPercentile, Zvertex)->IsReady()){
+                                MakeHHMixCorrelations(hhAssoc, fDphiHHMixed[indexZVtx], multPercentile, Zvertex);
+                            }
+                            fArrayHHTracksMix->Add(cfPart);
+                        }
+                    }
+                }else{
+                    Bool_t isTrueDaughter = MakeCorrelations(imcpart, AODMCtrig, truePhi, fDphiTrueHPhi[indexZVtx], Zvertex);
+                    Bool_t isTrueAcceptanceDaughter = MakeCorrelations(imcpart, AODMCtrig, truePhiAcceptance, fDphiTrueAcceptanceHPhi[indexZVtx], Zvertex);
+                    if(!isTrueAcceptanceDaughter){
+                        cfPart = new AliCFParticle(AODMCtrig->Pt(), AODMCtrig->Eta(), AODMCtrig->Phi(), AODMCtrig->Charge(), 0);
+                        fArrayTrueTracksMix->Add(cfPart);
+                    }
+                }
             }
         }
-    }else{*/
+    }else{
         for (Int_t itrack = 0; itrack < ntracks; itrack++) {
 
             VtriggerTrack = 0x0;
@@ -1207,6 +1336,17 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
             triggerTrack = dynamic_cast<AliVTrack*>(VtriggerTrack);
             etriggerTrack = dynamic_cast<AliESDtrack*>(VtriggerTrack);
             atriggerTrack = dynamic_cast<AliAODTrack*>(VtriggerTrack);
+            
+            //Hadron PT histograms for different event cases
+            if(triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8 && atriggerTrack->TestFilterMask(ASSOC_TRK_BIT)){
+                fHadronPT->Fill(triggerTrack->Pt());
+                if(numTriggers > 0){
+                    fHadronTrigPT->Fill(triggerTrack->Pt());
+                    if(phiCandidates.size() > 0){
+                        fHadronTrigPhiPT->Fill(triggerTrack->Pt());
+                    }
+                }
+            }
 
             //fill hybrid track histos if the track is hybridTPC
             if(triggerTrack->Pt() > 0.15 && TMath::Abs(triggerTrack->Eta()) < 0.8 && atriggerTrack->IsHybridTPCConstrainedGlobal()){
@@ -1237,7 +1377,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
 
             if(fESD)
                 if(!esdTrackCutsH->AcceptTrack(etriggerTrack))continue;
-                
+
             ////////////////////
             //Track properties//
             ////////////////////
@@ -1249,6 +1389,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                 //fTrkPt->Fill(triggerTrack->Pt());
                 //fTrketa->Fill(triggerTrack->Eta());
                 //fTrkphi->Fill(triggerTrack->Phi());
+
                 fdEdx->Fill(triggerTrack->P(),dEdx);
                 fTPCNpts->Fill(triggerTrack->P(),triggerTrack->GetTPCsignalN());
 
@@ -1261,7 +1402,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                 trigPoint[1] = triggerTrack->Phi();
                 trigPoint[2] = triggerTrack->Eta();
                 Float_t weight = 1.0;
-                if(triggerTrack->Pt() < 12.0 && ftrigEff !=0){ //&& !IS_MC_TRUE && !IS_MC_KAON){
+                if(triggerTrack->Pt() < 12.0 && ftrigEff !=0){ //&& !IS_MC_TRUE && !IS_MC_KAON)
                     if(ftrigEff->Eval(triggerTrack->Pt()) == 0){
                         AliFatal(Form("Trigger Efficiency Evaluated to 0 for pT %f", triggerTrack->Pt()));
                     }else{
@@ -1289,8 +1430,8 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                         isTriggerDaughter = MakeCorrelations(itrack, VtriggerTrack, phiCandidates, fDphiHPhi[indexZVtx], Zvertex);
                         isTriggerLSDaughter = MakeCorrelations(itrack, VtriggerTrack, phiLikeSignCandidates, fDphiHKK[indexZVtx], Zvertex);
                     }
-                    
-                    
+
+
                     if(!isTriggerDaughter){
                         cfPart = new AliCFParticle(VtriggerTrack->Pt(), VtriggerTrack->Eta(), VtriggerTrack->Phi(), VtriggerTrack->Charge(), 0);
                         fTrigSameUSDist->Fill(VtriggerTrack->Pt(), Zvertex); //filled once per trigger, only if the trigger isn't a US pair daughter
@@ -1349,9 +1490,44 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
                     }
                 }
             }
-        } //track loop
-        delete hhAssoc;
+        }   //track loop
+    }
+    delete hhAssoc;
     //}
+
+
+    //if there was a trigger, fill additional inclusive histograms
+    if(numTriggers>0){ 
+        if(phiCandidates.size() >0 ){
+            for(int iphi = 0; iphi < phiCandidates.size(); iphi++){
+                distPoint[0] = phiCandidates[iphi].particle.Pt();
+                distPoint[1] = phiCandidates[iphi].particle.M();
+                distPoint[2] = phiCandidates[iphi].particle.Phi();
+                if(distPoint[2] < 0){
+                    distPoint[2] += 2.0*TMath::Pi();
+                }
+                distPoint[3] = phiCandidates[iphi].particle.Eta();
+                distPoint[4] = phiCandidates[iphi].particle.Rapidity();
+                fKKUSTrigDist->Fill(distPoint);
+            }
+        }
+
+        if(phiLikeSignCandidates.size() >0){
+            for(int iphi = 0; iphi < phiLikeSignCandidates.size(); iphi++){
+                distPoint[0] = phiLikeSignCandidates[iphi].particle.Pt();
+                distPoint[1] = phiLikeSignCandidates[iphi].particle.M();
+                distPoint[2] = phiLikeSignCandidates[iphi].particle.Phi();
+                if(distPoint[2] < 0){
+                    distPoint[2] += 2.0*TMath::Pi();
+                }
+                distPoint[3] = phiLikeSignCandidates[iphi].particle.Eta();
+                distPoint[4] = phiLikeSignCandidates[iphi].particle.Rapidity();
+                fKKLSTrigDist->Fill(distPoint);
+            }
+        }
+
+        
+    }
 
     ntracks = fVevent->GetNumberOfTracks();
 
@@ -1428,7 +1604,7 @@ void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
     PostData(1, fOutputList);
 }    
 //________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr::Terminate(Option_t *) 
+void AliAnalysisTaskHadronPhiCorr_current::Terminate(Option_t *) 
 {
     // Draw result to the screen
     // Called once at the end of the query

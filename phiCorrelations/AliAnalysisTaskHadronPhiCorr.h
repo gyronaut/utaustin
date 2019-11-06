@@ -1,5 +1,5 @@
-#ifndef AliAnalysisTaskHadronPhiCorr_cxx
-#define AliAnalysisTaskHadronPhiCorr_cxx
+#ifndef AliAnalysisTaskHadronPhiCorr_current_cxx
+#define AliAnalysisTaskHadronPhiCorr_current_cxx
 
 //QA task for EMCAL electron analysis
 #include "AliAnalysisTaskSE.h"
@@ -18,11 +18,11 @@ class AliCFParticle;
 class AliAODMCParticle;
 class AliMultSelection;
 
-class AliAnalysisTaskHadronPhiCorr : public AliAnalysisTaskSE {
+class AliAnalysisTaskHadronPhiCorr_current : public AliAnalysisTaskSE {
 public:
-    AliAnalysisTaskHadronPhiCorr();
-    AliAnalysisTaskHadronPhiCorr(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh);
-    virtual ~AliAnalysisTaskHadronPhiCorr();
+    AliAnalysisTaskHadronPhiCorr_current();
+    AliAnalysisTaskHadronPhiCorr_current(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh);
+    virtual ~AliAnalysisTaskHadronPhiCorr_current();
     
     virtual void   UserCreateOutputObjects();
     virtual void   UserExec(Option_t *option);
@@ -70,6 +70,8 @@ public:
     void SetMultLow(Float_t multLow) { MULT_LOW = multLow; };
     void SetMultHigh(Float_t multHigh) { MULT_HIGH = multHigh; };
 
+    void SetSingleTrigger(Bool_t doSingleTrigger) { DO_SINGLE_TRIGGER = doSingleTrigger; };
+
     void LoadEfficiencies(TFile* filename);
 
 private:
@@ -78,6 +80,8 @@ private:
     Bool_t IS_MC_KAON;
     Bool_t IS_MC_KTRACK;
     Bool_t USE_ACCPT;
+    
+    Bool_t DO_SINGLE_TRIGGER;
 
     Bool_t IS_HH;
     Float_t MULT_LOW;
@@ -133,7 +137,7 @@ private:
     TH1F        *fVtxX;//!Vertex x
     TH1F        *fVtxY;//!Vertex y
     TH1F        *fVtxZmixbins;//! Vertex z, mixing bins
-    TH2F        *fTrigMulti;//!trigger multiplicity
+    TH2F        *fTrigMulti;//!trigger 
     TH1F        *fTrkPt;//!track pt
     TH1F        *fTrketa;//!track eta
     TH1F        *fTrkphi;//!track phi
@@ -145,11 +149,17 @@ private:
     TH1F        *fHybridGlobalTrkphi;//!hybridGlobal track phi
     TH2F        *fdEdx;//!dedx vs pt
     TH2F        *fTPCNpts;//!TPC Npoints used for dedx
+
+    TH1D        *fHadronPT;//!Hadron PT distribution
+    TH1D        *fHadronTrigPT;//!Hadron PT distribution for events with triggers
+    TH1D        *fHadronTrigPhiPT;//!Hadron PT distribution for events with triggers and phi candidate
+
     TH3F        *fKaonPID;//!Kaon PID
     TH3F        *fKaonDist;//!Kaon pt, phi, eta
     TH2F        *fTPCKaonNSig;//!TPC Nsigma
 
     THnSparseF  *fTrigDist;//! trigger distribution
+    TH1D        *fTrigPerEvent;//! trigger tracks per event
     TH2D        *fTrigSameUSDist;//! trigger count for same dist, US pairs
     TH2D        *fTrigSameLSDist;//! trigger count for same dist, LS pairs
     TH2D        *fTrigHHDist;//! trigger count for hh pairs
@@ -166,10 +176,17 @@ private:
 
     THnSparseF  *fKKUSDist;//! unlike sign kaon distribution
     THnSparseF  *fKKLSDist;//! like sign kaon distribution
+    THnSparseF  *fKKUSTrigDist;//! unlike sign kaon distribution for events with trigger
+    THnSparseF  *fKKLSTrigDist;//! like sign kaon distribution for events with trigger
     TH1D        *fkplusPerEvent;//! K+ per Event
     TH1D        *fkminusPerEvent;//! K- per Event
     TH1D        *fLSpairsPerEvent;//! LS pairs per Event in mass range
     TH1D        *fUSpairsPerEvent;//! US pairs per Event in mass range
+
+    THnSparseF  *fTruePhiDist;//! Distribution for MC True phi's
+    THnSparseF  *fTrueHDist;//! Distriubution for MC True hadrons
+    THnSparseF  *fTruePrimHDist;//! Distriubution for MC True Physical Primary hadrons
+    THnSparseF  *fTrueSecHDist;//! Distriubution for MC True Secondary hadrons
     
     THnSparseF  **fDphiHPhi;//! delta-phi distribution with unlike sign kaon pairs
     THnSparseF  **fDphiTrueHPhi;//! delta-phi distribution with true MC phi
@@ -181,10 +198,10 @@ private:
     THnSparseF  **fDphiHH;//! hadron-hadron correlation
     THnSparseF  **fDphiHHMixed;//! hadron-hadron mixed correlation
 
-    AliAnalysisTaskHadronPhiCorr(const AliAnalysisTaskHadronPhiCorr&); // not implemented
-    AliAnalysisTaskHadronPhiCorr& operator=(const AliAnalysisTaskHadronPhiCorr&); // not implemented
+    AliAnalysisTaskHadronPhiCorr_current(const AliAnalysisTaskHadronPhiCorr_current&); // not implemented
+    AliAnalysisTaskHadronPhiCorr_current& operator=(const AliAnalysisTaskHadronPhiCorr_current&); // not implemented
    
-    ClassDef(AliAnalysisTaskHadronPhiCorr, 3); // example of analysis
+    ClassDef(AliAnalysisTaskHadronPhiCorr_current, 3); // example of analysis
 };
 
 #endif
