@@ -1,24 +1,24 @@
 void massPlotsKK(){
 
     TFile *file1 = new TFile("20170721_KKbarAdded2_masswidth_recon_pf100_scaled.root");
-    TH1D* mass1 = file1->Get("kstar0mass");
+    TH1D* mass1 = (TH1D*)file1->Get("kstar0mass");
     mass1->SetName("mwScaled");
     mass1->SetTitle("Fit Mass Peak for K*^{0}");
     mass1->SetMarkerStyle(20);
     mass1->SetMarkerSize(1.5);
     mass1->SetMarkerColor(1);
-    TH1D* width1 = file1->Get("kstar0width");
+    TH1D* width1 = (TH1D*)file1->Get("kstar0width");
     width1->SetName("mwWidthScaled");
     width1->SetTitle("Fit Width for K*^{0}");
     width1->SetMarkerStyle(20);
     width1->SetMarkerSize(1.5);
     width1->SetMarkerColor(1);
-    TH1D* single1 = file1->Get("ptbin21particle5");
+    TH1D* single1 = (TH1D*)file1->Get("ptbin21particle5");
     single1->SetLineColor(1);
     single1->SetMarkerStyle(21);
     single1->SetMarkerSize(0.3);
     single1->SetLineWidth(3);
-    TH1D* othersingle1 = file1->Get("ptbin05particle5");
+    TH1D* othersingle1 = (TH1D*)file1->Get("ptbin05particle5");
     othersingle1->SetLineColor(1);
     othersingle1->SetMarkerStyle(21);
     othersingle1->SetMarkerSize(0.3);
@@ -33,25 +33,25 @@ void massPlotsKK(){
     otherfit1->SetLineWidth(4);
 
     TFile *file2 = new TFile("20170721_KKbarAdded2_masswidth_recon_pf100_scaled_error05.root");
-    TH1D* mass2 = file2->Get("kstar0mass");
+    TH1D* mass2 = (TH1D*)file2->Get("kstar0mass");
     mass2->SetName("mwError05");
     mass2->SetTitle("Fit Mass Peak for K*^{-}");
     mass2->SetMarkerStyle(33);
     mass2->SetMarkerSize(1.5);
     mass2->SetLineColor(kGreen-2);
     mass2->SetMarkerColor(kGreen-2);
-    TH1D* width2 = file2->Get("kstar0width");
+    TH1D* width2 = (TH1D*)file2->Get("kstar0width");
     width2->SetName("mwWidth05");
     width2->SetTitle("Fit Width for K*^{0}");
     width2->SetMarkerStyle(33);
     width2->SetMarkerSize(1.5);
     width2->SetMarkerColor(kGreen-2);
     width2->SetLineColor(kGreen-2);
-    TH1D* single2 = file2->Get("ptbin21particle5");
+    TH1D* single2 = (TH1D*)file2->Get("ptbin21particle5");
     single2->SetLineColor(17);
     single2->SetFillColor(17);
     single2->SetLineWidth(3);
-    TH1D* othersingle2 = file2->Get("ptbin05particle5");
+    TH1D* othersingle2 = (TH1D*)file2->Get("ptbin05particle5");
     othersingle2->SetLineColor(17);
     othersingle2->SetFillColor(17);
     othersingle2->SetLineWidth(3);
@@ -67,25 +67,25 @@ void massPlotsKK(){
 
 
     TFile *file3 = new TFile("20170721_KKbarAdded2_simplewidth_recon_pf100_scaled_error05.root");
-    TH1D* mass3 = file3->Get("kstar0mass");
+    TH1D* mass3 = (TH1D*)file3->Get("kstar0mass");
     mass3->SetName("swError05");
     mass3->SetTitle("simple width, error: 5%");
     mass3->SetMarkerStyle(21);
     mass3->SetMarkerSize(1.5);
     mass3->SetMarkerColor(4);
     mass3->SetLineColor(4);
-    TH1D* width3 = file3->Get("kstar0collWidth");
+    TH1D* width3 = (TH1D*)file3->Get("kstar0collWidth");
     width3->SetName("swWidth05");
     width3->SetTitle("Fit Width for (K*^{0} + K*^{0})");
     width3->SetMarkerStyle(21);
     width3->SetMarkerSize(1.5);
     width3->SetMarkerColor(4);
     width3->SetLineColor(4);
-    TF1* fit3 = file3->Get("fitPTbin2100particle5");
+    TF1* fit3 = (TF1*)file3->Get("fitPTbin2100particle5");
     fit3->SetLineColor(4);
     fit3->SetLineStyle(7);
     fit3->SetLineWidth(4);
-    TF1* otherfit3 = file3->Get("fitPTbin500particle5");
+    TF1* otherfit3 = (TF1*)file3->Get("fitPTbin500particle5");
     otherfit3->SetLineColor(4);
     otherfit3->SetLineStyle(7);
     otherfit3->SetLineWidth(4);
@@ -100,25 +100,25 @@ void massPlotsKK(){
     mass4->SetMarkerColor(3);
 */
     TFile *file5 = new TFile("20170721_KKbarAdded2_fixedwidth42_recon_pf100_scaled_error05.root");
-    TH1D* mass5 = file5->Get("kstar0mass");
+    TH1D* mass5 = (TH1D*)file5->Get("kstar0mass");
     mass5->SetName("fwError05");
     mass5->SetTitle("fixed width, error: 5%");
     mass5->SetMarkerStyle(22);
     mass5->SetMarkerSize(1.5);
     mass5->SetMarkerColor(2);
     mass5->SetLineColor(2);
-    TH1D* width5 = file5->Get("kstar0collWidth");
+    TH1D* width5 = (TH1D*)file5->Get("kstar0collWidth");
     width5->SetName("fwWidth05");
     width5->SetTitle("Fit Width for K*^0");
     width5->SetMarkerStyle(22);
     width5->SetMarkerSize(1.5);
     width5->SetMarkerColor(2);
     width5->SetLineColor(2);
-    TF1* fit5 = file5->Get("fitPTbin2100particle5");
+    TF1* fit5 = (TF1*)file5->Get("fitPTbin2100particle5");
     fit5->SetLineColor(2);
     fit5->SetLineStyle(3);
     fit5->SetLineWidth(4);
-    TF1* otherfit5 = file5->Get("fitPTbin500particle5");
+    TF1* otherfit5 = (TF1*)file5->Get("fitPTbin500particle5");
     otherfit5->SetLineColor(2);
     otherfit5->SetLineStyle(3);
     otherfit5->SetLineWidth(4);
@@ -361,9 +361,10 @@ void massPlotsKK(){
 
     cMassWidth->Divide(2, 1, 0.0);
     
-    cMassWidth->cd(1)->SetMargin(0.1827, 0.0, 0.1543, 0.0994);
+    cMassWidth->cd(1)->SetMargin(0.1827, 0.011, 0.1543, 0.0994);
     cMassWidth->cd(1)->SetTicks(0,1);
    
+    mass1->GetXaxis()->SetRangeUser(0, 4.0);
     mass1->Draw("P E1");
     mass3->Draw("SAME P E1");
     //mass4->Draw("SAME");
@@ -374,7 +375,12 @@ void massPlotsKK(){
     masstext->Draw();
     legend->Draw();
 
-    cMassWidth->cd(2)->SetMargin(0.0, 0.1968, 0.1543, 0.0994);
+    TPad* pe = new TPad("pe", "pe", 0.935872,  0.095, 1, 0.1513);
+    pe->Draw();
+    pe->SetFillColor(kWhite);
+    pe->SetBorderMode(0);
+
+    cMassWidth->cd(2)->SetMargin(0.013, 0.1968, 0.1543, 0.0994);
     cMassWidth->cd(2)->SetTicks(0,1);
 
     width1->Draw("P E1 Y+");

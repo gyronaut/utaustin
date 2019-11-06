@@ -1,6 +1,6 @@
 void massPlots(){
 
-    TFile *file1 = new TFile("20170527_Kstar0_recon_masswidth_pf100_wide_scaled.root");
+    TFile *file1 = new TFile("20170527_Kstar0_masswidth_pf160_wide_scaled.root");
     TH1D* mass1 = file1->Get("kstar0mass");
     mass1->SetName("mwScaled");
     mass1->SetTitle("Fit Mass Peak for K*^{0}");
@@ -13,18 +13,18 @@ void massPlots(){
     width1->SetMarkerStyle(20);
     width1->SetMarkerSize(1.5);
     width1->SetMarkerColor(1);
-    TH1D* single1 = file1->Get("ptbin21particle3");
+    TH1D* single1 = file1->Get("ptbin21particle4");
     single1->SetLineColor(1);
     single1->SetMarkerStyle(21);
     single1->SetMarkerSize(0.3);
     single1->SetLineWidth(3);
-    TH1D* othersingle1 = file1->Get("ptbin05particle3");
+    TH1D* othersingle1 = file1->Get("ptbin05particle4");
     othersingle1->SetLineColor(1);
     othersingle1->SetMarkerStyle(21);
     othersingle1->SetMarkerSize(0.3);
     othersingle1->SetLineWidth(3);
-    TF1* fit1 = single1->GetFunction("fitPTbin2100particle3");
-    TF1* otherfit1 = othersingle1->GetFunction("fitPTbin500particle3");
+    TF1* fit1 = single1->GetFunction("fitPTbin2100particle4");
+    TF1* otherfit1 = othersingle1->GetFunction("fitPTbin500particle4");
     fit1->SetBit(TF1::kNotDraw);
     fit1->SetLineColor(kGray+3);
     fit1->SetLineWidth(4);
@@ -32,7 +32,7 @@ void massPlots(){
     otherfit1->SetLineColor(kGray+3);
     otherfit1->SetLineWidth(4);
 
-    TFile *file2 = new TFile("20170527_Kstar0_recon_masswidth_pf100_wide_scaled_error05.root");
+    TFile *file2 = new TFile("20170527_Kstar0_masswidth_pf160_wide_scaled_error05.root");
     TH1D* mass2 = file2->Get("kstar0mass");
     mass2->SetName("mwError05");
     mass2->SetTitle("Fit Mass Peak for K*^{-}");
@@ -47,16 +47,16 @@ void massPlots(){
     width2->SetMarkerSize(1.5);
     width2->SetMarkerColor(kGreen-2);
     width2->SetLineColor(kGreen-2);
-    TH1D* single2 = file2->Get("ptbin21particle3");
+    TH1D* single2 = file2->Get("ptbin21particle4");
     single2->SetLineColor(17);
     single2->SetFillColor(17);
     single2->SetLineWidth(3);
-    TH1D* othersingle2 = file2->Get("ptbin05particle3");
+    TH1D* othersingle2 = file2->Get("ptbin05particle4");
     othersingle2->SetLineColor(17);
     othersingle2->SetFillColor(17);
     othersingle2->SetLineWidth(3);
-    TF1* fit2 = single2->GetFunction("fitPTbin2100particle3");
-    TF1* otherfit2 = othersingle2->GetFunction("fitPTbin500particle3");
+    TF1* fit2 = single2->GetFunction("fitPTbin2100particle4");
+    TF1* otherfit2 = othersingle2->GetFunction("fitPTbin500particle4");
     fit2->SetLineColor(kGreen-2);
     fit2->SetLineStyle(5);
     fit2->SetLineWidth(4);
@@ -66,7 +66,7 @@ void massPlots(){
 
 
 
-    TFile *file3 = new TFile("20170527_Kstar0_recon_simplewidth_pf100_wide_scaled_error05.root");
+    TFile *file3 = new TFile("20170527_Kstar0_simplewidth_pf160_wide_scaled_error05.root");
     TH1D* mass3 = file3->Get("kstar0mass");
     mass3->SetName("swError05");
     mass3->SetTitle("simple width, error: 5%");
@@ -81,25 +81,16 @@ void massPlots(){
     width3->SetMarkerSize(1.5);
     width3->SetMarkerColor(4);
     width3->SetLineColor(4);
-    TF1* fit3 = file3->Get("fitPTbin2100particle3");
+    TF1* fit3 = file3->Get("fitPTbin2100particle4");
     fit3->SetLineColor(4);
     fit3->SetLineStyle(7);
     fit3->SetLineWidth(4);
-    TF1* otherfit3 = file3->Get("fitPTbin500particle3");
+    TF1* otherfit3 = file3->Get("fitPTbin500particle4");
     otherfit3->SetLineColor(4);
     otherfit3->SetLineStyle(7);
     otherfit3->SetLineWidth(4);
 
-/*
-    TFile *file4 = new TFile("20170522_Kstar0_reconsimplewidth_recon_pf100_error01.root");
-    TH1D* mass4 = file4->Get("kstar0mass");
-    mass4->SetName("swError10");
-    mass4->SetTitle("simple width, error: 10%");
-    mass4->SetMarkerStyle(25);
-    mass4->SetMarkerSize(1.5);
-    mass4->SetMarkerColor(3);
-*/
-    TFile *file5 = new TFile("20170527_Kstar0_recon_fixedwidth_pf100_wide_scaled_error05.root");
+    TFile *file5 = new TFile("20170616_Kstar0_fixedwidth42_pf160_scaled_error05.root");
     TH1D* mass5 = file5->Get("kstar0mass");
     mass5->SetName("fwError05");
     mass5->SetTitle("fixed width, error: 5%");
@@ -114,42 +105,15 @@ void massPlots(){
     width5->SetMarkerSize(1.5);
     width5->SetMarkerColor(2);
     width5->SetLineColor(2);
-    TF1* fit5 = file5->Get("fitPTbin2100particle3");
+    TF1* fit5 = file5->Get("fitPTbin2100particle4");
     fit5->SetLineColor(2);
     fit5->SetLineStyle(3);
     fit5->SetLineWidth(4);
-    TF1* otherfit5 = file5->Get("fitPTbin500particle3");
+    TF1* otherfit5 = file5->Get("fitPTbin500particle4");
     otherfit5->SetLineColor(2);
     otherfit5->SetLineStyle(3);
     otherfit5->SetLineWidth(4);
-    /*
-    TFile *file6 = new TFile("20170522_Kstar0_reconfixedwidth_recon_pf100_error10.root");
-    TH1D* mass6 = file6->Get("kstar0mass");
-    mass6->SetName("fwError05");
-    mass6->SetTitle("fixed width, error: 10%");
-    mass6->SetMarkerStyle(26);
-    mass6->SetMarkerSize(1.5);
-    mass6->SetMarkerColor(3);
-
-    TFile *file7 = new TFile("20170522_Kstar0_reconfixedwidth70_recon_pf100_scaled.root");
-    TH1D* mass7 = file7->Get("kstar0mass");
-    mass7->SetName("fw70Error05");
-    mass7->SetMarkerStyle(22);
-    mass7->SetMarkerSize(1.5);
-    mass7->SetMarkerColor(kRed+3);
-    TH1D* width7 = file7->Get("kstar0collWidth");
-    width7->SetName("fw70Width05");
-    width7->SetTitle("Fit Width for K*^{0}");
-    width7->SetMarkerStyle(22);
-    width7->SetMarkerSize(1.5);
-    width7->SetMarkerColor(kRed+3);
-    width7->SetLineColor(2);
-    TF1* fit7 = file7->Get("fitPTbin2100particle3");
-    fit7->SetLineColor(kRed+3);
-    fit7->SetLineStyle(3);
-    fit7->SetLineWidth(3);
-*/
-   
+  
 
 
     TCanvas *cMass = new TCanvas("cMass", "cMass", 50, 50, 600, 600);
@@ -199,7 +163,7 @@ void massPlots(){
     //mass7->Draw("SAME P E1");
     TPaveText *masstext = new TPaveText(0.5520, 0.7208, 0.8389, 0.8517, "NDC");
     masstext->AddText("K*^{0} Mass");
-    masstext->AddText("Reconstructed");
+    masstext->AddText("At Decay Point");
     masstext->SetBorderSize(0);
     masstext->SetFillStyle(0);
     masstext->SetTextSizePixels(36);
@@ -240,7 +204,7 @@ void massPlots(){
 
     TPaveText *widthtext = new TPaveText(0.5822, 0.7024, 0.8675, 0.8333, "NDC");
     widthtext->AddText("K*^{0} Width");
-    widthtext->AddText("Reconstructed");
+    widthtext->AddText("At Decay Point");
     widthtext->SetBorderSize(0);
     widthtext->SetFillStyle(0);
     widthtext->SetTextSizePixels(36);

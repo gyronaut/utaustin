@@ -1,17 +1,17 @@
 void ptPlots(){
-    TFile *file1 = new TFile("20170527_Kstar0bar_recon_masswidth_pf100_wide_scaled.root");
-    TH1D* single1 = file1->Get("ptbin21particle5");
+    TFile *file1 = new TFile("20170527_Kstar0_recon_masswidth_pf100_wide_scaled.root");
+    TH1D* single1 = file1->Get("ptbin21particle3");
     single1->SetLineColor(1);
     single1->SetMarkerStyle(21);
     single1->SetMarkerSize(0.3);
     single1->SetLineWidth(3);
-    TH1D* othersingle1 = file1->Get("ptbin05particle5");
+    TH1D* othersingle1 = file1->Get("ptbin05particle3");
     othersingle1->SetLineColor(1);
     othersingle1->SetMarkerStyle(21);
     othersingle1->SetMarkerSize(0.3);
     othersingle1->SetLineWidth(3);
-    TF1* fit1 = single1->GetFunction("fitPTbin2100particle5");
-    TF1* otherfit1 = othersingle1->GetFunction("fitPTbin500particle5");
+    TF1* fit1 = single1->GetFunction("fitPTbin2100particle3");
+    TF1* otherfit1 = othersingle1->GetFunction("fitPTbin500particle3");
     fit1->SetBit(TF1::kNotDraw);
     fit1->SetLineColor(kGray+3);
     fit1->SetLineWidth(4);
@@ -19,17 +19,17 @@ void ptPlots(){
     otherfit1->SetLineColor(kGray+3);
     otherfit1->SetLineWidth(4);
 
-    TFile *file2 = new TFile("20170527_Kstar0bar_recon_masswidth_pf100_wide_scaled_error05.root");
-    TH1D* single2 = file2->Get("ptbin21particle5");
+    TFile *file2 = new TFile("20170527_Kstar0_recon_masswidth_pf100_wide_scaled_error05.root");
+    TH1D* single2 = file2->Get("ptbin21particle3");
     single2->SetLineColor(17);
     single2->SetFillColor(17);
     single2->SetLineWidth(3);
-    TH1D* othersingle2 = file2->Get("ptbin05particle5");
+    TH1D* othersingle2 = file2->Get("ptbin05particle3");
     othersingle2->SetLineColor(17);
     othersingle2->SetFillColor(17);
     othersingle2->SetLineWidth(3);
-    TF1* fit2 = single2->GetFunction("fitPTbin2100particle5");
-    TF1* otherfit2 = othersingle2->GetFunction("fitPTbin500particle5");
+    TF1* fit2 = single2->GetFunction("fitPTbin2100particle3");
+    TF1* otherfit2 = othersingle2->GetFunction("fitPTbin500particle3");
     fit2->SetLineColor(kGreen-2);
     fit2->SetLineStyle(5);
     fit2->SetLineWidth(6);
@@ -37,40 +37,40 @@ void ptPlots(){
     otherfit2->SetLineWidth(6);
     otherfit2->SetLineStyle(5);
 
-    TFile *file3 = new TFile("20170527_Kstar0bar_recon_simplewidth_pf100_wide_scaled_error05.root");
-    TF1* fit3 = file3->Get("fitPTbin2100particle5");
+    TFile *file3 = new TFile("20170527_Kstar0_recon_simplewidth_pf100_wide_scaled_error05.root");
+    TF1* fit3 = file3->Get("fitPTbin2100particle3");
     fit3->SetLineColor(4);
     fit3->SetLineStyle(7);
     fit3->SetLineWidth(6);
-    TF1* otherfit3 = file3->Get("fitPTbin500particle5");
+    TF1* otherfit3 = file3->Get("fitPTbin500particle3");
     otherfit3->SetLineColor(4);
     otherfit3->SetLineStyle(7);
     otherfit3->SetLineWidth(6);
 
-    TFile *file5 = new TFile("20170527_Kstar0bar_recon_fixedwidth_pf100_wide_scaled_error05.root");
-    TF1* fit5 = file5->Get("fitPTbin2100particle5");
+    TFile *file5 = new TFile("20170527_Kstar0_recon_fixedwidth_pf100_wide_scaled_error05.root");
+    TF1* fit5 = file5->Get("fitPTbin2100particle3");
     fit5->SetLineColor(2);
     fit5->SetLineStyle(3);
     fit5->SetLineWidth(6);
-    TF1* otherfit5 = file5->Get("fitPTbin500particle5");
+    TF1* otherfit5 = file5->Get("fitPTbin500particle3");
     otherfit5->SetLineColor(2);
     otherfit5->SetLineStyle(3);
     otherfit5->SetLineWidth(6);
 
     //KStar0 AT DECAY //
-    TFile *decayfile1 = new TFile("20170527_Kstar0bar_masswidth_pf160_scaled.root");
-    TH1D* decaysingle1 = decayfile1->Get("ptbin21particle5");
+    TFile *decayfile1 = new TFile("20170527_Kstar0_masswidth_pf160_scaled.root");
+    TH1D* decaysingle1 = decayfile1->Get("ptbin21particle4");
     decaysingle1->SetLineColor(1);
     decaysingle1->SetMarkerStyle(21);
     decaysingle1->SetMarkerSize(0.3);
     decaysingle1->SetLineWidth(3);
-    TH1D* otherdecaysingle1 = decayfile1->Get("ptbin05particle5");
+    TH1D* otherdecaysingle1 = decayfile1->Get("ptbin05particle4");
     otherdecaysingle1->SetLineColor(1);
     otherdecaysingle1->SetMarkerStyle(21);
     otherdecaysingle1->SetMarkerSize(0.3);
     otherdecaysingle1->SetLineWidth(3);
-    TF1* decayfit1 = decaysingle1->GetFunction("fitPTbin2100particle5");
-    TF1* otherdecayfit1 = otherdecaysingle1->GetFunction("fitPTbin500particle5");
+    TF1* decayfit1 = decaysingle1->GetFunction("fitPTbin2100particle4");
+    TF1* otherdecayfit1 = otherdecaysingle1->GetFunction("fitPTbin500particle4");
     decayfit1->SetBit(TF1::kNotDraw);
     decayfit1->SetLineColor(kGray+3);
     decayfit1->SetLineWidth(4);
@@ -78,17 +78,17 @@ void ptPlots(){
     otherdecayfit1->SetLineColor(kGray+3);
     otherdecayfit1->SetLineWidth(4);
 
-    TFile *decayfile2 = new TFile("20170527_Kstar0bar_masswidth_pf160_scaled_error05.root");
-    TH1D* decaysingle2 = decayfile2->Get("ptbin21particle5");
+    TFile *decayfile2 = new TFile("20170527_Kstar0_masswidth_pf160_scaled_error05.root");
+    TH1D* decaysingle2 = decayfile2->Get("ptbin21particle4");
     decaysingle2->SetLineColor(17);
     decaysingle2->SetFillColor(17);
     decaysingle2->SetLineWidth(3);
-    TH1D* otherdecaysingle2 = decayfile2->Get("ptbin05particle5");
+    TH1D* otherdecaysingle2 = decayfile2->Get("ptbin05particle4");
     otherdecaysingle2->SetLineColor(17);
     otherdecaysingle2->SetFillColor(17);
     otherdecaysingle2->SetLineWidth(3);
-    TF1* decayfit2 = decaysingle2->GetFunction("fitPTbin2100particle5");
-    TF1* otherdecayfit2 = otherdecaysingle2->GetFunction("fitPTbin500particle5");
+    TF1* decayfit2 = decaysingle2->GetFunction("fitPTbin2100particle4");
+    TF1* otherdecayfit2 = otherdecaysingle2->GetFunction("fitPTbin500particle4");
     decayfit2->SetLineColor(kGreen-2);
     decayfit2->SetLineStyle(5);
     decayfit2->SetLineWidth(6);
@@ -96,22 +96,22 @@ void ptPlots(){
     otherdecayfit2->SetLineWidth(4);
     otherdecayfit2->SetLineStyle(6);
 
-    TFile *decayfile3 = new TFile("20170527_Kstar0bar_simplewidth_pf160_scaled_error05.root");
-    TF1* decayfit3 = decayfile3->Get("fitPTbin2100particle5");
+    TFile *decayfile3 = new TFile("20170527_Kstar0_simplewidth_pf160_scaled_error05.root");
+    TF1* decayfit3 = decayfile3->Get("fitPTbin2100particle4");
     decayfit3->SetLineColor(4);
     decayfit3->SetLineStyle(7);
     decayfit3->SetLineWidth(6);
-    TF1* otherdecayfit3 = decayfile3->Get("fitPTbin500particle5");
+    TF1* otherdecayfit3 = decayfile3->Get("fitPTbin500particle4");
     otherdecayfit3->SetLineColor(4);
     otherdecayfit3->SetLineStyle(7);
     otherdecayfit3->SetLineWidth(6);
 
-    TFile *decayfile5 = new TFile("20170527_Kstar0bar_fixedwidth_pf160_scaled_error05.root");
-    TF1* decayfit5 = decayfile5->Get("fitPTbin2100particle5");
+    TFile *decayfile5 = new TFile("20170527_Kstar0_fixedwidth_pf160_scaled_error05.root");
+    TF1* decayfit5 = decayfile5->Get("fitPTbin2100particle4");
     decayfit5->SetLineColor(2);
     decayfit5->SetLineStyle(3);
     decayfit5->SetLineWidth(6);
-    TF1* otherdecayfit5 = decayfile5->Get("fitPTbin500particle5");
+    TF1* otherdecayfit5 = decayfile5->Get("fitPTbin500particle4");
     otherdecayfit5->SetLineColor(2);
     otherdecayfit5->SetLineStyle(3);
     otherdecayfit5->SetLineWidth(6);
@@ -231,7 +231,7 @@ void ptPlots(){
     othersingle1->SetStats(kFALSE);
     othersingle1->SetTitle("");
     othersingle1->GetYaxis()->SetTitleOffset(1.50);
-    othersingle1->GetYaxis()->SetLabelSize(0.05);
+    othersingle1->GetYaxis()->SetLabelSize(0.04);
     othersingle1->GetYaxis()->SetTitleSize(0.06);
     othersingle1->GetYaxis()->SetTitleFont(42);
     othersingle1->GetYaxis()->SetLabelFont(42);
@@ -241,7 +241,7 @@ void ptPlots(){
     othersingle1->GetXaxis()->SetTitleSize(0.06);
     othersingle1->GetXaxis()->SetLabelFont(42);
     othersingle1->GetXaxis()->SetTitleFont(42);
-    othersingle1->GetXaxis()->SetTitle("K^{-}#pi^{+} invariant mass (GeV/c^{2})");
+    othersingle1->GetXaxis()->SetTitle("K^{+}#pi^{-} invariant mass (GeV/c^{2})");
     othersingle1->Draw("E Y+");
     othersingle2->SetStats(kFALSE);
     othersingle2->GetXaxis()->SetRangeUser(0.61, 1.09);
@@ -256,35 +256,23 @@ void ptPlots(){
     //fit7->Draw("SAME");
 
     TPaveText *othertext = new TPaveText(0.3715, 0.7592, 0.6586, 0.8901, "NDC");
-    othertext->AddText("Reconstructed #bar{K}*^{0}");
+    othertext->AddText("Reconstructed K*^{0}");
     othertext->AddText("0.4 < p_{T} < 0.6 GeV/c");
     othertext->SetBorderSize(0);
     othertext->SetFillStyle(0);
-    othertext->GetLine(1)->SetTextSizePixels(28);
-    othertext->GetLine(0)->SetTextSizePixels(32);
+    othertext->GetLine(1)->SetTextSizePixels(24);
+    othertext->GetLine(0)->SetTextSizePixels(28);
   
     othertext->Draw();
-
+ 
     //Do DECAY part
     cotherSingle->cd(1)->SetMargin(0.1727, 0.0, 0.1326, 0.0977);
     cotherSingle->cd(1)->SetTicks(0,1);
-    TLegend *othersingleLegend = new TLegend(0.2048, 0.4223, 0.5884, 0.7400);
-    othersingleLegend->AddEntry(fit1, "Mass Dep. Width", "l");
-    othersingleLegend->AddEntry(fit2, "#splitline{Mass Dep. Width}{+5% Error}", "l");
-    othersingleLegend->AddEntry(fit3, "#splitline{Simple Width}{+5% Error}", "l");
-    othersingleLegend->AddEntry(fit5, "#splitline{Fixed #Gamma = 50 MeV/c^{2}}{+5% Error}", "l");
-    othersingleLegend->SetTextSizePixels(20);
-
-    TLegend *othersingleLegend2 = new TLegend(0.2430, 0.3351, 0.4940, 0.3892);
-    othersingleLegend2->AddEntry(othersingle2, "#splitline{Added Error}{(5% of peak bin)}", "f");
-    othersingleLegend2->SetFillStyle(0);
-    othersingleLegend2->SetBorderSize(0);
-    othersingleLegend2->SetTextSizePixels(20); 
 
     otherdecaysingle1->SetStats(kFALSE);
     otherdecaysingle1->SetTitle("");
     otherdecaysingle1->GetYaxis()->SetTitleOffset(1.50);
-    otherdecaysingle1->GetYaxis()->SetLabelSize(0.05);
+    otherdecaysingle1->GetYaxis()->SetLabelSize(0.04);
     otherdecaysingle1->GetYaxis()->SetTitleSize(0.06);
     otherdecaysingle1->GetYaxis()->SetTitleFont(42);
     otherdecaysingle1->GetYaxis()->SetLabelFont(42);
@@ -294,7 +282,7 @@ void ptPlots(){
     otherdecaysingle1->GetXaxis()->SetTitleSize(0.06);
     otherdecaysingle1->GetXaxis()->SetTitleFont(42);
     otherdecaysingle1->GetXaxis()->SetLabelFont(42);
-    otherdecaysingle1->GetXaxis()->SetTitle("K^{-}#pi^{+} invariant mass (GeV/c^{2})");
+    otherdecaysingle1->GetXaxis()->SetTitle("K^{+}#pi^{-} invariant mass (GeV/c^{2})");
     otherdecaysingle1->Draw("E");
     otherdecaysingle2->SetStats(kFALSE);
     otherdecaysingle2->GetXaxis()->SetRangeUser(0.61, 1.09);
@@ -309,15 +297,29 @@ void ptPlots(){
     //fit7->Draw("SAME");
 
     TPaveText *othertext = new TPaveText(0.5964, 0.7539, 0.8835, 0.8848, "NDC");
-    othertext->AddText("#bar{K}*^{0} at Decay Point");
+    othertext->AddText("K*^{0} at Decay Point");
     othertext->AddText("0.4 < p_{T} < 0.6 GeV/c");
     othertext->SetBorderSize(0);
     othertext->SetFillStyle(0);
     othertext->GetLine(1)->SetTextSizePixels(24);
     othertext->GetLine(0)->SetTextSizePixels(28);
   
+    othertext->Draw();
+
+    TLegend *othersingleLegend = new TLegend(0.2048, 0.4223, 0.5884, 0.7400);
+    othersingleLegend->AddEntry(fit1, "Mass Dep. Width", "l");
+    othersingleLegend->AddEntry(fit2, "Mass Dep. Width (+5% Error)", "l");
+    othersingleLegend->AddEntry(fit3, "Simple Width (+5% Error)", "l");
+    othersingleLegend->AddEntry(fit5, "Fixed #Gamma = 50 MeV/c^{2} (+5% Error)", "l");
+    othersingleLegend->SetTextSizePixels(20);
+
+    TLegend *othersingleLegend2 = new TLegend(0.2430, 0.3351, 0.4940, 0.3892);
+    othersingleLegend2->AddEntry(othersingle2, "#splitline{Added Error}{(5% of peak bin)}", "f");
+    othersingleLegend2->SetFillStyle(0);
+    othersingleLegend2->SetBorderSize(0);
+    othersingleLegend2->SetTextSizePixels(20); 
     othersingleLegend->Draw();
     othersingleLegend2->Draw();
-    othertext->Draw();
+
 
 }

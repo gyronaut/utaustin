@@ -44,13 +44,13 @@ void alicePlots(){
     aliceData->SetMarkerColor(kBlue-2);
     aliceData->SetLineColor(kBlue-2);
 
-    aliceData->GetYaxis()->SetRangeUser(-0.02, 0.015);
+    aliceData->GetYaxis()->SetRangeUser(-0.025, 0.015);
     aliceData->GetXaxis()->SetRangeUser(0, 5);
 
     TFile* phsd = new TFile("~/utaustin/resonancefits/finalplotting/20170721_KKbarAdded2_fixedwidth42_recon_pf100_scaled_error05.root");
     TH1D* mass = phsd->Get("kstar0mass");
     mass->SetName("mass");
-    mass->SetMarkerStyle(26);
+    mass->SetMarkerStyle(22);
     mass->SetMarkerSize(2.5);
     mass->SetMarkerColor(2);
     mass->SetLineColor(2);
@@ -69,10 +69,10 @@ void alicePlots(){
     TFile* phsd2 = new TFile("~/utaustin/resonancefits/finalplotting/20170616_KKbarAdded2_fixedwidth_recon_pf100_scaled_error05.root");
     TH1D* mass2 = phsd2->Get("kstar0mass");
     mass2->SetName("mass2");
-    mass2->SetMarkerStyle(22);
-    mass2->SetMarkerSize(2.5);
-    mass2->SetMarkerColor(2);
-    mass2->SetLineColor(2);
+    mass2->SetMarkerStyle(8);
+    mass2->SetMarkerSize(2);
+    mass2->SetMarkerColor(kBlack);
+    mass2->SetLineColor(kBlack);
     for(int j = 0; j<mass2->GetNbinsX(); j++){
         mass2->SetBinContent(j+1, (mass2->GetBinContent(j+1) - 0.892));
     }
@@ -95,12 +95,12 @@ void alicePlots(){
     aliceData->Draw("SAME PX");
     
 
-    TLegend* legend = new TLegend(0.5836, 0.1815, 0.9489, 0.3438);
+    TLegend* legend = new TLegend(0.4783, 0.1815, 0.9473, 0.3438);
     legend->SetMargin(0.2);
     legend->SetTextSizePixels(20);
     legend->AddEntry(aliceData, "ALICE data, 0-20%", "p");
-    legend->AddEntry(mass2, "Fit IV to PHSD: w in-med", "p");
     legend->AddEntry(mass, "Fit IV to PHSD: w/o in-med", "p");
+    legend->AddEntry(mass2, "Fit IV to PHSD: w in-med", "p");
     legend->Draw("SAME"); 
   
     TPaveText* text = new TPaveText(0.2554, 0.7243, 0.6006, 0.9162, "NDC");

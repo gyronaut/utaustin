@@ -129,8 +129,8 @@ int makeInvMassHistosNoBG(){
     particles[6] = "K*^{0} + #bar{K}*^{0}";
     particles[7] = "K*^{+} + K*^{-}";
 
-//    string folder = "/Users/jtblair/Downloads/ks_dndm/pt02/";
-    string folder = "/Users/jtblair/Downloads/kstar_reconstructed/pt02/";
+    string folder = "/Users/jtblair/Downloads/kstar_data/decayed/pt02/"; //K* = 4, K*bar = 5
+//    string folder = "/Users/jtblair/Downloads/kstar_data/reconstructed/pt02/"; //K* = 3, K*bar = 5
 
     string files[20];
     files[0] = "invm_[0.0,0.2].dat";
@@ -165,9 +165,9 @@ int makeInvMassHistosNoBG(){
     files[7] = "invm_[3.5,4.0].dat";
 */
 
-    Int_t PARTICLE_NUM = 6;
+    Int_t PARTICLE_NUM = 5;
 
-    TFile *output = new TFile("20170530_KKbar_fixedwidth_recon_pf100_scaled_error05.root", "RECREATE");
+    TFile *output = new TFile("20170721_Kstar0bar_fixedwidth42_pf160_scaled_error05.root", "RECREATE");
 
     TH1D *kstar0mass = new TH1D("kstar0mass", Form("Fit value of M*_{0} vs. p_{T} for %s", particles[PARTICLE_NUM].c_str()), NUM_PT_BINS, 0.0, 4.0);
     TH1D *kstar0width = new TH1D("kstar0width", Form("#Gamma_{tot}(M=M*_{0}) vs p_{T} for %s", particles[PARTICLE_NUM].c_str()), NUM_PT_BINS, 0.0, 4.0);
@@ -282,12 +282,12 @@ int makeInvMassHistosNoBG(){
 
             printf("mean PT: %f\n", meanPT);
 
-            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.65, 1.05, 5);
+            TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), FitFunRelBW, 0.68, 1.05, 5);
             //TF1 *fit = new TF1(Form("fitPTbin%d00particle%d", nfile*2+1, i), "gaus(0)", 0.86, 0.92);
 
 
             fit->SetParNames("BW Area", "Mass", "Width", "PT", "Temp");
-            fit->SetParameters(TMath::Power(10.0, (float)(nfile)/1.8), 0.89, 0.1, 0.5, 0.130);
+            fit->SetParameters(TMath::Power(10.0, (float)(nfile)/3.5), 0.89, 0.1, 0.5, 0.130);
             //fit->SetParNames("BW Area", "Mass", "Width");
             //fit->SetParameters(100, 0.89, 0.0474);
             //fit->SetParLimits(0, -10, 1.5e9);
@@ -298,10 +298,10 @@ int makeInvMassHistosNoBG(){
                 fit->SetParLimits(1, 0.82, 0.98);
             //}
             //fit->SetParLimits(2, 0.005, 0.15);
-            fit->FixParameter(2, 0.050);
+            fit->FixParameter(2, 0.042);
             fit->FixParameter(3, meanPT);
             //fit->SetParLimits(4, 0.05, 0.2);
-            fit->FixParameter(4, 0.100001);
+            fit->FixParameter(4, 0.160001);
             fit->SetLineColor(2);
 
             printf("%s\n", fit->GetName());
