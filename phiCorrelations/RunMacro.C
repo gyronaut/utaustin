@@ -11,13 +11,13 @@ void RunMacro(){
    Bool_t pre_final_stage = kTRUE; //TRUE = merging done on grid, FALSE = merge happens locally   
    Int_t cyclenumber = 1;
    Bool_t debug = kTRUE;
-   char* work_dir = "PhiCorrelations_LHC16q_TEST";
+   char* work_dir = "PhiCorrelations_LHC16k5b_MC";
    //char* output_dir = "output_2020_07_30_hphi_alltrig_0_100";
-   char* output_dir = "output_2020_08_15_hh_alltrig_0_100";
+   char* output_dir = "output_2020_12_12_hh_alltrig_test_0_100_b";
    Int_t ttl = 50000;
    Int_t noffiles = 50;
    //Int_t runcycle[]={0,16,31};
-   Int_t runcycle[]={0,2,12,25};
+   Int_t runcycle[]={0,1,12,27};
    Bool_t UseParfiles = kFALSE;
 
    // load libraries
@@ -37,22 +37,23 @@ void RunMacro(){
   //alienHandler->SetAPIVersion("V1.1x");
   alienHandler->SetAliPhysicsVersion("vAN-20191009_ROOT6-1"); //stable version for analysis  
   //alienHandler->SetAliPhysicsVersion("vAN-20190525-1"); //version for test for MC running
-  
+  //alienHandler->SetAliPhysicsVersion("v5-08-13t-01-cookdedx-1"); //test for LHC16k5b
+
   //alienHandler->SetFileForTestMode("File_LHC12dPass1.txt");  //txt file that tells where to look for local files if launch=local
   //alienHandler->SetGridDataDir("/alice/sim/2017/LHC17f2b_cent_woSDD/");
   //alienHandler->SetGridDataDir("/alice/sim/2017/LHC17f2b_fast/"); //for MC
 //  alienHandler->SetGridDataDir("/alice/sim/2018/LHC18j2_fast/"); //for pp MC
 //  alienHandler->SetDataPattern("AOD209/*/*AOD.root"); //for pp MC
-  //alienHandler->SetGridDataDir("/alice/sim/2016/LHC16h8a/"); //for pp MC
-  //alienHandler->SetDataPattern("AOD/*/*AOD.root"); //for pp MC
+  alienHandler->SetGridDataDir("/alice/sim/2016/LHC16k5b/"); //for pp MC
+  alienHandler->SetDataPattern("AOD/*/*AOD.root"); //for pp MC
   //alienHandler->SetDataPattern("/AOD202/*/*AOD.root"); //for MC
   //alienHandler->SetDataPattern("*ESDs.root");
   //alienHandler->SetGridDataDir("//alice/data/2017/LHC17p/");
   //alienHandler->SetDataPattern("*/pass1_FAST/AOD208/*/*AOD.root"); // for data
-  alienHandler->SetGridDataDir("//alice/data/2016/LHC16q/"); // for data
-  alienHandler->SetDataPattern("pass1_FAST/AOD190/*/*AOD.root"); // for data
+//  alienHandler->SetGridDataDir("//alice/data/2016/LHC16q/"); // for data
+//  alienHandler->SetDataPattern("pass1_FAST/AOD190/*/*AOD.root"); // for data
   //alienHandler->SetDataPattern("*/AOD/*/*AOD.root");
-  alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
+//  alienHandler->SetRunPrefix("000"); // IMPORTANT! Only need for real data, comment this line out for MC data
 
    
 //LHC16r - 8 TeV pPb data
@@ -60,7 +61,10 @@ void RunMacro(){
    //Int_t runArray[] = {266318, 266317, 266316, 266208, 266197, 266196, 266187, 265754, 265744, 265607, 265596, 265594};
 
 //LHC16q - 5 TeV pPb data
-   Int_t runArray[] = {265525, 265521, 265501, 265500, 265499, 265435, 265427, 265426, 265425, 265424, 265422, 265421, 265420, 265419, 265388, 265387, 265385, 265384, 265383, 265381, 265378, 265377, 265344, 265343, 265342, 265339, 265338, 265336, 265334, 265332, 265309};  
+   //Int_t runArray[] = {265525, 265521, 265501, 265500, 265499, 265435, 265427, 265426, 265425, 265424, 265422, 265421, 265420, 265419, 265388, 265387, 265385, 265384, 265383, 265381, 265378, 265377, 265344, 265343, 265342, 265339, 265338, 265336, 265334, 265332, 265309};  
+
+//LHC16k5 a&b (a = Pythia 6, b = Pythia 8) - 27 runs
+   Int_t runArray[] = {244340, 244343, 244351, 244355, 244359, 244364, 244377, 244411, 244416, 244418, 244421, 244453, 244456, 244480, 244481, 244482, 244483, 244484, 244531, 244540, 244542, 244617, 244618, 244619, 244626, 244627, 244628};
 
 //LHC18j2 - 5 TeV pp Pythia anchored to LHC17p 
   //Int_t runArray[] = {282008, 282016, 282021, 282025, 282031, 282050, 282051, 282078, 282098, 282099, 282118, 282119, 282120, 282122, 282123, 282125, 282126, 282127, 282146, 282147, 282189, 282206, 282224, 282227, 282229, 282230, 282247, 282302, 282303, 282304, 282305, 282306, 282307, 282309, 282312, 282313, 282314, 282340, 282341, 282342, 282343, 282365, 282366, 282367};
@@ -129,13 +133,13 @@ void RunMacro(){
 
 
     //switch on aliphysicsselection
-    AliPhysicsSelectionTask* physSelTask = reinterpret_cast<AliPhysicsSelectionTask*>(gInterpreter->ProcessLine(Form(".x %s(kFALSE, kTRUE)", gSystem->ExpandPathName("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C")))); //"kTRUE, kTRUE" for MC, "kFALSE, kTRUE" for Data 
+    AliPhysicsSelectionTask* physSelTask = reinterpret_cast<AliPhysicsSelectionTask*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, kTRUE)", gSystem->ExpandPathName("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C")))); //"kTRUE, kTRUE" for MC, "kFALSE, kTRUE" for Data 
     
     gInterpreter->ProcessLine(Form(".x %s", gSystem->ExpandPathName("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C")));
         //Only set true for MC
     Bool_t isMC = kTRUE;
     
-    gInterpreter->ProcessLine(Form(".x %s(kFALSE)", gSystem->ExpandPathName("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C")));
+    gInterpreter->ProcessLine(Form(".x %s(kTRUE)", gSystem->ExpandPathName("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C")));
 
 
 
@@ -147,11 +151,11 @@ void RunMacro(){
                                   
     //create a task
     
-    AliAnalysisTaskHadronPhiCorr_current *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 0.0, 20.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
+    //AliAnalysisTaskHadronPhiCorr_current *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 0.0, 20.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
     //gInterpreter->LoadMacro("AliAnalysisTaskHadronPhiCorr_current.cxx++g");
-    //AliAnalysisTaskHadronPhiCorr_current *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ExecuteMacro(Form(".x %s(kTRUE, 0.0, 100.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
+    AliAnalysisTaskHadronPhiCorr_current *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 0.0, 100.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
 
-    task1->SetIsMCTrue(kFALSE);
+    task1->SetIsMCTrue(kTRUE);
     task1->SetIsMCKaon(kFALSE);
     task1->SetIsMCKTrack(kFALSE);
     task1->SetUseAccpt(kTRUE);
