@@ -90,28 +90,10 @@ Double_t GBW(TH1D* h, Int_t bin){
     return h->GetXaxis()->GetBinWidth(bin);
 }
 
-
-void mt_spectrum_PP_NewProd_Coll_2019()
-{
-    gROOT->Reset();
-    gROOT->Time();
-    Int_t i;
-    Float_t nsig;
-    Float_t nbac;
-    Float_t fac;
-
-    //gStyle->SetStatX(100);
-    //gStyle->SetTitleX(100);
-
+void initGlobalStyle(){
     gStyle->SetOptFit(0);
     gStyle->SetOptTitle(0);
     gStyle->SetOptStat(0);
-
-    TCanvas *c = new TCanvas("c", "c",0,0,350,600);
-    c->SetFillColor(10);
-    c->SetBorderMode(0);
-    c->Divide(1,3);
-    //c->SetBorderSize(2);
 
     gStyle->SetTitleColor(10);
     //-------  stat box -------------------
@@ -135,6 +117,58 @@ void mt_spectrum_PP_NewProd_Coll_2019()
     //gStyle->SetLabelFont(22,"x");
     //gStyle->SetLabelFont(22,"y");
     //gStyle->SetLabelFont(22,"z");
+}
+
+void initHistoStyle(TH1* h){
+    h->SetLineColor(1);
+    h->SetLineWidth(4);
+    h->GetYaxis()->SetLabelSize(0.1);
+    h->GetXaxis()->SetLabelSize(0.1);
+    h->GetYaxis()->SetLabelOffset(0.01);
+    h->GetXaxis()->SetLabelOffset(0.00);
+
+    h->GetYaxis()->SetTitleSize(0.1);
+    h->GetXaxis()->SetTitleSize(0.1);
+    h->GetYaxis()->SetTitleOffset(1.2);
+    h->GetXaxis()->SetTitleOffset(1.2);
+    h->GetXaxis()->SetTitle("");
+    h->GetYaxis()->SetTitle("");
+    h->GetXaxis()->SetNdivisions(5);
+    h->GetYaxis()->SetNdivisions(6);
+    h->GetXaxis()->SetLabelFont(22);
+    h->GetYaxis()->SetLabelFont(22);
+    h->GetXaxis()->SetTitleFont(22);
+    h->GetYaxis()->SetTitleFont(22);
+}
+
+void initGAxisStyle(TAxis* g, TH1* h){
+    g->SetLabelOffset(h->GetXaxis()->GetLabelOffset());
+    g->SetLabelSize(h->GetXaxis()->GetLabelSize());  
+    g->SetTickSize(0.03);
+    g->SetGridLength(0);
+    g->SetTitleOffset(1);
+    g->SetLabelOffset(0.005);
+    g->SetLabelFont(20);
+    g->SetName(" ");
+}
+
+void mt_spectrum_PP_NewProd_Coll_2019()
+{
+    gROOT->Reset();
+    gROOT->Time();
+    Int_t i;
+    Float_t nsig;
+    Float_t nbac;
+    Float_t fac;
+
+    //gStyle->SetStatX(100);
+    //gStyle->SetTitleX(100);
+
+    TCanvas *c = new TCanvas("c", "c",0,0,350,600);
+    c->SetFillColor(10);
+    c->SetBorderMode(0);
+    c->Divide(1,3);
+    //c->SetBorderSize(2);
 
     c->cd();
     c->Modified();
@@ -159,45 +193,13 @@ void mt_spectrum_PP_NewProd_Coll_2019()
     c->SetLeftMargin(0.19);
     c->SetBottomMargin(0.19); 
 
-    h->SetLineColor(1);
-    h->SetLineWidth(4);
-    h->GetYaxis()->SetLabelSize(0.1);
-    h->GetXaxis()->SetLabelSize(0.1);
-    h->GetYaxis()->SetLabelOffset(0.01);
-    h->GetXaxis()->SetLabelOffset(0.00);
+    initHistoStyle(h);
 
-    h->GetYaxis()->SetTitleSize(0.1);
-    h->GetXaxis()->SetTitleSize(0.1);
-    h->GetYaxis()->SetTitleOffset(1.2);
-    h->GetXaxis()->SetTitleOffset(1.2);
-    h->GetXaxis()->SetTitle("");
-    h->GetYaxis()->SetTitle("");
-    h->GetXaxis()->SetNdivisions(5);
-    h->GetYaxis()->SetNdivisions(6);
-    h->GetXaxis()->SetLabelFont(22);
-    h->GetYaxis()->SetLabelFont(22);
-    h->GetXaxis()->SetTitleFont(22);
-    h->GetYaxis()->SetTitleFont(22);
-
-    TGaxis *g = new TGaxis(0,0,6,0,0,6,6,""); 
-    g->SetLabelOffset(h->GetXaxis()->GetLabelOffset());
-    g->SetLabelSize(h->GetXaxis()->GetLabelSize());  
-    g->SetTickSize(0.03);
-    g->SetGridLength(0);
-    g->SetTitleOffset(1);
-    g->SetLabelOffset(0.005);
-    g->SetLabelFont(20);
-    g->SetName(" ");
+    TGaxis *g = new TGaxis(0,0,6,0,0,6,6,"");
+    initGAxisStyle(g, h);
 
     TGaxis *g1 = new TGaxis(0,0,0,0,0,3.5,7,""); 
-    g1->SetLabelOffset(h->GetXaxis()->GetLabelOffset());
-    g1->SetLabelSize(h->GetXaxis()->GetLabelSize());  
-    g1->SetTickSize(0.03);
-    g1->SetGridLength(0);
-    g1->SetTitleOffset(1);
-    g1->SetLabelOffset(0.005);
-    g1->SetLabelFont(20);
-    g1->SetName(" ");
+    initGAxisStyle(g1, h);
 
     phiyield->SetLineColor(kGreen+2);
     phiyield->SetLineWidth(2);
@@ -215,32 +217,6 @@ void mt_spectrum_PP_NewProd_Coll_2019()
 
     Float_t  pt[5] = {0.4,0.8,1.2,1.6,2.0};
 
-    ////////////////////////////////////////////////////
-    // 0.8 cos theta 2cm dca 2.5 sigmadedx
-    //lambda1520 + bar
-    //Float_t  yield[5] ={244.0,947.0,1023.0,620.0,33.0};
-
-    //lambda1520
-    //Float_t  yield[5] ={159.0,603.0,569.0,320.0,27.0};
-    //lambda1520bar
-    //Float_t  yield[5] ={90.0,348.0,462.0,307.0,16.0};
-
-    //lambda1520 + bar
-    //Float_t  yielderr[5] = {57.0,125.0,142.0,96.0,35.0};
-    //lambda1520
-    //Float_t  yielderr[5] = {45.0,95.0,106.0,71.0,26.0};
-    //lambda1520 bar
-    //Float_t  yielderr[5] = {36.0,81.0,94.0,64.0,23.0};
-
-    //correction 
-    //Float_t  yield2[5] ={0.0217,0.0830,0.175,0.159,0.051};
-
-    /////////////////////////////////////////////////////    
-    ///////////all cos 0.9 dca 2 //////////////////////
-    //Float_t  yield[5] ={217.0,946.0,1049.0,534.0,36.0};
-    //Float_t  yielderr[5] = {54.0,103.0,114.0,91.0,35.0};
-    //Float_t  yield2[5] ={0.0598377,0.191638,0.33207,0.253979,0.07389};
-    ///////////////////////////////////////////////////////////
     ///////// all cos 0.9 dca 3 
     Float_t  yield[5] ={235.0,952.0,1156.0,620.0,36.0};
     //Float_t  yield[5] ={239.0,930.0,1061.0,619.0,65.0};
@@ -250,24 +226,9 @@ void mt_spectrum_PP_NewProd_Coll_2019()
     Float_t  yield2[5] ={0.062373,0.193031,0.33249,0.253979,0.07389};
     ////////////////////////////////////////////////////
 
-
-
     Float_t  pterr[5] = {0.0,0.0,0.0,0.0,0.0};  
     Float_t  yielderr2[5] = {0.0,0.0,0.0,0.0,0.0};
     Float_t  pterr2[5] = {0.0,0.0,0.0,0.0,0.0};
-
-
-
-    // y [-1,1]
-    /*
-       Float_t  yield2[5] ={0.0327,0.106,0.1847,0.1333,0.0390};
-       Float_t  yield2[5] ={0.0583,0.1756,0.307,0.299,0.073};
-       Float_t  yield2[5] ={0.0217,0.0830,0.175,0.159,0.051};
-       Float_t  yield2[5] ={0.0387,0.139,0.288,0.269,0.0967};
-       Float_t  yield2[5] ={0.0327,0.106,0.1847,0.1333,0.0390};
-       Float_t  yield2[5] ={0.0217,0.0830,0.175,0.159,0.051};
-       Float_t  yield2[5] ={0.0327,0.106,0.1847,0.1333,0.0390};
-       */
 
     TH2F *histo6 = new TH2F("histo6","amplituds of fit",30,0,3,100,0,1500);
 
@@ -524,6 +485,9 @@ void mt_spectrum_PP_NewProd_Coll_2019()
     Float_t piratios[7];
     Float_t kratios[7];
     Float_t pratios[7];
+    Float_t piLowRatios[7];
+    Float_t kLowRatios[7];
+    Float_t pLowRatios[7];
 
     for(int i = 0; i < 7; i++){
         phiboltz[i] = new TF1(Form("phiboltz%d", i), "([0]/([1]*(1.0195 + [1])))*x*exp(-(sqrt((x*x) + (1.0195*1.0195))-1.0195)*(1/[1]))", 0, 6);
@@ -556,14 +520,31 @@ void mt_spectrum_PP_NewProd_Coll_2019()
         piratios[i] = phi/pi;
         kratios[i] = phi/k;
         pratios[i] = phi/p;
+    
+        phi= phiboltz[i]->Integral(1.0, 2.0);
+        pi = pionboltz[i]->Integral(1.0, 2.0);
+        k = kaonboltz[i]->Integral(1.0, 2.0);
+        p = protonboltz[i]->Integral(1.0, 2.0);
+
+        piLowRatios[i] = phi/pi;
+        kLowRatios[i] = phi/k;
+        pLowRatios[i] = phi/p;
+
     }
     Float_t normpiratios[7];
     Float_t normkratios[7];
     Float_t normpratios[7];
+ 
+    Float_t normpiLowRatios[7];
+    Float_t normkLowRatios[7];
+    Float_t normpLowRatios[7];
     for(int i = 0; i< 6; i++){
         normpiratios[i] = piratios[i+1]/piratios[1];
         normkratios[i] = kratios[i+1]/kratios[1];
         normpratios[i] = pratios[i+1]/pratios[1];
+        normpiLowRatios[i] = piLowRatios[i+1]/piLowRatios[1];
+        normkLowRatios[i] = kLowRatios[i+1]/kLowRatios[1];
+        normpLowRatios[i] = pLowRatios[i+1]/pLowRatios[1];
     }
 
     TGraphErrors *piratiograph = new TGraphErrors(6, cutrevbincenters, normpiratios, cutrevbinwidths);
@@ -593,6 +574,34 @@ void mt_spectrum_PP_NewProd_Coll_2019()
     pratiograph->GetXaxis()->SetTitle("Multiplicity Pct. (V0A)");
     pratiograph->GetXaxis()->SetRangeUser(0.0, 100.0);
 
+    TGraphErrors *piLowRatiograph = new TGraphErrors(6, cutrevbincenters, normpiLowRatios, cutrevbinwidths);
+    piLowRatiograph->SetMarkerStyle(22);
+    piLowRatiograph->SetMarkerSize(2);
+    piLowRatiograph->SetMarkerColor(kBlue+1);
+    piLowRatiograph->SetLineColor(kBlue+1);
+    piLowRatiograph->GetYaxis()->SetTitle("#phi/#pi Ratio /  80-100%% Ratio");
+    piLowRatiograph->GetXaxis()->SetTitle("Multiplicity Pct. (V0A)");
+    piLowRatiograph->GetXaxis()->SetRangeUser(0.0, 100.0);
+
+    TGraphErrors *kLowRatiograph = new TGraphErrors(6, cutrevbincenters, normkLowRatios, cutrevbinwidths);
+    kLowRatiograph->SetMarkerStyle(23);
+    kLowRatiograph->SetMarkerSize(2);
+    kLowRatiograph->SetMarkerColor(kRed+1);
+    kLowRatiograph->SetLineColor(kRed+1);
+    kLowRatiograph->GetYaxis()->SetTitle("#phi/K Ratio / 80-100%% Ratio");
+    kLowRatiograph->GetXaxis()->SetTitle("Multiplicity Pct. (V0A)");
+    kLowRatiograph->GetXaxis()->SetRangeUser(0.0, 100.0);
+
+    TGraphErrors *pLowRatiograph = new TGraphErrors(6, cutrevbincenters, normpLowRatios, cutrevbinwidths);
+    pLowRatiograph->SetMarkerStyle(24);
+    pLowRatiograph->SetMarkerSize(2);
+    pLowRatiograph->SetMarkerColor(kGreen+1);
+    pLowRatiograph->SetLineColor(kGreen+1);
+    pLowRatiograph->GetYaxis()->SetTitle("#phi/p Ratio / 80-100%% Ratio");
+    pLowRatiograph->GetXaxis()->SetTitle("Multiplicity Pct. (V0A)");
+    pLowRatiograph->GetXaxis()->SetRangeUser(0.0, 100.0);
+
+
 
     TH1D* dummyh = new TH1D("dummyh", "dummyh", 10, 0, 100);
     dummyh->GetYaxis()->SetRangeUser(0.25, 1.25);
@@ -609,6 +618,15 @@ void mt_spectrum_PP_NewProd_Coll_2019()
     kratiograph->Draw("P SAME");
     pratiograph->Draw("P SAME");
     ratleg->Draw();
+
+    TCanvas* cLowRatios = new TCanvas("cLowRatios", "cLowRatios", 50, 50, 600, 600);
+    cLowRatios->cd();
+    dummyh->Draw("AXIS");
+    piLowRatiograph->Draw("P SAME");
+    kLowRatiograph->Draw("P SAME");
+    pLowRatiograph->Draw("P SAME");
+    ratleg->Draw();
+
 
 
     TF1* philowboltz = new TF1("philowboltz", "([0]/([1]*(1.0195 + [1])))*x*exp(-(sqrt((x*x) + (1.0195*1.0195))-1.0195)*(1/[1]))", 0, 6);

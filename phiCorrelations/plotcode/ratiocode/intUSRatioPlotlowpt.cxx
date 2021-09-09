@@ -169,11 +169,11 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     gStyle->SetOptFit(0);
     gStyle->SetErrorX(0);
 
-    if(input_0_20.EqualTo("")) input_0_20 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.0_effcorr_hPhi_0_20_combined.root";
-    if(input_20_50.EqualTo("")) input_20_50 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.0_effcorr_hPhi_20_50_combined.root";
-    if(input_50_80.EqualTo("")) input_50_80 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.0_effcorr_hPhi_50_80_combined.root";
+    if(input_0_20.EqualTo("")) input_0_20 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_5_8_assoc_1.5_2.5_effcorr_hPhi_0_20_combined.root";
+    if(input_20_50.EqualTo("")) input_20_50 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_5_8_assoc_1.5_2.5_effcorr_hPhi_20_50_combined.root";
+    if(input_50_80.EqualTo("")) input_50_80 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_5_8_assoc_1.5_2.5_effcorr_hPhi_50_80_combined.root";
     
-    TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.0_effcorr_hh_0_20.root", "hh", "hh2D", "Eff_0_20", -1.2, 1.2, kBlue+2, 21);
+    TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_5_8_assoc_1.5_2.5_effcorr_hh_0_20.root", "hh", "hh2D", "Eff_0_20", -1.2, 1.2, kBlue+2, 21);
     TH1D* hPhidphi_0_20 = getHisto(input_0_20, "hPhi", Form("AvgUSsubhPhi2Dpeak%s", scaleSuffix.Data()), "Eff_0_20", -1.2, 1.2, kRed+2, 22);
 
 
@@ -258,7 +258,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
 
 
    //20-50 section 
-    TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.0_effcorr_hh_20_50.root", "hh", "hh2D", "Eff_20_50", -1.2, 1.2, kBlue+2, 21);
+    TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_5_8_assoc_1.5_2.5_effcorr_hh_20_50.root", "hh", "hh2D", "Eff_20_50", -1.2, 1.2, kBlue+2, 21);
     TH1D* hPhidphi_20_50 = getHisto(input_20_50, "hPhi", Form("AvgUSsubhPhi2Dpeak%s", scaleSuffix.Data()), "Eff_20_50", -1.2, 1.2, kRed+2, 22);
 
 
@@ -345,7 +345,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     paperfit2050->SetParameter(0, hphiBG_20_50->GetParameter(0));
 
     //50-100 section
-    TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.0_effcorr_hh_50_80.root", "hh", "hh2D", "Eff_50_80", -1.2, 1.2, kBlue+2, 21);
+    TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_5_8_assoc_1.5_2.5_effcorr_hh_50_80.root", "hh", "hh2D", "Eff_50_80", -1.2, 1.2, kBlue+2, 21);
     TH1D* hPhidphi_50_100 = getHisto(input_50_80, "hPhi", Form("AvgUSsubhPhi2Dpeak%s", scaleSuffix.Data()), "Eff_50_80", -1.2, 1.2, kRed+2, 22);
 
 
@@ -855,7 +855,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     ratiosMultlegend->AddEntry(ratiosBulk, "Underlying Event", "pl");
     ratiosMultlegend->AddEntry(ratiosAway, "Away-side (Jet)", "pl");
     ratiosMultlegend->AddEntry(ratiosNear, "Near-side (Jet)", "pl");
-    //ratiosMultlegend->AddEntry(ratiosTot, "Total (Jet + UE)", "pl");
+    ratiosMultlegend->AddEntry(ratiosTot, "Total (Jet + UE)", "pl");
     ratiosMultlegend->SetLineWidth(0);
 
     TLegend *v2leg = new TLegend(0.209, 0.605, 0.392, 0.652);
@@ -875,10 +875,10 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     ratiosJetMultlegend->SetLineWidth(0);
 
 
-    TPaveText *text2 = new TPaveText(0.5935, 0.6367, 0.9287, 0.7796, "NDC");
-    text2->AddText("4.0 < #it{p}^{h}_{T,trig} < 8.0 GeV/#it{c}");
-    text2->AddText("1.5 < #it{p}^{#phi}_{T,assoc} < 2.0 GeV/#it{c}");
-    text2->SetTextSizePixels(18);
+    TPaveText *text2 = new TPaveText(0.272, 0.6994, 0.9314, 0.8357, "NDC");
+    text2->AddText("5.0 < #it{p}^{h}_{T,trig} < 8.0 GeV/#it{c}");
+    text2->AddText("1.5 < #it{p}^{#phi}_{T,assoc} < 2.5 GeV/#it{c}");
+//    text2->SetTextSizePixels(18);
     text2->SetFillColor(kWhite);
     text2->SetBorderSize(0);
     text2->SetFillStyle(0);
@@ -948,7 +948,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     //ratiosTot->Draw("3");
     ratiosMultlegend->Draw();
     //v2leg->Draw();
-    data->Draw();
+    //data->Draw();
     text2->Draw();
     //ratiosNear->Draw("PL");
     //newaxis->Draw();
@@ -2044,44 +2044,44 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     fline->SetLineWidth(3);
     fline->SetLineStyle(7);
 
-    TLegend* hphileg = new TLegend(0.456, 0.641, 0.613, 0.937);
+    TLegend* hphileg = new TLegend(0.475, 0.6072, 0.9452, 0.8938);
     hphileg->SetBorderSize(0);
     hphileg->AddEntry(hphi020, "V0A 0-20%", "lep");
     hphileg->AddEntry(hphi2050, "V0A 20-50%", "lep");
     hphileg->AddEntry(hphi5080, "V0A 50-80%", "lep");
 
-    TLegend* hhleg = new TLegend(0.456, 0.641, 0.613, 0.937);
+    TLegend* hhleg = new TLegend(0.475, 0.6072, 0.9452, 0.8938);
     hhleg->SetBorderSize(0);
     hhleg->AddEntry(hh020, "V0A 0-20%", "lep");
     hhleg->AddEntry(hh2050, "V0A 20-50%", "lep");
     hhleg->AddEntry(hh5080, "V0A 50-80%", "lep");
     
-    TPaveText* hphitext020 = new TPaveText(0.181, 0.827, 0.356, 0.925, "NDC");
+    TPaveText* hphitext020 = new TPaveText(0.2109, 0.7695, 0.3866, 0.8677, "NDC");
     hphitext020->SetBorderSize(0);
     hphitext020->SetFillColor(kWhite);
     hphitext020->AddText("h-#phi");
     hphitext020->SetTextFont(42);
-    TPaveText* hphitext2050 = new TPaveText(0.181, 0.827, 0.356, 0.925, "NDC");
+    TPaveText* hphitext2050 = new TPaveText(0.2109, 0.7695, 0.3866, 0.8677, "NDC");
     hphitext2050->SetBorderSize(0);
     hphitext2050->SetFillColor(kWhite);
     hphitext2050->AddText("h-#phi");
     hphitext2050->SetTextFont(42);
-    TPaveText* hphitext5080 = new TPaveText(0.181, 0.827, 0.356, 0.925, "NDC");
+    TPaveText* hphitext5080 = new TPaveText(0.2109, 0.7695, 0.3866, 0.8677, "NDC");
     hphitext5080->SetBorderSize(0);
     hphitext5080->SetFillColor(kWhite);
     hphitext5080->AddText("h-#phi");
 
-    TPaveText* hhtext020 = new TPaveText(0.2147, 0.7856, 0.3698, 0.8817, "NDC");
+    TPaveText* hhtext020 = new TPaveText(0.2109, 0.7695, 0.3866, 0.8677, "NDC");
     hhtext020->SetBorderSize(0);
     hhtext020->SetFillColor(kWhite);
     hhtext020->AddText("h-h");
     //hhtext020->SetTextSize(36);
     hhtext020->SetTextFont(42);
-    TPaveText* hhtext2050 = new TPaveText(0.2147, 0.7856, 0.3698, 0.8817, "NDC");
+    TPaveText* hhtext2050 = new TPaveText(0.2109, 0.7695, 0.3866, 0.8677, "NDC");
     hhtext2050->SetBorderSize(0);
     hhtext2050->SetFillColor(kWhite);
     hhtext2050->AddText("h-h");
-    TPaveText* hhtext5080 = new TPaveText(0.2147, 0.7856, 0.3698, 0.8817, "NDC");
+    TPaveText* hhtext5080 = new TPaveText(0.2109, 0.7695, 0.3866, 0.8677, "NDC");
     hhtext5080->SetBorderSize(0);
     hhtext5080->SetFillColor(kWhite);
     hhtext5080->AddText("h-h");
@@ -2091,11 +2091,11 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     chphi->cd();
     chphi->SetMargin(0.12, 0.05, 0.1, 0.05);
     hphi020->GetYaxis()->SetTitle("1/N_{trig} dN/d#Delta#varphi per #Delta#eta - constant (rad^{-1})");
-    hphi020->GetYaxis()->SetRangeUser(-0.5E-3, 2.0E-3);
+    hphi020->GetYaxis()->SetRangeUser(-1.0E-3, 3.0E-3);
     hphi020->Draw("E0 X0 P SAME");
-    hphi2050->GetYaxis()->SetRangeUser(-0.5E-3, 2.0E-3);
+    hphi2050->GetYaxis()->SetRangeUser(-1.0E-3, 3.0E-3);
     hphi2050->Draw("E0 X0 P SAME");
-    hphi5080->GetYaxis()->SetRangeUser(-0.5E-3, 2.0E-3);
+    hphi5080->GetYaxis()->SetRangeUser(-1.0E-3, 3.0E-3);
     hphi5080->Draw("E0 X0 P SAME");
     fline->Draw("SAME");
     hphitext020->Draw();
@@ -2155,7 +2155,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     chh020->cd();
     chh020->SetMargin(0.12, 0.05, 0.1, 0.05);
     hh020syst->GetYaxis()->SetTitle("1/#it{N}_{trig} d#it{N}/d#Delta#varphi per #Delta#eta - constant (rad^{-1})");
-    hh020syst->GetYaxis()->SetRangeUser(-50E-3, 280E-3);
+    hh020syst->GetYaxis()->SetRangeUser(-50E-3, 350E-3);
     hh020syst->Draw("E2");
     hh020->Draw("E0 X0 P SAME");
     fline->Draw("SAME");
@@ -2168,7 +2168,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     chh2050->cd();
     chh2050->SetMargin(0.12, 0.05, 0.1, 0.05);
     hh2050syst->GetYaxis()->SetTitle("1/N_{trig} dN/d#Delta#varphi per #Delta#eta - constant (rad^{-1})");
-    hh2050syst->GetYaxis()->SetRangeUser(-50E-3, 280E-3);
+    hh2050syst->GetYaxis()->SetRangeUser(-50E-3, 350E-3);
     hh2050syst->Draw("E2");
     hh2050->Draw("E0 X0 P SAME");
     fline->Draw("SAME");
@@ -2179,7 +2179,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     chh5080->cd();
     chh5080->SetMargin(0.12, 0.05, 0.1, 0.05);
     hh5080syst->GetYaxis()->SetTitle("1/N_{trig} dN/d#Delta#varphi per #Delta#eta - constant (rad^{-1})");
-    hh5080syst->GetYaxis()->SetRangeUser(-50E-3, 280E-3);
+    hh5080syst->GetYaxis()->SetRangeUser(-50E-3, 350E-3);
     hh5080syst->Draw("E2");
     hh5080->Draw("E0 X0 P SAME");
     hhleg->Draw();
@@ -2200,11 +2200,11 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     hphi020syst->GetYaxis()->SetLabelSize(0.05);
     hphi020syst->GetYaxis()->SetTitleOffset(1.5);
     hphi020syst->GetXaxis()->SetLabelSize(0.05);
-    hphi020syst->GetYaxis()->SetRangeUser(-0.5E-3, 2.0E-3);
+    hphi020syst->GetYaxis()->SetRangeUser(-1.0E-3, 3.5E-3);
     hphi020syst->Draw("E2");
     hphi020->Draw("E0 X0 P SAME");
     fline->Draw("SAME");
-    data->Draw();
+    //data->Draw();
     //text2->Draw();
     hphitext020->Draw();
     chphiall->cd();
@@ -2214,7 +2214,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     hphi2050pad->cd();
     hphi2050syst->GetXaxis()->SetLabelSize(0.05);
     hphi2050syst->GetYaxis()->SetLabelSize(0.0);
-    hphi2050syst->GetYaxis()->SetRangeUser(-0.5E-3, 2.0E-3);
+    hphi2050syst->GetYaxis()->SetRangeUser(-1.0E-3, 3.5E-3);
     hphi2050syst->Draw("E2");
     hphi2050->Draw("E0 X0 P SAME");
     fline->Draw("SAME");
@@ -2228,7 +2228,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     hphi5080pad->cd();
     hphi5080syst->GetXaxis()->SetLabelSize(0.05);
     hphi5080syst->GetYaxis()->SetLabelSize(0.0);
-    hphi5080syst->GetYaxis()->SetRangeUser(-0.5E-3, 2.0E-3);
+    hphi5080syst->GetYaxis()->SetRangeUser(-1.0E-3, 3.5E-3);
     hphi5080syst->Draw("E2");
     hphi5080->Draw("E0 X0 P SAME");
     hphileg->Draw();
@@ -2251,7 +2251,7 @@ void intUSRatioPlotlowpt(TString outputstring, TString input_0_20 = "", TString 
     hh020syst->Draw("E2");
     hh020->Draw("E0 X0 P SAME");
     fline->Draw("SAME");
-    data->Draw();
+    //data->Draw();
     //text2->Draw();
     hhtext020->Draw();
     //chhall->cd(2)->SetMargin(0.0,0.0, 0.1, 0.1);

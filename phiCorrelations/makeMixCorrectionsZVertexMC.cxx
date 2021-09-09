@@ -64,7 +64,7 @@ void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, fl
     TFile *histoFile = new TFile(inputName.c_str());
     //string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
     string mult = "_" + std::to_string(multLow) + "_" + std::to_string(multHigh);
-    TList* list = (TList*) histoFile->Get(Form("truePhiCorr_mult%s", mult.c_str()));
+    TList* list = (TList*) histoFile->Get(Form("phiCorr_mult%s_", mult.c_str()));
 
     //TH2D *trigSameUSDist = (TH2D*)list->FindObject("fTrigSameUSDist");
     //TH2D *trigSameLSDist = (TH2D*)list->FindObject("fTrigSameLSDist");
@@ -181,8 +181,8 @@ void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, fl
     }
 
     printf("done with z vertex stuff \n\n");
-    hPhi2DpeakTotal->Scale(1.0/totalTrigSameUS);
-    
+    hPhi2DpeakTotal->Scale(1.0/(totalTrigSameUS*0.49));//include scaling factor for branching ratio
+   
     //Create some uncorrected same/mixed event 2D histos
     hPhiTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
     hPhiMixedTotal->GetZaxis()->SetRangeUser(peakLow, peakHigh);
@@ -258,7 +258,7 @@ void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, fl
     */
 
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_MC_hPhi%s_CENT_02_28.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_MC_hPhi%s_02_28.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hPhi2DpeakTotal->Write();
     //hKK2DpeakTotal->Write();
     //hPhi2DRsideTotal->Write();

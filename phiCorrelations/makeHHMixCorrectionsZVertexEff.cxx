@@ -50,12 +50,11 @@ void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh,
 
     Float_t epsilon = 0.0001;
 
-    float trigMixScales[10] = {};
-    for(int i = 0; i < 10; i++){
-        trigMixScales[i] = (float) trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow + epsilon), trigHHDist->GetXaxis()->FindBin(trigPTHigh - epsilon), i+1, i+1);
-    }
-
-    float totalTrig = (float)trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow + epsilon), trigHHDist->GetXaxis()->FindBin(trigPTHigh - epsilon), 1, trigHHDist->GetYaxis()->GetNbins());
+    THnSparseF* trigDist = (THnSparseF*)list->FindObject("fTrigDist");
+    TH1D* trigDist1D = (TH1D*)trigDist->Projection(0);
+    float totalTrig = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow + epsilon), trigDist1D->GetXaxis()->FindBin(trigPTHigh - epsilon));
+    
+    //float totalTrig = (float)trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow + epsilon), trigHHDist->GetXaxis()->FindBin(trigPTHigh - epsilon), 1, trigHHDist->GetYaxis()->GetNbins());
       
     TH1D* vtxZmixbins = (TH1D*)list->FindObject("fVtxZmixbins");
     Int_t numbinsZvtx = vtxZmixbins->GetXaxis()->GetNbins();
@@ -113,7 +112,7 @@ void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh,
 
     uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2 + epsilon), uncorrhh2D->GetXaxis()->FindBin(1.2 - epsilon), 1, uncorrhh2D->GetYaxis()->GetNbins())));
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_effcorr_hh%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%.1f_%.1f_assoc_%.1f_%.1f_effcorr_hh%s.root", trigPTLow, trigPTHigh, assocPTLow, assocPTHigh, mult.c_str()), "RECREATE");
     hhTotal->Write();
     hhdphi->Write();
     uncorrhh2D->Write(); 

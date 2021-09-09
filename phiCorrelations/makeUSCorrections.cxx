@@ -177,22 +177,24 @@ void makeUSCorrections(string inputFile, float peakLow = 1.014, float peakHigh =
     Double_t scaletest = (rightscale)*hPhi2Dpeak->Integral(hPhi2Dpeak->GetXaxis()->FindBin(-1.2 + epsilon), hPhi2Dpeak->GetXaxis()->FindBin(1.2 - epsilon), 1, hPhi2Dpeak->GetYaxis()->GetNbins());
 
     printf("\n\nscaleUS = %e\n\ntestscale = %e \n\n", scaleUS, scaletest);
+    printf("avg. scale: %e\n", fullscaleavg);
 
     //do inv. mass reconstruction efficiency
     TH1D* corrMass = (TH1D*)USinvmass->Clone("correctedMass");
     corrMass->Add(LSinvmass, -1.0*rightscale);
-
+    TCanvas* cR = new TCanvas("cR", "cR", 50, 50, 600, 600);
+    cR->cd();
     TF1 *massfitR = new TF1("massfitR", "[0]*TMath::Voigt(x-[1], [2], [3], 4) + pol2(4)", 0.99, 1.07);
     massfitR->SetParameter(0, 1000);
     massfitR->SetParameter(1, 1.020);
     massfitR->SetParameter(2, 0.001);
     massfitR->FixParameter(3, 0.00426);
     massfitR->SetParLimits(1, 1.015, 1.025);
-    massfitR->SetParLimits(2, 0.0001, 0.005);
+    massfitR->SetParLimits(2, 0.0001, 0.0005);
 
     corrMass->Fit(massfitR);
 
-    TF1 *massBGR = new TF1("massBGR", "pol2(0)", 0.99, 1.07);
+    TF1 *massBGR = new TF1("massBGR", "pol2(0)", 1.0, 1.05);
     massBGR->SetParameters(massfitR->GetParameter(4), massfitR->GetParameter(5), massfitR->GetParameter(6));
     Double_t fullfitIntR = massfitR->Integral(1.0, 1.05) - massBGR->Integral(1.0, 1.05);
     Double_t peakfitIntR = massfitR->Integral(peakLow, peakHigh) - massBGR->Integral(peakLow, peakHigh);
@@ -204,6 +206,8 @@ void makeUSCorrections(string inputFile, float peakLow = 1.014, float peakHigh =
 
     printf("peak: %f, total: %f, fraction: %f\n", peakregion, totalregion, fraction); 
     
+    TCanvas* c2 = new TCanvas("c2", "c2", 50, 50, 600, 600);
+    c2->cd();
     TH1D* corrMassL = (TH1D*)USinvmass->Clone("correctedMassL");
     corrMassL->Add(LSinvmass, -1.0*leftscale);
 
@@ -216,7 +220,7 @@ void makeUSCorrections(string inputFile, float peakLow = 1.014, float peakHigh =
 
     corrMassL->Fit(massfitL);
 
-    TF1 *massBGL = new TF1("massBGL", "pol2(0)", 0.99, 1.07);
+    TF1 *massBGL = new TF1("massBGL", "pol2(0)", 1.0, 1.05);
     massBGL->SetParameters(massfitL->GetParameter(4), massfitL->GetParameter(5), massfitL->GetParameter(6));
     Double_t fullfitIntL = massfitL->Integral(1.0, 1.05) - massBGL->Integral(1.0, 1.05);
     Double_t peakfitIntL = massfitL->Integral(peakLow, peakHigh) - massBGL->Integral(peakLow, peakHigh);
@@ -226,7 +230,7 @@ void makeUSCorrections(string inputFile, float peakLow = 1.014, float peakHigh =
     TH1D* corrMassAvg = (TH1D*)USinvmass->Clone("correctedMassAvg");
     corrMassAvg->Add(LSinvmass, -1.0*(avgscale+avgerror));
 
-    TF1 *massfitAvg = new TF1("massfitAvg", "[0]*TMath::Voigt(x-[1], [2], [3], 5) + pol2(4)", 0.99, 1.07);
+    TF1 *massfitAvg = new TF1("massfitAvg", "[0]*TMath::Voigt(x-[1], [2], [3], 5) + pol2(4)", 1.0, 1.05);
     massfitAvg->SetParameter(0, 1000);
     massfitAvg->SetParameter(1, 1.020);
     massfitAvg->SetParameter(2, 0.0002);
