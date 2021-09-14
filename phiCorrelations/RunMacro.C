@@ -13,7 +13,7 @@ void RunMacro(){
    Bool_t debug = kTRUE;
    char* work_dir = "PhiCorrelations_LHC16q";
    //char* output_dir = "output_2020_07_30_hphi_alltrig_0_100";
-   char* output_dir = "output_2021_04_13_hphi_highesttrig_50_80";
+   char* output_dir = "output_2021_08_26_hh_highesttrig_0_20";
    Int_t ttl = 50000;
    Int_t noffiles = 50;
    //Int_t runcycle[]={0,16,31};
@@ -158,7 +158,7 @@ void RunMacro(){
     
     //AliAnalysisTaskHadronPhiCorr_current *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 0.0, 20.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
     //gInterpreter->LoadMacro("AliAnalysisTaskHadronPhiCorr_current.cxx++g");
-    AliAnalysisTaskHadronPhiCorr_current *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kFALSE, 50.0, 80.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
+    AliAnalysisTaskHadronPhiCorr_current *task1 = reinterpret_cast<AliAnalysisTaskHadronPhiCorr_current*>(gInterpreter->ProcessLine(Form(".x %s(kTRUE, 0.0, 20.0)", gSystem->ExpandPathName("AddTaskHadronPhiCorr_current.C"))));
 
     task1->SetIsMCTrue(kFALSE);
     task1->SetIsMCKaon(kFALSE);
