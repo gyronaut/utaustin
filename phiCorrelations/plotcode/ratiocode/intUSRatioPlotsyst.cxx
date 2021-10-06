@@ -169,11 +169,43 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     gStyle->SetOptFit(0);
     gStyle->SetErrorX(0);
 
-    if(input_0_20.EqualTo("")) input_0_20 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.5_effcorr_hPhi_0_20_combined.root";
-    if(input_20_50.EqualTo("")) input_20_50 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.5_effcorr_hPhi_20_50_combined.root";
-    if(input_50_80.EqualTo("")) input_50_80 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.5_effcorr_hPhi_50_80_combined.root";
+    if(input_0_20.EqualTo("")) input_0_20 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_0_20_combined.root";
+    if(input_20_50.EqualTo("")) input_20_50 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_20_50_combined.root";
+    if(input_50_80.EqualTo("")) input_50_80 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_2_4_effcorr_hPhi_50_80_combined.root";
+
+    TString hhinput_0_20 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_2_4_effcorr_hh_0_20.root";
+    TString hhinput_20_50 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_2_4_effcorr_hh_20_50.root";
+    TString hhinput_50_80 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_2_4_effcorr_hh_50_80.root";
+
+    TString assocpt = "2.0 < #it{p}^{#phi}_{T,assoc} < 4.0 GeV/#it{c}";
+    TString hhassocpt = "2.0 < #it{p}^{h}_{T,assoc} < 4.0 GeV/#it{c}";
+
+    //low pt
+   /* 
+    input_0_20 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.5_effcorr_hPhi_0_20_combined.root";
+    input_20_50 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.5_effcorr_hPhi_20_50_combined.root";
+    input_50_80 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_1.5_2.5_effcorr_hPhi_50_80_combined.root";
+    hhinput_0_20 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.5_effcorr_hh_0_20.root";
+    hhinput_20_50 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.5_effcorr_hh_20_50.root";
+    hhinput_50_80 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.5_effcorr_hh_50_80.root";
+    assocpt = "1.5 < #it{p}^{#phi}_{T,assoc} < 2.5 GeV/#it{c}";
+    hhassocpt = "1.5 < #it{p}^{h}_{T,assoc} < 2.5 GeC/#it{c}";
+    */
+
+    //highpt
     
-    TH1D* hhdphi_0_20 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.5_effcorr_hh_0_20.root", "hh", "hh2D", "Eff_0_20", -1.2, 1.2, kBlue+2, 21);
+    input_0_20 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_2.5_4.0_effcorr_hPhi_0_20_combined.root";
+    input_20_50 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_2.5_4.0_effcorr_hPhi_20_50_combined.root";
+    input_50_80 = "~/phiStudies/results_onlineEff/Combined/US_syst_trig_4_8_assoc_2.5_4.0_effcorr_hPhi_50_80_combined.root";
+    hhinput_0_20 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_2.5_4.0_effcorr_hh_0_20.root";
+    hhinput_20_50 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_2.5_4.0_effcorr_hh_20_50.root";
+    hhinput_50_80 = "~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_2.5_4.0_effcorr_hh_50_80.root";
+    assocpt = "2.5 < #it{p}^{#phi}_{T,assoc} < 4.0 GeV/#it{c}";
+    hhassocpt = "2.5 < #it{p}^{h}_{T,assoc} < 4.0 GeC/#it{c}";
+    
+    
+
+    TH1D* hhdphi_0_20 = getHisto(hhinput_0_20, "hh", "hh2D", "Eff_0_20", -1.2, 1.2, kBlue+2, 21);
     TH1D* hPhidphi_0_20 = getHisto(input_0_20, "hPhi", Form("AvgUSsubhPhi2Dpeak%s", scaleSuffix.Data()), "Eff_0_20", -1.2, 1.2, kRed+2, 22);
 
 
@@ -261,7 +293,7 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
 
 
    //20-50 section 
-    TH1D* hhdphi_20_50 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.5_effcorr_hh_20_50.root", "hh", "hh2D", "Eff_20_50", -1.2, 1.2, kBlue+2, 21);
+    TH1D* hhdphi_20_50 = getHisto(hhinput_20_50, "hh", "hh2D", "Eff_20_50", -1.2, 1.2, kBlue+2, 21);
     TH1D* hPhidphi_20_50 = getHisto(input_20_50, "hPhi", Form("AvgUSsubhPhi2Dpeak%s", scaleSuffix.Data()), "Eff_20_50", -1.2, 1.2, kRed+2, 22);
 
 
@@ -353,7 +385,7 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     paperfit2050->SetParameter(0, hphiBG_20_50->GetParameter(0));
 
     //50-100 section
-    TH1D* hhdphi_50_100 = getHisto("~/phiStudies/results_onlineEff/Combined/trig_4_8_assoc_1.5_2.5_effcorr_hh_50_80.root", "hh", "hh2D", "Eff_50_80", -1.2, 1.2, kBlue+2, 21);
+    TH1D* hhdphi_50_100 = getHisto(hhinput_50_80, "hh", "hh2D", "Eff_50_80", -1.2, 1.2, kBlue+2, 21);
     TH1D* hPhidphi_50_100 = getHisto(input_50_80, "hPhi", Form("AvgUSsubhPhi2Dpeak%s", scaleSuffix.Data()), "Eff_50_80", -1.2, 1.2, kRed+2, 22);
 
 
@@ -648,6 +680,10 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     Double_t multArrayErr[3] = {15.0, 15.0, 10.0}; //normal errors that take up whole multiplicity range
     Double_t multArraySystErr[3] = {2.5, 2.5, 2.5}; //box systematic errors that are small
 
+    Double_t nchArray[3] = {15.3, 29.3, 49.1};
+    Double_t nchArrayErr[3] = {0, 0, 0};
+    Double_t nchArraySystErr[3] = {2.0, 2.0, 2.0};
+    
     //Double_t multArrayErr[3] = {0.0, 0.0, 0.0}; //normal errors, no x error length
     //Double_t multArrayErr2[3] = {15.0, 15.0, 15.0}; 
     //Double_t multArraySystErr[3] = {15.0, 15.0, 10.0};
@@ -688,6 +724,17 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     jetratioshh->GetYaxis()->SetTitleSize(0.04);
     jetratioshh->GetYaxis()->SetTitleOffset(1.5); 
     jetratioshh->GetYaxis()->SetRangeUser(0.0002, 0.0035);
+
+    TH1D* nchratioNearHist = new TH1D("nchratioNearHist", "", 4, 0.0, 65.0);
+    nchratioNearHist->GetXaxis()->SetTitle("<N_{ch}>_{|#eta| < 0.8}");
+    nchratioNearHist->GetXaxis()->SetTitleSize(0.05);
+    nchratioNearHist->GetXaxis()->SetLabelSize(0.04);
+    nchratioNearHist->GetXaxis()->SetTitleOffset(1.2);
+    nchratioNearHist->GetXaxis()->SetRangeUser(0.0, 65.0);
+    nchratioNearHist->GetYaxis()->SetTitle("1/#it{N}_{trig} d#it{N}_{assoc}/d#it{#Delta#varphi} Yield Ratios #left(#frac{h-#phi}{h-h}#right)");
+    nchratioNearHist->GetYaxis()->SetTitleSize(0.04);
+    nchratioNearHist->GetYaxis()->SetTitleOffset(1.5); 
+    nchratioNearHist->GetYaxis()->SetRangeUser(0.0, 0.045);
 
     //trying instead with variable sized histograms:
     Double_t binwidths[5] = {0.0, 20.0, 50.0, 80.0, 100.0};
@@ -832,6 +879,91 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     ratiosTotSyst->SetLineWidth(2);
     ratiosTotSyst->SetFillColorAlpha(kWhite, 0.0);
     //ratiosTotSyst->SetFillStyle(3144);
+
+    //plotting ratios as function of nch instead of mult percentile
+    TGraphErrors* nchratiosNear = new TGraphErrors(3, nchArray, nearArray, nchArrayErr, nearArrayErr);
+    nchratiosNear->SetMarkerStyle(20);
+    nchratiosNear->SetMarkerSize(1.5);
+    nchratiosNear->SetMarkerColor(kRed+1);
+    nchratiosNear->SetLineColor(kRed+2);
+    nchratiosNear->SetLineWidth(2.0);
+    nchratiosNear->GetXaxis()->SetTitle("Multiplicity Percentile (V0A)");
+    nchratiosNear->GetXaxis()->SetTitleSize(0.05);
+    nchratiosNear->GetXaxis()->SetLabelSize(0.04);
+    nchratiosNear->GetXaxis()->SetTitleOffset(0.9);
+    nchratiosNear->GetXaxis()->SetRangeUser(0.0, 100.0);
+    nchratiosNear->GetYaxis()->SetTitle("Yield Ratio #left(#frac{h-#phi}{h-h}#right)");
+    nchratiosNear->GetYaxis()->SetTitleSize(0.04);
+    nchratiosNear->GetYaxis()->SetTitleOffset(1.5); 
+    nchratiosNear->GetYaxis()->SetRangeUser(0.0002, 0.0035);
+
+    TGraphErrors* nchratiosNearSyst = new TGraphErrors(3, nchArray, nearArray, nchArraySystErr, nearArraySystErr);
+    nchratiosNearSyst->SetMarkerStyle(20);
+    nchratiosNearSyst->SetMarkerSize(1);
+    nchratiosNearSyst->SetMarkerColor(kRed+1);
+    nchratiosNearSyst->SetLineColor(kRed+3);
+    nchratiosNearSyst->SetFillColorAlpha(kWhite, 0.0);
+    nchratiosNearSyst->SetLineWidth(2.0);
+    nchratiosNearSyst->GetXaxis()->SetTitle("Multiplicity Percentile");
+    nchratiosNearSyst->GetXaxis()->SetTitleSize(0.05);
+    nchratiosNearSyst->GetXaxis()->SetLabelSize(0.04);
+    nchratiosNearSyst->GetXaxis()->SetTitleOffset(0.9);
+    nchratiosNearSyst->GetXaxis()->SetRangeUser(0.0, 100.0);
+    nchratiosNearSyst->GetYaxis()->SetTitle("Yield Ratio #left(#frac{h-#phi}{h-h}#right)");
+    nchratiosNearSyst->GetYaxis()->SetTitleSize(0.04);
+    nchratiosNearSyst->GetYaxis()->SetTitleOffset(1.5); 
+    nchratiosNearSyst->GetYaxis()->SetRangeUser(0.0002, 0.0035);
+
+
+
+    TGraphErrors* nchratiosAway = new TGraphErrors(3, nchArray, awayArray, nchArrayErr, awayArrayErr);
+    nchratiosAway->SetMarkerStyle(21);
+    nchratiosAway->SetMarkerSize(1.5);
+    nchratiosAway->SetMarkerColor(kBlue+1);
+    nchratiosAway->SetLineColor(kBlue+2);
+    nchratiosAway->SetLineWidth(2.0);
+
+    TGraphErrors* nchratiosAwaySyst = new TGraphErrors(3, nchArray, awayArray, nchArraySystErr, awayArraySystErr);
+    nchratiosAwaySyst->SetMarkerStyle(21);
+    nchratiosAwaySyst->SetMarkerSize(1);
+    nchratiosAwaySyst->SetMarkerColor(kBlue+1);
+    nchratiosAwaySyst->SetLineColor(kBlue+3);
+    nchratiosAwaySyst->SetLineWidth(2.0);
+    nchratiosAwaySyst->SetFillColorAlpha(kWhite, 0.0);
+
+    TGraphErrors* nchratiosBulk = new TGraphErrors(3, nchArray, bulkArray, nchArrayErr, bulkArrayErr);
+    nchratiosBulk->SetMarkerStyle(kFullCross);
+    nchratiosBulk->SetMarkerSize(2.0);
+    nchratiosBulk->SetMarkerColor(kGreen+2);
+    nchratiosBulk->SetLineColor(kGreen+3);
+    nchratiosBulk->SetLineWidth(2.0);
+
+    TGraphErrors* nchratiosBulkSyst = new TGraphErrors(3, nchArray, bulkArray, nchArraySystErr, bulkArraySystErr);
+    nchratiosBulkSyst->SetMarkerStyle(kFullCross);
+    nchratiosBulkSyst->SetMarkerSize(1);
+    nchratiosBulkSyst->SetMarkerColor(kGreen+2);
+    nchratiosBulkSyst->SetLineColor(kGreen+3);
+    nchratiosBulkSyst->SetLineWidth(2);
+    nchratiosBulkSyst->SetFillColorAlpha(kWhite, .50);
+    nchratiosBulkSyst->SetFillStyle(0);
+   
+    TGraphErrors* nchratiosTot = new TGraphErrors(3, nchArray, totalArray, nchArrayErr, totalArrayErr);
+    nchratiosTot->SetMarkerStyle(33);
+    nchratiosTot->SetMarkerSize(3);
+    nchratiosTot->SetMarkerColor(kMagenta+2);
+    nchratiosTot->SetLineColor(kMagenta+3);
+    nchratiosTot->SetLineWidth(2);
+    nchratiosTot->SetFillColor(kMagenta+1);
+    nchratiosTot->SetFillStyle(3144);
+
+    TGraphErrors* nchratiosTotSyst = new TGraphErrors(3, nchArray, totalArray, nchArraySystErr, totalArraySystErr);
+    nchratiosTotSyst->SetMarkerStyle(33);
+    nchratiosTotSyst->SetMarkerSize(3);
+    nchratiosTotSyst->SetMarkerColor(kMagenta+2);
+    nchratiosTotSyst->SetLineColor(kMagenta+3);
+    nchratiosTotSyst->SetLineWidth(2);
+    nchratiosTotSyst->SetFillColorAlpha(kWhite, 0.0);
+    //nchratiosTotSyst->SetFillStyle(3144);
 
 
     //setting up scaled TGraph's for comparing Efficiency and Non-efficiency corrected
@@ -1083,8 +1215,8 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     ratiosMultlegend->AddEntry(ratiosNear, "Near-side (Jet)", "pl");
     ratiosMultlegend->AddEntry(ratiosTot, "Total (Jet + UE)", "pl");
     //ratiosMultlegend->AddEntry(pythiaratio, "Simul. pp (Pythia8) h-#phi/h-h", "l");
-    ratiosMultlegend->AddEntry(straightratio, "#phi/h ratio", "l");
-    ratiosMultlegend->AddEntry(trigratio, "triggered #phi/h ratio", "l");
+    //ratiosMultlegend->AddEntry(straightratio, "#phi/h ratio", "l");
+    //ratiosMultlegend->AddEntry(trigratio, "triggered #phi/h ratio", "l");
     ratiosMultlegend->SetLineWidth(0);
 
     TPaveText *pythiatext = new TPaveText(0.5935, 0.6367, 0.9287, 0.7796, "NDC");
@@ -1115,12 +1247,22 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
 
     TPaveText *text2 = new TPaveText(0.5935, 0.6367, 0.9287, 0.7796, "NDC");
     text2->AddText("4.0 < #it{p}^{h}_{T,trig} < 8.0 GeV/#it{c}");
-    text2->AddText("2.5 < #it{p}^{#phi}_{T,assoc} < 4.0 GeV/#it{c}");
+    text2->AddText(assocpt.Data());
     text2->SetTextSizePixels(18);
     text2->SetFillColor(kWhite);
     text2->SetBorderSize(0);
     text2->SetFillStyle(0);
     text2->SetTextFont(42);
+
+    TPaveText *text2hh = new TPaveText(0.5935, 0.6367, 0.9287, 0.7796, "NDC");
+    text2hh->AddText("4.0 < #it{p}^{h}_{T,trig} < 8.0 GeV/#it{c}");
+    text2hh->AddText(hhassocpt.Data());
+    text2hh->SetTextSizePixels(18);
+    text2hh->SetFillColor(kWhite);
+    text2hh->SetBorderSize(0);
+    text2hh->SetFillStyle(0);
+    text2hh->SetTextFont(42);
+
 
 
     TPaveText *data = new TPaveText(0.6058, 0.8127, 0.9042, 0.9416, "NDC");
@@ -1185,18 +1327,18 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     ratiosBulk->Draw("P");
     ratiosTot->Draw("P");
     //ratiosTot->Draw("3");
-    pythianearratiotop->Draw("SAME");
-    pythianearratiobot->Draw("SAME");
-    pythianearratio->Draw("SAME");
-    pythiaawayratiotop->Draw("SAME");
-    pythiaawayratiobot->Draw("SAME");
-    pythiaawayratio->Draw("SAME");
-    pythiatotalratiotop->Draw("SAME");
-    pythiatotalratiobot->Draw("SAME");
-    pythiatotalratio->Draw("SAME");
-    pythiaUEratio->Draw("SAME");
-    straightratio->Draw("SAME");
-    trigratio->Draw("SAME");
+    //pythianearratiotop->Draw("SAME");
+    //pythianearratiobot->Draw("SAME");
+    //pythianearratio->Draw("SAME");
+    //pythiaawayratiotop->Draw("SAME");
+    //pythiaawayratiobot->Draw("SAME");
+    //pythiaawayratio->Draw("SAME");
+    //pythiatotalratiotop->Draw("SAME");
+    //pythiatotalratiobot->Draw("SAME");
+    //pythiatotalratio->Draw("SAME");
+    //pythiaUEratio->Draw("SAME");
+    //straightratio->Draw("SAME");
+    //trigratio->Draw("SAME");
     ratiosMultlegend->Draw();
     v2leg->Draw();
     data->Draw();
@@ -1204,7 +1346,107 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
    // pythiatext->Draw();
 
 
+    TF1* nearlinearfit = new TF1("nearlinearfit", "pol1", 0, 65);
+    nearlinearfit->SetLineColor(kRed+1);
+    nearlinearfit->SetLineWidth(3);
+    TF1* nearflatfit = new TF1("nearflatfit", "pol0", 0, 65);
+    TF1* awaylinearfit = new TF1("awaylinearfit", "pol1", 0, 65);
+    awaylinearfit->SetLineColor(kBlue+1);
+    awaylinearfit->SetLineWidth(3);
+    TF1* awayflatfit = new TF1("awayflatfit", "pol0", 0, 65);
+    TF1* bulklinearfit = new TF1("bulklinearfit", "pol1", 0, 65);
+    bulklinearfit->SetLineColor(kGreen+2);
+    bulklinearfit->SetLineWidth(3);
+    TF1* bulkflatfit = new TF1("bulkflatfit", "pol0", 0, 65);
+    TF1* totallinearfit = new TF1("totallinearfit", "pol1", 0, 65);
+    totallinearfit->SetLineColor(kMagenta+3);
+    totallinearfit->SetLineWidth(3);
+    TF1* totalflatfit = new TF1("totalflatfit", "pol0", 0, 65);
+
+    //Drawing the Nch ratios instead of mult percentiles
+    TCanvas* vsNchCanvas = new TCanvas("vsNchCanvas", "vsNchCanvas", 55, 55, 900, 600);
+    vsNchCanvas->cd();
+    vsNchCanvas->SetMargin(0.126, 0.05, 0.125, 0.05);
+    //vsMultCanvas->SetMargin(0.4, 0.05, 0.125, 0.05); //testing margin stuff
+    //TH1F* hist = ratiosNear->GetHistogram();
+    gStyle->SetErrorX(0.5);
+    //ratioNearHist->GetYaxis()->SetRangeUser(0.0, 0.040);
+    //ratioNearHist->GetXaxis()->SetTitle("Multiplicity Percentile (V0A)");
+    nchratioNearHist->Draw("AXIS");
+
+    //ratioNearHist->GetXaxis()->SetLabelOffset(999);
+    //ratioNearHist->GetXaxis()->SetTitleOffset(999);
+    //ratioNearHist->GetXaxis()->SetTickSize(0.0);
+
+    //nchratiosNear->Draw("P");
+    //gPad->Update();
+    /*TGaxis* newaxis = new TGaxis(gPad->GetUxmax(),
+            gPad->GetUymin(),
+            gPad->GetUxmin(),
+            gPad->GetUymin(),
+            ratioNearHist->GetXaxis()->GetXmin(),
+            ratioNearHist->GetXaxis()->GetXmax(),
+            510,"-");
+    newaxis->SetLabelOffset(-0.03);
+    newaxis->SetLabelSize(0.04);
+    newaxis->SetLabelFont(42);
+    //newaxis->SetTitle("Multipliciy % (VOA)");
+    //newaxis->SetTitleOffset(1.3);
+    //newaxis->SetTextSize
+    newaxis->Draw();
+    gPad->Update();
+    */
+    nchratiosNearSyst->Draw("5");
+    //nearv2syst->Draw("2");
+    printf("fits for near side:\n");
+    //nchratiosNear->Fit("nearflatfit");
+    //nchratiosNear->Fit("nearlinearfit");   
+    nchratiosNear->Draw("P");
+    nchratiosAwaySyst->Draw("5");
+    //awayv2syst->Draw("2");
+    printf("fits for away side:\n");
+    //nchratiosAway->Fit("awayflatfit");
+    //nchratiosAway->Fit("awaylinearfit");
+    nchratiosAway->Draw("P"); 
+    nchratiosBulkSyst->Draw("5");
+    printf("fits for UE: \n");
+    nchratiosBulkSyst->Fit("bulkflatfit");
+    //nchratiosBulkSyst->Fit("bulklinearfit");
+    nchratiosBulk->Draw("P");
+    printf("fits for Total: \n");
+    nchratiosTotSyst->Draw("5");
+    //nchratiosTotSyst->Fit("totalflatfit");
+    //nchratiosTotSyst->Fit("totallinearfit");
+    nchratiosTot->Draw("P");
+    //ratiosTot->Draw("3");
+    //pythianearratiotop->Draw("SAME");
+    //pythianearratiobot->Draw("SAME");
+    //pythianearratio->Draw("SAME");
+    //pythiaawayratiotop->Draw("SAME");
+    //pythiaawayratiobot->Draw("SAME");
+    //pythiaawayratio->Draw("SAME");
+    //pythiatotalratiotop->Draw("SAME");
+    //pythiatotalratiobot->Draw("SAME");
+    //pythiatotalratio->Draw("SAME");
+    //pythiaUEratio->Draw("SAME");
+    //straightratio->Draw("SAME");
+    //trigratio->Draw("SAME");
+    ratiosMultlegend->Draw();
+    //v2leg->Draw();
+    data->Draw();
+    text2->Draw();
+   // pythiatext->Draw();
     //separate canvas for scaled Total ratio
+
+    //printout info on nch fits
+    printf("nearside:\n");
+    printf("slope: %e, error %e, chi2: %f, ndf: %d\n", nearlinearfit->GetParameter(1), nearlinearfit->GetParError(1), nearlinearfit->GetChisquare(), nearlinearfit->GetNDF());
+    printf("awayside:\n");
+    printf("slope: %e, error %e, chi2: %f, ndf: %d\n", awaylinearfit->GetParameter(1), awaylinearfit->GetParError(1), awaylinearfit->GetChisquare(), awaylinearfit->GetNDF());
+    printf("UE:\n");
+    printf("slope: %e, error %e, chi2: %f, ndf: %d\n", bulklinearfit->GetParameter(1), bulklinearfit->GetParError(1), bulklinearfit->GetChisquare(), bulklinearfit->GetNDF());
+    printf("total:\n");
+    printf("slope: %e, error %e, chi2: %f, ndf: %d\n", totallinearfit->GetParameter(1), totallinearfit->GetParError(1), totallinearfit->GetChisquare(), totallinearfit->GetNDF());
 
     TCanvas* vsMultCanvasScale = new TCanvas("vsMultCanvasScale", "vsMultCanvasScale", 55, 55, 900, 600);
     vsMultCanvasScale->cd();
@@ -2148,10 +2390,10 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     //hPhidphi_0_20->Draw("E0 X0 SAME");
     corrFit->Draw("SAME");
     //corrFit2->Draw("SAME");
-    //hhBG->Draw("SAME");
+    hhBG->Draw("SAME");
     //hphiBG->Draw("SAME");
     text->Draw();
-    text2->Draw();
+    text2hh->Draw();
     //legend->Draw();
 
     //"cartoon" plot showing different yield regions
@@ -2219,7 +2461,7 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     hhBG_20_50->Draw("SAME");
     //hphiBG_20_50->Draw("SAME");
     text2050->Draw();
-    text2->Draw();
+    text2hh->Draw();
     //legend->Draw();
 
     TCanvas *c50_100 = new TCanvas("c50_100", "c50_100", 50, 50, 550, 600);
@@ -2247,7 +2489,7 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     hhBG_50_100->Draw("SAME");
     //hphiBG_50_100->Draw("SAME");
     text50100->Draw();
-    text2->Draw();
+    text2hh->Draw();
     //legend->Draw();
 
     //Set-up and Draw the hh and hphi correlations on single canvases
@@ -2481,7 +2723,8 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     althphi2050->SetLineColor(kBlack);
     althphi2050->Draw("E0 X0 P SAME");
     //fline->Draw("SAME");
-    hphiBG_20_50->SetParameter(0, hphiBG_20_50->GetParameter(0)*(1.0/(2.4*TMath::Pi()*2.0/16.0)));
+    //hphiBG_20_50->SetParameter(0, hphiBG_20_50->GetParameter(0)*(1.0/(2.4*TMath::Pi()*2.0/16.0)));
+    hphiBG_20_50->SetParameter(0, hphiBG_20_50->GetParameter(0));
     hphiBG_20_50->SetLineColor(kBlack);
     hphiBG_20_50->SetLineWidth(3);
     hphiBG_20_50->SetLineStyle(7);
@@ -2539,7 +2782,8 @@ void intUSRatioPlotsyst(TString outputstring, TString input_0_20 = "", TString i
     althh2050->SetMarkerStyle(22);
     althh2050->Draw("E0 X0 P SAME");
     //fline->Draw("SAME");
-    hhBG_20_50->SetParameter(0, hhBG_20_50->GetParameter(0)*(1.0/(2.4*TMath::Pi()*2.0/16.0)));
+    //hhBG_20_50->SetParameter(0, hhBG_20_50->GetParameter(0)*(1.0/(2.4*TMath::Pi()*2.0/16.0)));
+    hhBG_20_50->SetParameter(0, hhBG_20_50->GetParameter(0));
     hhBG_20_50->SetLineColor(kBlack);
     hhBG_20_50->SetLineWidth(4);
     hhBG_20_50->SetLineStyle(7);

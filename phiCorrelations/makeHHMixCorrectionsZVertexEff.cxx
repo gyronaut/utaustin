@@ -53,6 +53,7 @@ void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh,
     THnSparseF* trigDist = (THnSparseF*)list->FindObject("fTrigDist");
     TH1D* trigDist1D = (TH1D*)trigDist->Projection(0);
     float totalTrig = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow + epsilon), trigDist1D->GetXaxis()->FindBin(trigPTHigh - epsilon));
+    printf("total triggers: %e\n", totalTrig);
     
     //float totalTrig = (float)trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow + epsilon), trigHHDist->GetXaxis()->FindBin(trigPTHigh - epsilon), 1, trigHHDist->GetYaxis()->GetNbins());
       
@@ -99,22 +100,27 @@ void makeHHMixCorrectionsZVertexEff(string inputName, int multLow, int multHigh,
         if(izvtx == 0){
             hhTotal = (TH2D*)hh2D[izvtx]->Clone("hh2D");
             uncorrhh2D = (TH2D*)hh[izvtx]->Clone("uncorrhh2D");
+            hhMixedTotal = (TH2D*)hhMixed[izvtx]->Clone("hhMixedTotal");
         }else{
             hhTotal->Add(hh2D[izvtx]);
             uncorrhh2D->Add(hh[izvtx]);
+            hhMixedTotal->Add(hhMixed[izvtx]);
         }
     }
 
     hhTotal->Scale(1.0/totalTrig);
 
     TH1D* hhdphi = hhTotal->ProjectionY("hhdphi", hhTotal->GetXaxis()->FindBin(-1.2 + epsilon), hhTotal->GetXaxis()->FindBin(1.2 - epsilon));
-    hhdphi->Scale(1.0/(hhdphi->Integral()));
+    //hhdphi->Scale(1.0/(hhdphi->Integral()));
 
-    uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2 + epsilon), uncorrhh2D->GetXaxis()->FindBin(1.2 - epsilon), 1, uncorrhh2D->GetYaxis()->GetNbins())));
+    //uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2 + epsilon), uncorrhh2D->GetXaxis()->FindBin(1.2 - epsilon), 1, uncorrhh2D->GetYaxis()->GetNbins())));
+    uncorrhh2D->Scale(1.0/totalTrig);
     
     TFile* output = new TFile(Form("trig_%.1f_%.1f_assoc_%.1f_%.1f_effcorr_hh%s.root", trigPTLow, trigPTHigh, assocPTLow, assocPTHigh, mult.c_str()), "RECREATE");
     hhTotal->Write();
     hhdphi->Write();
     uncorrhh2D->Write(); 
     trigHHDist->Write();
+    trigDist1D->Write();
+    hhMixedTotal->Write();
 }

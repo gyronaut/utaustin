@@ -1,6 +1,6 @@
 TH2D* makeCorrections(TH3D* same, TH3D* mixed, Float_t lowmass, Float_t highmass, TH1D* sameEta, TH1D* mixedEta, Int_t zbin){
-    same->GetZaxis()->SetRangeUser(lowmass, highmass);
-    mixed->GetZaxis()->SetRangeUser(lowmass, highmass);
+    same->GetZaxis()->SetRangeUser(lowmass + 0.0001, highmass - 0.0001);
+    mixed->GetZaxis()->SetRangeUser(lowmass + 0.0001, highmass - 0.0001);
     TH2D* same2D = (TH2D*)same->Project3D("xye");
     same2D->Sumw2();
     TH2D* mix2D = (TH2D*)mixed->Project3D("xye");
@@ -81,6 +81,8 @@ void makeMixCorrectionsZVertexEff(string inputName, string outputStr, int multLo
     THnSparseF* trigDist = (THnSparseF*)list->FindObject("fTrigDist");
     TH1D* trigDist1D = (TH1D*)trigDist->Projection(0);
     float totalTrigSameUS = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow + epsilon), trigDist1D->GetXaxis()->FindBin(trigPTHigh - epsilon));
+
+    printf("total triggers: %e\n", totalTrigSameUS);
 
     TH1D* vtxZmixbins = (TH1D*)list->FindObject("fVtxZmixbins");
     Int_t numbinsZvtx = vtxZmixbins->GetXaxis()->GetNbins();
@@ -261,6 +263,7 @@ void makeMixCorrectionsZVertexEff(string inputName, string outputStr, int multLo
     TH2D* uncorrhPhi2Dpeak = (TH2D*)hPhiTotal->Project3D("xye");
     uncorrhPhi2Dpeak->Sumw2();
     uncorrhPhi2Dpeak->SetName("uncorrhPhi2Dpeak");
+    uncorrhPhi2Dpeak->Scale(1.0/totalTrigSameUS);
     TH2D* uncorrhKK2Dpeak = (TH2D*)hKKTotal->Project3D("xye");
     uncorrhKK2Dpeak->Sumw2();
     uncorrhKK2Dpeak->SetName("uncorrhKK2Dpeak");
@@ -330,7 +333,7 @@ void makeMixCorrectionsZVertexEff(string inputName, string outputStr, int multLo
     TH2D* mixedratioPeakZ2 = (TH2D*)hPhiMixed[6]->Project3D("xye");
     hKKMixed[6]->GetZaxis()->SetRangeUser(peakLow, peakHigh);
     TH2D* hist = (TH2D*)hKKMixed[6]->Project3D("xye");
-    mixedratioPeakZ2->Divide(hist);
+    //mixedratioPeakZ2->Divide(hist);
     TH1D* mixedratioPeakZ2deta = mixedratioPeakZ2->ProjectionX("mixedratioPeakZ2deta");
 
 

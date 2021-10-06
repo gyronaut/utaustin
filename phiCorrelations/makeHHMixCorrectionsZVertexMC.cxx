@@ -23,7 +23,8 @@ void makeHHMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, 
     //string mult = inputName.substr(inputName.find("_", inputName.find("_")+1), inputName.find(".") - inputName.find("_", inputName.find("_")+1));
     string mult = "_" + std::to_string(multLow) + "_" + std::to_string(multHigh);
     TList* list = (TList*) histoFile->Get(Form("hhCorr_mult%s_", mult.c_str()));
-   
+  
+    Float_t epsilon = 0.00001; 
     TH2D *trigHHDist = (TH2D*)list->FindObject("fTrigHHDist");
 
     float trigMixScales[10] = {};
@@ -33,7 +34,7 @@ void makeHHMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, 
 
     THnSparseF* trigDist = (THnSparseF*)list->FindObject("fTrigDist");
     TH1D* trigDist1D = (TH1D*)trigDist->Projection(0);
-    float totalTrig = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow), trigDist1D->GetXaxis()->FindBin(trigPTHigh));
+    float totalTrig = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow + epsilon), trigDist1D->GetXaxis()->FindBin(trigPTHigh - epsilon));
 
     //float totalTrig = (float)trigHHDist->Integral(trigHHDist->GetXaxis()->FindBin(trigPTLow), trigHHDist->GetXaxis()->FindBin(trigPTHigh), 1, trigHHDist->GetYaxis()->GetNbins());
       
@@ -58,12 +59,12 @@ void makeHHMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, 
     for(int izvtx = 0; izvtx < numbinsZvtx; izvtx++){
 
         dphiHH[izvtx] = (THnSparseF*)list->FindObject(Form("fDphiHHz%i", izvtx));
-        dphiHH[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
-        dphiHH[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow, assocPTHigh); 
+        dphiHH[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow + epsilon, trigPTHigh - epsilon); 
+        dphiHH[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow + epsilon, assocPTHigh - epsilon); 
    
         dphiHHMixed[izvtx] = (THnSparseF*)list->FindObject(Form("fDphiHHMixedz%i", izvtx));
-        dphiHHMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
-        dphiHHMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
+        dphiHHMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow + epsilon, trigPTHigh - epsilon); 
+        dphiHHMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow + epsilon ,assocPTHigh - epsilon); 
 
         
         hh[izvtx] = dphiHH[izvtx]->Projection(2,3);
@@ -85,12 +86,12 @@ void makeHHMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, 
 
     hhTotal->Scale(1.0/totalTrig);
 
-    TH1D* hhdphi = hhTotal->ProjectionY("hhdphi", hhTotal->GetXaxis()->FindBin(-1.2), hhTotal->GetXaxis()->FindBin(1.2));
-    hhdphi->Scale(1.0/(hhdphi->Integral()));
+    TH1D* hhdphi = hhTotal->ProjectionY("hhdphi", hhTotal->GetXaxis()->FindBin(-1.2+epsilon), hhTotal->GetXaxis()->FindBin(1.2-epsilon));
+    //hhdphi->Scale(1.0/(hhdphi->Integral()));
 
-    uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2), uncorrhh2D->GetXaxis()->FindBin(1.2), 1, uncorrhh2D->GetYaxis()->GetNbins())));
+    uncorrhh2D->Scale(1.0/(uncorrhh2D->Integral(uncorrhh2D->GetXaxis()->FindBin(-1.2+epsilon), uncorrhh2D->GetXaxis()->FindBin(1.2-epsilon), 1, uncorrhh2D->GetYaxis()->GetNbins())));
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_hh%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_hh_09_29_%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hhTotal->Write();
     hhdphi->Write();
     uncorrhh2D->Write(); 

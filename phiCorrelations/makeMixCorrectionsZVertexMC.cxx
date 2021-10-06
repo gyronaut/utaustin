@@ -1,6 +1,6 @@
 TH2D* makeCorrections(TH3D* same, TH3D* mixed, Float_t lowmass, Float_t highmass, TH1D* sameEta, TH1D* mixedEta, Int_t zbin){
-    same->GetZaxis()->SetRangeUser(lowmass, highmass);
-    mixed->GetZaxis()->SetRangeUser(lowmass, highmass);
+    same->GetZaxis()->SetRangeUser(lowmass + 0.00001, highmass - 0.00001);
+    mixed->GetZaxis()->SetRangeUser(lowmass + 0.00001, highmass - 0.00001);
     TH2D* same2D = (TH2D*)same->Project3D("xye");
     same2D->Sumw2();
     TH2D* mix2D = (TH2D*)mixed->Project3D("xye");
@@ -71,13 +71,15 @@ void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, fl
 
     //float totalTrigSameUS = (float)trigSameUSDist->Integral(trigSameUSDist->GetXaxis()->FindBin(trigPTLow), trigSameUSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameUSDist->GetYaxis()->GetNbins());
     //float totalTrigSameLS = (float)trigSameLSDist->Integral(trigSameLSDist->GetXaxis()->FindBin(trigPTLow), trigSameLSDist->GetXaxis()->FindBin(trigPTHigh), 1, trigSameLSDist->GetYaxis()->GetNbins());
-  
+ 
+    Float_t epsilon = 0.00001;
+
     if(!list){
        printf("why can't i find the list! \n");
     } 
     THnSparseF* trigDist = (THnSparseF*)list->FindObject("fTrigDist");
     TH1D* trigDist1D = (TH1D*)trigDist->Projection(0);
-    float totalTrigSameUS = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow), trigDist1D->GetXaxis()->FindBin(trigPTHigh));
+    float totalTrigSameUS = (float)trigDist1D->Integral(trigDist1D->GetXaxis()->FindBin(trigPTLow + epsilon), trigDist1D->GetXaxis()->FindBin(trigPTHigh - epsilon));
     
     TH1D* vtxZmixbins = (TH1D*)list->FindObject("fVtxZmixbins");
     Int_t numbinsZvtx = vtxZmixbins->GetXaxis()->GetNbins();
@@ -136,13 +138,13 @@ void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, fl
 
 
         //make 4D THnProjections projection to do mixed event corrections    
-        dphiHPhi[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
-        dphiHPhi[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
+        dphiHPhi[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow + epsilon, trigPTHigh - epsilon); 
+        dphiHPhi[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow + epsilon, assocPTHigh - epsilon); 
         //dphiHKK[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
         //dphiHKK[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
 
-        dphiHPhiMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh); 
-        dphiHPhiMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh); 
+        dphiHPhiMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow + epsilon, trigPTHigh - epsilon); 
+        dphiHPhiMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow + epsilon, assocPTHigh - epsilon); 
         //dphiHKKMixed[izvtx]->GetAxis(0)->SetRangeUser(trigPTLow, trigPTHigh);
         //dphiHKKMixed[izvtx]->GetAxis(1)->SetRangeUser(assocPTLow,assocPTHigh);
 
@@ -258,7 +260,7 @@ void makeMixCorrectionsZVertexMC(string inputName, int multLow, int multHigh, fl
     */
 
     
-    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_MC_hPhi%s_02_28.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
+    TFile* output = new TFile(Form("trig_%i_%i_assoc_%i_%i_MC_hPhi_09_29_%s.root", (int)trigPTLow, (int)trigPTHigh, (int)assocPTLow, (int)assocPTHigh, mult.c_str()), "RECREATE");
     hPhi2DpeakTotal->Write();
     //hKK2DpeakTotal->Write();
     //hPhi2DRsideTotal->Write();
