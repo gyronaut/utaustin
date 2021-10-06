@@ -32,8 +32,9 @@ public:
     void SetESDAnalysis() { SetBit(kAODanalysis, kFALSE); };
     Bool_t IsAODanalysis() const { return TestBit(kAODanalysis); };
     
-    struct AliKaonContainer{
+    struct AliHContainer{
         Int_t trackNum;
+        Float_t charge;
         TLorentzVector particle;
     };
 
@@ -71,8 +72,11 @@ public:
     void SetMultHigh(Float_t multHigh) { MULT_HIGH = multHigh; };
 
     void SetSingleTrigger(Bool_t doSingleTrigger) { DO_SINGLE_TRIGGER = doSingleTrigger; };
+    void SetSelectTrigger(Bool_t selectTriggerEvents) { SELECT_TRIGGER_EVENTS = selectTriggerEvents; };
+    void SetHighestTriggerOnly(Bool_t doHighestTrigger) { DO_HIGHEST_TRIGGER = doHighestTrigger; };
 
     void LoadEfficiencies(TFile* filename);
+    void LoadEfficiencies(TF1* phieff, TF1* heff, TF1* trigeff);
 
 private:
 
@@ -82,6 +86,8 @@ private:
     Bool_t USE_ACCPT;
     
     Bool_t DO_SINGLE_TRIGGER;
+    Bool_t SELECT_TRIGGER_EVENTS;
+    Bool_t DO_HIGHEST_TRIGGER;
 
     Bool_t IS_HH;
     Float_t MULT_LOW;
@@ -111,7 +117,7 @@ private:
  
        
     TObjArray* AddToTracks();
-    Bool_t MakeCorrelations(Int_t itrack, AliVParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
+    Bool_t MakeCorrelations(Int_t itrack, AliHContainer trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
     Bool_t MakeCorrelations(Int_t itrack, AliAODMCParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
     void MakeMixCorrelations(AliPhiContainer* phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS);
     void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
@@ -126,9 +132,9 @@ private:
     AliPIDResponse *fpidResponse; //!pid response
     AliMultSelection *fMultSelection; //!mult selection
 
-    TF1         *fphiEff;///> phi Efficiency
-    TF1         *fhEff;///> hadron Efficiency
-    TF1         *ftrigEff;///> trigger Efficiency
+    TF1         *fphiEff;// phi Efficiency
+    TF1         *fhEff;// hadron Efficiency
+    TF1         *ftrigEff;// trigger Efficiency
     
     TList       *fOutputList; //!Output list
     TH1F        *fNevents;//! no of events
@@ -187,6 +193,18 @@ private:
     THnSparseF  *fTrueHDist;//! Distriubution for MC True hadrons
     THnSparseF  *fTruePrimHDist;//! Distriubution for MC True Physical Primary hadrons
     THnSparseF  *fTrueSecHDist;//! Distriubution for MC True Secondary hadrons
+    THnSparseF  *fTrueNotPrimHDist;//! Distriubution for MC True Not Physical Primary hadrons
+
+    THnSparseF  *fTriggeredTruePhiDist;//! Distribution for MC TriggeredTrue phi's
+    THnSparseF  *fTriggeredTrueHDist;//! Distriubution for MC TriggeredTrue hadrons
+    THnSparseF  *fTriggeredTruePrimHDist;//! Distriubution for MC TriggeredTrue Physical Primary hadrons
+    THnSparseF  *fTriggeredTrueSecHDist;//! Distriubution for MC TriggeredTrue Secondary hadrons
+    THnSparseF  *fTriggeredTrueNotPrimHDist;//! Distriubution for MC TriggeredTrue Physical Primary hadrons
+
+    TH2D        *fHadronsVsPhi;//! hadrons vs. phi per event
+    TH2D        *fHadronsVsPhiPairs;//! h-h vs h-phi per event
+    TH1D        *fRatio;//! phi/hadron ratio per event
+    TH1D        *fPairRatio;//! h-phi/h-h ratio per event
     
     THnSparseF  **fDphiHPhi;//! delta-phi distribution with unlike sign kaon pairs
     THnSparseF  **fDphiTrueHPhi;//! delta-phi distribution with true MC phi
