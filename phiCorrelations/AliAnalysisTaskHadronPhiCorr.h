@@ -1,5 +1,5 @@
-#ifndef AliAnalysisTaskHadronPhiCorr_current_cxx
-#define AliAnalysisTaskHadronPhiCorr_current_cxx
+#ifndef AliAnalysisTaskHadronPhiCorr_cxx
+#define AliAnalysisTaskHadronPhiCorr_cxx
 
 //QA task for EMCAL electron analysis
 #include "AliAnalysisTaskSE.h"
@@ -18,11 +18,11 @@ class AliCFParticle;
 class AliAODMCParticle;
 class AliMultSelection;
 
-class AliAnalysisTaskHadronPhiCorr_current : public AliAnalysisTaskSE {
+class AliAnalysisTaskHadronPhiCorr : public AliAnalysisTaskSE {
 public:
-    AliAnalysisTaskHadronPhiCorr_current();
-    AliAnalysisTaskHadronPhiCorr_current(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh);
-    virtual ~AliAnalysisTaskHadronPhiCorr_current();
+    AliAnalysisTaskHadronPhiCorr();
+    AliAnalysisTaskHadronPhiCorr(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh);
+    virtual ~AliAnalysisTaskHadronPhiCorr();
     
     virtual void   UserCreateOutputObjects();
     virtual void   UserExec(Option_t *option);
@@ -67,6 +67,7 @@ public:
     void SetIsMCKaon(Bool_t isMCKaon) {IS_MC_KAON = isMCKaon; };
     void SetIsMCKTrack(Bool_t isMCKTrack) {IS_MC_KTRACK = isMCKTrack; };
     void SetUseAccpt(Bool_t useAccpt) {USE_ACCPT = useAccpt; };
+    void SetMCPileupRemoval(Bool_t doPileupRemoval) {DO_PILEUP_REMOVAL = doPileupRemoval; };
 
     void SetMultLow(Float_t multLow) { MULT_LOW = multLow; };
     void SetMultHigh(Float_t multHigh) { MULT_HIGH = multHigh; };
@@ -74,9 +75,11 @@ public:
     void SetSingleTrigger(Bool_t doSingleTrigger) { DO_SINGLE_TRIGGER = doSingleTrigger; };
     void SetSelectTrigger(Bool_t selectTriggerEvents) { SELECT_TRIGGER_EVENTS = selectTriggerEvents; };
     void SetHighestTriggerOnly(Bool_t doHighestTrigger) { DO_HIGHEST_TRIGGER = doHighestTrigger; };
+    void SetPerEventScaling(Bool_t doPerEventScaling) { DO_PER_EVENT_SCALING = doPerEventScaling; };
 
     void LoadEfficiencies(TFile* filename);
     void LoadEfficiencies(TF1* phieff, TF1* heff, TF1* trigeff);
+    void LoadEfficiencyHistos(TFile* efffile);
 
 private:
 
@@ -84,10 +87,12 @@ private:
     Bool_t IS_MC_KAON;
     Bool_t IS_MC_KTRACK;
     Bool_t USE_ACCPT;
+    Bool_t DO_PILEUP_REMOVAL;
     
     Bool_t DO_SINGLE_TRIGGER;
     Bool_t SELECT_TRIGGER_EVENTS;
     Bool_t DO_HIGHEST_TRIGGER;
+    Bool_t DO_PER_EVENT_SCALING;
 
     Bool_t IS_HH;
     Float_t MULT_LOW;
@@ -117,8 +122,8 @@ private:
  
        
     TObjArray* AddToTracks();
-    Bool_t MakeCorrelations(Int_t itrack, AliHContainer trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
-    Bool_t MakeCorrelations(Int_t itrack, AliAODMCParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx);
+    Bool_t MakeCorrelations(Int_t itrack, const AliHContainer& trigger, const std::vector<AliPhiContainer>& phiVec, THnSparse *fDphi, Double_t zVtx, Int_t numtrigs);
+    Bool_t MakeCorrelations(Int_t itrack, AliAODMCParticle *trigger, const std::vector<AliPhiContainer>& phiVec, THnSparse *fDphi, Double_t zVtx);
     void MakeMixCorrelations(AliPhiContainer* phiVec, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS);
     void MakeHHMixCorrelations(AliCFParticle *cfPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx);
   
@@ -135,7 +140,11 @@ private:
     TF1         *fphiEff;// phi Efficiency
     TF1         *fhEff;// hadron Efficiency
     TF1         *ftrigEff;// trigger Efficiency
-    
+ 
+    TH1D         *fphiEffHist;// phi Efficiency
+    TH1D         *fhEffHist;// hadron Efficiency
+    TH1D         *ftrigEffHist;// trigger Efficiency
+   
     TList       *fOutputList; //!Output list
     TH1F        *fNevents;//! no of events
     TH1F        *fNumTracks;//! number of Tracks/evt
@@ -216,10 +225,10 @@ private:
     THnSparseF  **fDphiHH;//! hadron-hadron correlation
     THnSparseF  **fDphiHHMixed;//! hadron-hadron mixed correlation
 
-    AliAnalysisTaskHadronPhiCorr_current(const AliAnalysisTaskHadronPhiCorr_current&); // not implemented
-    AliAnalysisTaskHadronPhiCorr_current& operator=(const AliAnalysisTaskHadronPhiCorr_current&); // not implemented
+    AliAnalysisTaskHadronPhiCorr(const AliAnalysisTaskHadronPhiCorr&); // not implemented
+    AliAnalysisTaskHadronPhiCorr& operator=(const AliAnalysisTaskHadronPhiCorr&); // not implemented
    
-    ClassDef(AliAnalysisTaskHadronPhiCorr_current, 3); // example of analysis
+    ClassDef(AliAnalysisTaskHadronPhiCorr, 3); // 
 };
 
 #endif

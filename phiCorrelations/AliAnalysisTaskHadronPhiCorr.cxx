@@ -44,15 +44,17 @@
 #include "AliMCEvent.h"
 //#include "AliStack.h"
 #include "AliMCEventHandler.h"
+#include "AliAnalysisUtils.h"
+#include "AliAODMCHeader.h"
 
-#include "AliAnalysisTaskHadronPhiCorr_current.h"
+#include "AliAnalysisTaskHadronPhiCorr.h"
 
 using std::cout;
 using std::endl;
 
-ClassImp(AliAnalysisTaskHadronPhiCorr_current)
+ClassImp(AliAnalysisTaskHadronPhiCorr)
 //________________________________________________________________________
-AliAnalysisTaskHadronPhiCorr_current::AliAnalysisTaskHadronPhiCorr_current(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh)
+AliAnalysisTaskHadronPhiCorr::AliAnalysisTaskHadronPhiCorr(const char *name, Bool_t isHH, Float_t multLow, Float_t multHigh)
 : AliAnalysisTaskSE(name),
 fVevent(0),
 fPoolMgr(0x0),
@@ -68,6 +70,9 @@ fNumTracks(0),
 fphiEff(0),
 fhEff(0),
 ftrigEff(0),
+fphiEffHist(0),
+fhEffHist(0),
+ftrigEffHist(0),
 fVtxZ(0),
 fVtxX(0),
 fVtxY(0),
@@ -156,6 +161,7 @@ fDphiHHMixed(0)
     DO_SINGLE_TRIGGER = kFALSE;
     SELECT_TRIGGER_EVENTS = kFALSE;
     DO_HIGHEST_TRIGGER = kFALSE;
+    DO_PER_EVENT_SCALING = kFALSE;
 
     KAON_ETA_CUT = 0.8;
     KAON_TPC_CUT = 3.0;
@@ -183,8 +189,8 @@ fDphiHHMixed(0)
     fDphiHHMixed = new THnSparseF*[Z_VTX_NBINS];
 }
 //________________________________________________________________________
-AliAnalysisTaskHadronPhiCorr_current::AliAnalysisTaskHadronPhiCorr_current()
-: AliAnalysisTaskSE("DefaultTask_hPhiCorr_current"),
+AliAnalysisTaskHadronPhiCorr::AliAnalysisTaskHadronPhiCorr()
+: AliAnalysisTaskSE("DefaultTask_hPhiCorr"),
 fVevent(0),
 fPoolMgr(0x0),
 fLSPoolMgr(0x0),
@@ -199,6 +205,9 @@ fNumTracks(0),
 fphiEff(0),
 fhEff(0),
 ftrigEff(0),
+fphiEffHist(0),
+fhEffHist(0),
+ftrigEffHist(0),
 fVtxZ(0),
 fVtxX(0),
 fVtxY(0),
@@ -284,6 +293,7 @@ fDphiHHMixed(0)
     DO_SINGLE_TRIGGER = kFALSE;
     SELECT_TRIGGER_EVENTS = kFALSE;
     DO_HIGHEST_TRIGGER = kFALSE;
+    DO_PER_EVENT_SCALING = kFALSE;
 
     IS_HH = kFALSE;
     MULT_LOW = 0.0;
@@ -316,7 +326,7 @@ fDphiHHMixed(0)
 
 }
 //________________________________________________________________________
-AliAnalysisTaskHadronPhiCorr_current::~AliAnalysisTaskHadronPhiCorr_current()
+AliAnalysisTaskHadronPhiCorr::~AliAnalysisTaskHadronPhiCorr()
 {
     //Destructor
     delete fOutputList;
@@ -334,7 +344,7 @@ AliAnalysisTaskHadronPhiCorr_current::~AliAnalysisTaskHadronPhiCorr_current()
     delete fHHPoolMgr;
 }
 //________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr_current::LoadEfficiencies(TFile* filename){
+void AliAnalysisTaskHadronPhiCorr::LoadEfficiencies(TFile* filename){
     //TFile* effFile = TFile::Open(filename.Data());
     TFile* effFile = filename;
     //TFile* effFile = TFile::Open("/home/alidock/alirepos/utaustin/efficiency/fits_17f2bCENTTPC80efficiency.root");
@@ -365,7 +375,7 @@ void AliAnalysisTaskHadronPhiCorr_current::LoadEfficiencies(TFile* filename){
 
 }
 
-void AliAnalysisTaskHadronPhiCorr_current::LoadEfficiencies(TF1* phieff, TF1* heff, TF1* trigeff){
+void AliAnalysisTaskHadronPhiCorr::LoadEfficiencies(TF1* phieff, TF1* heff, TF1* trigeff){
     
     fphiEff = (TF1*)phieff->Clone("phiEff");
     fhEff = (TF1*)heff->Clone("hEff"); 
@@ -385,8 +395,29 @@ void AliAnalysisTaskHadronPhiCorr_current::LoadEfficiencies(TF1* phieff, TF1* he
 */
 }
 
+void AliAnalysisTaskHadronPhiCorr::LoadEfficiencyHistos(TFile* effFile){
+    
+    fphiEffHist = (TH1D*)(effFile->Get("phiPTEff")->Clone("fphiEffHist"));
+    if(!fphiEffHist){
+        AliFatal("No phi Eff found!!");
+    }
+
+    fhEffHist = (TH1D*)(effFile->Get("hadronPTEff")->Clone("fhEffHist"));
+    if(!fhEffHist){
+        AliFatal("No h Eff found!!");
+    }
+    
+    ftrigEffHist = (TH1D*)(effFile->Get("trigEff")->Clone("ftrigEffHist"));
+    if(!ftrigEffHist){
+        AliFatal("No trig Eff found!!");
+    }
+
+    printf("test efficiency: %f\n", fphiEffHist->GetBinContent(fphiEffHist->GetXaxis()->FindBin(2.1)));
+
+}
+
 //________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr_current::UserCreateOutputObjects()
+void AliAnalysisTaskHadronPhiCorr::UserCreateOutputObjects()
 {
     // Create histograms
     // Called once
@@ -731,7 +762,7 @@ void AliAnalysisTaskHadronPhiCorr_current::UserCreateOutputObjects()
 
 
 //___________________________________________________________________________
-Bool_t AliAnalysisTaskHadronPhiCorr_current::MakeCorrelations(Int_t triggerIndex, AliHContainer trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
+Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex,const AliHContainer& trigger, const std::vector<AliPhiContainer>& phiVec, THnSparse *fDphi, Double_t zVtx, Int_t numtrigs = 1){
 
     Double_t dphi_point[5];
     AliPhiContainer phi;
@@ -765,14 +796,17 @@ Bool_t AliAnalysisTaskHadronPhiCorr_current::MakeCorrelations(Int_t triggerIndex
         dphi_point[4] = phi.particle.M();
 
         Double_t weight = 1.0;
-        if(!IS_MC_TRUE && !IS_MC_KAON && fphiEff!=0){
+        if(!IS_MC_TRUE && !IS_MC_KAON && fphiEffHist!=0){
             if((phi.particle.Pt() > 1.0 && phi.particle.Pt() < 8.0) && trigger.particle.Pt() > 3.0 && trigger.particle.Pt() < 9.0){
-                weight = 1.0/fphiEff->Eval(phi.particle.Pt());
-                weight = weight*(1.0/ftrigEff->Eval(trigger.particle.Pt()));
+                weight = 1.0/fphiEffHist->GetBinContent(fphiEffHist->GetXaxis()->FindBin((phi.particle.Pt())));
+                weight = weight*(1.0/ftrigEffHist->GetBinContent(ftrigEffHist->GetXaxis()->FindBin((trigger.particle.Pt()))));
                 //weight = 21.0;
             }
-        }else if(IS_MC_KAON && ftrigEff!=0){
-            weight = weight*1.0/ftrigEff->Eval(trigger.particle.Pt());
+        }else if(IS_MC_KAON && ftrigEffHist!=0){
+            weight = weight*1.0/ftrigEffHist->GetBinContent(ftrigEffHist->GetXaxis()->FindBin((trigger.particle.Pt())));
+        }
+        if(DO_PER_EVENT_SCALING){
+            weight = weight/numtrigs;
         }
         fDphi->Fill(dphi_point, weight);
     }
@@ -780,7 +814,7 @@ Bool_t AliAnalysisTaskHadronPhiCorr_current::MakeCorrelations(Int_t triggerIndex
 }
 
 //___________________________________________________________________________
-Bool_t AliAnalysisTaskHadronPhiCorr_current::MakeCorrelations(Int_t triggerIndex, AliAODMCParticle *trigger, std::vector<AliPhiContainer> phiVec, THnSparse *fDphi, Double_t zVtx){
+Bool_t AliAnalysisTaskHadronPhiCorr::MakeCorrelations(Int_t triggerIndex, AliAODMCParticle *trigger, const std::vector<AliPhiContainer>& phiVec, THnSparse *fDphi, Double_t zVtx){
 
     Double_t dphi_point[5];
     AliPhiContainer phi;
@@ -809,7 +843,7 @@ Bool_t AliAnalysisTaskHadronPhiCorr_current::MakeCorrelations(Int_t triggerIndex
 }
 
 //___________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr_current::MakeMixCorrelations(AliPhiContainer* phi, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS){
+void AliAnalysisTaskHadronPhiCorr::MakeMixCorrelations(AliPhiContainer* phi, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx, AliEventPool* fPool, Bool_t isLS){
 
     Double_t dphi_point[5];    
     Int_t nMix = fPool->GetCurrentNEvents();
@@ -840,8 +874,8 @@ void AliAnalysisTaskHadronPhiCorr_current::MakeMixCorrelations(AliPhiContainer* 
             Double_t weight = 1.0;
             if(!IS_MC_TRUE && !IS_MC_KAON && fphiEff!=0 && ftrigEff!=0){
                 if((phi->particle.Pt() > 1.0 && phi->particle.Pt() < 8.0) && hadron->Pt() > 3.0){
-                    weight = 1.0/fphiEff->Eval(phi->particle.Pt());
-                    weight = weight*(1.0/ftrigEff->Eval(hadron->Pt()));
+                    weight = 1.0/fphiEffHist->GetBinContent(fphiEffHist->GetXaxis()->FindBin(phi->particle.Pt()));
+                    weight = weight*(1.0/ftrigEffHist->GetBinContent(ftrigEffHist->GetXaxis()->FindBin(hadron->Pt())));
                     //weight = 21.0;
                 }
             }
@@ -860,7 +894,7 @@ void AliAnalysisTaskHadronPhiCorr_current::MakeMixCorrelations(AliPhiContainer* 
 }
 
 //___________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr_current::MakeHHMixCorrelations(AliCFParticle *assocPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx){
+void AliAnalysisTaskHadronPhiCorr::MakeHHMixCorrelations(AliCFParticle *assocPart, THnSparse *fDphiMixed, Float_t mult, Double_t zVtx){
 
     Double_t dphi_point[4];
     AliEventPool* fPool;
@@ -895,9 +929,9 @@ void AliAnalysisTaskHadronPhiCorr_current::MakeHHMixCorrelations(AliCFParticle *
                 dphi_point[3] = hadron->Eta() - assocPart->Eta();
                 //dphi_point[4] = zVtx;
                 Double_t weight = 1.0;
-                if(fhEff !=0 && ftrigEff != 0){
-                    weight = 1.0/fhEff->Eval(assocPart->Pt());
-                    weight = weight*(1.0/ftrigEff->Eval(hadron->Pt()));
+                if(fhEffHist !=0 && ftrigEffHist != 0){
+                    weight = 1.0/(fhEffHist->GetBinContent(fhEffHist->GetXaxis()->FindBin(assocPart->Pt())));
+                    weight = weight*(1.0/(ftrigEffHist->GetBinContent(ftrigEffHist->GetXaxis()->FindBin((hadron->Pt())))));
                 }
                 fDphiMixed->Fill(dphi_point, weight);
             }
@@ -910,7 +944,7 @@ void AliAnalysisTaskHadronPhiCorr_current::MakeHHMixCorrelations(AliCFParticle *
 
 
 //________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
+void AliAnalysisTaskHadronPhiCorr::UserExec(Option_t *){
 
 
     UInt_t evSelMask=((AliInputEventHandler*)(AliAnalysisManager::GetAnalysisManager()->GetInputEventHandler()))->IsEventSelected();
@@ -934,6 +968,26 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
     if (fAOD) {
         // printf("fAOD available\n");
         //return;
+    }
+
+    TClonesArray* MCArray;
+    AliAODMCHeader* MCHeader;
+    if(IS_MC_TRUE || IS_MC_KAON){
+        MCArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
+        MCHeader = dynamic_cast<AliAODMCHeader*>(fAOD->GetList()->FindObject(AliAODMCHeader::StdBranchName()));
+        if(!MCArray){
+            AliError("Array of MC particles not found");
+            return;
+        }
+        if(!MCHeader){
+            AliError("MCHeader not found!");
+            return;
+        }
+    }
+
+    /////Remove in bunch pileup events in MC////
+    if(DO_PILEUP_REMOVAL){
+        if(AliAnalysisUtils::IsSameBunchPileupInGeneratedEvent(MCHeader)) return;
     }
 
     ///////////////////
@@ -982,6 +1036,8 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
 
         if(multPercentile < MULT_LOW || multPercentile > MULT_HIGH) return;
     }
+    
+    
     
     fNevents->Fill(0); //all events
     Double_t Zvertex = -100, Xvertex = -100, Yvertex = -100;
@@ -1038,13 +1094,11 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
 
     //if MC events, do loop through MCArray to get generated particles
     if((IS_MC_TRUE || IS_MC_KAON)){
-        TClonesArray* MCArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
-        if(!MCArray){
-            AliError("Array of MC particles not found");
-            return;
-        }
         if(SELECT_TRIGGER_EVENTS){ //do initial loop to check if there are trigger particle in the event
             for(Int_t imcpart=0; imcpart< MCArray->GetEntries(); imcpart++){
+                if(DO_PILEUP_REMOVAL){
+                    if(AliAnalysisUtils::IsParticleFromOutOfBunchPileupCollision(imcpart, MCHeader, MCArray)) continue;
+                }
                 AliAODMCParticle *AODMCtrack = (AliAODMCParticle*)MCArray->At(imcpart);
                 Int_t pdgcode = AODMCtrack->GetPdgCode();
                 //select generated particles by their pdg codes for MC TRUE case
@@ -1061,6 +1115,9 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
             }
         }  
         for(Int_t imcpart=0; imcpart< MCArray->GetEntries(); imcpart++){
+            if(DO_PILEUP_REMOVAL){
+                if(AliAnalysisUtils::IsParticleFromOutOfBunchPileupCollision(imcpart, MCHeader, MCArray)) continue;
+            }
             AliAODMCParticle *AODMCtrack = (AliAODMCParticle*)MCArray->At(imcpart);
             Int_t pdgcode = AODMCtrack->GetPdgCode();
             //select generated particles by their pdg codes for MC TRUE case
@@ -1191,7 +1248,7 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
 
             //make list of trigger particles
             if(fAOD && !IS_MC_TRUE){
-                if(aKaonTrack->TestBit(TRIG_TRK_BIT) && TMath::Abs(kaonTrack->Eta()) < 0.8 && kaonTrack->Pt() > 3.0 && kaonTrack->Pt() < 8.0){
+                if(aKaonTrack->TestBit(TRIG_TRK_BIT) && TMath::Abs(kaonTrack->Eta()) < 0.8 && kaonTrack->Pt() > 4.0 && kaonTrack->Pt() < 8.0){
                     numTriggers++;
                     AliHContainer trig;
                     trig.trackNum = itrack;
@@ -1227,11 +1284,6 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
                 Bool_t acceptKaon = kFALSE;
                 if(IS_MC_KTRACK){
                     if(label>0){
-                        TClonesArray* MCArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
-                        if(!MCArray){
-                            AliError("Array of MC particles not found");
-                            return;
-                        }
                         AliAODMCParticle *AODMCtrack = (AliAODMCParticle*)MCArray->At(label);
                         Int_t pdgcode = AODMCtrack->GetPdgCode();
                         //only accept tracks that have TOF hit that correspond to real Kaons
@@ -1302,6 +1354,8 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
 
                 //accept only those kaon pairs that fall within our mass range:
                 if(phi.particle.M() > 1.07 || phi.particle.M()<0.98) continue;
+                //accept only phi candidates that fall in our momentum range:
+                if(phi.particle.Pt() < 0.5 || phi.particle.Pt() > 10) continue;
                 //cut out all reconstructed phi at wide eta
                 if(TMath::Abs(phi.particle.Eta()) >0.8) continue;
 
@@ -1348,7 +1402,7 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
                     //check for eta-phi range set for efficiency crosscheck
                     if(ETA_PHI_REGION <= 0){
                         phiCandidates.push_back(phi);
-                        Double_t weight = 1.0/fphiEff->Eval(phi.particle.Pt());
+                        Double_t weight = 1.0/(fphiEffHist->GetBinContent(fphiEffHist->GetXaxis()->FindBin(phi.particle.Pt())));
                         fKKUSDist->Fill(distPoint, weight);
                     }else if(ETA_PHI_REGION == 1 && TMath::Abs(phi.particle.Eta()) > 0.2 && distPoint[2] < TMath::Pi()){
                         phiCandidates.push_back(phi);
@@ -1445,12 +1499,10 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
 
     /* Do Correlations for MC case using the MCArray information */
     if(IS_MC_TRUE){
-        TClonesArray* MCArray = dynamic_cast<TClonesArray*>(fAOD->FindListObject(AliAODMCParticle::StdBranchName()));
-        if(!MCArray){
-            AliError("Array of MC particles not found");
-            return;
-        }
         for(Int_t imcpart=0; imcpart< MCArray->GetEntries(); imcpart++){
+            if(DO_PILEUP_REMOVAL){
+                if(AliAnalysisUtils::IsParticleFromOutOfBunchPileupCollision(imcpart, MCHeader, MCArray)) continue;
+            }
             AliAODMCParticle *AODMCtrig = (AliAODMCParticle*)MCArray->At(imcpart);
             Int_t triggerpdgcode = TMath::Abs(AODMCtrig->GetPdgCode());
             if((TMath::Abs(triggerpdgcode)==211 || TMath::Abs(triggerpdgcode)==2212 || TMath::Abs(triggerpdgcode)==11 || TMath::Abs(triggerpdgcode)==321 || TMath::Abs(triggerpdgcode)==13) && TMath::Abs(AODMCtrig->Eta()) < 0.8 && AODMCtrig->Pt() > 2.0 /*&& AODMCtrig->IsPhysicalPrimary()*/){
@@ -1462,6 +1514,9 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
                 if(IS_HH){
                     for(Int_t iassoc = 0; iassoc< MCArray->GetEntries(); iassoc++){
                         if(iassoc == imcpart) continue;
+                        if(DO_PILEUP_REMOVAL){
+                            if(AliAnalysisUtils::IsParticleFromOutOfBunchPileupCollision(iassoc, MCHeader, MCArray)) continue;
+                        }
                         AliAODMCParticle* AODMCassoc = (AliAODMCParticle*)MCArray->At(iassoc);
                         Int_t assocpdgcode = TMath::Abs(AODMCassoc->GetPdgCode());
                         if((TMath::Abs(assocpdgcode)==211 || TMath::Abs(assocpdgcode)==2212 || TMath::Abs(assocpdgcode)==11 || TMath::Abs(assocpdgcode)==321 || TMath::Abs(assocpdgcode)==13) && TMath::Abs(AODMCassoc->Eta()) < 0.8 && AODMCassoc->Pt() > 1.0 && AODMCassoc->IsPhysicalPrimary()){ //select charged hadrons
@@ -1514,13 +1569,12 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
             }
             trigPoint[2] = triggerTrack.particle.Eta();
             Float_t weight = 1.0;
-            if(ftrigEff !=0){ 
-                if(ftrigEff->Eval(triggerTrack.particle.Pt()) == 0){
-                    AliFatal(Form("Trigger Efficiency Evaluated to 0 for pT %f", triggerTrack.particle.Pt()));
-                }else{
-                    weight = 1.0/ftrigEff->Eval(triggerTrack.particle.Pt());
-                }
+            if(ftrigEffHist->GetBinContent(ftrigEffHist->GetXaxis()->FindBin((triggerTrack.particle.Pt()))) == 0){
+                AliFatal(Form("Trigger Efficiency Evaluated to 0 for pT %f", triggerTrack.particle.Pt()));
+            }else{
+                weight = 1.0/ftrigEffHist->GetBinContent(ftrigEffHist->GetXaxis()->FindBin((triggerTrack.particle.Pt())));
             }
+            
             fTrigDist->Fill(trigPoint, weight);
 
             //hadron-phi correlations
@@ -1531,8 +1585,8 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
                 Bool_t isTriggerAccptDaughter = kTRUE;
                 Bool_t isTriggerTrueDaughter = kTRUE;
                 
-                isTriggerDaughter = MakeCorrelations(itrack, triggerTrack, phiCandidates, fDphiHPhi[indexZVtx], Zvertex);
-                isTriggerLSDaughter = MakeCorrelations(itrack, triggerTrack, phiLikeSignCandidates, fDphiHKK[indexZVtx], Zvertex);
+                isTriggerDaughter = MakeCorrelations(itrack, triggerTrack, phiCandidates, fDphiHPhi[indexZVtx], Zvertex, trigList.size());
+                isTriggerLSDaughter = MakeCorrelations(itrack, triggerTrack, phiLikeSignCandidates, fDphiHKK[indexZVtx], Zvertex, trigList.size());
 
                 if(!isTriggerDaughter){
                     cfPart = new AliCFParticle(triggerTrack.particle.Pt(), triggerTrack.particle.Eta(), trigPoint[1] ,triggerTrack.charge, 0);
@@ -1557,7 +1611,7 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
 
                         aassocTrack = dynamic_cast<AliAODTrack*>(VassocTrack);
 
-                        if(aassocTrack->TestFilterMask(ASSOC_TRK_BIT) && aassocTrack->Pt() > 0.15 && TMath::Abs(aassocTrack->Eta())<0.8){
+                        if(aassocTrack->TestFilterMask(ASSOC_TRK_BIT) && aassocTrack->Pt() > 0.5 && aassocTrack->Pt() < 10 && TMath::Abs(aassocTrack->Eta())<0.8){
                             hhdphi_point[0] = trigPoint[0];
                             hhdphi_point[1] = aassocTrack->Pt();
                             hhdphi_point[2] = trigPoint[1] - aassocTrack->Phi();
@@ -1570,9 +1624,12 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
                             //hhdphi_point[4] = Zvertex;
                             //hhdphi_point[4] = multPercentile;
                             Double_t weight = 1.0;
-                            if(fhEff !=0 && ftrigEff !=0){
-                                weight = 1.0/fhEff->Eval(aassocTrack->Pt());
-                                weight = weight*(1.0/ftrigEff->Eval(trigPoint[0]));
+                            if(fhEffHist !=0 && ftrigEffHist !=0){
+                                weight = 1.0/fhEffHist->GetBinContent(fhEffHist->GetXaxis()->FindBin((aassocTrack->Pt())));
+                                weight = weight*(1.0/ftrigEffHist->GetBinContent(ftrigEffHist->GetXaxis()->FindBin((trigPoint[0]))));
+                            }
+                            if(DO_PER_EVENT_SCALING){
+                                weight = weight/trigList.size();
                             }
                             fDphiHH[indexZVtx]->Fill(hhdphi_point, weight);
                             hhAssoc->SetPt(aassocTrack->Pt());
@@ -1591,121 +1648,121 @@ void AliAnalysisTaskHadronPhiCorr_current::UserExec(Option_t *){
                     fArrayHHTracksMix->Add(cfPart);
                 }
             }
-    }   //track loop
-}
-delete hhAssoc;
+        }   //track loop
+    }
+    delete hhAssoc;
 
 
-//if there was a trigger, fill additional inclusive histograms
-if(numTriggers>0){
-    if(phiCandidates.size() >0 ){
-        for(int iphi = 0; iphi < phiCandidates.size(); iphi++){
-            distPoint[0] = phiCandidates[iphi].particle.Pt();
-            distPoint[1] = phiCandidates[iphi].particle.M();
-            distPoint[2] = phiCandidates[iphi].particle.Phi();
-            if(distPoint[2] < 0){
-                distPoint[2] += 2.0*TMath::Pi();
+    //if there was a trigger, fill additional inclusive histograms
+    if(numTriggers>0){
+        if(phiCandidates.size() >0 ){
+            for(int iphi = 0; iphi < phiCandidates.size(); iphi++){
+                distPoint[0] = phiCandidates[iphi].particle.Pt();
+                distPoint[1] = phiCandidates[iphi].particle.M();
+                distPoint[2] = phiCandidates[iphi].particle.Phi();
+                if(distPoint[2] < 0){
+                    distPoint[2] += 2.0*TMath::Pi();
+                }
+                distPoint[3] = phiCandidates[iphi].particle.Eta();
+                distPoint[4] = phiCandidates[iphi].particle.Rapidity();
+                Double_t weight = 1.0/fphiEffHist->GetBinContent(fphiEffHist->GetXaxis()->FindBin((phiCandidates[iphi].particle.Pt())));
+                fKKUSTrigDist->Fill(distPoint, weight);
             }
-            distPoint[3] = phiCandidates[iphi].particle.Eta();
-            distPoint[4] = phiCandidates[iphi].particle.Rapidity();
-            Double_t weight = 1.0/fphiEff->Eval(phiCandidates[iphi].particle.Pt());
-            fKKUSTrigDist->Fill(distPoint, weight);
         }
+
+        if(phiLikeSignCandidates.size() >0){
+            for(int iphi = 0; iphi < phiLikeSignCandidates.size(); iphi++){
+                distPoint[0] = phiLikeSignCandidates[iphi].particle.Pt();
+                distPoint[1] = phiLikeSignCandidates[iphi].particle.M();
+                distPoint[2] = phiLikeSignCandidates[iphi].particle.Phi();
+                if(distPoint[2] < 0){
+                    distPoint[2] += 2.0*TMath::Pi();
+                }
+                distPoint[3] = phiLikeSignCandidates[iphi].particle.Eta();
+                distPoint[4] = phiLikeSignCandidates[iphi].particle.Rapidity();
+                fKKLSTrigDist->Fill(distPoint);
+            }
+        }
+
+
     }
 
-    if(phiLikeSignCandidates.size() >0){
-        for(int iphi = 0; iphi < phiLikeSignCandidates.size(); iphi++){
-            distPoint[0] = phiLikeSignCandidates[iphi].particle.Pt();
-            distPoint[1] = phiLikeSignCandidates[iphi].particle.M();
-            distPoint[2] = phiLikeSignCandidates[iphi].particle.Phi();
-            if(distPoint[2] < 0){
-                distPoint[2] += 2.0*TMath::Pi();
-            }
-            distPoint[3] = phiLikeSignCandidates[iphi].particle.Eta();
-            distPoint[4] = phiLikeSignCandidates[iphi].particle.Rapidity();
-            fKKLSTrigDist->Fill(distPoint);
-        }
-    }
+    ntracks = fVevent->GetNumberOfTracks();
 
-
-}
-
-ntracks = fVevent->GetNumberOfTracks();
-
-if(multPercentile <= 100.){
-    if(!IS_HH){
-        if(IS_MC_TRUE){
-            if(truePhiAcceptance.size() > 0){
-                AliEventPool *fTruePool = 0x0;
-                fTruePool = fTruePoolMgr->GetEventPool(multPercentile, Zvertex);
-                if(!fTruePool){
-                    AliFatal(Form("No true pool found for multiplicity = %f, zVtx = %i", multPercentile, Zvertex));
-                    return;
-                }else{
-                    if(fTruePool->IsReady()){
-                        for(int i = 0; i < truePhiAcceptance.size(); i++){
-                            MakeMixCorrelations(&truePhiAcceptance[i], fDphiTrueHPhiMixed[indexZVtx], multPercentile, Zvertex, fTruePool, kFALSE);
+    if(multPercentile <= 100.){
+        if(!IS_HH){
+            if(IS_MC_TRUE){
+                if(truePhiAcceptance.size() > 0){
+                    AliEventPool *fTruePool = 0x0;
+                    fTruePool = fTruePoolMgr->GetEventPool(multPercentile, Zvertex);
+                    if(!fTruePool){
+                        AliFatal(Form("No true pool found for multiplicity = %f, zVtx = %i", multPercentile, Zvertex));
+                        return;
+                    }else{
+                        if(fTruePool->IsReady()){
+                            for(int i = 0; i < truePhiAcceptance.size(); i++){
+                                MakeMixCorrelations(&truePhiAcceptance[i], fDphiTrueHPhiMixed[indexZVtx], multPercentile, Zvertex, fTruePool, kFALSE);
+                            }
+                        }
+                        if(fArrayTrueTracksMix->GetEntries() > 0){
+                            fTruePool->UpdatePool(fArrayTrueTracksMix);
                         }
                     }
-                    if(fArrayTrueTracksMix->GetEntries() > 0){
-                        fTruePool->UpdatePool(fArrayTrueTracksMix);
+                }
+            }else{
+                if(phiCandidates.size() > 0){
+                    AliEventPool *fPool = 0x0;
+                    fPool = fPoolMgr->GetEventPool(multPercentile, Zvertex); // Get the buffer associated with the current centrality and z-vtx
+                    if(!fPool){
+                        AliFatal(Form("No pool found for multiplicity = %f, zVtx = %f", multPercentile, Zvertex));
+                        return;
+                    }else{
+                        if(fPool->IsReady()){
+                            for(int i =0; i< phiCandidates.size(); i++){
+                                MakeMixCorrelations(&phiCandidates[i], fDphiHPhiMixed[indexZVtx], multPercentile, Zvertex, fPool, kFALSE);
+                            }
+                        }
+                        if(fArrayTracksMix->GetEntries() > 0){
+                            fPool->UpdatePool(fArrayTracksMix);
+                        }
                     }
                 }
             }
-        }else{
-            if(phiCandidates.size() > 0){
-                AliEventPool *fPool = 0x0;
-                fPool = fPoolMgr->GetEventPool(multPercentile, Zvertex); // Get the buffer associated with the current centrality and z-vtx
-                if(!fPool){
+            if(phiLikeSignCandidates.size() > 0){
+                AliEventPool *fLSPool = 0x0;
+                fLSPool = fLSPoolMgr->GetEventPool(multPercentile, Zvertex); // Get the buffer associated with the current centrality and z-vtx
+                if(!fLSPool){
                     AliFatal(Form("No pool found for multiplicity = %f, zVtx = %f", multPercentile, Zvertex));
                     return;
                 }else{
-                    if(fPool->IsReady()){
-                        for(int i =0; i< phiCandidates.size(); i++){
-                            MakeMixCorrelations(&phiCandidates[i], fDphiHPhiMixed[indexZVtx], multPercentile, Zvertex, fPool, kFALSE);
+                    if(fLSPool->IsReady()){
+                        for(int i =0; i< phiLikeSignCandidates.size(); i++){
+                            MakeMixCorrelations(&phiLikeSignCandidates[i], fDphiHKKMixed[indexZVtx], multPercentile, Zvertex, fLSPool, kTRUE);
                         }
                     }
-                    if(fArrayTracksMix->GetEntries() > 0){
-                        fPool->UpdatePool(fArrayTracksMix);
+                    if(fArrayLSTracksMix->GetEntries() > 0){
+                        fLSPool->UpdatePool(fArrayLSTracksMix);
                     }
                 }
             }
+
         }
-        if(phiLikeSignCandidates.size() > 0){
-            AliEventPool *fLSPool = 0x0;
-            fLSPool = fLSPoolMgr->GetEventPool(multPercentile, Zvertex); // Get the buffer associated with the current centrality and z-vtx
-            if(!fLSPool){
+        //di-hadron event pool
+        if(IS_HH){
+            AliEventPool *fHHPool = 0x0;
+            fHHPool = fHHPoolMgr->GetEventPool(multPercentile, Zvertex);
+            if(!fHHPool){
                 AliFatal(Form("No pool found for multiplicity = %f, zVtx = %f", multPercentile, Zvertex));
                 return;
-            }else{
-                if(fLSPool->IsReady()){
-                    for(int i =0; i< phiLikeSignCandidates.size(); i++){
-                        MakeMixCorrelations(&phiLikeSignCandidates[i], fDphiHKKMixed[indexZVtx], multPercentile, Zvertex, fLSPool, kTRUE);
-                    }
-                }
-                if(fArrayLSTracksMix->GetEntries() > 0){
-                    fLSPool->UpdatePool(fArrayLSTracksMix);
-                }
+            }else if(fArrayHHTracksMix->GetEntries() > 0){
+                fHHPool->UpdatePool(fArrayHHTracksMix);
             }
         }
-
     }
-    //di-hadron event pool
-    if(IS_HH){
-        AliEventPool *fHHPool = 0x0;
-        fHHPool = fHHPoolMgr->GetEventPool(multPercentile, Zvertex);
-        if(!fHHPool){
-            AliFatal(Form("No pool found for multiplicity = %f, zVtx = %f", multPercentile, Zvertex));
-            return;
-        }else if(fArrayHHTracksMix->GetEntries() > 0){
-            fHHPool->UpdatePool(fArrayHHTracksMix);
-        }
-    }
-}
-PostData(1, fOutputList);
+    PostData(1, fOutputList);
 }
 //________________________________________________________________________
-void AliAnalysisTaskHadronPhiCorr_current::Terminate(Option_t *) 
+void AliAnalysisTaskHadronPhiCorr::Terminate(Option_t *) 
 {
     // Draw result to the screen
     // Called once at the end of the query
