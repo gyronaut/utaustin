@@ -1,10 +1,12 @@
 void plotV2assumption(){
-    TFile* filev2 = new TFile("~/phiStudies/results_onlineEff/Combined/fitsyst_v2.root");
+    //TFile* filev2 = new TFile("~/phiStudies/results_onlineEff/Combined/fitsyst_v2.root");
+    TFile* filev2 = new TFile("fitsyst_v2testtest.root");
     TGraphErrors* nearv2 = (TGraphErrors*)filev2->Get("ratiosNear")->Clone("nearv2");
     TGraphErrors* awayv2 = (TGraphErrors*)filev2->Get("ratiosAway")->Clone("awayv2");
     TGraphErrors* uev2 = (TGraphErrors*)filev2->Get("ratiosBulk")->Clone("uev2");
 
-    TFile* fileno = new TFile("~/phiStudies/results_onlineEff/Combined/fitsyst_nov2.root");
+    //TFile* fileno = new TFile("~/phiStudies/results_onlineEff/Combined/fitsyst_nov2.root");
+    TFile* fileno = new TFile("fitsyst_pythia8test.root");
     TGraphErrors* nearno = (TGraphErrors*)fileno->Get("ratiosNear")->Clone("nearno");
     TGraphErrors* awayno = (TGraphErrors*)fileno->Get("ratiosAway")->Clone("awayno");
     TGraphErrors* ueno = (TGraphErrors*)fileno->Get("ratiosBulk")->Clone("ueno");

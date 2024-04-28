@@ -3,8 +3,13 @@
 void KKInvMass(){
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(0);
+    gStyle->SetPadColor(10);
+    gStyle->SetPadTickX(1);
+    gStyle->SetPadTickY(1);
 
-    TFile* file = new TFile("~/phiStudies/results_onlineEff/FAST/hphi_0_20_rapiditytest.root");
+
+//    TFile* file = new TFile("~/phiStudies/results_onlineEff/FAST/hphi_0_20_rapiditytest.root");
+    TFile* file = new TFile("~/phiStudies/results_onlineEff/Combined/2021code/TOTAL_hphi_0_20_2021code.root");
     TList* list = (TList*) file->Get("phiCorr_mult_0_20_");
     THnSparseF* kkUSDist= (THnSparseF*)list->FindObject("fkkUSDist");
     THnSparseF* kkLSDist= (THnSparseF*)list->FindObject("fkkLSDist");
@@ -13,9 +18,11 @@ void KKInvMass(){
     TH1D* events = (TH1D*)list->FindObject("fNevents");
     
     Float_t epsilon = 0.0001;
+    Float_t lowpt = 1.5;
+    Float_t highpt = 4.0;
 
-    kkUSDist->GetAxis(0)->SetRangeUser(2.0 + epsilon, 4.0 - epsilon);
-    kkLSDist->GetAxis(0)->SetRangeUser(2.0 + epsilon, 4.0 - epsilon);
+    kkUSDist->GetAxis(0)->SetRangeUser(lowpt + epsilon, highpt - epsilon);
+    kkLSDist->GetAxis(0)->SetRangeUser(lowpt + epsilon, highpt - epsilon);
     
     TH1D* USInvMass = kkUSDist->Projection(1);
     TH1D* LSInvMass = kkLSDist->Projection(1);
@@ -23,26 +30,35 @@ void KKInvMass(){
     origLSInvMass->SetLineColor(kRed);
     origLSInvMass->SetLineWidth(2);
     
-    Double_t sidebandUS = (Double_t)(USInvMass->Integral(USInvMass->GetXaxis()->FindBin(1.04), USInvMass->GetXaxis()->FindBin(1.06)) + USInvMass->Integral(USInvMass->GetXaxis()->FindBin(0.995), USInvMass->GetXaxis()->FindBin(1.005)));
-    Double_t sidebandLS = (Double_t)(LSInvMass->Integral(LSInvMass->GetXaxis()->FindBin(1.04), LSInvMass->GetXaxis()->FindBin(1.06)) + LSInvMass->Integral(LSInvMass->GetXaxis()->FindBin(0.995), LSInvMass->GetXaxis()->FindBin(1.005)));
+    Double_t sidebandUS = (Double_t)(USInvMass->Integral(USInvMass->GetXaxis()->FindBin(1.04+epsilon), USInvMass->GetXaxis()->FindBin(1.06-epsilon)) + USInvMass->Integral(USInvMass->GetXaxis()->FindBin(0.995+epsilon), USInvMass->GetXaxis()->FindBin(1.005-epsilon)));
+    Double_t sidebandLS = (Double_t)(LSInvMass->Integral(LSInvMass->GetXaxis()->FindBin(1.04+epsilon), LSInvMass->GetXaxis()->FindBin(1.06-epsilon)) + LSInvMass->Integral(LSInvMass->GetXaxis()->FindBin(0.995+epsilon), LSInvMass->GetXaxis()->FindBin(1.005-epsilon)));
     Double_t scale = sidebandUS/sidebandLS;
     
     LSInvMass->Scale(scale);
 
     LSInvMass->SetLineColor(kRed);
     LSInvMass->SetLineWidth(2);
+    LSInvMass->SetMarkerColor(kRed+1);
+    LSInvMass->SetMarkerStyle(25);
+    LSInvMass->SetMarkerSize(1);
     USInvMass->SetLineWidth(3);
     
     USInvMass->SetTitle("");
     USInvMass->GetXaxis()->SetTitle("#it{m}_{KK} (GeV/#it{c}^{2})");
     USInvMass->GetXaxis()->SetTitleSize(0.05);
     USInvMass->SetLineColor(kBlack);
+    USInvMass->SetMarkerSize(1);
+    USInvMass->SetMarkerColor(kBlack);
+    USInvMass->SetMarkerStyle(20);
+    Float_t LSBus = USInvMass->Integral(0.9950001, 1.0049999);
+    Float_t RSBus = USInvMass->Integral(1.0400001, 1.0599999);
+
    
     TH1D* corrected = (TH1D*)USInvMass->Clone("corrected");
     corrected->Add(LSInvMass, -1.0);
     corrected->SetLineWidth(2);
-    corrected->SetMarkerSize(2);
-    corrected->SetMarkerStyle(34);
+    corrected->SetMarkerSize(1);
+    corrected->SetMarkerStyle(20);
     corrected->GetXaxis()->SetTitle("#it{m}_{K^{+}K^{-}} (GeV/#it{c}^{2})");
     TF1* fit = new TF1("fit",  "[0]*TMath::Voigt(x - [1], [2], [3], 4) + pol2(4)",0.99, 1.07);
     fit->SetParameter(1, 1.020);
@@ -72,6 +88,15 @@ void KKInvMass(){
     Float_t bg2peak = bgpeakInt/peakInt;
     
     printf("=================\n\nfit integral: %e,    hist integral: %e,   only hist: %e,    only BG: %e,    ratio to residual: %4.2f%% \n=====================\n", fullInt, fullHistInt, onlyHistInt, onlyBGInt, bg2peak*100);
+
+    Float_t lsb = voigtFit->Integral(0.995, 1.005);
+    Float_t lsbfull = fit->Integral(0.995, 1.005);
+    Float_t lsbhist = USInvMass->Integral(USInvMass->GetXaxis()->FindBin(0.995+epsilon),USInvMass->GetXaxis()->FindBin(1.005-epsilon));
+    Float_t rsb = voigtFit->Integral(1.040, 1.060);
+    Float_t rsbfull = fit->Integral(1.040, 1.060);
+    Float_t rsbhist = USInvMass->Integral(USInvMass->GetXaxis()->FindBin(1.040+epsilon),USInvMass->GetXaxis()->FindBin(1.060-epsilon));
+
+    printf("phi in LSB = %f, phi in RSB = %f\n", 100.*lsb/LSBus, 100.*rsb/RSBus);
 
     Float_t diffPct[11];
     Float_t diffInt[11];
@@ -147,22 +172,23 @@ void KKInvMass(){
     //lineLeg->AddEntry(peak1, "#phi(1020) Peak Region", "l");
 
     TLegend *leg = new TLegend(0.5435, 0.507, 0.898, 0.6777);
-    leg->AddEntry(USInvMass, "US Kaon Pairs", "le");
-    leg->AddEntry(LSInvMass, "#splitline{Est. BG}{(using LS Kaon Pairs)}", "le");
+    leg->AddEntry(USInvMass, "US kaon pairs", "pe");
+    leg->AddEntry(LSInvMass, "#splitline{Est. BG}{(using LS kaon pairs)}", "pe");
     leg->SetLineWidth(0);
 
     TPaveText *text = new TPaveText(0.5953, 0.7622, 0.9147, 0.9103, "NDC");
-    text->AddText("ALICE Preliminary");
+    text->AddText("ALICE");
+    //text->AddText("ALICE Preliminary");
     //text->AddText("Work In Progress");
-    text->AddText("p-Pb #sqrt{s_{NN}} = 5.02 TeV");
-    text->AddText("0-20% Multiplicity Class (V0A)");
+    text->AddText("p#font[122]{-}Pb #sqrt{#it{s}_{NN}} = 5.02 TeV");
+    text->AddText("0#font[122]{-}20% multiplicity class (V0A)");
     text->SetFillColor(kWhite);
     text->SetFillStyle(0);
     text->SetBorderSize(0);
     text->SetTextFont(42);
 
     TPaveText *pTText = new TPaveText(0.1589, 0.8031, 0.5134, 0.8902, "NDC");
-    pTText->AddText("2.0 < #it{p}_{T}^{KK} < 4.0 GeV/#it{c}");
+    pTText->AddText(Form("%.1f < #it{p}_{T}^{KK} < %.1f GeV/#it{c}", lowpt, highpt));
     pTText->SetFillColor(kWhite);
     pTText->SetBorderSize(0);
     pTText->SetFillStyle(0);
@@ -172,10 +198,10 @@ void KKInvMass(){
     c->cd()->SetMargin(0.15, 0.05, 0.12, 0.06);
     //c->cd()->SetLeftMargin(0.15);
     //c->cd()->SetBottomMargin(0.12);
-    USInvMass->GetYaxis()->SetTitle("Arb. Units");
+    USInvMass->GetYaxis()->SetTitle("Counts");
     USInvMass->GetYaxis()->SetMaxDigits(2);
-    USInvMass->GetYaxis()->SetRangeUser(0.0, 0.05E6);
-    USInvMass->Draw("HIST E");
+    USInvMass->GetYaxis()->SetRangeUser(0.2E5, 1.0E6);
+    USInvMass->Draw("");
     LSInvMass->Draw("SAME E");
     //sbLine1->Draw("SAME");
     //sbLine2->Draw("SAME");
@@ -188,18 +214,19 @@ void KKInvMass(){
 
 
     TLegend *corrleg = new TLegend(0.46, 0.39, 0.88, 0.57);
-    corrleg->AddEntry(corrected, "Corrected US Inv. Mass", "p");
-    corrleg->AddEntry(fit, "Inv. Mass Fit", "l");
-    corrleg->AddEntry(bgFit, "Residual BG Fit", "l");
+    corrleg->AddEntry(corrected, "Corrected US inv. mass", "pe");
+    corrleg->AddEntry(fit, "Inv. mass fit", "l");
+    corrleg->AddEntry(bgFit, "Residual BG fit", "l");
     corrleg->SetLineWidth(0);
+    corrleg->SetTextSizePixels(18);
 
     TCanvas *c2 = new TCanvas("c2", "c2", 50, 50, 600, 600);
     c2->cd()->SetMargin(0.15, 0.05, 0.12, 0.06);
     //c2->cd()->SetLeftMargin(0.15);
     //c2->cd()->SetBottomMargin(0.12);
-    corrected->GetYaxis()->SetTitle("Arb. Units");
+    corrected->GetYaxis()->SetTitle("Counts");
     corrected->GetYaxis()->SetMaxDigits(2);
-    corrected->GetYaxis()->SetRangeUser(-0.002E6, 0.04E6);
+    corrected->GetYaxis()->SetRangeUser(-0.4E6, 0.8E6);
     corrected->Draw();
     bgFit->Draw("SAME");
     text->Draw();

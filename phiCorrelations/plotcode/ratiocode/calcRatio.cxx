@@ -8,8 +8,8 @@ void calcRatio(TString filename){
 
     Float_t eps = 0.000001;
     hadronDist->GetAxis(2)->SetRangeUser(-0.8+eps, 0.8-eps);
-    //TH1D* hadronPT = (TH1D*)hadronDist->Projection(0); 
-    TH1D* hadronPT = (TH1D*)list->FindObject("fHadronTrigPT");
+    TH1D* hadronPT = (TH1D*)hadronDist->Projection(0); 
+    //TH1D* hadronPT = (TH1D*)list->FindObject("fHadronTrigPT");
 
     TFile* efffile = new TFile("~/alidock/alirepos/utaustin/efficiency/fits_17f2b_secondarytest.root");
     TF1* phiEff = (TF1*)efffile->Get("phiFit")->Clone("phiEff");
