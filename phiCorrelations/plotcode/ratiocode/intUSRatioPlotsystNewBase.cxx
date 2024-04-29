@@ -103,6 +103,7 @@ TH1D* getHisto(TString filename, TString histotype, TString histoname, TString m
     histo1D->GetYaxis()->SetMaxDigits(2);
     histo1D->GetYaxis()->SetLabelSize(0.05);
     histo1D->GetYaxis()->SetLabelOffset(0.005);
+    histo1D->GetYaxis()->SetDecimals(kTRUE);
     histo1D->GetXaxis()->SetTitleSize(0.06);
     histo1D->GetXaxis()->SetTitleOffset(0.80);
     histo1D->GetXaxis()->SetLabelSize(0.05);
@@ -1173,11 +1174,13 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //TFile* v2file = new TFile("~/phiStudies/results_onlineEff/Combined/v2syst.root");
     TFile* v2file = new TFile("~/alidock/alirepos/utaustin/phiCorrelations/plotcode/ratiocode/v2syst.root");
     TGraphErrors* nearv2syst = (TGraphErrors*)v2file->Get("nearv2syst");
-    nearv2syst->SetLineWidth(0);
-    nearv2syst->SetLineColor(kWhite);
+    nearv2syst->SetLineWidth(2);
+    nearv2syst->SetLineColor(kGray+2);
     nearv2syst->SetFillColor(kGray+2);
+    nearv2syst->SetFillStyle(3144);
     TGraphErrors* awayv2syst = (TGraphErrors*)v2file->Get("awayv2syst");
     awayv2syst->SetFillColor(kGray+2);
+    awayv2syst->SetFillStyle(3144);
 
     Double_t multArray[3] = {35.0, 65.0, 90.0};
     Double_t multArrayErr[3] = {15.0, 15.0, 10.0}; //normal errors that take up whole multiplicity range
@@ -1916,12 +1919,12 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 */
 
     TLegend  *ratiosMultlegend = new TLegend(0.1873, 0.696, 0.450, 0.939);
-    ratiosMultlegend->SetMargin(0.35);
+    ratiosMultlegend->SetMargin(0.2);
     ratiosMultlegend->SetHeader("ALICE p#font[122]{-}Pb #sqrt{s_{NN}} = 5 TeV","L");
-    ratiosMultlegend->AddEntry(ratiosBulk, "Underlying event", "pl");
-    ratiosMultlegend->AddEntry(ratiosAway, "Away-side (jet)", "pl");
-    ratiosMultlegend->AddEntry(ratiosNear, "Near-side (jet)", "pl");
-    ratiosMultlegend->AddEntry(ratiosTot, "Total (jet + UE)", "pl");
+    ratiosMultlegend->AddEntry(ratiosBulk, "Underlying event", "p");
+    ratiosMultlegend->AddEntry(ratiosAway, "Away-side (jet)", "p");
+    ratiosMultlegend->AddEntry(ratiosNear, "Near-side (jet)", "p");
+    ratiosMultlegend->AddEntry(ratiosTot, "Total (jet + UE)", "p");
     //ratiosMultlegend->AddEntry(pythiaratio, "Simul. pp (Pythia8) h-#phi/h-h", "l");
     //ratiosMultlegend->AddEntry(straightratio, "#phi/h ratio", "l");
     //ratiosMultlegend->AddEntry(trigratio, "triggered #phi/h ratio", "l");
@@ -1942,14 +1945,14 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 
     TLegend *ratiosUEMultlegend = new TLegend(0.183, 0.686, 0.461, 0.928);
     ratiosUEMultlegend->SetMargin(0.35);
-    ratiosUEMultlegend->AddEntry(ratiosBulk, "In U.E.", "pl");
+    ratiosUEMultlegend->AddEntry(ratiosBulk, "In U.E.", "p");
     ratiosUEMultlegend->AddEntry(ratiosTot, "Total (Jet + UE)", "f");
     ratiosUEMultlegend->SetLineWidth(0);
 
     TLegend *ratiosJetMultlegend = new TLegend(0.183, 0.686, 0.461, 0.928);
     ratiosJetMultlegend->SetMargin(0.35);
-    ratiosJetMultlegend->AddEntry(jetratioshh, "Jet/Tot for (h-h)", "pl");
-    ratiosJetMultlegend->AddEntry(jetratioshPhi, "Jet/Tot for (h-#phi)", "pl");
+    ratiosJetMultlegend->AddEntry(jetratioshh, "Jet/Tot for (h-h)", "p");
+    ratiosJetMultlegend->AddEntry(jetratioshPhi, "Jet/Tot for (h-#phi)", "p");
     ratiosJetMultlegend->SetLineWidth(0);
 
 
@@ -2041,6 +2044,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //TH1F* hist = ratiosNear->GetHistogram();
     gStyle->SetErrorX(0.5);
     ratioNearHist->GetYaxis()->SetRangeUser(0.0, 0.040);
+    ratioNearHist->GetYaxis()->SetDecimals(kTRUE);
     ratioNearHist->GetXaxis()->SetTitle("Multiplicity Percentile (V0A)");
     ratioNearHist->GetYaxis()->SetTitleOffset(1.1);
     ratioNearHist->Draw("AXIS");
@@ -2136,7 +2140,8 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 
     TLegend* dataleg = new TLegend(0.547, 0.642, 0.777, 0.765);
     //dataleg->AddEntry(labelppb, "p#font[122]{-}Pb, #sqrt{#it{s}_{NN}} = 5.02 TeV", "pl");
-    dataleg->AddEntry(labelpy, "PYTHIA 8 Monash pp, #sqrt{#it{s}} = 13 TeV", "pl");
+    dataleg->SetMargin(0.12);
+    dataleg->AddEntry(labelpy, "PYTHIA 8 Monash pp, #sqrt{#it{s}} = 13 TeV", "p");
     dataleg->SetLineWidth(0);
 
 
@@ -2149,6 +2154,8 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     gStyle->SetErrorX(0.5);
     //ratioNearHist->GetYaxis()->SetRangeUser(0.0, 0.040);
     //ratioNearHist->GetXaxis()->SetTitle("Multiplicity Percentile (V0A)");
+    nchratioNearHist->GetYaxis()->SetDecimals(kTRUE);
+    nchratioNearHist->GetYaxis()->SetMaxDigits(2);
     nchratioNearHist->Draw("AXIS");
 
     //ratioNearHist->GetXaxis()->SetLabelOffset(999);
@@ -2178,23 +2185,23 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     nearv2fly->Draw("2");
     //printf("fits for near side:\n");
     //nchratiosNear->Fit("nearlinearfit");   
-    nchratiosNear->Draw("P");
+    nchratiosNear->Draw("PZ");
     
     nchratiosAwaySyst->Draw("5");
     awayv2fly->Draw("2");
     printf("fits for away side:\n");
     //nchratiosAway->Fit("awaylinearfit");
-    nchratiosAway->Draw("P"); 
+    nchratiosAway->Draw("PZ"); 
     //printf("fits for Total: \n");
    
     nchratiosTotSyst->Draw("5");
     //nchratiosTot->Fit("totallinearfit");
-    nchratiosTot->Draw("P");
+    nchratiosTot->Draw("PZ");
     
     nchratiosBulkSyst->Draw("5");
     printf("fits for UE: \n");
     //nchratiosBulk->Fit("bulklinearfit");
-    nchratiosBulk->Draw("P");
+    nchratiosBulk->Draw("PZ");
 
    
    // single pythia 0-100 point 
@@ -2512,7 +2519,8 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     yieldsNearSystv2->SetPointError(1, 2.0, -0.5*(nearhPhiYieldArray[1]-nearhPhiYieldArrayv2[1]));
     yieldsNearSystv2->SetPointError(2, 2.0, -0.5*(nearhPhiYieldArray[2]-nearhPhiYieldArrayv2[2]));
     yieldsNearSystv2->SetFillColor(kRed);
-    yieldsNearSystv2->SetFillStyle(3002);
+    yieldsNearSystv2->SetFillStyle(3245);
+//    yieldsNearSystv2->SetLineWidth(0);
 
     TGraphErrors* yieldsAway = new TGraphErrors(3, nchArray, awayhPhiYieldArray, nchArrayErr, awayhPhiYieldArrayErr);
     yieldsAway->SetMarkerStyle(21);
@@ -2545,7 +2553,8 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     yieldsAwaySystv2->SetPointError(1, 2.0, -0.5*(awayhPhiYieldArray[1]-awayhPhiYieldArrayv2[1]));
     yieldsAwaySystv2->SetPointError(2, 2.0, -0.5*(awayhPhiYieldArray[2]-awayhPhiYieldArrayv2[2]));
     yieldsAwaySystv2->SetFillColor(kBlue);
-    yieldsAwaySystv2->SetFillStyle(3002);
+    yieldsAwaySystv2->SetFillStyle(3254);
+//    yieldsAwaySystv2->SetLineWidth(0);
 
 
     TGraphErrors* yieldsBulk = new TGraphErrors(3, nchArray, bulkhPhiYieldArray, nchArrayErr, bulkhPhiYieldArrayErr);
@@ -2632,7 +2641,8 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     yieldshhNearSystv2->SetPointError(1, 2.0, -0.5*(nearhhYieldArray[1]-nearhhYieldArrayv2[1]));
     yieldshhNearSystv2->SetPointError(2, 2.0, -0.5*(nearhhYieldArray[2]-nearhhYieldArrayv2[2]));
     yieldshhNearSystv2->SetFillColor(kRed+2);
-    yieldshhNearSystv2->SetFillStyle(3001);
+    yieldshhNearSystv2->SetFillStyle(3254);
+//    yieldshhNearSystv2->SetLineWidth(0);
 
 
 
@@ -2667,7 +2677,8 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     yieldshhAwaySystv2->SetPointError(1, 2.0, -0.5*(awayhhYieldArray[1]-awayhhYieldArrayv2[1]));
     yieldshhAwaySystv2->SetPointError(2, 2.0, -0.5*(awayhhYieldArray[2]-awayhhYieldArrayv2[2]));
     yieldshhAwaySystv2->SetFillColor(kBlue+2);
-    yieldshhAwaySystv2->SetFillStyle(3001);
+    yieldshhAwaySystv2->SetFillStyle(3245);
+//    yieldshhAwaySystv2->SetLineWidth(0);
 
 
     TGraphErrors* yieldshhBulk = new TGraphErrors(3, nchArray, bulkhhYieldArray, nchArrayErr, bulkhhYieldArrayErr);
@@ -2802,8 +2813,8 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     jet2totalhh->SetMarkerColor(kCyan+2);
 
     TLegend *jetlegend = new TLegend(0.186, 0.759, 0.529, 0.868);
-    jetlegend->AddEntry(jet2totalhPhi, "Jet/Total (h-#phi)", "pe");
-    jetlegend->AddEntry(jet2totalhh, "Jet/Total (h-h)", "pe");
+    jetlegend->AddEntry(jet2totalhPhi, "Jet/Total (h-#phi)", "p");
+    jetlegend->AddEntry(jet2totalhh, "Jet/Total (h-h)", "p");
     jetlegend->SetLineWidth(0);
 
     TCanvas* jet2totalcanvas = new TCanvas("jet2totalcanvas", "jet2totalcanvas", 55, 55, 900, 600);
@@ -2834,16 +2845,16 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     text2->Draw();
 
     //draw near-side yields
-    TLegend *nearYieldMultlegend = new TLegend(0.1737, 0.781, 0.533, 0.919);
-    nearYieldMultlegend->SetMargin(0.2);
-    nearYieldMultlegend->AddEntry(yieldshhNear, "(h#font[122]{-}h) in near-side jet", "pl");
-    nearYieldMultlegend->AddEntry(yieldsNear, Form("(h#font[122]{-}#phi) in near-side jet (#times %d)", int(phijetscale)), "pl");
+    TLegend *nearYieldMultlegend = new TLegend(0.164, 0.527, 0.498, 0.908);
+    nearYieldMultlegend->SetMargin(0.12);
+    nearYieldMultlegend->AddEntry(yieldshhNear, "(h#font[122]{-}h) in near-side jet", "p");
+    nearYieldMultlegend->AddEntry(yieldsNear, Form("(h#font[122]{-}#phi) in near-side jet (#times %d)", int(phijetscale)), "p");
     //nearYieldMultlegend->AddEntry(pyhhnear, "PYTHIA8 (h-h) in Near Jet", "pl");
     //nearYieldMultlegend->AddEntry(pyhphinear, Form("PYTHIA8 (h-#phi) in Near Jet (#times %d)", int(phijetscale)), "pl");
-    nearYieldMultlegend->AddEntry(yieldsNearSystv2, "yields with v_{2} assumption", "f");
-    nearYieldMultlegend->AddEntry(yieldshhAway, "(h#font[122]{-}h) in away-side jet", "pl");
-    nearYieldMultlegend->AddEntry(yieldsAway, Form("(h#font[122]{-}#phi) in away-side jet (#times %d)", int(phijetscale)), "pl");
-    nearYieldMultlegend->AddEntry(yieldsAwaySystv2, "yields with v_{2} assumption", "f");
+    nearYieldMultlegend->AddEntry(yieldsNearSystv2, "yields with #it{v}_{2} assumption", "f");
+    nearYieldMultlegend->AddEntry(yieldshhAway, "(h#font[122]{-}h) in away-side jet", "p");
+    nearYieldMultlegend->AddEntry(yieldsAway, Form("(h#font[122]{-}#phi) in away-side jet (#times %d)", int(phijetscale)), "p");
+    nearYieldMultlegend->AddEntry(yieldsAwaySystv2, "yields with #it{v}_{2} assumption", "f");
 
      
     nearYieldMultlegend->SetLineWidth(0);
@@ -2856,6 +2867,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     nearYieldvsMultCanvas->cd();
     nearYieldvsMultCanvas->SetMargin(0.126, 0.05, 0.125, 0.05);
     nchJetYieldHist->GetYaxis()->SetTitleOffset(1.0);
+    nchJetYieldHist->GetYaxis()->SetDecimals(kTRUE);
     //gStyle->SetErrorX(0.5);
     //ratioJetHist->Draw("AXIS");
     nchJetYieldHist->Draw("AXIS");
@@ -2877,29 +2889,33 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 */
     //yieldsNearSyst->Draw("5");   
     yieldsNearSystv2->Draw("3");
-    yieldsNear->Draw("P");
+    yieldsNear->Draw("PZL");
+    yieldsNearv2->Draw("LX");
     //yieldshhNearSyst->Draw("5");
-    yieldshhNear->Draw("P");
+    yieldshhNear->Draw("PZL");
     yieldshhNearSystv2->Draw("3");
+    yieldshhNearv2->Draw("LX");
     //yieldsAwaySyst->Draw("5");   
-    yieldsAway->Draw("P");
+    yieldsAway->Draw("PZL");
     yieldsAwaySystv2->Draw("3");
+    yieldsAwayv2->Draw("LX");
     //yieldshhAwaySyst->Draw("5");
-    yieldshhAway->Draw("P");
+    yieldshhAway->Draw("PZL");
     yieldshhAwaySystv2->Draw("3");
-    data->Draw();
+    yieldshhAwayv2->Draw("LX");
+    nearYieldMultlegend->Draw("SAME");
+   data->Draw();
     //pyhphinear->Draw("P");
     //pyhphiaway->Draw("P");
     //pyhhnear->Draw("P");
     //pyhhaway->Draw("P");
     text2gen->Draw();
-    nearYieldMultlegend->Draw("SAME");
 
     //draw away-side yields
     TLegend *awayYieldMultlegend = new TLegend(0.1737, 0.781, 0.533, 0.919);
     awayYieldMultlegend->SetMargin(0.20);
-    awayYieldMultlegend->AddEntry(yieldshhAway, "(h#font[122]{-}h) in Away Jet", "pl");
-    awayYieldMultlegend->AddEntry(yieldsAway, "(h#font[122]{-}#phi) in Away Jet (#times 300)", "pl");
+    awayYieldMultlegend->AddEntry(yieldshhAway, "(h#font[122]{-}h) in Away Jet", "p");
+    awayYieldMultlegend->AddEntry(yieldsAway, "(h#font[122]{-}#phi) in Away Jet (#times 300)", "p");
     awayYieldMultlegend->SetLineWidth(0);
 
 
@@ -2935,15 +2951,15 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //draw bulk yields
     TLegend *bulkYieldMultlegend = new TLegend(0.1737, 0.781, 0.533, 0.919);
     bulkYieldMultlegend->SetMargin(0.30);
-    bulkYieldMultlegend->AddEntry(yieldshhBulk, "(h#font[122]{-}h) in UE", "pl");
-    bulkYieldMultlegend->AddEntry(yieldsBulk, Form("(h#font[122]{-}#phi) in UE (#times %d)", int(phitotscale)), "pl");
+    bulkYieldMultlegend->AddEntry(yieldshhBulk, "(h#font[122]{-}h) in UE", "p");
+    bulkYieldMultlegend->AddEntry(yieldsBulk, Form("(h#font[122]{-}#phi) in UE (#times %d)", int(phitotscale)), "p");
     bulkYieldMultlegend->SetLineWidth(0);
 
 
     TLegend *totalYieldMultlegend = new TLegend(0.1737, 0.781, 0.533, 0.919);
     totalYieldMultlegend->SetMargin(0.30);
-    totalYieldMultlegend->AddEntry(yieldshhTot, "Total (h#font[122]{-}h) pairs", "pl");
-    totalYieldMultlegend->AddEntry(yieldsTot, Form("Total (h#font[122]{-}#phi) pairs (#times %d)", int(phitotscale)), "pl");
+    totalYieldMultlegend->AddEntry(yieldshhTot, "Total (h#font[122]{-}h) pairs", "p");
+    totalYieldMultlegend->AddEntry(yieldsTot, Form("Total (h#font[122]{-}#phi) pairs (#times %d)", int(phitotscale)), "p");
     totalYieldMultlegend->SetLineWidth(0);
 
 
@@ -3837,7 +3853,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     text2->Draw();
     hphitext020->Draw();
    
-    TLegend* bgleg = new TLegend(0.662, 0.697, 0.96, 0.817);
+    TLegend* bgleg = new TLegend(0.555, 0.683, 0.96, 0.817);
     bgleg->SetMargin(0.4);
     bgleg->AddEntry(hphiBG, "Flat U.E.", "l");
     bgleg->AddEntry(hphiBGv2, "#it{v}_{2} Est.", "l");
@@ -3858,7 +3874,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     althphi020syst->Draw("E2 SAME");
     //althphi020->SetMarkerColor(kBlack);
     //althphi020->SetLineColor(kBlack);
-    althphi020->Draw("E1X0 P SAME");
+    althphi020->Draw("EX0 P SAME");
     //hPhidphi_0_20_bg->Draw("E0 X0 P HIST SAME"); 
     hphiBG->SetParameter(0, hphiBG->GetParameter(0)/(2.4*althphi020->GetBinWidth(1)));
     hphiBG->SetLineColor(kBlack);
@@ -3905,7 +3921,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     althphi2050syst->Draw("E2 SAME");
     //althphi2050->SetMarkerColor(kBlack);
     //althphi2050->SetLineColor(kBlack);
-    althphi2050->Draw("E1X0 P SAME");
+    althphi2050->Draw("EX0 P SAME");
     //hPhidphi_20_50_bg->Draw("E0 X0 P HIST SAME"); 
     hphiBG_20_50->SetParameter(0, hphiBG_20_50->GetParameter(0)/(2.4*althphi2050->GetBinWidth(1)));
     hphiBG_20_50->SetLineColor(kBlack);
@@ -3955,7 +3971,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     althphi5080syst->Draw("E2 SAME");
     //althphi5080->SetMarkerColor(kBlack);
     //althphi5080->SetLineColor(kBlack);
-    althphi5080->Draw("E1X0 P SAME");
+    althphi5080->Draw("EX0 P SAME");
     //hPhidphi_50_100_bg->Draw("E0 X0 P HIST SAME"); 
     hphiBG_50_100->SetParameter(0, hphiBG_50_100->GetParameter(0)/(2.4*althphi5080->GetBinWidth(1)));
     hphiBG_50_100->SetLineColor(kBlack);
@@ -4015,7 +4031,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //althh020->SetMarkerColor(kBlack);
     //althh020->SetLineColor(kBlack);
     //althh020->SetMarkerStyle(22);
-    althh020->Draw("E1X0 P SAME");
+    althh020->Draw("EX0 P SAME");
     //hhdphi_0_20_bg->Draw("E0 X0 P HIST SAME");
     hhBG->SetParameter(0, hhBG->GetParameter(0)/(2.4*althh020->GetBinWidth(1)));
     double hhoffset = hhBG->GetParameter(0);
@@ -4058,7 +4074,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //althh2050->SetMarkerColor(kBlack);
     //althh2050->SetLineColor(kBlack);
     //althh2050->SetMarkerStyle(22);
-    althh2050->Draw("E1X0 P SAME");
+    althh2050->Draw("EX0 P SAME");
     //hhdphi_20_50_bg->Draw("E0 X0 P HIST SAME");
     hhBG_20_50->SetParameter(0, hhBG_20_50->GetParameter(0)/(2.4*althphi2050->GetBinWidth(1)));
     double hhoffset2050 = hhBG_20_50->GetParameter(0);
@@ -4102,7 +4118,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //althh5080->SetMarkerColor(kBlack);
     //althh5080->SetLineColor(kBlack);
     //althh5080->SetMarkerStyle(22);
-    althh5080->Draw("E1X0 P SAME");
+    althh5080->Draw("EX0 P SAME");
     //hhdphi_50_100_bg->Draw("E0 X0 P HIST SAME");
     hhBG_50_100->SetParameter(0, hhBG_50_100->GetParameter(0)/(2.4*althh5080->GetBinWidth(1)));
     double hhoffset5080 = hhBG_50_100->GetParameter(0);
