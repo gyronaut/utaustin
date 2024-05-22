@@ -1319,7 +1319,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 
 
     TH1D* nchratioNearHist = new TH1D("nchratioNearHist", "", 4, 0.0, 55.0);
-    nchratioNearHist->GetXaxis()->SetTitle("#LT#it{N}_{ch}#GT_{|#eta| < 0.8}");
+    nchratioNearHist->GetXaxis()->SetTitle("#LT#it{N}_{ch}#GT_{|#eta| < 0.5}");
     nchratioNearHist->GetXaxis()->SetTitleSize(0.05);
     nchratioNearHist->GetXaxis()->SetLabelSize(0.05);
     nchratioNearHist->GetXaxis()->SetTitleOffset(1.2);
@@ -1372,7 +1372,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     ratioJetHist->GetYaxis()->SetRangeUser(0.0, 0.6);
 
     TH1D* ratioJetHistNch =(TH1D*)ratioJetHist->Clone("ratioJetHistNch");
-    ratioJetHistNch->GetXaxis()->SetTitle("#LT #it{N}_{ch}#GT_{|#eta| < 0.8}");
+    ratioJetHistNch->GetXaxis()->SetTitle("#LT #it{N}_{ch}#GT_{|#eta| < 0.5}");
     ratioJetHistNch->GetXaxis()->SetRangeUser(0.0, 55.0);
 
     ratioBulkHist->SetMarkerStyle(22);
@@ -1920,7 +1920,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 
     TLegend  *ratiosMultlegend = new TLegend(0.1873, 0.696, 0.450, 0.939);
     ratiosMultlegend->SetMargin(0.2);
-    ratiosMultlegend->SetHeader("ALICE p#font[122]{-}Pb #sqrt{s_{NN}} = 5 TeV","L");
+    ratiosMultlegend->SetHeader("ALICE, p#font[122]{-}Pb, #sqrt{s_{NN}} = 5 TeV","L");
     ratiosMultlegend->AddEntry(ratiosBulk, "Underlying event", "p");
     ratiosMultlegend->AddEntry(ratiosAway, "Away-side (jet)", "p");
     ratiosMultlegend->AddEntry(ratiosNear, "Near-side (jet)", "p");
@@ -1956,7 +1956,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     ratiosJetMultlegend->SetLineWidth(0);
 
 
-    TPaveText *text2 = new TPaveText(0.545, 0.671, 0.879, 0.815, "NDC");
+    TPaveText *text2 = new TPaveText(0.525, 0.671, 0.859, 0.815, "NDC");
     text2->AddText("4.0 < #it{p}^{h}_{T,trig} < 8.0 GeV/#it{c}");
     text2->AddText(assocpt.Data());
     text2->SetTextSizePixels(28);
@@ -1965,7 +1965,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     text2->SetFillStyle(0);
     text2->SetTextFont(42);
 
-    TPaveText *text2hh = new TPaveText(0.545, 0.671, 0.879, 0.815, "NDC");
+    TPaveText *text2hh = new TPaveText(0.525, 0.671, 0.859, 0.815, "NDC");
     text2hh->AddText("4.0 < #it{p}^{h}_{T,trig} < 8.0 GeV/#it{c}");
     text2hh->AddText(hhassocpt.Data());
     text2hh->SetTextSizePixels(28);
@@ -1988,7 +1988,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 //    TPaveText *data = new TPaveText(0.5657, 0.756, 0.8645, 0.883, "NDC");
     TPaveText *data = new TPaveText(0.467, 0.749, 0.764, 0.876, "NDC"); 
     //data->AddText("ALICE Preliminary"); 
-    data->AddText("ALICE p#font[122]{-}Pb #sqrt{#it{s}_{NN}} = 5.02 TeV");
+    data->AddText("ALICE, p#font[122]{-}Pb, #sqrt{#it{s}_{NN}} = 5.02 TeV");
     data->GetLine(0)->SetTextSizePixels(32);
     //data->GetLine(1)->SetTextSizePixels(24);
     data->SetBorderSize(0);
@@ -2029,7 +2029,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 
     TPaveText *prelim = new TPaveText(0.5416, 0.7194, 0.9615, 0.8878, "NDC");
     prelim->AddText("ALICE Prelimenary"); 
-    prelim->AddText("p-Pb #sqrt{s_{NN}} = 5.02 TeV");
+    prelim->AddText("p-Pb, #sqrt{s_{NN}} = 5.02 TeV");
     prelim->GetLine(0)->SetTextSizePixels(32);
     prelim->GetLine(1)->SetTextSizePixels(24);
     prelim->SetBorderSize(0);
@@ -2141,7 +2141,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     TLegend* dataleg = new TLegend(0.547, 0.642, 0.777, 0.765);
     //dataleg->AddEntry(labelppb, "p#font[122]{-}Pb, #sqrt{#it{s}_{NN}} = 5.02 TeV", "pl");
     dataleg->SetMargin(0.12);
-    dataleg->AddEntry(labelpy, "PYTHIA 8 Monash pp, #sqrt{#it{s}} = 13 TeV", "p");
+    dataleg->AddEntry(labelpy, "PYTHIA 8 Monash, pp, #sqrt{#it{s}} = 13 TeV", "p");
     dataleg->SetLineWidth(0);
 
 
@@ -3343,7 +3343,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 
     TPaveText *text = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
 //    text->AddText("ALICE");
-    text->AddText("ALICE p#font[122]{-}Pb #sqrt{s_{NN}} = 5 TeV");
+    text->AddText("ALICE, p#font[122]{-}Pb, #sqrt{s_{NN}} = 5 TeV");
     text->AddText("0%#font[122]{-}20% Multiplicity");
     text->SetTextSizePixels(20);
     text->SetBorderSize(0);
@@ -3351,7 +3351,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 
     TPaveText *text2050 = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
 //    text2050->AddText("ALICE");
-    text2050->AddText("ALICE p#font[122]{-}Pb #sqrt{s_{NN}} = 5 TeV");
+    text2050->AddText("ALICE, p#font[122]{-}Pb, #sqrt{s_{NN}} = 5 TeV");
     text2050->AddText("20%#font[122]{-}50% Multiplicity");
     text2050->SetTextSizePixels(20);
     text2050->SetBorderSize(0);
@@ -3359,7 +3359,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
 
     TPaveText *text50100 = new TPaveText(0.4815, 0.7056, 0.8658, 0.8551, "NDC");
 //    text50100->AddText("ALICE");
-    text50100->AddText("ALICE p#font[122]{-}Pb #sqrt{s_{NN}} = 5 TeV");
+    text50100->AddText("ALICE, p#font[122]{-}Pb, #sqrt{s_{NN}} = 5 TeV");
     text50100->AddText("50%#font[122]{-}80% Multiplicity");
     text50100->SetBorderSize(0);
     text50100->SetTextSizePixels(20);
@@ -3890,7 +3890,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     data->Draw();
     highmulttext->Draw();
     //hphitext020->Draw();
-    calthphi020->SaveAs(Form("%s_openerror_hphi_020_CR1.pdf", ptprefix.Data()));
+    calthphi020->SaveAs(Form("%s_openerror_hphi_020_CR1.eps", ptprefix.Data()));
 
 
     TCanvas* chphi2050 = new TCanvas("chphi2050", "chphi2050", 50, 50, 550, 600);
@@ -3939,7 +3939,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //text2->Draw();
     bgleg->Draw("SAME");
     midmulttext->Draw();
-    calthphi2050->SaveAs(Form("%s_openerror_hphi_2050_CR1.pdf", ptprefix.Data()));
+    calthphi2050->SaveAs(Form("%s_openerror_hphi_2050_CR1.eps", ptprefix.Data()));
 
 
     TCanvas* chphi5080 = new TCanvas("chphi5080", "chphi5080", 50, 50, 550, 600);
@@ -3990,7 +3990,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //bgleg->Draw();
     text2->Draw();
     lowmulttext->Draw();
-    calthphi5080->SaveAs(Form("%s_openerror_hphi_5080_CR1.pdf", ptprefix.Data()));
+    calthphi5080->SaveAs(Form("%s_openerror_hphi_5080_CR1.eps", ptprefix.Data()));
 
     TCanvas* calthphiall = new TCanvas("calthphiall", "calthphiall", 50, 50, 550, 600);
     calthphiall->cd();
@@ -4051,7 +4051,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     data->Draw();
     highmulttext->Draw();
     //hhtext020->Draw();
-    calthh020->SaveAs(Form("%s_openerror_hh_020_CR1.pdf", ptprefix.Data()));
+    calthh020->SaveAs(Form("%s_openerror_hh_020_CR1.eps", ptprefix.Data()));
 
     TCanvas* chh2050 = new TCanvas("chh2050", "chh2050", 50, 50, 550, 600);
     chh2050->cd();
@@ -4094,7 +4094,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //text2hh->Draw();
     bgleg->Draw("SAME");
     midmulttext->Draw();
-    calthh2050->SaveAs(Form("%s_openerror_hh_2050_CR1.pdf", ptprefix.Data()));
+    calthh2050->SaveAs(Form("%s_openerror_hh_2050_CR1.eps", ptprefix.Data()));
     
     TCanvas* chh5080 = new TCanvas("chh5080", "chh5080", 50, 50, 550, 600);
     chh5080->cd();
@@ -4139,7 +4139,7 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     //bgleg->Draw();
     text2hh->Draw();
     lowmulttext->Draw();
-    calthh5080->SaveAs(Form("%s_openerror_hh_5080_CR1.pdf", ptprefix.Data()));
+    calthh5080->SaveAs(Form("%s_openerror_hh_5080_CR1.eps", ptprefix.Data()));
 
 
     TCanvas* chphiall = new TCanvas("chphiall", "chphiall", 50, 50, 1200, 525);
@@ -4435,12 +4435,57 @@ Float_t pythiaSplitnch[2] = {10.1, 23.3};
     hhhoff2050->Write();
     hhhoff5080->Write();
 
+    yieldsNearSystv2->SetName("yieldsNearSystv2");
+    yieldsNearSystv2->Write();
+    yieldsNear->SetName("yieldsNear");
+    yieldsNear->Write();
+    yieldsNearv2->SetName("yieldsNearv2");
+    yieldsNearv2->Write();
     yieldshhNear->SetName("yieldshhNear");
     yieldshhNear->Write();
+    yieldshhNearSystv2->SetName("yieldshhNearSystv2");
+    yieldshhNearSystv2->Write(); 
+    yieldshhNearv2->SetName("yieldshhNearv2");
+    yieldshhNearv2->Write();
+    yieldsAway->SetName("yieldsAway");
+    yieldsAway->Write(); 
+    yieldsAwaySystv2->SetName("yieldsAwaySystv2");
+    yieldsAwaySystv2->Write(); 
+    yieldsAwayv2->SetName("yieldsAwayv2");
+    yieldsAwayv2->Write(); 
     yieldshhAway->SetName("yieldshhAway");
     yieldshhAway->Write();
+    yieldshhAwaySystv2->SetName("yieldshhAwaySystv2");
+    yieldshhAwaySystv2->Write(); 
+    yieldshhAwayv2->SetName("yieldshhAwayv2");
+    yieldshhAwayv2->Write();
 
     vsMultCanvas->Write("ratiocanvas");
+
+    nchratiosNearSyst->SetName("nchratiosNearSyst");
+    nchratiosNearSyst->Write();
+    nearv2fly->SetName("nearv2fly");
+    nearv2fly->Write();
+    nchratiosNear->SetName("nchratiosNear");
+    nchratiosNear->Write();
+    
+    nchratiosAwaySyst->SetName("nchratiosAwaySyst");
+    nchratiosAwaySyst->Write();
+    awayv2fly->SetName("awayv2fly");
+    awayv2fly->Write();
+    nchratiosAway->SetName("nchratiosAway");
+    nchratiosAway->Write();
+   
+    nchratiosTotSyst->SetName("nchratiosTotSyst");
+    nchratiosTotSyst->Write();
+    nchratiosTot->SetName("nchratiosTot");
+    nchratiosTot->Write();
+    
+    nchratiosBulkSyst->SetName("nchratiosBulkSyst");
+    nchratiosBulkSyst->Write();
+    nchratiosBulk->SetName("nchratiosBulk");
+    nchratiosBulk->Write();
+
 
     printf("offsets: \n       h-phi     h-h\n 0-20   %e   %e\n 20-50   %e   %e\n 50-80   %e   %e\n", offset, hhoffset, offset2050, hhoffset2050, offset5080, hhoffset5080);
 

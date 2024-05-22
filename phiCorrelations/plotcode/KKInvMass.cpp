@@ -50,8 +50,8 @@ void KKInvMass(){
     USInvMass->SetMarkerSize(1);
     USInvMass->SetMarkerColor(kBlack);
     USInvMass->SetMarkerStyle(20);
-    Float_t LSBus = USInvMass->Integral(0.9950001, 1.0049999);
-    Float_t RSBus = USInvMass->Integral(1.0400001, 1.0599999);
+    Float_t LSBus = USInvMass->Integral(USInvMass->GetXaxis()->FindBin(0.9950001), USInvMass->GetXaxis()->FindBin(1.0049999));
+    Float_t RSBus = USInvMass->Integral(USInvMass->GetXaxis()->FindBin(1.0400001), USInvMass->GetXaxis()->FindBin(1.0599999));
 
    
     TH1D* corrected = (TH1D*)USInvMass->Clone("corrected");
@@ -59,7 +59,7 @@ void KKInvMass(){
     corrected->SetLineWidth(2);
     corrected->SetMarkerSize(1);
     corrected->SetMarkerStyle(20);
-    corrected->GetXaxis()->SetTitle("#it{m}_{K^{+}K^{-}} (GeV/#it{c}^{2})");
+    corrected->GetXaxis()->SetTitle("#it{m}_{KK} (GeV/#it{c}^{2})");
     TF1* fit = new TF1("fit",  "[0]*TMath::Voigt(x - [1], [2], [3], 4) + pol2(4)",0.99, 1.07);
     fit->SetParameter(1, 1.020);
     fit->SetParameter(2, 0.0002);
@@ -172,15 +172,15 @@ void KKInvMass(){
     //lineLeg->AddEntry(peak1, "#phi(1020) Peak Region", "l");
 
     TLegend *leg = new TLegend(0.5435, 0.507, 0.898, 0.6777);
-    leg->AddEntry(USInvMass, "US kaon pairs", "pe");
-    leg->AddEntry(LSInvMass, "#splitline{Est. BG}{(using LS kaon pairs)}", "pe");
+    leg->AddEntry(USInvMass, "US kaon pairs", "p");
+    leg->AddEntry(LSInvMass, "#splitline{Est. BG}{(using LS kaon pairs)}", "p");
     leg->SetLineWidth(0);
 
     TPaveText *text = new TPaveText(0.5953, 0.7622, 0.9147, 0.9103, "NDC");
     text->AddText("ALICE");
     //text->AddText("ALICE Preliminary");
     //text->AddText("Work In Progress");
-    text->AddText("p#font[122]{-}Pb #sqrt{#it{s}_{NN}} = 5.02 TeV");
+    text->AddText("p#font[122]{-}Pb, #sqrt{#it{s}_{NN}} = 5.02 TeV");
     text->AddText("0#font[122]{-}20% multiplicity class (V0A)");
     text->SetFillColor(kWhite);
     text->SetFillStyle(0);
@@ -188,7 +188,7 @@ void KKInvMass(){
     text->SetTextFont(42);
 
     TPaveText *pTText = new TPaveText(0.1589, 0.8031, 0.5134, 0.8902, "NDC");
-    pTText->AddText(Form("%.1f < #it{p}_{T}^{KK} < %.1f GeV/#it{c}", lowpt, highpt));
+    pTText->AddText(Form("%.1f < #it{p}_{T} < %.1f GeV/#it{c}", lowpt, highpt));
     pTText->SetFillColor(kWhite);
     pTText->SetBorderSize(0);
     pTText->SetFillStyle(0);
@@ -200,7 +200,7 @@ void KKInvMass(){
     //c->cd()->SetBottomMargin(0.12);
     USInvMass->GetYaxis()->SetTitle("Counts");
     USInvMass->GetYaxis()->SetMaxDigits(2);
-    USInvMass->GetYaxis()->SetRangeUser(0.2E5, 1.0E6);
+    USInvMass->GetYaxis()->SetRangeUser(-0.2E5, 1.0E6);
     USInvMass->Draw("");
     LSInvMass->Draw("SAME E");
     //sbLine1->Draw("SAME");
@@ -214,7 +214,7 @@ void KKInvMass(){
 
 
     TLegend *corrleg = new TLegend(0.46, 0.39, 0.88, 0.57);
-    corrleg->AddEntry(corrected, "Corrected US inv. mass", "pe");
+    corrleg->AddEntry(corrected, "Corrected US inv. mass", "p");
     corrleg->AddEntry(fit, "Inv. mass fit", "l");
     corrleg->AddEntry(bgFit, "Residual BG fit", "l");
     corrleg->SetLineWidth(0);
@@ -226,7 +226,7 @@ void KKInvMass(){
     //c2->cd()->SetBottomMargin(0.12);
     corrected->GetYaxis()->SetTitle("Counts");
     corrected->GetYaxis()->SetMaxDigits(2);
-    corrected->GetYaxis()->SetRangeUser(-0.4E6, 0.8E6);
+    corrected->GetYaxis()->SetRangeUser(-0.4E5, 0.8E6);
     corrected->Draw();
     bgFit->Draw("SAME");
     text->Draw();
@@ -394,7 +394,7 @@ void KKInvMass(){
         Double_t histint = usinvmass->IntegralAndError(usinvmass->GetXaxis()->FindBin(1.014 + 0.00001), usinvmass->GetXaxis()->FindBin(1.026 - 0.00001), error);
         
         numphis = numphis/0.802; //scale by signal pct.
-        numphis = numphis/0.49; //scale by branching ratio
+        numphis = numphis/0.491; //scale by branching ratio
         numphis = numphis/phiEff->Eval(1.0 + 0.125 + 0.5*(float(i-1.0))); // scale by pt dependent efficiency
         numphis = numphis/0.5; //divide by pt bin width
         numphis = numphis/events->GetBinContent(3); //divide by number of events considered.
@@ -403,7 +403,7 @@ void KKInvMass(){
         numphis = numphis/(2.0*TMath::Pi()); //scale for same factor 1/2pi(pT) as paper plot
         numphis = numphis/(1.0 + 0.25 + 0.5*(float(i-1.0)));
         phiPT->SetBinContent(i, numphis);
-        phiPT->SetBinError(i, error/(0.802*0.49*0.5*0.6*2.0*TMath::Pi()*phiEff->Eval(1.0 + 0.125 + 0.5*(float(i-1.0)))*events->GetBinContent(3)*(1.0 + 0.25 + 0.5*(float(i-1.0)))));
+        phiPT->SetBinError(i, error/(0.802*0.491*0.5*0.6*2.0*TMath::Pi()*phiEff->Eval(1.0 + 0.125 + 0.5*(float(i-1.0)))*events->GetBinContent(3)*(1.0 + 0.25 + 0.5*(float(i-1.0)))));
                 
 
     }
@@ -542,7 +542,7 @@ void KKInvMass(){
     TLegend *ptleg = new TLegend(0.35, 0.70, 0.89, 0.88);
     ptleg->SetLineWidth(0);
     ptleg->AddEntry(phiPT, "My 0-20% #phi(1020) spectrum (rough)", "p");
-    ptleg->AddEntry(pubphi020, "Published 0-20% #phi(1020) spectrum", "pl");
+    ptleg->AddEntry(pubphi020, "Published 0-20% #phi(1020) spectrum", "p");
     ptleg->Draw();
 
     //pubphiMB->SetMarkerStyle(22);
