@@ -18,181 +18,177 @@ TString indentstr(int n, string s){
     return res+str;
 }
 
-void hepdataparser(){
 
-    TString depvar("dependent_variables:\n");
-    TString indepvar("independent_variables:\n");
 
-    TString var = varheader("yields");
+TString jet_data_to_yaml(TGraphErrors* jetgraph, TGraphErrors* jetv2graph, bool isXaxis){
+    TString values_string = indentstr(1, "  values:\n");
+    int n = jetgraph->GetN();
+    if(isXaxis){
+        for(int i =  0; i<n; i++){
+            TString xval(Form("%s%e\n",indentstr(2, "- value: ").Data(), jetgraph->GetPointX(i)));
+            values_string += xval;
+        }
 
-    TString qualifiers( 
-Form(R"X(      qualifiers:
+    }else{
+        for(int i =  0; i<n; i++){
+            TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n",indentstr(2, "- value: ").Data(), jetgraph->GetPointY(i)/250.0, indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), jetgraph->GetErrorY(i)/250.0, indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -(jetgraph->GetPointY(i)-jetv2graph->GetPointY(i))/250.0));
+            values_string += yval;
+        }
+    }
+    return values_string;
+}
+
+TString ratio_data_to_yaml(TGraphErrors* ratiograph, TGraphErrors* ratiov2graph, TGraphErrors* ratiosystgraph, bool isXaxis, bool isJet = true){
+
+    TString values_string = indentstr(1, "  values:\n");
+    int n = ratiograph->GetN();
+    if(isXaxis){
+        for(int i =  0; i<n; i++){
+            TString xval(Form("%s%e\n",indentstr(2, "- value: ").Data(), ratiograph->GetPointX(i)));
+            values_string += xval;
+        }
+    }else{
+        if(isJet){
+            for(int i =  0; i<n; i++){
+                TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n%s\n%s%e\n",indentstr(2, "- value: ").Data(), ratiograph->GetPointY(i), indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), ratiograph->GetErrorY(i), indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -2.0*(abs(ratiov2graph->GetErrorY(i))), indentstr(3, "- label: sys").Data(), indentstr(3, "  symerror: ").Data(), ratiosystgraph->GetErrorY(i)));
+                values_string += yval;
+            }
+        }else{
+            for(int i =  0; i<n; i++){
+                TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e\n",indentstr(2, "- value: ").Data(), ratiograph->GetPointY(i), indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), ratiograph->GetErrorY(i), indentstr(3, "- label: sys").Data(), indentstr(3, "  symerror: ").Data(), ratiosystgraph->GetErrorY(i)));
+                values_string += yval;
+            }
+        }
+
+    }
+    return values_string;
+}
+
+
+void hepdataparser(bool isLowPT){
+
+    TString qualifiers;
+    TFile* datafile;
+    TString file_prefix;
+    if(isLowPT){
+        datafile = new TFile("./plotcode/ratiocode/fitsyst_cr2lowtest.root");
+        qualifiers = Form(R"X(      qualifiers:
         - name: REACTION
-          value: PPB
+          value: P PB --> H + PHI + X
         - name: SQRT(S)
           units: GEV
           value: 5020.0
         - name: ETARAP
           value: -0.8 to 0.8
         - name: TRIGPT
-          value: 4.0 to 8.0 GeV/c
+          units: GEV/C
+          value: 4.0 to 8.0
         - name: ASSOCPT
-          value: 1.5 to 2.5 GeV/c
-)X"));
+          units: GEV/C
+          value: 1.5 to 2.5
+)X");
+        file_prefix = "lowpt";
+    }else{
+        datafile = new TFile("./plotcode/ratiocode/fitsyst_cr2hightest.root");
+        qualifiers = Form(R"X(      qualifiers:
+        - name: REACTION
+          value: P PB --> H + PHI + X
+        - name: SQRT(S)
+          units: GEV
+          value: 5020.0
+        - name: ETARAP
+          value: -0.8 to 0.8
+        - name: TRIGPT
+          units: GEV/C
+          value: 4.0 to 8.0
+        - name: ASSOCPT
+          units: GEV/C
+          value: 2.5 to 4.0
+)X");
+        file_prefix = "highpt";
+    }
+      
 
-//    printf("%s%s%s", depvar.Data(), var.Data(), qualifiers.Data());
+    TString depvar("dependent_variables:\n");
+    TString indepvar("independent_variables:\n");
 
-    TFile* lowptfile = new TFile("./plotcode/ratiocode/fitsyst_cr2lowtest.root");
-//  jet-yield graphs   
-    TGraphErrors* low_near_phi = (TGraphErrors*)lowptfile->Get("yieldsNear");
-    TGraphErrors* low_near_phi_v2 = (TGraphErrors*)lowptfile->Get("yieldsNearv2");
-    TGraphErrors* low_away_phi = (TGraphErrors*)lowptfile->Get("yieldsAway");
-    TGraphErrors* low_away_phi_v2 = (TGraphErrors*)lowptfile->Get("yieldsAwayv2");
-    TGraphErrors* low_near_h = (TGraphErrors*)lowptfile->Get("yieldshhNear");
-    TGraphErrors* low_near_h_v2 = (TGraphErrors*)lowptfile->Get("yieldshhNearv2");
-    TGraphErrors* low_away_h = (TGraphErrors*)lowptfile->Get("yieldshhAway");
-    TGraphErrors* low_away_h_v2 = (TGraphErrors*)lowptfile->Get("yieldshhAwayv2");
-// ratio graphs
-    TGraphErrors* low_near_ratio = (TGraphErrors*)lowptfile->Get("nchratiosNear");
-    TGraphErrors* low_near_ratio_syst = (TGraphErrors*)lowptfile->Get("nchratiosNearSyst");
-    TGraphErrors* low_near_ratio_v2 = (TGraphErrors*)lowptfile->Get("nearv2fly");
+//  get jet-yield graphs   
+    TGraphErrors* near_phi = (TGraphErrors*)datafile->Get("yieldsNear");
+    TGraphErrors* near_phi_v2 = (TGraphErrors*)datafile->Get("yieldsNearv2");
+    TGraphErrors* away_phi = (TGraphErrors*)datafile->Get("yieldsAway");
+    TGraphErrors* away_phi_v2 = (TGraphErrors*)datafile->Get("yieldsAwayv2");
+    TGraphErrors* near_h = (TGraphErrors*)datafile->Get("yieldshhNear");
+    TGraphErrors* near_h_v2 = (TGraphErrors*)datafile->Get("yieldshhNearv2");
+    TGraphErrors* away_h = (TGraphErrors*)datafile->Get("yieldshhAway");
+    TGraphErrors* away_h_v2 = (TGraphErrors*)datafile->Get("yieldshhAwayv2");
+//  get ratio graphs
+    TGraphErrors* near_ratio = (TGraphErrors*)datafile->Get("nchratiosNear");
+    TGraphErrors* near_ratio_syst = (TGraphErrors*)datafile->Get("nchratiosNearSyst");
+    TGraphErrors* near_ratio_v2 = (TGraphErrors*)datafile->Get("nearv2fly");
     
-    TGraphErrors* low_away_ratio = (TGraphErrors*)lowptfile->Get("nchratiosAway");
-    TGraphErrors* low_away_ratio_syst = (TGraphErrors*)lowptfile->Get("nchratiosAwaySyst");
-    TGraphErrors* low_away_ratio_v2 = (TGraphErrors*)lowptfile->Get("awayv2fly");
+    TGraphErrors* away_ratio = (TGraphErrors*)datafile->Get("nchratiosAway");
+    TGraphErrors* away_ratio_syst = (TGraphErrors*)datafile->Get("nchratiosAwaySyst");
+    TGraphErrors* away_ratio_v2 = (TGraphErrors*)datafile->Get("awayv2fly");
     
-    TGraphErrors* low_ue_ratio = (TGraphErrors*)lowptfile->Get("nchratiosBulk");
-    TGraphErrors* low_ue_ratio_syst = (TGraphErrors*)lowptfile->Get("nchratiosBulkSyst");
+    TGraphErrors* ue_ratio = (TGraphErrors*)datafile->Get("nchratiosBulk");
+    TGraphErrors* ue_ratio_syst = (TGraphErrors*)datafile->Get("nchratiosBulkSyst");
 
-    TGraphErrors* low_tot_ratio = (TGraphErrors*)lowptfile->Get("nchratiosTot");
-    TGraphErrors* low_tot_ratio_syst = (TGraphErrors*)lowptfile->Get("nchratiosTotSyst");
+    TGraphErrors* tot_ratio = (TGraphErrors*)datafile->Get("nchratiosTot");
+    TGraphErrors* tot_ratio_syst = (TGraphErrors*)datafile->Get("nchratiosTotSyst");
 
     
-    TString low_yields_indep, low_yields_dep;
-    low_yields_indep += indepvar + varheader(R"($\langle N_{\mathrm{ch}} \rangle_{|\eta|<0.5}$)");
-    
+    TString yields_indep, yields_dep, yields_xval, yields_yval;
+    yields_indep += indepvar + varheader(R"($\langle N_{\mathrm{ch}} \rangle_{|\eta|<0.5}$)");
+    yields_indep += jet_data_to_yaml(near_phi, near_phi_v2, true);
+
 // h-phi jet yields
-    
-    low_yields_dep += depvar + varheader(R"(Per-trigger h--$\phi$ yields in near-side jet)")+qualifiers;
-    TString low_yields_yval = indentstr(1, "  values:\n");
-    TString low_yields_xval = indentstr(1, "  values:\n");
+    yields_dep += depvar + varheader(R"(Per-trigger h--$\phi$ yields in near-side jet)")+qualifiers;
+    yields_dep += jet_data_to_yaml(near_phi, near_phi_v2, false);
 
-    for(int i =  0; i<3; i++){
-        TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n",indentstr(2, "- value: ").Data(), low_near_phi->GetPointY(i)/250.0, indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), low_near_phi->GetErrorY(i)/250.0, indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -(low_near_phi->GetPointY(i)-low_near_phi_v2->GetPointY(i))/250.0));
-        low_yields_yval += yval;
-        TString xval(Form("%s%e\n",indentstr(2, "- value: ").Data(), low_near_phi->GetPointX(i)));
-        low_yields_xval += xval;
-    }
-    low_yields_dep += low_yields_yval;
-    low_yields_indep += low_yields_xval;
-    
-    low_yields_dep += varheader(R"(Per-trigger h--$\phi$ yields in away-side jet)")+qualifiers;
-    low_yields_yval = indentstr(1, "  values:\n");
-    //low_yields_xval = indentstr(1, "  values:\n");
-
-    for(int i =  0; i<3; i++){
-        TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n",indentstr(2, "- value: ").Data(), low_away_phi->GetPointY(i)/250.0, indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), low_away_phi->GetErrorY(i)/250.0, indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -(low_away_phi->GetPointY(i)-low_away_phi_v2->GetPointY(i))/250.0));
-        low_yields_yval += yval;
-        //TString xval(Form("%s%e\n",indentstr(2, "- value: ").Data(), low_away_phi->GetPointX(i)));
-        //low_yields_xval += xval;
-    }
-    low_yields_dep += low_yields_yval;
-    //low_yields_indep += low_yields_xval;
+    yields_dep += varheader(R"(Per-trigger h--$\phi$ yields in away-side jet)")+qualifiers;
+    yields_dep += jet_data_to_yaml(away_phi, away_phi_v2, false);
 
 //  h-h jet yields
-    low_yields_dep += varheader(R"(Per-trigger h--h yields in near-side jet)")+qualifiers;
-    low_yields_yval = indentstr(1, "  values:\n");
-    //low_yields_xval = indentstr(1, "  values:\n");
+    yields_dep += varheader(R"(Per-trigger h--h yields in near-side jet)")+qualifiers;
+    yields_dep += jet_data_to_yaml(near_h, near_h_v2, false);
 
-    for(int i =  0; i<3; i++){
-        TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n",indentstr(2, "- value: ").Data(), low_near_h->GetPointY(i), indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), low_near_h->GetErrorY(i), indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -(low_near_h->GetPointY(i)-low_near_h_v2->GetPointY(i))));
-        low_yields_yval += yval;
-        //TString xval(Form("%s%e\n",indentstr(2, "- value: ").Data(), low_near_h->GetPointX(i)));
-        //low_yields_xval += xval;
-    }
-    low_yields_dep += low_yields_yval;
-    //low_yields_indep += low_yields_xval;
-    
-    low_yields_dep += varheader(R"(Per-trigger h--h yields in away-side jet)")+qualifiers;
-    low_yields_yval = indentstr(1, "  values:\n");
-    //low_yields_xval = indentstr(1, "  values:\n");
+    yields_dep += varheader(R"(Per-trigger h--h yields in away-side jet)")+qualifiers;
+    yields_dep += jet_data_to_yaml(away_h, away_h_v2, false);
 
-    for(int i =  0; i<3; i++){
-        TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n",indentstr(2, "- value: ").Data(), low_away_h->GetPointY(i), indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), low_away_h->GetErrorY(i), indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -(low_away_h->GetPointY(i)-low_away_h_v2->GetPointY(i))));
-        low_yields_yval += yval;
-        //TString xval(Form("%s%e\n",indentstr(2, "- value: ").Data(), low_away_h->GetPointX(i)));
-        //low_yields_xval += xval;
-    }
-    low_yields_dep += low_yields_yval;
-    //low_yields_indep += low_yields_xval;
-
-   
-    TString low_jet_output = low_yields_indep + low_yields_dep;
+    TString jet_output = yields_indep + yields_dep;
  
-    // write low pt jet-yield table
-    FILE *f = fopen("lowpt_jet_data.yaml", "w+");    
-    fprintf(f, "%s", low_jet_output.Data());
+    // write jet-yield data
+    FILE *f = fopen(Form("%s_jet_data.yaml", file_prefix.Data()), "w+");    
+    fprintf(f, "%s", jet_output.Data());
     fclose(f);
 
     
-    // low pt ratio data
-    TString low_ratio_indep, low_ratio_dep, low_ratio_yval, low_ratio_xval;
-    low_ratio_indep += indepvar + varheader(R"($\langle N_{\mathrm{ch}} \rangle_{|\eta|<0.5}$)");
+// ratio data
+    TString ratio_indep, ratio_dep, ratio_yval, ratio_xval;
+    ratio_indep += indepvar + varheader(R"($\langle N_{\mathrm{ch}} \rangle_{|\eta|<0.5}$)");
+    ratio_indep += ratio_data_to_yaml(near_ratio, near_ratio_v2, near_ratio_syst, true);
     // near side
-    low_ratio_dep += depvar + varheader(R"($1/{N}_{\mathrm{trig}} \mathrm{d}N_{\mathrm{assoc}}/\mathrm{d}{\Delta\varphi} near-side ratio \biggl(\frac{\mathrm{h--}\phi}{\mathrm{h--h}\biggr)$)")+qualifiers;
-
-    low_ratio_yval = indentstr(1, "  values:\n");
-    low_ratio_xval = indentstr(1, "  values:\n");
-
-
-    for(int i =  0; i<3; i++){
-        TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n%s\n%s%e\n",indentstr(2, "- value: ").Data(), low_near_ratio->GetPointY(i), indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), low_near_ratio->GetErrorY(i), indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -2.0*(abs(low_near_ratio_v2->GetErrorY(i))), indentstr(3, "- label: sys").Data(), indentstr(3, "  symerror: ").Data(), low_near_ratio_syst->GetErrorY(i)));
-        low_ratio_yval += yval;
-        TString xval(Form("%s%e\n",indentstr(2, "- value: ").Data(), low_near_ratio->GetPointX(i)));
-        low_ratio_xval += xval;
-    }
-    low_ratio_dep += low_ratio_yval;
-    low_ratio_indep += low_ratio_xval;
-
+    
+    ratio_dep += depvar + varheader(R"($1/{N}_{\mathrm{trig}} \mathrm{d}N_{\mathrm{assoc}}/\mathrm{d}{\Delta\varphi} near-side ratio \biggl(\frac{\mathrm{h--}\phi}{\mathrm{h--h}\biggr)$)")+qualifiers;
+    ratio_dep += ratio_data_to_yaml(near_ratio, near_ratio_v2, near_ratio_syst, false);
+  
     // away side
-    low_ratio_dep += varheader(R"($1/{N}_{\mathrm{trig}} \mathrm{d}N_{\mathrm{assoc}}/\mathrm{d}{\Delta\varphi} away-side ratio \biggl(\frac{\mathrm{h--}\phi}{\mathrm{h--h}\biggr)$)")+qualifiers;
-
-    low_ratio_yval = indentstr(1, "  values:\n");
-
-
-    for(int i =  0; i<3; i++){
-        TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n%s\n%s%e\n",indentstr(2, "- value: ").Data(), low_away_ratio->GetPointY(i), indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), low_away_ratio->GetErrorY(i), indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -2.0*(abs(low_away_ratio_v2->GetErrorY(i))), indentstr(3, "- label: sys").Data(), indentstr(3, "  symerror: ").Data(), low_away_ratio_syst->GetErrorY(i)));
-        low_ratio_yval += yval;
-    }
-    low_ratio_dep += low_ratio_yval;
-
+    ratio_dep += varheader(R"($1/{N}_{\mathrm{trig}} \mathrm{d}N_{\mathrm{assoc}}/\mathrm{d}{\Delta\varphi} away-side ratio \biggl(\frac{\mathrm{h--}\phi}{\mathrm{h--h}\biggr)$)")+qualifiers;
+    ratio_dep += ratio_data_to_yaml(away_ratio, away_ratio_v2, away_ratio_syst, false);
+    
     // UE
-    low_ratio_dep += varheader(R"($1/{N}_{\mathrm{trig}} \mathrm{d}N_{\mathrm{assoc}}/\mathrm{d}{\Delta\varphi} U.E. ratio \biggl(\frac{\mathrm{h--}\phi}{\mathrm{h--h}\biggr)$)")+qualifiers;
-
-    low_ratio_yval = indentstr(1, "  values:\n");
-
-    for(int i =  0; i<3; i++){
-        TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e\n",indentstr(2, "- value: ").Data(), low_ue_ratio->GetPointY(i), indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), low_ue_ratio->GetErrorY(i), indentstr(3, "- label: sys").Data(), indentstr(3, "  symerror: ").Data(), low_ue_ratio_syst->GetErrorY(i)));
-        low_ratio_yval += yval;
-    }
-    low_ratio_dep += low_ratio_yval;
-
+    ratio_dep += varheader(R"($1/{N}_{\mathrm{trig}} \mathrm{d}N_{\mathrm{assoc}}/\mathrm{d}{\Delta\varphi} U.E. ratio \biggl(\frac{\mathrm{h--}\phi}{\mathrm{h--h}\biggr)$)")+qualifiers;
+    ratio_dep += ratio_data_to_yaml(ue_ratio, NULL, ue_ratio_syst, false, false);
+    
     // total
-    low_ratio_dep += varheader(R"($1/{N}_{\mathrm{trig}} \mathrm{d}N_{\mathrm{assoc}}/\mathrm{d}{\Delta\varphi} total ratio \biggl(\frac{\mathrm{h--}\phi}{\mathrm{h--h}\biggr)$)")+qualifiers;
-
-    low_ratio_yval = indentstr(1, "  values:\n");
-
-    for(int i =  0; i<3; i++){
-        TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e\n",indentstr(2, "- value: ").Data(), low_tot_ratio->GetPointY(i), indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), low_tot_ratio->GetErrorY(i), indentstr(3, "- label: sys").Data(), indentstr(3, "  symerror: ").Data(), low_tot_ratio_syst->GetErrorY(i)));
-        low_ratio_yval += yval;
-    }
-    low_ratio_dep += low_ratio_yval;
-
-    TString low_ratio_output = low_ratio_indep + low_ratio_dep;
+    ratio_dep += varheader(R"($1/{N}_{\mathrm{trig}} \mathrm{d}N_{\mathrm{assoc}}/\mathrm{d}{\Delta\varphi} total ratio \biggl(\frac{\mathrm{h--}\phi}{\mathrm{h--h}\biggr)$)")+qualifiers;
+    ratio_dep += ratio_data_to_yaml(tot_ratio, NULL, tot_ratio_syst, false, false);
+    
+    TString ratio_output = ratio_indep + ratio_dep;
  
-    // write low pt jet-yield table
-    f = fopen("lowpt_ratio_data.yaml", "w+");    
-    fprintf(f, "%s", low_ratio_output.Data());
+    // write ratio data
+    f = fopen(Form("%s_ratio_data.yaml", file_prefix.Data()), "w+");    
+    fprintf(f, "%s", ratio_output.Data());
     fclose(f);
 
 
