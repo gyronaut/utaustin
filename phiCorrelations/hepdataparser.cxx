@@ -73,17 +73,17 @@ void hepdataparser(bool isLowPT){
     if(isLowPT){
         datafile = new TFile("./plotcode/ratiocode/fitsyst_cr2lowtest.root");
         qualifiers = Form(R"X(      qualifiers:
-        - name: REACTION
-          value: P PB --> H + PHI + X
+        - name: RE
+          value: P PB --> H PHI X
         - name: SQRT(S)
           units: GEV
           value: 5020.0
         - name: ETARAP
           value: -0.8 to 0.8
-        - name: TRIGPT
+        - name: PT(trig)
           units: GEV/C
           value: 4.0 to 8.0
-        - name: ASSOCPT
+        - name: PT(assoc)
           units: GEV/C
           value: 1.5 to 2.5
 )X");
@@ -91,17 +91,17 @@ void hepdataparser(bool isLowPT){
     }else{
         datafile = new TFile("./plotcode/ratiocode/fitsyst_cr2hightest.root");
         qualifiers = Form(R"X(      qualifiers:
-        - name: REACTION
-          value: P PB --> H + PHI + X
+        - name: RE
+          value: P PB --> H PHI X
         - name: SQRT(S)
           units: GEV
           value: 5020.0
         - name: ETARAP
           value: -0.8 to 0.8
-        - name: TRIGPT
+        - name: PT(trig)
           units: GEV/C
           value: 4.0 to 8.0
-        - name: ASSOCPT
+        - name: PT(assoc)
           units: GEV/C
           value: 2.5 to 4.0
 )X");
