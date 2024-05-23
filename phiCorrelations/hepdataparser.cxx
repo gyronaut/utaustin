@@ -20,9 +20,11 @@ TString indentstr(int n, string s){
 
 
 
-TString jet_data_to_yaml(TGraphErrors* jetgraph, TGraphErrors* jetv2graph, bool isXaxis){
+TString jet_data_to_yaml(TGraphErrors* jetgraph, TGraphErrors* jetv2graph, bool isXaxis, bool isHPhi){
     TString values_string = indentstr(1, "  values:\n");
     int n = jetgraph->GetN();
+    float scale = 1.0;
+    if(isHPhi) scale = 250.0;
     if(isXaxis){
         for(int i =  0; i<n; i++){
             TString xval(Form("%s%e\n",indentstr(2, "- value: ").Data(), jetgraph->GetPointX(i)));
@@ -31,7 +33,7 @@ TString jet_data_to_yaml(TGraphErrors* jetgraph, TGraphErrors* jetv2graph, bool 
 
     }else{
         for(int i =  0; i<n; i++){
-            TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n",indentstr(2, "- value: ").Data(), jetgraph->GetPointY(i)/250.0, indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), jetgraph->GetErrorY(i)/250.0, indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -(jetgraph->GetPointY(i)-jetv2graph->GetPointY(i))/250.0));
+            TString yval(Form("%s%e\n%s\n%s\n%s%e\n%s\n%s%e}\n",indentstr(2, "- value: ").Data(), jetgraph->GetPointY(i)/scale, indentstr(2, "  errors:").Data(), indentstr(3, "- label: stat").Data(), indentstr(3, "  symerror: ").Data(), jetgraph->GetErrorY(i)/scale, indentstr(3, "- label: sys,v2").Data(), indentstr(3, "  asymerror: {plus: 0.0, minus: ").Data(), -(jetgraph->GetPointY(i)-jetv2graph->GetPointY(i))/scale));
             values_string += yval;
         }
     }
@@ -139,21 +141,21 @@ void hepdataparser(bool isLowPT){
     
     TString yields_indep, yields_dep, yields_xval, yields_yval;
     yields_indep += indepvar + varheader(R"($\langle N_{\mathrm{ch}} \rangle_{|\eta|<0.5}$)");
-    yields_indep += jet_data_to_yaml(near_phi, near_phi_v2, true);
+    yields_indep += jet_data_to_yaml(near_phi, near_phi_v2, true, true);
 
 // h-phi jet yields
     yields_dep += depvar + varheader(R"(Per-trigger h--$\phi$ yields in near-side jet)")+qualifiers;
-    yields_dep += jet_data_to_yaml(near_phi, near_phi_v2, false);
+    yields_dep += jet_data_to_yaml(near_phi, near_phi_v2, false, true);
 
     yields_dep += varheader(R"(Per-trigger h--$\phi$ yields in away-side jet)")+qualifiers;
-    yields_dep += jet_data_to_yaml(away_phi, away_phi_v2, false);
+    yields_dep += jet_data_to_yaml(away_phi, away_phi_v2, false, true);
 
 //  h-h jet yields
     yields_dep += varheader(R"(Per-trigger h--h yields in near-side jet)")+qualifiers;
-    yields_dep += jet_data_to_yaml(near_h, near_h_v2, false);
+    yields_dep += jet_data_to_yaml(near_h, near_h_v2, false, false);
 
     yields_dep += varheader(R"(Per-trigger h--h yields in away-side jet)")+qualifiers;
-    yields_dep += jet_data_to_yaml(away_h, away_h_v2, false);
+    yields_dep += jet_data_to_yaml(away_h, away_h_v2, false, false);
 
     TString jet_output = yields_indep + yields_dep;
  
